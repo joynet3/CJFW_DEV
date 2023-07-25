@@ -159,7 +159,9 @@ public with sharing class IFN_ApiGateWay {
                 
                 endPointUrl = String.isNotBlank(this.objIFMaster.Param4__c) ?                 
                 (endPointUrl.contains('?') ?  endPointUrl + '&' + this.objIFMaster.Param4__c :endPointUrl + '?' + this.objIFMaster.Param4__c)
-                : endPointUrl;                        
+                : endPointUrl;
+
+
 
 
                if(String.isNotBlank(this.ifKeyId) && this.objIFAuthGetParamInfoLst.size() >0) {
