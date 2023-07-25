@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label></label>
+    <name>CJLCenter__c</name>
+    <picklistValues>
+        <masterLabel>값추후입력예정</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>인천신선센터</masterLabel>
+        <translation></translation>
+    </picklistValues>
+</CustomFieldTranslation>

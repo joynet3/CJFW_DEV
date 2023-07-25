@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>WF_STATUS__c</fullName>
+    <externalId>false</externalId>
+    <label>WF_STATUS</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>REQ</fullName>
+                <default>true</default>
+                <label>요청</label>
+            </value>
+            <value>
+                <fullName>PROC</fullName>
+                <default>false</default>
+                <label>검토</label>
+            </value>
+            <value>
+                <fullName>APPR</fullName>
+                <default>false</default>
+                <label>승인</label>
+            </value>
+            <value>
+                <fullName>RJCT</fullName>
+                <default>false</default>
+                <label>반려</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

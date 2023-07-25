@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <help>[ 월 매출 5백만 이상 = 6점 ] [ 월 매출 3백만 이상 = 5점 ] [ 월 매출 2백만 이상 = 4점 ] [ 월 매출 백만 이상 = 3점 ] [ 월 매출 50만 이상 = 2점 ] [ 월 매출 50만 미만 = 1점 ]</help>
+    <label>월매출 점수</label>
+    <name>fm_MonthlySalesScore__c</name>
+</CustomFieldTranslation>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>TwoWeekvaildCheck</fullName>
+    <active>true</active>
+    <description>시작일 ~ 종료일 간격 14일 초과 불가</description>
+    <errorConditionFormula>EndDateTime__c - StartDateTime__c &gt; 14</errorConditionFormula>
+    <errorMessage>이벤트는 14일 이상 지속될 수 없습니다.</errorMessage>
+</ValidationRule>

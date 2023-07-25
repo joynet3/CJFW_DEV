@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>반품회수 위치</label>
+    <name>PV_RETURNLOC__c</name>
+</CustomFieldTranslation>

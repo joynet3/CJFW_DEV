@@ -1,0 +1,27 @@
+.THIS ul, .THIS li {
+    padding: 8px 16px;
+    border-bottom: 1px solid #ddd;
+}
+
+.THIS td, .THIS th  {
+    padding: 8px;
+    text-align: left;
+}
+
+.THIS th {
+    text-align: center;
+}
+
+.THIS .table-level-1 tr, .THIS .table-level-2 tr, .THIS .table-level-3 tr {
+    cursor: pointer;
+}
+
+.THIS .category-label {
+    text-align: left;
+    margin-bottom: 5px;
+}
+
+.THIS label {
+    margin-bottom: 5px;
+    font-weight: bold;
+}

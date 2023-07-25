@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>EventAccountMatchValidation</fullName>
+    <active>true</active>
+    <description>업무 등록시 연락처와 영업활동에 연결된 고객이 일치하는 지 확인</description>
+    <errorConditionFormula>AND (
+   NOT(ISBLANK(Contact__c)),
+   NOT(ISBLANK(Opportunity__c)),
+   Contact__r.Account.Id != Opportunity__r.AccountId
+)</errorConditionFormula>
+    <errorMessage>입력된 연락처와 영업활동에 연결된 고객이 일치하지 않습니다.</errorMessage>
+</ValidationRule>

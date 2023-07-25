@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>1100</fullName>
+        <default>false</default>
+        <label>상온 원자재 창고</label>
+    </customValue>
+    <customValue>
+        <fullName>1200</fullName>
+        <default>false</default>
+        <label>냉장 원자재 창고</label>
+    </customValue>
+    <customValue>
+        <fullName>1300</fullName>
+        <default>false</default>
+        <label>냉동 원자재 창고</label>
+    </customValue>
+    <customValue>
+        <fullName>1900</fullName>
+        <default>false</default>
+        <label>원자재 불량 창고</label>
+    </customValue>
+    <customValue>
+        <fullName>3000</fullName>
+        <default>false</default>
+        <label>제품 장기재고 창고</label>
+    </customValue>
+    <customValue>
+        <fullName>3100</fullName>
+        <default>false</default>
+        <label>상온 제품 창고</label>
+    </customValue>
+    <customValue>
+        <fullName>3200</fullName>
+        <default>false</default>
+        <label>냉장 제품 창고</label>
+    </customValue>
+    <customValue>
+        <fullName>3300</fullName>
+        <default>false</default>
+        <label>냉동 제품 창고</label>
+    </customValue>
+    <customValue>
+        <fullName>3900</fullName>
+        <default>false</default>
+        <label>제품 불량창고</label>
+    </customValue>
+    <customValue>
+        <fullName>1000</fullName>
+        <default>false</default>
+        <label>정상품창고</label>
+    </customValue>
+    <customValue>
+        <fullName>2000</fullName>
+        <default>false</default>
+        <label>불량품창고</label>
+    </customValue>
+    <customValue>
+        <fullName>L091</fullName>
+        <default>false</default>
+        <label>센트럴키친중부세척센터근태점</label>
+    </customValue>
+    <masterLabel>저장위치</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

@@ -1,0 +1,71 @@
+<!--
+* ==================================================================================
+*   File Name   : BalanceTableMgmt.cmp
+*   Author      : minje.kim
+*   Date        : 2022.10.21
+*   Description : 시산표 업로드
+*   Modification Log
+* ==================================================================================
+*   Ver     Date            Author          Modification
+* ==================================================================================
+*   1.0     2022.10.21      minje.kim        Create
+* ==================================================================================
+-->
+<aura:component implements="force:appHostable,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,force:hasRecordId" controller="BalanceExcelUploadController"> 
+    
+    <!-- Attribute -->
+    <aura:attribute name="isMobile" type="Boolean" default="false" description="Mobile, DeskTop 구분자"/>
+    <aura:attribute name="isOpenUpload" type="Boolean" default="false" description="시산 업로드 화면 Open 여부"/>
+    <aura:attribute name="isComplete" type="Boolean" default="false" description="시산 업로드 완료 여부"/>
+    <aura:attribute name="selectedTab" type="String" default="Summary" description="선택된 시산종류 (시산요약표/PL/IRR)"/>
+    <aura:attribute name="balanceType" type="String" description="시산 구분 (제안/오픈)" />
+    <aura:attribute name="vfPageUrl" type="String" default="" description="시산표 양식 URL"/>
+    <aura:attribute name="showSpinner" type="Boolean" default="false" />
+
+    <!-- Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.fnInit}"/>
+    <aura:handler name="change" value="{!v.isComplete}" action="{!c.fnHandleExcelpaste}"/>
+    
+    <aura:if isTrue="{!v.showSpinner}">
+        <lightning:spinner aura:id="spinner" alternativeText="Loading" variant="brand" size="small" />
+    </aura:if>
+
+    <!-- 시산표 View 화면 -->
+    <aura:if isTrue="{! OR(v.balanceType == '제안시산', v.balanceType == '오픈시산')}">
+        <div class="slds-card__header slds-grid">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="slds-media__body">
+                    <h2 class="slds-card__header-title">
+                        <lightning:tabset selectedTabId="{!v.selectedTab}">
+                            <lightning:tab id="Summary"   onactive="{!c.fnActive}" class="custom-tab_ContentsNone" label="시산요약표"/>
+                            <lightning:tab id="IRR"   onactive="{!c.fnActive}" class="custom-tab_ContentsNone" label="IRR"/>
+                            <lightning:tab id="PL" onactive="{!c.fnActive}" class="custom-tab_ContentsNone" label="PL"/>
+                        </lightning:tabset>
+                    </h2>
+                </div>
+                <div class="slds-no-flex">
+                    <aura:if isTrue="{!!v.isMobile}">
+                        <lightning:button label="업로드" onclick="{!c.fnOpenUpload}" />
+                    </aura:if>
+                </div>
+            </header>
+        </div>
+    </aura:if>
+    <div class="slds-card__body slds-card__body_inner">
+        <iframe aura:id="vfFrameMaster" class="iFrameStyle" src="{!v.vfPageUrl}" style="width:100%; height:20rem;"/>
+        <aura:if isTrue="{! AND(v.balanceType != '제안시산', v.balanceType != '오픈시산')}">
+            * 비교에 대한 설명은 전자결재 품의화면의 비고란에 입력 가능합니다. 
+        </aura:if>
+    </div>
+
+    <!-- 시산 업로드 화면 -->
+    <aura:if isTrue="{!v.isOpenUpload}">
+        <c:BalanceExcelUpload 
+            isComplete = "{!v.isComplete}" 
+            isOpen = "{!v.isOpenUpload}" 
+            recordId = "{!v.recordId}" 
+            balanceType = "{!v.balanceType}" 
+        /> 
+    </aura:if>
+
+</aura:component>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>홈</fullName>
+        <default>false</default>
+        <label>홈</label>
+    </customValue>
+    <customValue>
+        <fullName>배달</fullName>
+        <default>false</default>
+        <label>배달</label>
+    </customValue>
+    <customValue>
+        <fullName>유통경로</fullName>
+        <default>false</default>
+        <label>유통경로</label>
+    </customValue>
+    <description>외식중부에서 사용하는 영업형태 필드 선택목록 값</description>
+    <masterLabel>영업형태_외식중부</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

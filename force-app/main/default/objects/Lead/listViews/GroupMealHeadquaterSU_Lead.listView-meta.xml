@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>GroupMealHeadquaterSU_Lead</fullName>
+    <columns>fm_LinkBidNoticeName__c</columns>
+    <columns>LEAD.LEAD_SOURCE</columns>
+    <columns>BidNoticeNumber__c</columns>
+    <columns>LEAD.COMPANY</columns>
+    <columns>BidNoticeStatus__c</columns>
+    <columns>BidMethod__c</columns>
+    <columns>pblancDate__c</columns>
+    <columns>BidQualifyRegistCloseDateTime__c</columns>
+    <columns>BidOpenDateTime__c</columns>
+    <columns>FULL_NAME</columns>
+    <columns>Keyword__c</columns>
+    <columns>LEAD.CREATED_DATE</columns>
+    <columns>CORE.USERS.ALIAS</columns>
+    <filterScope>Queue</filterScope>
+    <label>급식SU 입찰공고</label>
+    <queue>GroupMealHeadquaterSU</queue>
+    <sharedTo>
+        <allInternalUsers></allInternalUsers>
+    </sharedTo>
+</ListView>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>IsConglomerateRestrictionsYN__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>중소기업만 참여할 수 있는 입찰인지에 대한 여부</description>
+    <externalId>false</externalId>
+    <label>Conglomerate Restrictions Y/N</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

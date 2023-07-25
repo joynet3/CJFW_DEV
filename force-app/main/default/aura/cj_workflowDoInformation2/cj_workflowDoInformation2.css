@@ -1,0 +1,85 @@
+.THIS {
+}
+
+.THIS .slds-modal__container {
+    max-width: 70rem !important;
+    width: 80% !important;
+}
+
+.THIS .main-table {
+    width: 100%;
+}
+
+.THIS td, .THIS th  {
+    padding: 0 13px 8px 13px;
+}
+
+.THIS .main-table tr {
+    width: 100%;
+}
+
+.THIS .main-table td {
+    width: 50%;
+    vertical-align: bottom;
+}
+
+.THIS .main-table .padding-side {
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+.THIS .padding-side {
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+.THIS .selectList {
+    padding: 0px 3px 8px 3px;
+}
+
+.THIS .main-table .input-date {
+    padding-bottom: 16px;
+}
+
+.THIS .table-container {
+    width: 100%;
+    overflow: auto;
+}
+
+.THIS .table-container td {
+    text-align: center;
+    padding: 5px !important;
+}
+
+.THIS .table-container th {
+    text-align: center;
+    padding: 5px !important;
+}
+
+.THIS .table-contact-container {
+    width: 100%;
+    overflow-y: hidden !important;
+}
+
+.THIS .table-container>table {
+    min-width: max-content;
+}
+
+.THIS .select-option label{
+    display: none !important;
+}
+
+.THIS .required-block {
+    display: flex;
+    width: 100%;
+}
+
+.THIS .required-mark {
+    color: red;
+    padding-top: 4px;
+}
+
+.THIS .required-input {
+    width: 100%;
+    margin-left: -2px;
+}

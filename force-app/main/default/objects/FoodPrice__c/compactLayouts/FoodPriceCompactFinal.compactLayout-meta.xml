@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>FoodPriceCompactFinal</fullName>
+    <fields>Opportunity__c</fields>
+    <fields>VATIncluded__c</fields>
+    <fields>OperatingExpenseType__c</fields>
+    <fields>OperatingDays__c</fields>
+    <fields>InputAmount__c</fields>
+    <label>Food Price Compact Final</label>
+</CompactLayout>

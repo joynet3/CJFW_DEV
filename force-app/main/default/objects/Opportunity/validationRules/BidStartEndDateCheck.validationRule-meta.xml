@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>BidStartEndDateCheck</fullName>
+    <active>true</active>
+    <description>입찰일정 종료일이 입찰일정 시작일보다 빠를 경우</description>
+    <errorConditionFormula>BidStartDate__c &gt; CloseDate</errorConditionFormula>
+    <errorMessage>입찰일정 종료일을 입찰일정 시작일 이후로 설정해주세요</errorMessage>
+</ValidationRule>

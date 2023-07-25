@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>신성장사업본부MD</label>
+    <name>ekgrp_n__c</name>
+</CustomFieldTranslation>

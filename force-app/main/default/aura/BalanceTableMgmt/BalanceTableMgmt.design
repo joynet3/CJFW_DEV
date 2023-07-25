@@ -1,0 +1,3 @@
+<design:component >
+    <design:attribute name="balanceType" label="시산 종류" placeholder="ex) 제안시산 / 오픈시산" required="true" />
+</design:component>

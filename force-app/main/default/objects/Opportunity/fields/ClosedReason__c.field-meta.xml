@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ClosedReason__c</fullName>
+    <externalId>false</externalId>
+    <label>Closed Reason</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>StageName</controllingField>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>단가 - (단가가 저렴함/비쌈)</fullName>
+                <default>false</default>
+                <label>단가 - (단가가 저렴함/비쌈)</label>
+            </value>
+            <value>
+                <fullName>상품 - (제안 상품이 좋음/나쁨[품질 포함])</fullName>
+                <default>false</default>
+                <label>상품 - (제안 상품이 좋음/나쁨[품질 포함])</label>
+            </value>
+            <value>
+                <fullName>지원 - (보증금,기부금 등 지원조건 좋음 / 나쁨)</fullName>
+                <default>false</default>
+                <label>지원 - (보증금,기부금 등 지원조건 좋음 / 나쁨)</label>
+            </value>
+            <value>
+                <fullName>배송 - (최소 물량, OTD 배송조건의 적합성)</fullName>
+                <default>false</default>
+                <label>배송 - (최소 물량, OTD 배송조건의 적합성)</label>
+            </value>
+            <value>
+                <fullName>경쟁사 - (기존에 거래하던 경쟁사에 대한 불만)</fullName>
+                <default>false</default>
+                <label>경쟁사 - (기존에 거래하던 경쟁사에 대한 불만)</label>
+            </value>
+            <value>
+                <fullName>영업 - (영업사원의 태도, 역량, 연락 등)</fullName>
+                <default>false</default>
+                <label>영업 - (영업사원의 태도, 역량, 연락 등)</label>
+            </value>
+            <value>
+                <fullName>배송(물류) - (결품,지연 등 기본적인 배송 클레임 수준)</fullName>
+                <default>false</default>
+                <label>배송(물류) - (결품,지연 등 기본적인 배송 클레임 수준)</label>
+            </value>
+            <value>
+                <fullName>영업 - (영업사원이 이전부터 얼마나 접촉을 했는지)</fullName>
+                <default>false</default>
+                <label>영업 - (영업사원이 이전부터 얼마나 접촉을 했는지)</label>
+            </value>
+            <value>
+                <fullName>서비스 - (제안설명회를 통한 우수함 인식)</fullName>
+                <default>false</default>
+                <label>서비스 - (제안설명회를 통한 우수함 인식)</label>
+            </value>
+            <value>
+                <fullName>단가 - (경쟁사 比 단가가 저렴함/비쌈)</fullName>
+                <default>false</default>
+                <label>단가 - (경쟁사 比 단가가 저렴함/비쌈)</label>
+            </value>
+            <value>
+                <fullName>상품 - (운영하는 상품이 다양함/단순함)</fullName>
+                <default>false</default>
+                <label>상품 - (운영하는 상품이 다양함/단순함)</label>
+            </value>
+            <value>
+                <fullName>인프라 - (상품, 단가 外 FW가 가진 인프라)</fullName>
+                <default>false</default>
+                <label>인프라 - (상품, 단가 外 FW가 가진 인프라)</label>
+            </value>
+            <value>
+                <fullName>서비스 - (상품, 단가 外 FW가 제공하는서비스)</fullName>
+                <default>false</default>
+                <label>서비스 - (상품, 단가 外 FW가 제공하는서비스)</label>
+            </value>
+            <value>
+                <fullName>경쟁사 - (경쟁사 費 단가, 품질, 서비스 등의 제안 내용)</fullName>
+                <default>false</default>
+                <label>경쟁사 - (경쟁사 費 단가, 품질, 서비스 등의 제안 내용)</label>
+            </value>
+            <value>
+                <fullName>배송(물류) - [최소 물량, 최대 물량 등 SCM 대응 가능 수준])</fullName>
+                <default>false</default>
+                <label>배송(물류) - [최소 물량, 최대 물량 등 SCM 대응 가능 수준])</label>
+            </value>
+            <value>
+                <fullName>내부이슈 - (수주 했으나, FW 내부적으로 수주심의 탈락)</fullName>
+                <default>false</default>
+                <label>내부이슈 - (수주 했으나, FW 내부적으로 수주심의 탈락)</label>
+            </value>
+            <value>
+                <fullName>고객사 - (고객사의 단순 거래 중단, 변경 등의 요청)</fullName>
+                <default>false</default>
+                <label>고객사 - (고객사의 단순 거래 중단, 변경 등의 요청)</label>
+            </value>
+            <value>
+                <fullName>키맨 영업 우위</fullName>
+                <default>false</default>
+                <label>키맨 영업 우위</label>
+            </value>
+            <value>
+                <fullName>Top sales 우위</fullName>
+                <default>false</default>
+                <label>Top sales 우위</label>
+            </value>
+            <value>
+                <fullName>식단가 경쟁력 우위</fullName>
+                <default>false</default>
+                <label>식단가 경쟁력 우위</label>
+            </value>
+            <value>
+                <fullName>고객 맞춤 메뉴 제안 우위</fullName>
+                <default>false</default>
+                <label>고객 맞춤 메뉴 제안 우위</label>
+            </value>
+            <value>
+                <fullName>적정 투자 제안 우위</fullName>
+                <default>false</default>
+                <label>적정 투자 제안 우위</label>
+            </value>
+            <value>
+                <fullName>PT 우위</fullName>
+                <default>false</default>
+                <label>PT 우위</label>
+            </value>
+            <value>
+                <fullName>시식 우위</fullName>
+                <default>false</default>
+                <label>시식 우위</label>
+            </value>
+            <value>
+                <fullName>품평회 우위</fullName>
+                <default>false</default>
+                <label>품평회 우위</label>
+            </value>
+            <value>
+                <fullName>협력사 연계</fullName>
+                <default>false</default>
+                <label>협력사 연계</label>
+            </value>
+            <value>
+                <fullName>기존 운영점 평가 우위</fullName>
+                <default>false</default>
+                <label>기존 운영점 평가 우위</label>
+            </value>
+            <value>
+                <fullName>키맨 영업 열위</fullName>
+                <default>false</default>
+                <label>키맨 영업 열위</label>
+            </value>
+            <value>
+                <fullName>Top sales 열위</fullName>
+                <default>false</default>
+                <label>Top sales 열위</label>
+            </value>
+            <value>
+                <fullName>식단가 경쟁력 열위</fullName>
+                <default>false</default>
+                <label>식단가 경쟁력 열위</label>
+            </value>
+            <value>
+                <fullName>고객 맞춤 메뉴 제안 열위</fullName>
+                <default>false</default>
+                <label>고객 맞춤 메뉴 제안 열위</label>
+            </value>
+            <value>
+                <fullName>적정 투자 제안 열위</fullName>
+                <default>false</default>
+                <label>적정 투자 제안 열위</label>
+            </value>
+            <value>
+                <fullName>PT 열위</fullName>
+                <default>false</default>
+                <label>PT 열위</label>
+            </value>
+            <value>
+                <fullName>시식 열위</fullName>
+                <default>false</default>
+                <label>시식 열위</label>
+            </value>
+            <value>
+                <fullName>품평회 열위</fullName>
+                <default>false</default>
+                <label>품평회 열위</label>
+            </value>
+            <value>
+                <fullName>기존 운영점 평가 열위</fullName>
+                <default>false</default>
+                <label>기존 운영점 평가 열위</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>Closed Lost</controllingFieldValue>
+            <controllingFieldValue>Closed Won</controllingFieldValue>
+            <valueName>단가 - (단가가 저렴함/비쌈)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Lost</controllingFieldValue>
+            <controllingFieldValue>Closed Won</controllingFieldValue>
+            <valueName>상품 - (제안 상품이 좋음/나쁨[품질 포함])</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Lost</controllingFieldValue>
+            <controllingFieldValue>Closed Won</controllingFieldValue>
+            <valueName>지원 - (보증금,기부금 등 지원조건 좋음 / 나쁨)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Lost</controllingFieldValue>
+            <controllingFieldValue>Closed Won</controllingFieldValue>
+            <valueName>영업 - (영업사원의 태도, 역량, 연락 등)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Lost</controllingFieldValue>
+            <controllingFieldValue>Closed Won</controllingFieldValue>
+            <valueName>배송(물류) - (결품,지연 등 기본적인 배송 클레임 수준)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Lost</controllingFieldValue>
+            <valueName>경쟁사 - (경쟁사 費 단가, 품질, 서비스 등의 제안 내용)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Lost</controllingFieldValue>
+            <valueName>배송(물류) - [최소 물량, 최대 물량 등 SCM 대응 가능 수준])</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Lost</controllingFieldValue>
+            <valueName>내부이슈 - (수주 했으나, FW 내부적으로 수주심의 탈락)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Lost</controllingFieldValue>
+            <valueName>고객사 - (고객사의 단순 거래 중단, 변경 등의 요청)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Lost</controllingFieldValue>
+            <valueName>키맨 영업 열위</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Lost</controllingFieldValue>
+            <valueName>Top sales 열위</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Lost</controllingFieldValue>
+            <valueName>식단가 경쟁력 열위</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Lost</controllingFieldValue>
+            <valueName>고객 맞춤 메뉴 제안 열위</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Lost</controllingFieldValue>
+            <valueName>적정 투자 제안 열위</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Lost</controllingFieldValue>
+            <valueName>PT 열위</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Lost</controllingFieldValue>
+            <valueName>시식 열위</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Lost</controllingFieldValue>
+            <valueName>품평회 열위</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Lost</controllingFieldValue>
+            <valueName>기존 운영점 평가 열위</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Won</controllingFieldValue>
+            <valueName>배송 - (최소 물량, OTD 배송조건의 적합성)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Won</controllingFieldValue>
+            <valueName>경쟁사 - (기존에 거래하던 경쟁사에 대한 불만)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Won</controllingFieldValue>
+            <valueName>영업 - (영업사원이 이전부터 얼마나 접촉을 했는지)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Won</controllingFieldValue>
+            <valueName>서비스 - (제안설명회를 통한 우수함 인식)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Won</controllingFieldValue>
+            <valueName>단가 - (경쟁사 比 단가가 저렴함/비쌈)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Won</controllingFieldValue>
+            <valueName>상품 - (운영하는 상품이 다양함/단순함)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Won</controllingFieldValue>
+            <valueName>인프라 - (상품, 단가 外 FW가 가진 인프라)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Won</controllingFieldValue>
+            <valueName>서비스 - (상품, 단가 外 FW가 제공하는서비스)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Won</controllingFieldValue>
+            <valueName>키맨 영업 우위</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Won</controllingFieldValue>
+            <valueName>Top sales 우위</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Won</controllingFieldValue>
+            <valueName>식단가 경쟁력 우위</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Won</controllingFieldValue>
+            <valueName>고객 맞춤 메뉴 제안 우위</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Won</controllingFieldValue>
+            <valueName>적정 투자 제안 우위</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Won</controllingFieldValue>
+            <valueName>PT 우위</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Won</controllingFieldValue>
+            <valueName>시식 우위</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Won</controllingFieldValue>
+            <valueName>품평회 우위</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Won</controllingFieldValue>
+            <valueName>협력사 연계</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed Won</controllingFieldValue>
+            <valueName>기존 운영점 평가 우위</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

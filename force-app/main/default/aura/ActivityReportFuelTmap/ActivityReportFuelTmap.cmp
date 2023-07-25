@@ -1,0 +1,105 @@
+<!--
+  @description       : 
+  @author            : (서원) won.seo@daeunextier.com
+  @group             : 
+  @last modified on  : 09-30-2022
+  @last modified by  : (서원) won.seo@daeunextier.com
+-->
+<aura:component access="global" implements="force:appHostable,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes" controller="ActivityReportFuelMgmtController">
+
+    <!-- Attribute -->
+    <aura:attribute name="tmapIframeUrl" type="String" description="Tmap 검색화면 Vfp URL"/>
+    <aura:attribute name="isOpenTmap" type="Boolean" description="Tmap 검색화면 Open 여부"/>
+    <aura:attribute name="isComplete" type="Boolean" default="false" description="Tmap 검색 완료 여부"/>
+
+    <aura:attribute name="tmapOriginDistance" type="String" default="" description="Tmap 원본 거리"/>
+    <aura:attribute name="tmapDistance" type="String" default="" description="산정 거리 (변경된 거리)"/>
+    <aura:attribute name="tmapStartAddr" type="String" default="" description="출발지 주소"/>
+    <aura:attribute name="tmapEndAddr" type="String" default="" description="도착지 주소"/>
+    <aura:attribute name="tmapViaPoints" type="List" description="경유지 주소 리스트"/>
+
+    <aura:attribute name="tmapStartDesc" type="String" default="" description="출발지 주소 비고"/>
+    <aura:attribute name="tmapEndDesc" type="String" default="" description="도착지 주소 비고"/>
+    <aura:attribute name="tmapViaPointsDesc" type="List" description="경유지 주소 리스트 비고"/>
+
+    <aura:attribute name="isMobile" type="Boolean" default="false" description="Mobile, DeskTop 구분자"/>
+    <aura:attribute name="parent" type="Aura.Component" description="상위 컴포넌트 (주유비 관리 화면)"/>
+
+    <aura:attribute name="modalStatus" type="String" default="Hide" description="모달창 상태값 Hide(숨김), Description(비고입력)"/>
+    <aura:attribute name="modalTitle" type="String" default="" description="모달창 제목"/>
+    <aura:attribute name="modalType" type="String" default="" description="모달창 비고 유형"/>
+    <aura:attribute name="modalViaNo" type="String" default="" description="모달창 비고 경유지 번호"/>
+    <aura:attribute name="modalDesc" type="String" default="" description="모달창 비고 내용"/>
+    
+    <!-- Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.fnInit}"/>
+    <aura:handler name="change" value="{!v.isOpenTmap}" action="{!c.fnOnChangeAddEventHandler}" />
+
+    
+    <!-- Modal/Popup Box starts here-->
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" style="z-index:9002" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_large">
+        <!-- spinner -->
+        <lightning:spinner aura:id="loadingSpinner" style="margin: var(--lwc-squareIconLargeBoundary,3rem) 0 var(--lwc-squareIconLargeBoundaryAlt,5rem) 0;" class="slds-hide" alternativeText="Loading" size="large" variant="brand" />
+        
+        <div class="slds-modal__container" style="width: 100%; position: fixed; margin: 0px;">
+            <!-- Modal/Popup Box Header Starts here-->
+            <aura:if isTrue="{!!v.isMobile}">
+                <header class="slds-modal__header">
+                    <!-- <lightning:buttonIcon iconName="utility:close"
+                                          onclick="{! c.fnCloseModel }"
+                                          alternativeText="close"
+                                          variant="bare-inverse"
+                                          class="slds-modal__close"/> -->
+                </header>
+            </aura:if>
+            <!--Modal/Popup Box Body Starts here-->
+            <div class="slds-modal__content slds-var-p-around_medium" id="modal-content-id-1">
+                <div id="modal_child_mapDiv">
+                    <!-- Tmap 검색 화면 페이지-->
+                    <iframe id="tmapIframeMap" aura:id="tmapIframeMap" src="{!v.tmapIframeUrl}" frameborder="0" allow="*"></iframe>
+                </div>
+            </div>
+            <!--Modal/Popup Box Footer Starts here-->
+            <footer class="slds-modal__footer">
+                <lightning:button variant="neutral"
+                                  label="취소"
+                                  title="취소"
+                                  onclick="{! c.fnCloseModel }"/>
+                <lightning:button variant="brand"
+                                  aura:id="OK"
+                                  label="저장"
+                                  title="저장"
+                                  onclick="{!c.fnTmapSubmitDetails}"/>
+            </footer>
+            
+            <!-- 주유비 비고입력 화면 -->
+            <aura:if isTrue="{!v.modalStatus == 'Description'}">
+                <section role="dialog" tabindex="-3" class="slds-modal slds-fade-in-open slds-modal_small" style="position: fixed; min-width:100%; z-index:9002 !important;">
+                    <div class="slds-align_absolute-center slds-modal__container" style="{!v.isMobile ? 'max-width:100% ;min-width:100%; width:100%' : 'min-width:90%;'}">
+                        <div class="cuCheckModalCSS" style="{!v.isMobile ? 'width:100%' : 'width:40%'}">
+                            <div class="slds-modal__header" >
+                                <lightning:buttonIcon iconName="utility:close" size="large" alternativeText="Close" variant="bare-inverse" class="slds-modal__close" onclick="{!c.fnCloseModal}" />
+                                <h2 class="title slds-text-heading--medium">
+                                    <label><b>{!v.modalTitle}</b></label>
+                                </h2>
+                            </div>
+                            <div class="slds-modal__content scrollable" style="padding:15px;">   
+                                <div class="custom-textarea">
+                                    <lightning:textarea variant="label-hidden" value="{!v.modalDesc}" maxlength="255"/>
+                                </div>
+                            </div>
+                            <div class="modal-footer slds-modal__footer">
+                                <lightning:button variant="neutral" label="취소" onclick="{!c.fnCloseModal}"/> 
+                                <lightning:button variant="brand" label="저장" onclick="{!c.fnSaveDescription}"/> 
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open" style="z-index:9001 !important;"></div>
+            </aura:if>
+        </div>        
+    </section>
+    <aura:if isTrue="{!v.isMobile}">
+        <div class="slds-backdrop slds-backdrop_open" style="z-index:9001 !important;"></div>
+    </aura:if>
+</aura:component>

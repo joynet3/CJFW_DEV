@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>PV_OLD_BIZPLACE_NEW_lu__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>경로(사업부)
+GroupId : ROUTETVBUR</description>
+    <externalId>false</externalId>
+    <label>PV_OLD_BIZPLACE_NEW_lu</label>
+    <lookupFilter>
+        <active>true</active>
+        <filterItems>
+            <field>MDMReferenceCode__c.GROUPID__c</field>
+            <operation>equals</operation>
+            <value>ROUTETVBUR</value>
+        </filterItems>
+        <isOptional>true</isOptional>
+    </lookupFilter>
+    <referenceTo>MDMReferenceCode__c</referenceTo>
+    <relationshipLabel>MDMRegRequestCustomer (PV_OLD_BIZPLACE_NEW_lu)</relationshipLabel>
+    <relationshipName>MDMRegRequestCustomer_PV_BIZPLACE</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>하역조건-1</label>
+    <name>UnloadConditions1__c</name>
+    <picklistValues>
+        <masterLabel>계단만사용</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>덤웨이터(식품전용 엘리베이터) 사용</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>엘리베이터사용</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>제한없음</masterLabel>
+        <translation></translation>
+    </picklistValues>
+</CustomFieldTranslation>

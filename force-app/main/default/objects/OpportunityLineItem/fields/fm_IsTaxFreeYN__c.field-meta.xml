@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>fm_IsTaxFreeYN__c</fullName>
+    <description>기회 제품에서 제품의 면세 여부</description>
+    <externalId>false</externalId>
+    <formula>IF(ISPICKVAL(PricebookEntry.Product2.taxt_cl_cd__c, &quot;1&quot;), TRUE, FALSE)</formula>
+    <label>Tax Free Y/N</label>
+    <type>Checkbox</type>
+</CustomField>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ClosedReasonValidationRule</fullName>
+    <active>true</active>
+    <description>수주 성공 혹은 수주 실패 시 수주 성공/실패 요인 미선택시 확인규칙 발동</description>
+    <errorConditionFormula>AND(OR(Text(StageName) = &apos;Closed Won&apos; , Text(StageName) = &apos;Closed Lost&apos;), ISBLANK(Text(ClosedReason__c)))</errorConditionFormula>
+    <errorMessage>수주 성공 혹은 실패 시 수주 성공/실패 요인은 필수 선택값입니다.</errorMessage>
+</ValidationRule>

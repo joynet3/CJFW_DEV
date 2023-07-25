@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>상</fullName>
+        <default>false</default>
+        <label>상</label>
+    </customValue>
+    <customValue>
+        <fullName>중</fullName>
+        <default>false</default>
+        <label>중</label>
+    </customValue>
+    <customValue>
+        <fullName>하</fullName>
+        <default>false</default>
+        <label>하</label>
+    </customValue>
+    <masterLabel>Friendship Score</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

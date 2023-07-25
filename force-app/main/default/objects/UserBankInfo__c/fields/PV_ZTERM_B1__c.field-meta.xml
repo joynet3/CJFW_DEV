@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>PV_ZTERM_B1__c</fullName>
+    <externalId>false</externalId>
+    <label>PV_ZTERM_B1</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>K400</fullName>
+                <default>true</default>
+                <label>출납일 지정 지급</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

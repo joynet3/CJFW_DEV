@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>NaraMarketLeadCompactLayoutFinal</fullName>
+    <fields>BidNoticeName__c</fields>
+    <fields>Company</fields>
+    <fields>BidMethod__c</fields>
+    <fields>BidBeginDateTime__c</fields>
+    <fields>BidOpenDateTime__c</fields>
+    <fields>OwnerId</fields>
+    <fields>fm_BidNoticeDetail__c</fields>
+    <label>NaraMarket Lead Compact Layout Final</label>
+</CompactLayout>

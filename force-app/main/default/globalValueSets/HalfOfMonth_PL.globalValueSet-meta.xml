@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>EarlyJan</fullName>
+        <default>false</default>
+        <label>Early Jan</label>
+    </customValue>
+    <customValue>
+        <fullName>LateJan</fullName>
+        <default>false</default>
+        <label>Late Jan</label>
+    </customValue>
+    <customValue>
+        <fullName>EarlyFeb</fullName>
+        <default>false</default>
+        <label>Early Feb</label>
+    </customValue>
+    <customValue>
+        <fullName>LateFeb</fullName>
+        <default>false</default>
+        <label>Late Feb</label>
+    </customValue>
+    <customValue>
+        <fullName>EarlyMar</fullName>
+        <default>false</default>
+        <label>Early Mar</label>
+    </customValue>
+    <customValue>
+        <fullName>LateMar</fullName>
+        <default>false</default>
+        <label>Late Mar</label>
+    </customValue>
+    <customValue>
+        <fullName>EarlyApr</fullName>
+        <default>false</default>
+        <label>Early Apr</label>
+    </customValue>
+    <customValue>
+        <fullName>LateApr</fullName>
+        <default>false</default>
+        <label>Late Apr</label>
+    </customValue>
+    <customValue>
+        <fullName>EarlyMay</fullName>
+        <default>false</default>
+        <label>Early May</label>
+    </customValue>
+    <customValue>
+        <fullName>LateMay</fullName>
+        <default>false</default>
+        <label>Late May</label>
+    </customValue>
+    <customValue>
+        <fullName>EarlyJun</fullName>
+        <default>false</default>
+        <label>Early Jun</label>
+    </customValue>
+    <customValue>
+        <fullName>LateJun</fullName>
+        <default>false</default>
+        <label>Late Jun</label>
+    </customValue>
+    <customValue>
+        <fullName>EarlyJul</fullName>
+        <default>false</default>
+        <label>Early Jul</label>
+    </customValue>
+    <customValue>
+        <fullName>LateJul</fullName>
+        <default>false</default>
+        <label>Late Jul</label>
+    </customValue>
+    <customValue>
+        <fullName>EarlyAug</fullName>
+        <default>false</default>
+        <label>Early Aug</label>
+    </customValue>
+    <customValue>
+        <fullName>LateAug</fullName>
+        <default>false</default>
+        <label>Late Aug</label>
+    </customValue>
+    <customValue>
+        <fullName>EarlySep</fullName>
+        <default>false</default>
+        <label>Early Sep</label>
+    </customValue>
+    <customValue>
+        <fullName>LateSep</fullName>
+        <default>false</default>
+        <label>Late Sep</label>
+    </customValue>
+    <customValue>
+        <fullName>EarlyOct</fullName>
+        <default>false</default>
+        <label>Early Oct</label>
+    </customValue>
+    <customValue>
+        <fullName>LateOct</fullName>
+        <default>false</default>
+        <label>Late Oct</label>
+    </customValue>
+    <customValue>
+        <fullName>EarlyNov</fullName>
+        <default>false</default>
+        <label>Early Nov</label>
+    </customValue>
+    <customValue>
+        <fullName>LateNov</fullName>
+        <default>false</default>
+        <label>Late Nov</label>
+    </customValue>
+    <customValue>
+        <fullName>EarlyDec</fullName>
+        <default>false</default>
+        <label>Early Dec</label>
+    </customValue>
+    <customValue>
+        <fullName>LateDec</fullName>
+        <default>false</default>
+        <label>Late Dec</label>
+    </customValue>
+    <masterLabel>Half Of Month</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

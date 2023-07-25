@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>TeamManager_ActivityReport</fullName>
+    <columns>NAME</columns>
+    <columns>EventStartDate__c</columns>
+    <columns>Description__c</columns>
+    <columns>ApprovalStatus__c</columns>
+    <columns>OilTotalAmount__c</columns>
+    <columns>OWNER.LAST_NAME</columns>
+    <columns>CREATED_DATE</columns>
+    <filterScope>Everything</filterScope>
+    <label>팀장</label>
+    <sharedTo>
+        <allInternalUsers></allInternalUsers>
+    </sharedTo>
+</ListView>

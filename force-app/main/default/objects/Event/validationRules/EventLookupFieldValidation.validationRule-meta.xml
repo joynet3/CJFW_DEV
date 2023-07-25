@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>EventLookupFieldValidation</fullName>
+    <active>true</active>
+    <description>업무 관련항목에 대한 확인 규칙</description>
+    <errorConditionFormula>AND(
+   IsBlank(Account__c),
+   IsBlank(Opportunity__c),
+   IsBlank(Lead__c), 
+   IsBlank(Contact__c), 
+   Text(Category__c) &lt;&gt; &apos;기타&apos;, 
+   IsPastActivity__c = False ,  
+   isblank( WhoId )
+)</errorConditionFormula>
+    <errorMessage>업무를 등록시 고객, 리드, 영업기회, 연락처 중 하나를 필수로 입력을 부탁드립니다.</errorMessage>
+</ValidationRule>

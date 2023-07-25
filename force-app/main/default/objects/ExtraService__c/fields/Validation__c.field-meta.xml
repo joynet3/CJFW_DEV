@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Validation__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>부가서비스 신청 불가 시 Validation Check에 이용되는 필드</description>
+    <externalId>false</externalId>
+    <label>Validation</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

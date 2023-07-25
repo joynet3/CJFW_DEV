@@ -1,0 +1,642 @@
+<!--
+* ==================================================================================
+*   File Name   : ESM_ProposalApproval.vfp
+*   Author      : Minje.Kim
+*   Date        : 2023.01.12
+*   Description : FS 제안 품의서(CRM004) 품의 양식
+*   Modification Log
+* ==================================================================================
+*   Ver     Date          Author          Modification
+* ==================================================================================
+*   1.0     2023.01.12    Minje.Kim    Create
+* ==================================================================================
+-->
+<apex:page showHeader="false" standardStylesheets="false" controller="ESM_CreateApprovalController">
+    <html>
+    <head>
+        <style>
+            /* html default
+            ----------------------------------*/
+            @font-face{font-family:NBG;src:url(/approval/common/styles/Font/NanumBarunGothic.eot);src:local('Nanum Barun Gothic Regular'),url(/approval/common/styles/Font/NanumBarunGothic.woff) format('woff');}
+
+            html,body{margin:0;padding:0;font-size:12px;height:100%;width:100%;font-family:NBG,"Malgun Gothic",Dotum,tahoma,AppleGothic,Sans-serif;}
+            p{margin-top:2px;margin-bottom:2px;LINE-HEIGHT:1.5;}
+            td,input,select,th{font-size:10pt;}
+            input{-webkit-box-sizing:border-box;/* Safari/Chrome, other WebKit */-moz-box-sizing:border-box;/* Firefox, other Gecko */box-sizing:border-box;/* Opera/IE 8+ */}
+            input::-ms-clear,input::-ms-reveal{display:none;}
+
+            a:link,a:visited{color:#888;text-decoration:none;}
+            a:hover,a:active,a:focus{color:#888;text-decoration:none;}
+
+            .autocomplete td:hover{background-color:#ff5}
+            .autocomplete td{cursor:pointer}
+            .autocomplete .selected{background-color:#ff5}
+
+            v\:*{behavior:url(#default#VML);}
+            o\:*{behavior:url(#default#VML);}
+            w\:*{behavior:url(#default#VML);}
+            .shape{behavior:url(#default#VML);}
+
+            /*
+                print option preview
+            ----------------------------------*/
+            .print_doc_info{line-height:16px;font-size:12px;font-weight:normal;margin:15px 0px 0px 15px;}
+            .print_doc_info .print_doc_serial_body{margin-bottom:15px;}
+            .print_doc_info .print_doc_serial_body .print_doc_serial_title{display:inline-block;width:60px;}
+            .print_doc_info .print_user_body{height:20px;}
+            .print_doc_info .print_user_body .print_user_activity{display:inline-block;width:60px;}
+            .print_doc_info .print_user_body .print_user_name{margin-right:20px;}
+
+            /* doc title
+            ----------------------------------*/
+            .doc_title{width:100%;height:45px;border-bottom:2px solid #b5b5b5;margin-bottom:10px;border-collapse:collapse;border-spacing:0;}
+            .doc_title input[type=text]{background:#fff;border:1px solid #b5b5b5;width:100%;height:24px;font-size:12px;}
+            .doc_title_item{padding:0 0 1px 15px;height:25px;font-size:12px;}
+
+            /* doc title section
+            ----------------------------------*/
+            .title_section{border:3px solid #29B4D5;border-radius:3px;width:98%;}
+
+            /* tablecontent
+            ----------------------------------*/
+            .tablecontent{width:auto;border-spacing:0;margin-bottom:10px;table-layout:fixed;border-top:1px solid #b5b5b5;border-right:1px solid #b5b5b5;}
+            .tablecontent tr{height:29px;}
+            .tablecontent th{line-height:16px;font-size:12px;background:#c9e6ee;border-bottom:1px solid #b5b5b5;border-left:1px solid #b5b5b5;text-align:left;font-weight:normal;padding-left:11px;}
+            .tablecontent td{line-height:16px;font-size:12px;padding:0 3px;border-bottom:1px solid #b5b5b5;border-left:1px solid #b5b5b5;}
+            .tablecontent input{padding:2px 1px 0;border:1px solid #ccc;width:100%;height:20px;text-align:left;line-height:16px;font-size:12px;}
+            .tablecontent input[type=checkbox]{padding:2px 1px 0;border:0 solid #ccc;width:11px;height:11px;text-align:left;line-height:16px;font-size:12px;vertical-align:middle;position:relative;cursor:pointer;}
+            .tablecontent input[type=radio]{padding:2px 1px 0;border:0 solid #ccc;width:11px;height:11px;text-align:left;line-height:16px;font-size:12px;vertical-align:middle;position:relative;cursor:pointer;}
+            .tablecontent label[for]{cursor:pointer;vertical-align:middle;}
+            .tablecontent span img{margin-right:3px;vertical-align:middle;}
+            .tablecontent .link{height:20px;vertical-align:middle;padding:2px 0px 2px 11px;}
+            .tablecontent .td_left{text-align:left;}
+            .tablecontent .td_right{text-align:right;}
+            .tablecontent .td_center{text-align:center;}
+
+            /* tablecontent sub title
+            ----------------------------------*/
+            .tablecontent_sub_title{width:100%;color:#0074ba;font-size:14px;font-weight:bold;height:24px;}
+            .tablecontent_sub_title .label{width:285px;float:left;padding-left:15px;background:url(/approval/common/images/button/bullet_icon.png) no-repeat left;}
+
+            /* tablecontent sub title2
+            ----------------------------------*/
+            .tablecontent_sub_title2 .label{width:282px;float:left;padding-left:18px;background:url(/approval/common/images/button/contents_box_point.png) no-repeat left;}
+
+            /* tablecontent division
+            ----------------------------------*/
+            .tablecontent_division {width:100%;margin:22px 0px 8px 0px;font-size:12px;font-weight:bold;height:18px;background:url(/approval/common/images/form/form_content_division.gif) repeat-x left;}
+            .tablecontent_division span {display:inline-block;color:#0074BA;font-size:15px;padding:0px 4px 0px 16px;background:url(/approval/common/images/form/form_content_division_title.gif) no-repeat left;background-color:#fff;}
+
+            /* tablecontent sub title button - type1
+            ----------------------------------*/
+            .tablecontent_sub_title .form_button{width:357px;float:left;font-weight:normal;}
+            .tablecontent_sub_title .form_button span{float:right;margin:0 0 0 2px;padding:3px 5px 2px 5px;color:#0072b9;font-size:11px;border:1px solid #b5b5b5;border-radius:2px;cursor:pointer;}
+            .tablecontent_sub_title .form_button span img{margin-right:3px;vertical-align:middle;}
+
+            /* tablecontent sub title button - type2
+            ----------------------------------*/
+            .tablecontent_sm_btn{font-size:12px;font-weight:normal;border:1px solid #c6c5c5;border-radius:2px;color:#333333;text-align:center;padding:1px 9px 2px 7px;cursor:pointer;}
+            .tablecontent_sm_btn:hover{background-color:#ffffff;color:#267cf1;}
+
+            /* tablecontent grid button
+            ----------------------------------*/
+            .tablecontent_grid_btn{font-size:11px;font-weight:normal;border:1px solid #c6c5c5;border-radius:2px;color:#333333;text-align:center;padding:0px 8px 1px 8px;cursor:pointer;}
+            .tablecontent_grid_btn:hover{background-color:#ffffff;color:#267cf1;}
+
+            /* tablecontent sub title help
+            ----------------------------------*/
+            .tablecontent_sub_title .help{width:357px;float:left;font-weight:normal;}
+            .tablecontent_sub_title .help span{float:right;margin:0 0 0 2px;padding:8px 0px 2px 5px;color:#0072b9;font-size:11px;border-radius:2px;}
+
+            /* tablecontent grid
+            ----------------------------------*/
+            .tablecontent_grid th{padding-left:0px !important;}
+            .tablecontent_grid thead tr{height:24px;}
+            .tablecontent_grid thead tr th{line-height:24px;font-size:12px;background:#c9e6ee;text-align:center;font-weight:normal;}
+            .tablecontent_grid tbody tr{height:20px;}
+            .tablecontent_grid tbody tr th{text-align:center;}
+            .tablecontent_grid tbody tr td{white-space: nowrap; padding-inline:1rem; line-height:20px;font-size:12px;text-align:center;}
+            .tablecontent_grid tbody tr:nth-child(even){background-color:#eff8fc;}
+            .tablecontent_grid tfoot tr{height:24px;}
+            .tablecontent_grid tfoot tr th{text-align:center;}
+            .tablecontent_grid tfoot tr td{line-height:24px;font-size:12px;text-align:center;font-weight:normal;}
+            .tablecontent_grid .td_left{text-align:left;}
+            .tablecontent_grid .td_right{text-align:right;}
+            .tablecontent_grid .td_center{text-align:center;}
+
+            /* tablecontent calendar
+            ----------------------------------*/
+            .tablecontent .hasDatepicker{width:80px;}
+
+            /* important
+            ----------------------------------*/
+            .important_item{position:relative;left:-7px;}
+            .important_item span,.important_item_grid{color:#fe612c;font-weight:bold;padding-right:2px;}
+
+            /* web editor
+            ----------------------------------*/
+            .input_edit{padding:10px 6px 0 6px;line-height:160%;border-bottom:1px solid #b5b5b5;border-left:1px solid #b5b5b5;height:400px;text-decoration:none;vertical-align:top;}
+            .editorhelp{margin-top:10%;text-align:center;font-size:13px;line-height:normal;}
+            .editorhelp_ui_icon{background:url(/approval/common/images/button/icon_caution.png) no-repeat left;width:20px;display:inline-block;}
+
+            /* simple text editor
+            ----------------------------------*/
+            .input_editable{border:1px solid #ccc;text-align:left;line-height:16px;font-size:12px;min-height:41px;margin:5px 0 5px 0;}
+            .input_editable_single{border:1px solid #fff;text-align:left;line-height:16px;font-size:12px;min-height:41px;margin:5px 0 5px 0;}
+            .input_editable_multiline{border:1px solid #fff;text-align:left;line-height:16px;font-size:12px;min-height:110px;margin:5px 0 5px 0;}
+
+            /* Custom */
+            .blank_tablecontent{width:auto;border-spacing:0;margin-bottom:10px;table-layout:fixed;border:none;}
+            .blank_tablecontent tr{height:29px;}
+            .blank_tablecontent th{line-height:16px;font-size:12px;background:#c9e6ee;border:none;text-align:left;font-weight:normal;padding-left:11px;}
+            .blank_tablecontent td{line-height:16px;font-size:12px;padding:0 3px;border:none;}
+            .blank_tablecontent input{padding:2px 1px 0;border:1px solid #ccc;width:100%;height:20px;text-align:left;line-height:16px;font-size:12px;}
+            .blank_tablecontent input[type=checkbox]{padding:2px 1px 0;border:0 solid #ccc;width:11px;height:11px;text-align:left;line-height:16px;font-size:12px;vertical-align:middle;position:relative;cursor:pointer;}
+            .blank_tablecontent input[type=radio]{padding:2px 1px 0;border:0 solid #ccc;width:11px;height:11px;text-align:left;line-height:16px;font-size:12px;vertical-align:middle;position:relative;cursor:pointer;}
+
+            .tablecontent .th_left{text-align:left;}
+            .tablecontent .th_right{text-align:right;}
+            .tablecontent .th_center{text-align:center; padding: 0px;}
+
+            /* tablecontent sub title
+            ----------------------------------*/
+            .tablecontent_sub_title_custom{width:100%;color:#0074ba;font-size:14px;font-weight:bold;height:24px;}
+            .tablecontent_sub_title_custom .label{width:100%;float:left;padding-left:15px;background:url(/approval/common/images/button/bullet_icon.png) no-repeat left;}
+            .tablecontent_sub_title_custom .label_noimage{width:100%;float:left;}
+            .red_span{font-size:12px;color:#ff0000;}
+            
+            .ml-0 {margin-left: 0px;}
+            .mr-0 {margin-right: 0px;}
+            .mt-0 {margin-top: 0px;}
+            .mb-0 {margin-bottom: 0px;}
+            .ml-10 {margin-left: 10px;}
+            .mr-10 {margin-right: 10px;}
+            .mt-10 {margin-top: 10px;}
+            .mb-10 {margin-bottom: 10px;}
+            .ml-20 {margin-left: 20px;}
+            .mr-20 {margin-right: 20px;}
+            .mt-20 {margin-top: 20px;}
+            .mb-20 {margin-bottom: 20px;}
+
+            .pl-20 {padding-left: 20px;}
+            .pr-20 {padding-right: 20px;}
+            .pt-20 {padding-top: 20px;}
+            .pb-20 {padding-bottom: 20px;}
+        </style>
+        <meta http-equiv="Content-Type" content="text/html" charset="UTF-8"/>
+    </head>
+
+    <body>
+        <!-- CODE HERE [S]-->
+        <div id="getdata">
+            <div class='tablecontent_sub_title mt-10'>
+                <div class='label'>제안 개요</div>
+            </div>
+            <table class='tablecontent' style="width:100%" id=''>
+                <colgroup>
+                    <col style="width:20%"/>
+                    <col style="width:30%"/>
+                    <col style="width:20%"/>
+                    <col style="width:30%"/>
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th class='th_center'>구분</th>
+                        <th class='th_center'>내용</th>
+                        <th class='th_center'>구분</th>
+                        <th class='th_center'>내용</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class='td_left'>점포명</td>
+                        <td class='td_left'>{!objOpportunity.Account.name}</td>
+                        <td class='td_left'>주소</td>
+                        <td class='td_left'>{!objOpportunity.Address__c} {!objOpportunity.AddressDetails__c}</td>
+                    </tr>
+                    <tr>
+                        <td class='td_left'>현업체/위탁배경</td>
+                        <td class='td_left'>{!objOpportunity.Proposal_Partner_Background__c}</td>
+                        <td class='td_left'>운영업종</td>
+                        <td class='td_left'>{!objOpportunity.Proposal_Operating_Industry__c}</td>
+                    </tr>
+                    <tr>
+                        <td class='td_left'>제안업체</td>
+                        <td class='td_left'>{!objOpportunity.Proposal_ProposedCompany__c}</td>
+                        <td class='td_left'>계약만료일</td>
+                        <td class='td_left'>
+                            <apex:outputText value="{0,date,yyyy-MM-dd}">
+                                <apex:param value="{!objOpportunity.CloseDate}"/></apex:outputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class='td_left'>제안일</td>
+                        <td class='td_left'>
+                            <apex:outputText value="{0,date,yyyy-MM-dd}">
+                                <apex:param value="{!objOpportunity.ProposalDate__c}"/></apex:outputText>
+                        </td>
+                        <td class='td_left'>오픈예정일</td>
+                        <td class='td_left'>
+                            <apex:outputText value="{0,date,yyyy-MM-dd}">
+                                <apex:param value="{!objOpportunity.Proposal_OpenDate__c}"/></apex:outputText>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class='tablecontent_sub_title mt-10'>
+                <div class='label'>주요 제안 내용</div>
+            </div>
+            <table class='tablecontent' style="width:100%" id=''>
+                <colgroup>
+                    <col style="width:20%"/>
+                    <col style="width:30%"/>
+                    <col style="width:20%"/>
+                    <col style="width:30%"/>
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th class='th_center'>구분</th>
+                        <th class='th_center'>내용</th>
+                        <th class='th_center'>구분</th>
+                        <th class='th_center'>내용</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class='td_left'>제안식단가</td>
+                        <td class='td_right'>{!objOpportunity.Proposal_ProposedFoodPrice__c}</td>
+                        <td class='td_left'>현식단가</td>
+                        <td class='td_right'>{!objOpportunity.FoodPrice__c}</td>
+                    </tr>
+                    <tr>
+                        <td class='td_left'>예상일식수</td>
+                        <td class='td_right'>{!objOpportunity.Proposal_ExpectDailyMeals__c}</td>
+                        <td class='td_left'>현일식수</td>
+                        <td class='td_right'>{!objOpportunity.Proposal_DailyMeal__c}</td>
+                    </tr>
+                    <tr>
+                        <td class='td_left'>
+                            시설투자금액
+                            <br/>
+                            (백만원)
+                        </td>
+                        <td class='td_right'>{!objOpportunity.Proposal_All__c}</td>
+                        <td class='td_left'>IRR(%)</td>
+                        <td class='td_right'>{!objOpportunity.IRRPct__c}</td>
+                    </tr>
+                    <tr>
+                        <td class='td_left'>
+                            인수협상
+                            <br/>
+                            (백만원)
+                        </td>
+                        <td class='td_right'>{!objOpportunity.Proposal_AcquisitionNegotiation__c}</td>
+                        <td class='td_left'>
+                            신규투자
+                            <br/>
+                            (백만원)
+                        </td>
+                        <td class='td_right'>{!objOpportunity.Proposal_NewInvestment__c}</td>
+                    </tr>
+                    <tr>
+                        <td class='td_left'>계약기간</td>
+                        <td class='td_left'>{!objOpportunity.ContractPeriod__c}</td>
+                        <td class='td_left'>임대료(백만원)</td>
+                        <td class='td_right'>{!objOpportunity.Proposal_Rentfeemillionwon__c}</td>
+                    </tr>
+                    <tr>
+                        <td class='td_left'>유틸리티부담</td>
+                        <td>
+                            &nbsp;&nbsp;
+                            <apex:outputtext rendered="{!IF(CONTAINS(objOpportunity.Proposal_Utility__c,'전기'), true, false)}">
+                                <input type='checkbox' fieldtype="CHECK" readonly="readonly" checked="checked"/>&nbsp;<label>전기</label>
+                            </apex:outputtext>
+                            <apex:outputtext rendered="{!!IF(CONTAINS(objOpportunity.Proposal_Utility__c,'전기'), true, false)}">
+                                <input type='checkbox' fieldtype="CHECK" readonly="readonly"/>&nbsp;<label>전기</label>
+                            </apex:outputtext>
+                            &nbsp;&nbsp;
+                            <apex:outputtext rendered="{!IF(CONTAINS(objOpportunity.Proposal_Utility__c,'수도'), true, false)}">
+                                <input type='checkbox' fieldtype="CHECK" readonly="readonly" checked="checked"/>&nbsp;<label>수도</label>
+                            </apex:outputtext>
+                            <apex:outputtext rendered="{!!IF(CONTAINS(objOpportunity.Proposal_Utility__c,'수도'), true, false)}">
+                                <input type='checkbox' fieldtype="CHECK" readonly="readonly"/>&nbsp;<label>수도</label>
+                            </apex:outputtext>
+                            &nbsp;&nbsp;
+                            <apex:outputtext rendered="{!IF(CONTAINS(objOpportunity.Proposal_Utility__c,'가스'), true, false)}">
+                                <input type='checkbox' fieldtype="CHECK" readonly="readonly" checked="checked"/>&nbsp;<label>가스</label>
+                            </apex:outputtext>
+                            <apex:outputtext rendered="{!!IF(CONTAINS(objOpportunity.Proposal_Utility__c,'가스'), true, false)}">
+                                <input type='checkbox' fieldtype="CHECK" readonly="readonly"/>&nbsp;<label>가스</label>
+                            </apex:outputtext>
+                        </td>
+                        <td class='td_left'>식수종류</td>
+                        <td>
+                            &nbsp;&nbsp;
+                            <apex:outputtext rendered="{!IF(CONTAINS(objOpportunity.Proposal_Meal__c,'상수도'), true, false)}">
+                                <input type='checkbox' fieldtype="CHECK" readonly="readonly" checked="checked"/>&nbsp;<label>상수도</label>
+                            </apex:outputtext>
+                            <apex:outputtext rendered="{!!IF(CONTAINS(objOpportunity.Proposal_Meal__c,'상수도'), true, false)}">
+                                <input type='checkbox' fieldtype="CHECK" readonly="readonly"/>&nbsp;<label>상수도</label>
+                            </apex:outputtext>
+                            &nbsp;&nbsp;
+                            <apex:outputtext rendered="{!IF(CONTAINS(objOpportunity.Proposal_Meal__c,'지하수'), true, false)}">
+                                <input type='checkbox' fieldtype="CHECK" readonly="readonly" checked="checked"/>&nbsp;<label>지하수</label>
+                            </apex:outputtext>
+                            <apex:outputtext rendered="{!!IF(CONTAINS(objOpportunity.Proposal_Meal__c,'지하수'), true, false)}">
+                                <input type='checkbox' fieldtype="CHECK" readonly="readonly"/>&nbsp;<label>지하수</label>
+                            </apex:outputtext>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class='td_left'>투입인력</td>
+                        <td class='td_left' colspan="3">{!objOpportunity.Proposal_InputManpower__c}</td>
+                    </tr>
+                    <tr>
+                        <td class='td_left'>
+                            메뉴
+                            <br/>
+                            기타
+                        </td>
+                        <td class='td_left' colspan="3">
+                            {!objOpportunity.Proposal_MenuOther__c}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class='tablecontent_sub_title mt-10'>
+                <div class='label'>연간 운영 시산</div>
+            </div>
+            <div style="width:1230px">
+                <table class="tablecontent tablecontent_grid" id="datatable3" >
+                    <thead>
+                        <tr>
+                            <th rowspan="2" style="text-align:center; padding-left:0px">구분</th>
+                            <th rowspan="2" style="text-align:center; padding-left:0px">매출액</th>
+                            <th rowspan="2" style="text-align:center; padding-left:0px">매입원가</th>
+                            <th colspan="8" style="text-align:center; padding-left:0px">제조경비</th>
+                            <th rowspan="2" style="text-align:center; padding-left:0px">매출이익</th>
+                            <th rowspan="2" style="text-align:center; padding-left:0px">영업외비용</th>
+                            <th rowspan="2" style="text-align:center; padding-left:0px">관리이익</th>
+                        </tr>
+                        <tr>
+                            <th style="text-align:center; padding-left:0px">인건비</th>
+                            <th style="text-align:center; padding-left:0px">서비스전문</th>
+                            <th style="text-align:center; padding-left:0px">물류비</th>
+                            <th style="text-align:center; padding-left:0px">상각비</th>
+                            <th style="text-align:center; padding-left:0px">임차료</th>
+                            <th style="text-align:center; padding-left:0px">유틸리티</th>
+                            <th style="text-align:center; padding-left:0px">소모품비</th>
+                            <th style="text-align:center; padding-left:0px">경비</th>
+                        </tr>
+                    </thead>    
+                    <tbody>
+                        <apex:repeat value="{!listProposalBalanceDetail_SUM}" var="objSum">
+                            <tr>
+                                <td class="td_center">
+                                    {!objSum.Column1__c}
+                                </td> 
+                                <td class="td_center">
+                                    {!objSum.Column2__c}
+                                </td> 
+                                <td class="td_center">
+                                    {!objSum.Column3__c}
+                                </td> 
+                                <td class="td_center">
+                                    {!objSum.Column4__c}
+                                </td> 
+                                <td class="td_center">
+                                    {!objSum.Column5__c}
+                                </td> 
+                                <td class="td_center">
+                                    {!objSum.Column6__c}
+                                </td> 
+                                <td class="td_center">
+                                    {!objSum.Column7__c}
+                                </td> 
+                                <td class="td_center">
+                                    {!objSum.Column8__c}
+                                </td> 
+                                <td class="td_center">
+                                    {!objSum.Column9__c}
+                                </td> 
+                                <td class="td_center">
+                                    {!objSum.Column10__c}
+                                </td> 
+                                <td class="td_center">
+                                    {!objSum.Column11__c}
+                                </td> 
+                                <td class="td_center">
+                                    {!objSum.Column12__c}
+                                </td> 
+                                <td class="td_center">
+                                    {!objSum.Column13__c}
+                                </td> 
+                                <td class="td_center">
+                                    {!objSum.Column14__c}
+                                </td> 
+                            </tr>   
+                        </apex:repeat>
+                    </tbody>
+                </table>
+            </div>
+            <div class='tablecontent_sub_title mt-10'>
+                <div class='label'>PL(본부기준)</div>
+            </div>
+            <div style="width:1230px">
+                <table class="tablecontent tablecontent_grid" id="datatable3">
+                    <thead>
+                        <tr>
+                            <th rowspan="2" style="text-align:center; padding-left:0px">구분</th>
+                            <th colspan="2" style="text-align:center; padding-left:0px">년간</th>
+                            <th colspan="7" style="text-align:center; padding-left:0px">상반기</th>
+                            <th colspan="7" style="text-align:center; padding-left:0px">하반기</th>
+                        </tr>
+                        <apex:repeat value="{!listProposalBalanceDetail_PL}" var="objPL">
+                            <apex:outputPanel rendered="{!objPL.KeyCode__c == '0'}">
+                                <tr>
+                                    <th style="text-align:center; padding-left:0px">{!objPL.Column2__c}</th>
+                                    <th style="text-align:center; padding-left:0px">{!objPL.Column3__c}</th>
+                                    <th style="text-align:center; padding-left:0px">{!objPL.Column4__c}</th>
+                                    <th style="text-align:center; padding-left:0px">{!objPL.Column5__c}</th>
+                                    <th style="text-align:center; padding-left:0px">{!objPL.Column6__c}</th>
+                                    <th style="text-align:center; padding-left:0px">{!objPL.Column7__c}</th>
+                                    <th style="text-align:center; padding-left:0px">{!objPL.Column8__c}</th>
+                                    <th style="text-align:center; padding-left:0px">{!objPL.Column9__c}</th>
+                                    <th style="text-align:center; padding-left:0px">{!objPL.Column10__c}</th>
+                                    <th style="text-align:center; padding-left:0px">{!objPL.Column11__c}</th>
+                                    <th style="text-align:center; padding-left:0px">{!objPL.Column12__c}</th>
+                                    <th style="text-align:center; padding-left:0px">{!objPL.Column13__c}</th>
+                                    <th style="text-align:center; padding-left:0px">{!objPL.Column14__c}</th>
+                                    <th style="text-align:center; padding-left:0px">{!objPL.Column15__c}</th>
+                                    <th style="text-align:center; padding-left:0px">{!objPL.Column16__c}</th>
+                                    <th style="text-align:center; padding-left:0px">{!objPL.Column17__c}</th>
+                                </tr>
+                            </apex:outputPanel>
+                        </apex:repeat>
+                        <!-- <tr>
+                            <th style="text-align:center; padding-left:0px">계</th>
+                            <th style="text-align:center; padding-left:0px">(%)</th>
+                            <th style="text-align:center; padding-left:0px">4월</th>
+                            <th style="text-align:center; padding-left:0px">5월</th>
+                            <th style="text-align:center; padding-left:0px">6월</th>
+                            <th style="text-align:center; padding-left:0px">7월</th>
+                            <th style="text-align:center; padding-left:0px">8월</th>
+                            <th style="text-align:center; padding-left:0px">9월</th>
+                            <th style="text-align:center; padding-left:0px">계</th>
+                            <th style="text-align:center; padding-left:0px">10월</th>
+                            <th style="text-align:center; padding-left:0px">11월</th>
+                            <th style="text-align:center; padding-left:0px">12월</th>
+                            <th style="text-align:center; padding-left:0px">1월</th>
+                            <th style="text-align:center; padding-left:0px">2월</th>
+                            <th style="text-align:center; padding-left:0px">3월</th>
+                            <th style="text-align:center; padding-left:0px">계</th>
+                        </tr> -->
+                    </thead> 
+                    <tbody>   
+                        <apex:repeat value="{!listProposalBalanceDetail_PL}" var="objPL">
+                            <apex:outputPanel rendered="{!objPL.KeyCode__c != '0'}">
+                                <tr>
+                                    <td >
+                                        {!objPL.Column1__c}
+                                    </td> 
+                                    <td class="td_right">
+                                        {!objPL.Column2__c}
+                                    </td> 
+                                    <td class="td_right">
+                                        {!objPL.Column3__c}
+                                    </td> 
+                                    <td class="td_right">
+                                        {!objPL.Column4__c}
+                                    </td> 
+                                    <td class="td_right">
+                                        {!objPL.Column5__c}
+                                    </td> 
+                                    <td class="td_right">
+                                        {!objPL.Column6__c}
+                                    </td> 
+                                    <td class="td_right">
+                                        {!objPL.Column7__c}
+                                    </td> 
+                                    <td class="td_right">
+                                        {!objPL.Column8__c}
+                                    </td> 
+                                    <td class="td_right">
+                                        {!objPL.Column9__c}
+                                    </td> 
+                                    <td class="td_right">
+                                        {!objPL.Column10__c}
+                                    </td> 
+                                    <td class="td_right">
+                                        {!objPL.Column11__c}
+                                    </td> 
+                                    <td class="td_right">
+                                        {!objPL.Column12__c}
+                                    </td> 
+                                    <td class="td_right">
+                                        {!objPL.Column13__c}
+                                    </td> 
+                                    <td class="td_right">
+                                        {!objPL.Column14__c}
+                                    </td> 
+                                    <td class="td_right">
+                                        {!objPL.Column15__c}
+                                    </td> 
+                                    <td class="td_right">
+                                        {!objPL.Column16__c}
+                                    </td> 
+                                    <td class="td_right">
+                                        {!objPL.Column17__c}
+                                    </td> 
+                                </tr>
+                            </apex:outputPanel>
+                        </apex:repeat>
+                    </tbody>
+                </table>
+            </div>
+            <div class='tablecontent_sub_title mt-10'>
+                <div class='label'>IRR</div>
+            </div>
+            <div style="width:1230px">
+                <table class="tablecontent tablecontent_grid" id="datatable3">
+                    <thead>
+                        <tr>
+                            <th style="text-align:center; padding-left:0px">구분 항목</th>
+                            <th style="text-align:center; padding-left:0px">Y0</th>
+                            <th style="text-align:center; padding-left:0px">Y1</th>
+                            <th style="text-align:center; padding-left:0px">Y2</th>
+                            <th style="text-align:center; padding-left:0px">Y3</th>
+                            <th style="text-align:center; padding-left:0px">Y4</th>
+                            <th style="text-align:center; padding-left:0px">Y5</th>
+                            <th style="text-align:center; padding-left:0px">Y6</th>
+                            <th style="text-align:center; padding-left:0px">비 고</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <apex:repeat value="{!listProposalBalanceDetail_IRR}" var="objIRR">
+                            <tr>
+                                <td>
+                                    {!objIRR.Column1__c}
+                                </td> 
+                                <td class="td_center">
+                                    {!objIRR.Column2__c}
+                                </td> 
+                                <td class="td_center">
+                                    {!objIRR.Column3__c}
+                                </td> 
+                                <td class="td_center">
+                                    {!objIRR.Column4__c}
+                                </td> 
+                                <td class="td_center">
+                                    {!objIRR.Column5__c}
+                                </td> 
+                                <td class="td_center">
+                                    {!objIRR.Column6__c}
+                                </td> 
+                                <td class="td_center">
+                                    {!objIRR.Column7__c}
+                                </td> 
+                                <td class="td_center">
+                                    {!objIRR.Column8__c}
+                                </td> 
+                                <td class="td_center">
+                                    {!objIRR.Column9__c}
+                                </td> 
+                            </tr>
+                        </apex:repeat>
+                    </tbody>
+                </table>
+            </div>
+            <div class='tablecontent_sub_title mt-10'>
+                <div class='label'>특이사항</div>
+            </div>
+            <table class='tablecontent'>
+                <colgroup>
+                    <col style="width:100%"/>
+                </colgroup>
+                <tbody>
+                    <tr>    
+                        <td class="input_edit" id="txt_contents" editormode="1" fieldtype="EDITOR">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class='tablecontent_sub_title mt-10'>
+                <div class='label'>기타</div>
+            </div>
+            <table class='tablecontent'>
+                <colgroup>
+                    <col style="width:100%"/>
+                </colgroup>
+                <tbody>
+                    <tr>    
+                        <td class="input_edit" id="txt_contents" editormode="1" fieldtype="EDITOR">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- CODE HERE [E]-->
+    </body>
+    </html>
+
+</apex:page>

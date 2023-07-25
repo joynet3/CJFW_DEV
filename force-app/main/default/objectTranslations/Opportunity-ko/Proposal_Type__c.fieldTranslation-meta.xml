@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>제안구분</label>
+    <name>Proposal_Type__c</name>
+    <picklistValues>
+        <masterLabel>기타(오픈)</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>신규제안</masterLabel>
+        <translation></translation>
+    </picklistValues>
+</CustomFieldTranslation>

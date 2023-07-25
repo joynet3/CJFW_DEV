@@ -1,0 +1,991 @@
+<!--
+* ==================================================================================
+*   File Name   : BalanceCompareView.vfp
+*   Author      : Minje.Kim
+*   Date        : 2023.02.08
+*   Description : 제안/오픈 시산 비교 확인 양식
+*   Modification Log
+* ==================================================================================
+*   Ver     Date          Author          Modification
+* ==================================================================================
+*   1.0     2023.02.08    Minje.Kim    Create
+* ==================================================================================
+-->
+<apex:page controller="BalanceExcelUploadController" showHeader="false" standardStylesheets="false">
+    <html>
+    <head>
+        <style>
+            /* html default
+            ----------------------------------*/
+            @font-face{font-family:NBG;src:url(/approval/common/styles/Font/NanumBarunGothic.eot);src:local('Nanum Barun Gothic Regular'),url(/approval/common/styles/Font/NanumBarunGothic.woff) format('woff');}
+
+            html,body{margin:0;padding:0;font-size:12px;height:100%;width:100%;font-family:NBG,"Malgun Gothic",Dotum,tahoma,AppleGothic,Sans-serif;}
+            p{margin-top:2px;margin-bottom:2px;LINE-HEIGHT:1.5;}
+            td,input,selEtc,th{font-size:10pt;}
+            input{-webkit-box-sizing:border-box;/* Safari/Chrome, other WebKit */-moz-box-sizing:border-box;/* Firefox, other Gecko */box-sizing:border-box;/* Opera/IE 8+ */}
+            input::-ms-clear,input::-ms-reveal{display:none;}
+
+            a:link,a:visited{color:#888;text-decoration:none;}
+            a:hover,a:active,a:focus{color:#888;text-decoration:none;}
+
+            .autocomplete td:hover{background-color:#ff5}
+            .autocomplete td{cursor:pointer}
+            .autocomplete .selEtced{background-color:#ff5}
+
+            v\:*{behavior:url(#default#VML);}
+            o\:*{behavior:url(#default#VML);}
+            w\:*{behavior:url(#default#VML);}
+            .shape{behavior:url(#default#VML);}
+
+            /*
+                print option preview
+            ----------------------------------*/
+            .print_doc_info{line-height:16px;font-size:12px;font-weight:normal;margin:15px 0px 0px 15px;}
+            .print_doc_info .print_doc_serial_body{margin-bottom:15px;}
+            .print_doc_info .print_doc_serial_body .print_doc_serial_title{display:inline-block;width:60px;}
+            .print_doc_info .print_user_body{height:20px;}
+            .print_doc_info .print_user_body .print_user_activity{display:inline-block;width:60px;}
+            .print_doc_info .print_user_body .print_user_name{margin-right:20px;}
+
+            /* doc title
+            ----------------------------------*/
+            .doc_title{width:100%;height:45px;border-bottom:2px solid #b5b5b5;margin-bottom:10px;border-collapse:collapse;border-spacing:0;}
+            .doc_title input[type=text]{background:#fff;border:1px solid #b5b5b5;width:100%;height:24px;font-size:12px;}
+            .doc_title_item{padding:0 0 1px 15px;height:25px;font-size:12px;}
+
+            /* doc title sEtcion
+            ----------------------------------*/
+            .title_sEtcion{border:3px solid #29B4D5;border-radius:3px;width:98%;}
+
+            /* tablecontent
+            ----------------------------------*/
+            .tablecontent{width:auto;border-spacing:0;margin-bottom:10px;table-layout:fixed;border-top:1px solid #b5b5b5;border-right:1px solid #b5b5b5;}
+            .tablecontent tr{height:29px;}
+            .tablecontent th{line-height:16px;font-size:12px;background:#c9e6ee;border-bottom:1px solid #b5b5b5;border-left:1px solid #b5b5b5;text-align:left;font-weight:normal;padding-left:11px;}
+            .tablecontent td{line-height:16px;font-size:12px;padding:0 3px;border-bottom:1px solid #b5b5b5;border-left:1px solid #b5b5b5;}
+            .tablecontent input{padding:2px 1px 0;border:1px solid #ccc;width:100%;height:20px;text-align:left;line-height:16px;font-size:12px;}
+            .tablecontent input[type=checkbox]{padding:2px 1px 0;border:0 solid #ccc;width:11px;height:11px;text-align:left;line-height:16px;font-size:12px;vertical-align:middle;position:relative;cursor:pointer;}
+            .tablecontent input[type=radio]{padding:2px 1px 0;border:0 solid #ccc;width:11px;height:11px;text-align:left;line-height:16px;font-size:12px;vertical-align:middle;position:relative;cursor:pointer;}
+            .tablecontent label[for]{cursor:pointer;vertical-align:middle;}
+            .tablecontent span img{margin-right:3px;vertical-align:middle;}
+            .tablecontent .link{height:20px;vertical-align:middle;padding:2px 0px 2px 11px;}
+            .tablecontent .td_left{text-align:left;}
+            .tablecontent .td_right{text-align:right;}
+            .tablecontent .td_center{text-align:center;}
+
+            /* tablecontent sub title
+            ----------------------------------*/
+            .tablecontent_sub_title{width:100%;color:#0074ba;font-size:14px;font-weight:bold;height:24px;}
+            .tablecontent_sub_title .label{width:285px;float:left;padding-left:15px;background:url(/approval/common/images/button/bullet_icon.png) no-repeat left;}
+
+            /* tablecontent sub title2
+            ----------------------------------*/
+            .tablecontent_sub_title2 .label{width:282px;float:left;padding-left:18px;background:url(/approval/common/images/button/contents_box_point.png) no-repeat left;}
+
+            /* tablecontent division
+            ----------------------------------*/
+            .tablecontent_division {width:100%;margin:22px 0px 8px 0px;font-size:12px;font-weight:bold;height:18px;background:url(/approval/common/images/form/form_content_division.gif) repeat-x left;}
+            .tablecontent_division span {display:inline-block;color:#0074BA;font-size:15px;padding:0px 4px 0px 16px;background:url(/approval/common/images/form/form_content_division_title.gif) no-repeat left;background-color:#fff;}
+
+            /* tablecontent sub title button - type1
+            ----------------------------------*/
+            .tablecontent_sub_title .form_button{width:357px;float:left;font-weight:normal;}
+            .tablecontent_sub_title .form_button span{float:right;margin:0 0 0 2px;padding:3px 5px 2px 5px;color:#0072b9;font-size:11px;border:1px solid #b5b5b5;border-radius:2px;cursor:pointer;}
+            .tablecontent_sub_title .form_button span img{margin-right:3px;vertical-align:middle;}
+
+            /* tablecontent sub title button - type2
+            ----------------------------------*/
+            .tablecontent_sm_btn{font-size:12px;font-weight:normal;border:1px solid #c6c5c5;border-radius:2px;color:#333333;text-align:center;padding:1px 9px 2px 7px;cursor:pointer;}
+            .tablecontent_sm_btn:hover{background-color:#ffffff;color:#267cf1;}
+
+            /* tablecontent grid button
+            ----------------------------------*/
+            .tablecontent_grid_btn{font-size:11px;font-weight:normal;border:1px solid #c6c5c5;border-radius:2px;color:#333333;text-align:center;padding:0px 8px 1px 8px;cursor:pointer;}
+            .tablecontent_grid_btn:hover{background-color:#ffffff;color:#267cf1;}
+
+            /* tablecontent sub title help
+            ----------------------------------*/
+            .tablecontent_sub_title .help{width:357px;float:left;font-weight:normal;}
+            .tablecontent_sub_title .help span{float:right;margin:0 0 0 2px;padding:8px 0px 2px 5px;color:#0072b9;font-size:11px;border-radius:2px;}
+
+            /* tablecontent grid
+            ----------------------------------*/
+            .tablecontent_grid th{padding-left:0px !important;}
+            .tablecontent_grid thead tr{height:24px;}
+            .tablecontent_grid thead tr th{line-height:24px;font-size:12px;background:#c9e6ee;text-align:center;font-weight:normal;}
+            .tablecontent_grid tbody tr{height:20px;}
+            .tablecontent_grid tbody tr th{text-align:center;}
+            .tablecontent_grid tbody tr td{white-space: nowrap; padding-inline:1rem; line-height:20px;font-size:12px;text-align:center;}
+            .tablecontent_grid tbody tr:nth-child(even){background-color:#eff8fc;}
+            .tablecontent_grid tfoot tr{height:24px;}
+            .tablecontent_grid tfoot tr th{text-align:center;}
+            .tablecontent_grid tfoot tr td{line-height:24px;font-size:12px;text-align:center;font-weight:normal;}
+            .tablecontent_grid .td_left{text-align:left;}
+            .tablecontent_grid .td_right{text-align:right;}
+            .tablecontent_grid .td_center{text-align:center;}
+
+            /* tablecontent calendar
+            ----------------------------------*/
+            .tablecontent .hasDatepicker{width:80px;}
+
+            /* important
+            ----------------------------------*/
+            .important_item{position:relative;left:-7px;}
+            .important_item span,.important_item_grid{color:#fe612c;font-weight:bold;padding-right:2px;}
+
+            /* web editor
+            ----------------------------------*/
+            .input_edit{padding:10px 6px 0 6px;line-height:160%;border-bottom:1px solid #b5b5b5;border-left:1px solid #b5b5b5;height:400px;text-decoration:none;vertical-align:top;}
+            .editorhelp{margin-top:10%;text-align:center;font-size:13px;line-height:normal;}
+            .editorhelp_ui_icon{background:url(/approval/common/images/button/icon_caution.png) no-repeat left;width:20px;display:inline-block;}
+
+            /* simple text editor
+            ----------------------------------*/
+            .input_editable{border:1px solid #ccc;text-align:left;line-height:16px;font-size:12px;min-height:41px;margin:5px 0 5px 0;}
+            .input_editable_single{border:1px solid #fff;text-align:left;line-height:16px;font-size:12px;min-height:41px;margin:5px 0 5px 0;}
+            .input_editable_multiline{border:1px solid #fff;text-align:left;line-height:16px;font-size:12px;min-height:110px;margin:5px 0 5px 0;}
+
+        </style>
+        <meta http-equiv="Content-Type" content="text/html" charset="UTF-8"/>
+    </head>
+
+    <body>
+        
+        <div id="customtablePL" >
+            <table class="tablecontent tablecontent_grid" id="datatable3">
+                <thead>
+                    <tr>
+                        <th style="text-align:center; padding-left:0px">구분</th>
+                        <th style="text-align:center; padding-left:0px">제안</th>
+                        <th style="text-align:center; padding-left:0px">오픈</th>
+                        <th style="text-align:center; padding-left:0px">비교</th>
+                    </tr>
+                </thead>    
+                <tbody>
+                    <tr>
+                        <td class="td_center">
+                            매출액
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.SalesRevenueAmt__c != null, objProposalBalance.SalesRevenueAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objProposalBalance.SalesRevenueAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objOpenBalance.SalesRevenueAmt__c != null, objOpenBalance.SalesRevenueAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objOpenBalance.SalesRevenueAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_center">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.SalesRevenueAmt__c != null, objOpenBalance.SalesRevenueAmt__c != null)}">
+                                <apex:outputPanel rendered="{!objOpenBalance.SalesRevenueAmt__c > objProposalBalance.SalesRevenueAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:red">▲</span> <apex:param value="{!objOpenBalance.SalesRevenueAmt__c - objProposalBalance.SalesRevenueAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!objOpenBalance.SalesRevenueAmt__c < objProposalBalance.SalesRevenueAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:blue">▼</span> <apex:param value="{!objProposalBalance.SalesRevenueAmt__c - objOpenBalance.SalesRevenueAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </td> 
+                    </tr>
+                    <tr>
+                        <td class="td_center">
+                            매입원가
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.PurchasingCostAmt__c != null, objProposalBalance.PurchasingCostAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objProposalBalance.PurchasingCostAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objOpenBalance.PurchasingCostAmt__c != null, objOpenBalance.PurchasingCostAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objOpenBalance.PurchasingCostAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_center">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.PurchasingCostAmt__c != null, objOpenBalance.PurchasingCostAmt__c != null)}">
+                                <apex:outputPanel rendered="{!objOpenBalance.PurchasingCostAmt__c > objProposalBalance.PurchasingCostAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:red">▲</span> <apex:param value="{!objOpenBalance.PurchasingCostAmt__c - objProposalBalance.PurchasingCostAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!objOpenBalance.PurchasingCostAmt__c < objProposalBalance.PurchasingCostAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:blue">▼</span> <apex:param value="{!objProposalBalance.PurchasingCostAmt__c - objOpenBalance.PurchasingCostAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </td> 
+                    </tr>
+                    <tr>
+                        <td class="td_center">
+                            (%)
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.PurchasingCostPct__c != null, objProposalBalance.PurchasingCostPct__c != 0)}">
+                                ({!objProposalBalance.PurchasingCostPct__c})
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objOpenBalance.PurchasingCostPct__c != null, objOpenBalance.PurchasingCostPct__c != 0)}">
+                                ({!objOpenBalance.PurchasingCostPct__c})
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_center">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.PurchasingCostPct__c != null, objOpenBalance.PurchasingCostPct__c != null)}">
+                                <!-- <apex:outputPanel rendered="{!objOpenBalance.PurchasingCostPct__c == objProposalBalance.PurchasingCostPct__c}">
+                                    -
+                                </apex:outputPanel> -->
+                                <apex:outputPanel rendered="{!objOpenBalance.PurchasingCostPct__c > objProposalBalance.PurchasingCostPct__c}">
+                                    <span style="color:red">▲</span> ({!objOpenBalance.PurchasingCostPct__c - objProposalBalance.PurchasingCostPct__c})
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!objOpenBalance.PurchasingCostPct__c < objProposalBalance.PurchasingCostPct__c}">
+                                    <span style="color:blue">▼</span> ({!objProposalBalance.PurchasingCostPct__c - objOpenBalance.PurchasingCostPct__c})
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </td> 
+                    </tr>
+                    <tr>
+                        <td class="td_center">
+                            제조경비
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.ManufacturingCostAmt__c != null, objProposalBalance.ManufacturingCostAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objProposalBalance.ManufacturingCostAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objOpenBalance.ManufacturingCostAmt__c != null, objOpenBalance.ManufacturingCostAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objOpenBalance.ManufacturingCostAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_center">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.ManufacturingCostAmt__c != null, objOpenBalance.ManufacturingCostAmt__c != null)}">
+                                <apex:outputPanel rendered="{!objOpenBalance.ManufacturingCostAmt__c > objProposalBalance.ManufacturingCostAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:red">▲</span> <apex:param value="{!objOpenBalance.ManufacturingCostAmt__c - objProposalBalance.ManufacturingCostAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!objOpenBalance.ManufacturingCostAmt__c < objProposalBalance.ManufacturingCostAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:blue">▼</span> <apex:param value="{!objProposalBalance.ManufacturingCostAmt__c - objOpenBalance.ManufacturingCostAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </td> 
+                        <!-- <td class="td_right">
+                            {!objOpenBalance.ManufacturingCostAmt__c - objProposalBalance.ManufacturingCostAmt__c}
+                        </td>  -->
+                    </tr>
+                    <tr>
+                        <td class="td_center">
+                            (%)
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.ManufacturingCostPct__c != null, objProposalBalance.ManufacturingCostPct__c != 0)}">
+                                ({!objProposalBalance.ManufacturingCostPct__c})
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objOpenBalance.ManufacturingCostPct__c != null, objOpenBalance.ManufacturingCostPct__c != 0)}">
+                                ({!objOpenBalance.ManufacturingCostPct__c})
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_center">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.ManufacturingCostPct__c != null, objOpenBalance.ManufacturingCostPct__c != null)}">
+                                <!-- <apex:outputPanel rendered="{!objOpenBalance.ManufacturingCostPct__c == objProposalBalance.ManufacturingCostPct__c}">
+                                    -
+                                </apex:outputPanel> -->
+                                <apex:outputPanel rendered="{!objOpenBalance.ManufacturingCostPct__c > objProposalBalance.ManufacturingCostPct__c}">
+                                    <span style="color:red">▲</span> ({!objOpenBalance.ManufacturingCostPct__c - objProposalBalance.ManufacturingCostPct__c})
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!objOpenBalance.ManufacturingCostPct__c < objProposalBalance.ManufacturingCostPct__c}">
+                                    <span style="color:blue">▼</span> ({!objProposalBalance.ManufacturingCostPct__c - objOpenBalance.ManufacturingCostPct__c})
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </td> 
+                    </tr>
+                    <tr>
+                        <td class="td_center">
+                            (인건비)
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.CommonLaborCostAmt__c != null, objProposalBalance.CommonLaborCostAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objProposalBalance.CommonLaborCostAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objOpenBalance.CommonLaborCostAmt__c != null, objOpenBalance.CommonLaborCostAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objOpenBalance.CommonLaborCostAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_center">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.CommonLaborCostAmt__c != null, objOpenBalance.CommonLaborCostAmt__c != null)}">
+                                <apex:outputPanel rendered="{!objOpenBalance.CommonLaborCostAmt__c > objProposalBalance.CommonLaborCostAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:red">▲</span> <apex:param value="{!objOpenBalance.CommonLaborCostAmt__c - objProposalBalance.CommonLaborCostAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!objOpenBalance.CommonLaborCostAmt__c < objProposalBalance.CommonLaborCostAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:blue">▼</span> <apex:param value="{!objProposalBalance.CommonLaborCostAmt__c - objOpenBalance.CommonLaborCostAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </td> 
+                        <!-- <td class="td_right">
+                            {!objOpenBalance.CommonLaborCostAmt__c - objProposalBalance.CommonLaborCostAmt__c}
+                        </td>  -->
+                    </tr>
+                    <tr>
+                        <td class="td_center">
+                            (서비스전문직비)
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.ServiceLaborCostAmt__c != null, objProposalBalance.ServiceLaborCostAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objProposalBalance.ServiceLaborCostAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objOpenBalance.ServiceLaborCostAmt__c != null, objOpenBalance.ServiceLaborCostAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objOpenBalance.ServiceLaborCostAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_center">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.ServiceLaborCostAmt__c != null, objOpenBalance.ServiceLaborCostAmt__c != null)}">
+                                <apex:outputPanel rendered="{!objOpenBalance.ServiceLaborCostAmt__c > objProposalBalance.ServiceLaborCostAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:red">▲</span> <apex:param value="{!objOpenBalance.ServiceLaborCostAmt__c - objProposalBalance.ServiceLaborCostAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!objOpenBalance.ServiceLaborCostAmt__c < objProposalBalance.ServiceLaborCostAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:blue">▼</span> <apex:param value="{!objProposalBalance.ServiceLaborCostAmt__c - objOpenBalance.ServiceLaborCostAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </td> 
+                        <!-- <td class="td_right">
+                            <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                <apex:param value="{!objOpenBalance.ServiceLaborCostAmt__c - objProposalBalance.ServiceLaborCostAmt__c}" />
+                            </apex:outputText> 
+                        </td>  -->
+                    </tr>
+                    <tr>
+                        <td class="td_center">
+                            (물류비)
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.LogisticCostAmt__c != null, objProposalBalance.LogisticCostAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objProposalBalance.LogisticCostAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objOpenBalance.LogisticCostAmt__c != null, objOpenBalance.LogisticCostAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objOpenBalance.LogisticCostAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_center">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.LogisticCostAmt__c != null, objOpenBalance.LogisticCostAmt__c != null)}">
+                                <apex:outputPanel rendered="{!objOpenBalance.LogisticCostAmt__c > objProposalBalance.LogisticCostAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:red">▲</span> <apex:param value="{!objOpenBalance.LogisticCostAmt__c - objProposalBalance.LogisticCostAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!objOpenBalance.LogisticCostAmt__c < objProposalBalance.LogisticCostAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:blue">▼</span> <apex:param value="{!objProposalBalance.LogisticCostAmt__c - objOpenBalance.LogisticCostAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </td> 
+                        <!-- <td class="td_right">
+                            <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                <apex:param value="{!objOpenBalance.LogisticCostAmt__c - objProposalBalance.LogisticCostAmt__c}" />
+                            </apex:outputText> 
+                        </td>  -->
+                    </tr>
+                    <tr>
+                        <td class="td_center">
+                            (상각비)
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.DepreciationCostAmt__c != null, objProposalBalance.DepreciationCostAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objProposalBalance.DepreciationCostAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objOpenBalance.DepreciationCostAmt__c != null, objOpenBalance.DepreciationCostAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objOpenBalance.DepreciationCostAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_center">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.DepreciationCostAmt__c != null, objOpenBalance.DepreciationCostAmt__c != null)}">
+                                <apex:outputPanel rendered="{!objOpenBalance.DepreciationCostAmt__c > objProposalBalance.DepreciationCostAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:red">▲</span> <apex:param value="{!objOpenBalance.DepreciationCostAmt__c - objProposalBalance.DepreciationCostAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!objOpenBalance.DepreciationCostAmt__c < objProposalBalance.DepreciationCostAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:blue">▼</span> <apex:param value="{!objProposalBalance.DepreciationCostAmt__c - objOpenBalance.DepreciationCostAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </td> 
+                        <!-- <td class="td_right">
+                            <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                <apex:param value="{!objOpenBalance.DepreciationCostAmt__c - objProposalBalance.DepreciationCostAmt__c}" />
+                            </apex:outputText> 
+                        </td>  -->
+                    </tr>
+                    <tr>
+                        <td class="td_center">
+                            (임차료)
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.RentalCostAmt__c != null, objProposalBalance.RentalCostAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objProposalBalance.RentalCostAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objOpenBalance.RentalCostAmt__c != null, objOpenBalance.RentalCostAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objOpenBalance.RentalCostAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_center">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.RentalCostAmt__c != null, objOpenBalance.RentalCostAmt__c != null)}">
+                                <apex:outputPanel rendered="{!objOpenBalance.RentalCostAmt__c > objProposalBalance.RentalCostAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:red">▲</span> <apex:param value="{!objOpenBalance.RentalCostAmt__c - objProposalBalance.RentalCostAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!objOpenBalance.RentalCostAmt__c < objProposalBalance.RentalCostAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:blue">▼</span> <apex:param value="{!objProposalBalance.RentalCostAmt__c - objOpenBalance.RentalCostAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </td> 
+                        <!-- <td class="td_right">
+                            <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                <apex:param value="{!objOpenBalance.RentalCostAmt__c - objProposalBalance.RentalCostAmt__c}" />
+                            </apex:outputText> 
+                        </td>  -->
+                    </tr>
+                    <tr>
+                        <td class="td_center">
+                            (유틸리티)
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.UtilityCostAmt__c != null, objProposalBalance.UtilityCostAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objProposalBalance.UtilityCostAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objOpenBalance.UtilityCostAmt__c != null, objOpenBalance.UtilityCostAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objOpenBalance.UtilityCostAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_center">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.UtilityCostAmt__c != null, objOpenBalance.UtilityCostAmt__c != null)}">
+                                <apex:outputPanel rendered="{!objOpenBalance.UtilityCostAmt__c > objProposalBalance.UtilityCostAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:red">▲</span> <apex:param value="{!objOpenBalance.UtilityCostAmt__c - objProposalBalance.UtilityCostAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!objOpenBalance.UtilityCostAmt__c < objProposalBalance.UtilityCostAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:blue">▼</span> <apex:param value="{!objProposalBalance.UtilityCostAmt__c - objOpenBalance.UtilityCostAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </td> 
+                        <!-- <td class="td_right">
+                            <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                <apex:param value="{!objOpenBalance.UtilityCostAmt__c - objProposalBalance.UtilityCostAmt__c}" />
+                            </apex:outputText> 
+                        </td>  -->
+                    </tr>
+                    <tr>
+                        <td class="td_center">
+                            (소모품비)
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.ConsumableCostAmt__c != null, objProposalBalance.ConsumableCostAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objProposalBalance.ConsumableCostAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objOpenBalance.ConsumableCostAmt__c != null, objOpenBalance.ConsumableCostAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objOpenBalance.ConsumableCostAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_center">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.ConsumableCostAmt__c != null, objOpenBalance.ConsumableCostAmt__c != null)}">
+                                <apex:outputPanel rendered="{!objOpenBalance.ConsumableCostAmt__c > objProposalBalance.ConsumableCostAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:red">▲</span> <apex:param value="{!objOpenBalance.ConsumableCostAmt__c - objProposalBalance.ConsumableCostAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!objOpenBalance.ConsumableCostAmt__c < objProposalBalance.ConsumableCostAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:blue">▼</span> <apex:param value="{!objProposalBalance.ConsumableCostAmt__c - objOpenBalance.ConsumableCostAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </td> 
+                        <!-- <td class="td_right">
+                            <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                <apex:param value="{!objOpenBalance.ConsumableCostAmt__c - objProposalBalance.ConsumableCostAmt__c}" />
+                            </apex:outputText> 
+                        </td>  -->
+                    </tr>
+                    <tr>
+                        <td class="td_center">
+                            (기타경비)
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.EtcCostAmt__c != null, objProposalBalance.EtcCostAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objProposalBalance.EtcCostAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objOpenBalance.EtcCostAmt__c != null, objOpenBalance.EtcCostAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objOpenBalance.EtcCostAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_center">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.EtcCostAmt__c != null, objOpenBalance.EtcCostAmt__c != null)}">
+                                <apex:outputPanel rendered="{!objOpenBalance.EtcCostAmt__c > objProposalBalance.EtcCostAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:red">▲</span> <apex:param value="{!objOpenBalance.EtcCostAmt__c - objProposalBalance.EtcCostAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!objOpenBalance.EtcCostAmt__c < objProposalBalance.EtcCostAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:blue">▼</span> <apex:param value="{!objProposalBalance.EtcCostAmt__c - objOpenBalance.EtcCostAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </td> 
+                        <!-- <td class="td_right">
+                            <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                <apex:param value="{!objOpenBalance.EtcCostAmt__c - objProposalBalance.EtcCostAmt__c}" />
+                            </apex:outputText> 
+                        </td>  -->
+                    </tr>
+                    <tr>
+                        <td class="td_center">
+                            매출이익
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.SalesProfitAmt__c != null, objProposalBalance.SalesProfitAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objProposalBalance.SalesProfitAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objOpenBalance.SalesProfitAmt__c != null, objOpenBalance.SalesProfitAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objOpenBalance.SalesProfitAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_center">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.SalesProfitAmt__c != null, objOpenBalance.SalesProfitAmt__c != null)}">
+                                <apex:outputPanel rendered="{!objOpenBalance.SalesProfitAmt__c > objProposalBalance.SalesProfitAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:red">▲</span> <apex:param value="{!objOpenBalance.SalesProfitAmt__c - objProposalBalance.SalesProfitAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!objOpenBalance.SalesProfitAmt__c < objProposalBalance.SalesProfitAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:blue">▼</span> <apex:param value="{!objProposalBalance.SalesProfitAmt__c - objOpenBalance.SalesProfitAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </td> 
+                        <!-- <td class="td_right">
+                            <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                <apex:param value="{!objOpenBalance.SalesProfitAmt__c - objProposalBalance.SalesProfitAmt__c}" />
+                            </apex:outputText> 
+                        </td>  -->
+                    </tr>
+                    <tr>
+                        <td class="td_center">
+                            (%)
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.SalesProfitPct__c != null, objProposalBalance.SalesProfitPct__c != 0)}">
+                                ({!objProposalBalance.SalesProfitPct__c})
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objOpenBalance.SalesProfitPct__c != null, objOpenBalance.SalesProfitPct__c != 0)}">
+                                ({!objOpenBalance.SalesProfitPct__c})
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_center">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.SalesProfitPct__c != null, objOpenBalance.SalesProfitPct__c != null)}">
+                                <!-- <apex:outputPanel rendered="{!objOpenBalance.SalesProfitPct__c == objProposalBalance.SalesProfitPct__c}">
+                                    - 
+                                </apex:outputPanel> -->
+                                <apex:outputPanel rendered="{!objOpenBalance.SalesProfitPct__c > objProposalBalance.SalesProfitPct__c}">
+                                    <span style="color:red">▲</span> ({!objProposalBalance.SalesProfitPct__c - objOpenBalance.SalesProfitPct__c})
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!objOpenBalance.SalesProfitPct__c < objProposalBalance.SalesProfitPct__c}">
+                                    <span style="color:blue">▼</span> ({!objOpenBalance.SalesProfitPct__c - objProposalBalance.SalesProfitPct__c})
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </td> 
+                    </tr>
+                    <tr>
+                        <td class="td_center">
+                            금융수지
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.FinancialBalanceAmt__c != null, objProposalBalance.FinancialBalanceAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objProposalBalance.FinancialBalanceAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objOpenBalance.FinancialBalanceAmt__c != null, objOpenBalance.FinancialBalanceAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objOpenBalance.FinancialBalanceAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_center">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.FinancialBalanceAmt__c != null, objOpenBalance.FinancialBalanceAmt__c != null)}">
+                                <apex:outputPanel rendered="{!objOpenBalance.FinancialBalanceAmt__c > objProposalBalance.FinancialBalanceAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:red">▲</span> <apex:param value="{!objOpenBalance.FinancialBalanceAmt__c - objProposalBalance.FinancialBalanceAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!objOpenBalance.FinancialBalanceAmt__c < objProposalBalance.FinancialBalanceAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:blue">▼</span> <apex:param value="{!objProposalBalance.FinancialBalanceAmt__c - objOpenBalance.FinancialBalanceAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </td> 
+                        <!-- <td class="td_right">
+                            <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                <apex:param value="{!objOpenBalance.FinancialBalanceAmt__c - objProposalBalance.FinancialBalanceAmt__c}" />
+                            </apex:outputText> 
+                        </td>  -->
+                    </tr>
+                    <tr>
+                        <td class="td_center">
+                            (금융수익)
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.FinancialProfitAmt__c != null, objProposalBalance.FinancialProfitAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objProposalBalance.FinancialProfitAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objOpenBalance.FinancialProfitAmt__c != null, objOpenBalance.FinancialProfitAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objOpenBalance.FinancialProfitAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_center">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.FinancialProfitAmt__c != null, objOpenBalance.FinancialProfitAmt__c != null)}">
+                                <apex:outputPanel rendered="{!objOpenBalance.FinancialProfitAmt__c > objProposalBalance.FinancialProfitAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:red">▲</span> <apex:param value="{!objOpenBalance.FinancialProfitAmt__c - objProposalBalance.FinancialProfitAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!objOpenBalance.FinancialProfitAmt__c < objProposalBalance.FinancialProfitAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:blue">▼</span> <apex:param value="{!objProposalBalance.FinancialProfitAmt__c - objOpenBalance.FinancialProfitAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </td> 
+                        <!-- <td class="td_right">
+                            <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                <apex:param value="{!objOpenBalance.FinancialProfitAmt__c - objProposalBalance.FinancialProfitAmt__c}" />
+                            </apex:outputText> 
+                        </td>  -->
+                    </tr>
+                    <tr>
+                        <td class="td_center">
+                            (금융비용)
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.FinancialExpenseAmt__c != null, objProposalBalance.FinancialExpenseAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objProposalBalance.FinancialExpenseAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objOpenBalance.FinancialExpenseAmt__c != null, objOpenBalance.FinancialExpenseAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objOpenBalance.FinancialExpenseAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_center">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.FinancialExpenseAmt__c != null, objOpenBalance.FinancialExpenseAmt__c != null)}">
+                                <apex:outputPanel rendered="{!objOpenBalance.FinancialExpenseAmt__c > objProposalBalance.FinancialExpenseAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:red">▲</span> <apex:param value="{!objOpenBalance.FinancialExpenseAmt__c - objProposalBalance.FinancialExpenseAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!objOpenBalance.FinancialExpenseAmt__c < objProposalBalance.FinancialExpenseAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:blue">▼</span> <apex:param value="{!objProposalBalance.FinancialExpenseAmt__c - objOpenBalance.FinancialExpenseAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </td> 
+                        <!-- <td class="td_right">
+                            <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                <apex:param value="{!objOpenBalance.FinancialExpenseAmt__c - objProposalBalance.FinancialExpenseAmt__c}" />
+                            </apex:outputText> 
+                        </td>  -->
+                    </tr>
+                    <tr>
+                        <td class="td_center">
+                            기타영외수지
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.EtcBalanceAmt__c != null, objProposalBalance.EtcBalanceAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objProposalBalance.EtcBalanceAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objOpenBalance.EtcBalanceAmt__c != null, objOpenBalance.EtcBalanceAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objOpenBalance.EtcBalanceAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_center">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.EtcBalanceAmt__c != null, objOpenBalance.EtcBalanceAmt__c != null)}">
+                                <apex:outputPanel rendered="{!objOpenBalance.EtcBalanceAmt__c > objProposalBalance.EtcBalanceAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:red">▲</span> <apex:param value="{!objOpenBalance.EtcBalanceAmt__c - objProposalBalance.EtcBalanceAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!objOpenBalance.EtcBalanceAmt__c < objProposalBalance.EtcBalanceAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:blue">▼</span> <apex:param value="{!objProposalBalance.EtcBalanceAmt__c - objOpenBalance.EtcBalanceAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </td> 
+                        <!-- <td class="td_right">
+                            <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                <apex:param value="{!objOpenBalance.EtcBalanceAmt__c - objProposalBalance.EtcBalanceAmt__c}" />
+                            </apex:outputText> 
+                        </td>  -->
+                    </tr>
+                    <tr>
+                        <td class="td_center">
+                            (기타영외수익)
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.EtcProfitAmt__c != null, objProposalBalance.EtcProfitAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objProposalBalance.EtcProfitAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objOpenBalance.EtcProfitAmt__c != null, objOpenBalance.EtcProfitAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objOpenBalance.EtcProfitAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_center">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.EtcProfitAmt__c != null, objOpenBalance.EtcProfitAmt__c != null)}">
+                                <apex:outputPanel rendered="{!objOpenBalance.EtcProfitAmt__c > objProposalBalance.EtcProfitAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:red">▲</span> <apex:param value="{!objOpenBalance.EtcProfitAmt__c - objProposalBalance.EtcProfitAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!objOpenBalance.EtcProfitAmt__c < objProposalBalance.EtcProfitAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:blue">▼</span> <apex:param value="{!objProposalBalance.EtcProfitAmt__c - objOpenBalance.EtcProfitAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </td> 
+                        <!-- <td class="td_right">
+                            <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                <apex:param value="{!objOpenBalance.EtcProfitAmt__c - objProposalBalance.EtcProfitAmt__c}" />
+                            </apex:outputText> 
+                        </td>  -->
+                    </tr>
+                    <tr>
+                        <td class="td_center">
+                            (기타영외비용)
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.EtcExpenseAmt__c != null, objProposalBalance.EtcExpenseAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objProposalBalance.EtcExpenseAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objOpenBalance.EtcExpenseAmt__c != null, objOpenBalance.EtcExpenseAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objOpenBalance.EtcExpenseAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_center">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.EtcExpenseAmt__c != null, objOpenBalance.EtcExpenseAmt__c != null)}">
+                                <apex:outputPanel rendered="{!objOpenBalance.EtcExpenseAmt__c > objProposalBalance.EtcExpenseAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:red">▲</span> <apex:param value="{!objOpenBalance.EtcExpenseAmt__c - objProposalBalance.EtcExpenseAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!objOpenBalance.EtcExpenseAmt__c < objProposalBalance.EtcExpenseAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:blue">▼</span> <apex:param value="{!objProposalBalance.EtcExpenseAmt__c - objOpenBalance.EtcExpenseAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </td> 
+                        <!-- <td class="td_right">
+                            <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                <apex:param value="{!objOpenBalance.EtcExpenseAmt__c - objProposalBalance.EtcExpenseAmt__c}" />
+                            </apex:outputText> 
+                        </td>  -->
+                    </tr>
+                    <tr>
+                        <td class="td_center">
+                            관리이익
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.MgmtProfitAmt__c != null, objProposalBalance.MgmtProfitAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objProposalBalance.MgmtProfitAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objOpenBalance.MgmtProfitAmt__c != null, objOpenBalance.MgmtProfitAmt__c != 0)}">
+                                <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                    <apex:param value="{!objOpenBalance.MgmtProfitAmt__c}" />
+                                </apex:outputText> 
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_center">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.MgmtProfitAmt__c != null, objOpenBalance.MgmtProfitAmt__c != null)}">
+                                <apex:outputPanel rendered="{!objOpenBalance.MgmtProfitAmt__c > objProposalBalance.MgmtProfitAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:red">▲</span> <apex:param value="{!objOpenBalance.MgmtProfitAmt__c - objProposalBalance.MgmtProfitAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!objOpenBalance.MgmtProfitAmt__c < objProposalBalance.MgmtProfitAmt__c}">
+                                    <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                        <span style="color:blue">▼</span> <apex:param value="{!objProposalBalance.MgmtProfitAmt__c - objOpenBalance.MgmtProfitAmt__c}" />
+                                    </apex:outputText> 
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </td> 
+                        <!-- <td class="td_right">
+                            <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                <apex:param value="{!objOpenBalance.MgmtProfitAmt__c - objProposalBalance.MgmtProfitAmt__c}" />
+                            </apex:outputText> 
+                        </td>  -->
+                    </tr>
+                    <tr>
+                        <td class="td_center">
+                            (%)
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.MgmtProfitPct__c != null, objProposalBalance.MgmtProfitPct__c != 0)}">
+                                ({!objProposalBalance.MgmtProfitPct__c})
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_right">
+                            <apex:outputPanel rendered="{!and(objOpenBalance.MgmtProfitPct__c != null, objOpenBalance.MgmtProfitPct__c != 0)}">
+                                ({!objOpenBalance.MgmtProfitPct__c})
+                            </apex:outputPanel>
+                        </td> 
+                        <td class="td_center">
+                            <apex:outputPanel rendered="{!and(objProposalBalance.MgmtProfitPct__c != null, objOpenBalance.MgmtProfitPct__c != null)}">
+                                <!-- <apex:outputPanel rendered="{!objOpenBalance.MgmtProfitPct__c == objProposalBalance.MgmtProfitPct__c}">
+                                    -
+                                </apex:outputPanel> -->
+                                <apex:outputPanel rendered="{!objOpenBalance.MgmtProfitPct__c > objProposalBalance.MgmtProfitPct__c}">
+                                    <span style="color:red">▲</span> ({!objProposalBalance.MgmtProfitPct__c - objOpenBalance.MgmtProfitPct__c})
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!objOpenBalance.MgmtProfitPct__c < objProposalBalance.MgmtProfitPct__c}">
+                                    <span style="color:blue">▼</span> ({!objOpenBalance.MgmtProfitPct__c - objProposalBalance.MgmtProfitPct__c})
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </td> 
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </body>
+    </html>
+
+</apex:page>

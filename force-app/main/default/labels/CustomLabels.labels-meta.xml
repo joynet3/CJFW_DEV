@@ -1,0 +1,565 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+    <labels>
+        <fullName>AboutAddress</fullName>
+        <categories>Remark</categories>
+        <language>ko</language>
+        <protected>false</protected>
+        <shortDescription>고객사 주소 관련</shortDescription>
+        <value>MDM상 주소가 아닌 실제 주소 기재 부탁드립니다.</value>
+    </labels>
+    <labels>
+        <fullName>AboutDate</fullName>
+        <language>ko</language>
+        <protected>false</protected>
+        <shortDescription>요청일 관련</shortDescription>
+        <value>요청은 최소 일주일 이후로 입력하시기 바랍니다.
+시작시간 기재 부탁드립니다.</value>
+    </labels>
+    <labels>
+        <fullName>Account_Related</fullName>
+        <categories>Related</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Account Related</shortDescription>
+        <value>Account Related List</value>
+    </labels>
+    <labels>
+        <fullName>ActivityReportRelated</fullName>
+        <categories>Activity Report Related</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Activity Report Related</shortDescription>
+        <value>Activity Report Related List</value>
+    </labels>
+    <labels>
+        <fullName>ActivtyReport</fullName>
+        <categories>Related</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Activty Report</shortDescription>
+        <value>Activty Report Related List</value>
+    </labels>
+    <labels>
+        <fullName>AfterOperationRelated</fullName>
+        <categories>Related</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>After Operation Related</shortDescription>
+        <value>After Operation Related List</value>
+    </labels>
+    <labels>
+        <fullName>ApplicationInfo</fullName>
+        <language>ko</language>
+        <protected>false</protected>
+        <shortDescription>ApplicationInfo</shortDescription>
+        <value>Application Info</value>
+    </labels>
+    <labels>
+        <fullName>BalanceRelatedList</fullName>
+        <categories>Related</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Balance Related List</shortDescription>
+        <value>Balance Related List</value>
+    </labels>
+    <labels>
+        <fullName>BidAmountInformation</fullName>
+        <categories>Nara Market</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Bid Amount Information</shortDescription>
+        <value>Bid Amount Information</value>
+    </labels>
+    <labels>
+        <fullName>BidDetailInformation</fullName>
+        <categories>Bidding Contract Layout</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Bid Detail Information</shortDescription>
+        <value>Bid Detail Information</value>
+    </labels>
+    <labels>
+        <fullName>BidExecutionInformation</fullName>
+        <categories>Nara Market</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Bid Process Information</shortDescription>
+        <value>Bid Process Information</value>
+    </labels>
+    <labels>
+        <fullName>BidGeneralInformation</fullName>
+        <categories>Nara Market</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Bid General Information(Nara Market)</shortDescription>
+        <value>Bid General Information</value>
+    </labels>
+    <labels>
+        <fullName>BidInformation</fullName>
+        <categories>Bidding Contract Layout</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Bid Information</shortDescription>
+        <value>Bidding Contract Layout</value>
+    </labels>
+    <labels>
+        <fullName>BidInformationMIL</fullName>
+        <categories>Military Opportunity Layout</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Bid Information</shortDescription>
+        <value>입찰관련 정보</value>
+    </labels>
+    <labels>
+        <fullName>BidNoticeContactInformation</fullName>
+        <categories>Nara Market</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Bid Notice Contact Information</shortDescription>
+        <value>Contact Information</value>
+    </labels>
+    <labels>
+        <fullName>Composition</fullName>
+        <categories>FS Opportunity Layout Final</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Composition</shortDescription>
+        <value>Composition</value>
+    </labels>
+    <labels>
+        <fullName>ContactInformation</fullName>
+        <categories>Nara Market</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Contact Information</shortDescription>
+        <value>Contact Information</value>
+    </labels>
+    <labels>
+        <fullName>ContactRelated</fullName>
+        <categories>Related</categories>
+        <language>ko</language>
+        <protected>false</protected>
+        <shortDescription>Contact Related</shortDescription>
+        <value>Contact Related List</value>
+    </labels>
+    <labels>
+        <fullName>ContractAlreadyRegisteredError</fullName>
+        <categories>RegisteContract</categories>
+        <language>ko</language>
+        <protected>false</protected>
+        <shortDescription>계약이 이미 등록되어 있습니다.</shortDescription>
+        <value>계약이 이미 등록되어 있습니다.</value>
+    </labels>
+    <labels>
+        <fullName>ContractRelated</fullName>
+        <categories>Contract Related</categories>
+        <language>ko</language>
+        <protected>false</protected>
+        <shortDescription>Contract Related</shortDescription>
+        <value>Contract Related List</value>
+    </labels>
+    <labels>
+        <fullName>CookingClassCaution</fullName>
+        <categories>ExtraService</categories>
+        <language>ko</language>
+        <protected>false</protected>
+        <shortDescription>CookingClassCaution</shortDescription>
+        <value>아래 사항에 해당하는 경우 셰프와 필히 사전협의 해주세요.
+
+① 수업인원 100명 이상의 대형 고객사의 경우 
+② 오후 수업을 희망할 경우
+③ 메뉴 특이사항이 있을 경우
+④ 비대면(아이온택트)로 진행할 경우</value>
+    </labels>
+    <labels>
+        <fullName>CustomerInfo</fullName>
+        <language>ko</language>
+        <protected>false</protected>
+        <shortDescription>CustomerInfo</shortDescription>
+        <value>Customer Information</value>
+    </labels>
+    <labels>
+        <fullName>CustomerInformationNotEntered</fullName>
+        <categories>Rating</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Customer information not entered</shortDescription>
+        <value>Customer information not entered</value>
+    </labels>
+    <labels>
+        <fullName>CustomerStatusInformation</fullName>
+        <categories>Bidding Contract Layout</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Customer Status Information</shortDescription>
+        <value>Customer Status Information</value>
+    </labels>
+    <labels>
+        <fullName>EducationRemark</fullName>
+        <categories>Remark</categories>
+        <language>ko</language>
+        <protected>false</protected>
+        <shortDescription>교육 특이사항</shortDescription>
+        <value>영양 교육 - 보육원일 경우 정확한 연령대 기재 부탁드립니다.
+쿠킹클래스 - 사전에 주방기물 및 주방사용 관련 협의 부탁드립니다.</value>
+    </labels>
+    <labels>
+        <fullName>EndpointSAP</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>EndpointSAP</shortDescription>
+        <value>http://scmwsqa.ifresh.co.kr:8900/ws/callSapCkProcedure</value>
+    </labels>
+    <labels>
+        <fullName>ErrorMessage</fullName>
+        <categories>Message</categories>
+        <language>ko</language>
+        <protected>false</protected>
+        <shortDescription>ErrorMessage</shortDescription>
+        <value>오류가 발생했습니다. 관리자에게 문의해주시기 바랍니다.</value>
+    </labels>
+    <labels>
+        <fullName>ExcelFormatNotMatch</fullName>
+        <categories>Message</categories>
+        <language>ko</language>
+        <protected>false</protected>
+        <shortDescription>ExcelFormatNotMatch</shortDescription>
+        <value>Excel 형식이 일치하지 않습니다.</value>
+    </labels>
+    <labels>
+        <fullName>ExtraRemark</fullName>
+        <language>ko</language>
+        <protected>false</protected>
+        <shortDescription>기타 사항</shortDescription>
+        <value>마지막 수업은 17:00입니다. 17:00이후 수업은 유선협의 진행 해 주세요.</value>
+    </labels>
+    <labels>
+        <fullName>ExtraService</fullName>
+        <categories>Extra Service</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Extra Service</shortDescription>
+        <value>Extra Service</value>
+    </labels>
+    <labels>
+        <fullName>ExtraServiceApplication</fullName>
+        <categories>Extra Service</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Extra Service History</shortDescription>
+        <value>Extra Service History</value>
+    </labels>
+    <labels>
+        <fullName>FieldBriefingRelated</fullName>
+        <categories>Related</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Field Briefing Related List</shortDescription>
+        <value>Field Briefing Related List</value>
+    </labels>
+    <labels>
+        <fullName>File</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>File</shortDescription>
+        <value>File</value>
+    </labels>
+    <labels>
+        <fullName>FinalConfirmationRelated</fullName>
+        <categories>Related</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Final Confirmation Related</shortDescription>
+        <value>Final Confirmation Related List</value>
+    </labels>
+    <labels>
+        <fullName>FocusingElementry</fullName>
+        <categories>Rating</categories>
+        <language>ko</language>
+        <protected>false</protected>
+        <shortDescription>Focusing Elementry</shortDescription>
+        <value>Focusing Elementry</value>
+    </labels>
+    <labels>
+        <fullName>FoodPriceRelated</fullName>
+        <categories>Related</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Food Price Related</shortDescription>
+        <value>Food Price Related List</value>
+    </labels>
+    <labels>
+        <fullName>FreeContractInformation</fullName>
+        <categories>Free Contract Layout</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Free Contract Information</shortDescription>
+        <value>Free Contract Information</value>
+    </labels>
+    <labels>
+        <fullName>GeneralInformation</fullName>
+        <categories>Military Opportunity Layout</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>General Information</shortDescription>
+        <value>General Information</value>
+    </labels>
+    <labels>
+        <fullName>History</fullName>
+        <categories>Field Tracking</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>History</shortDescription>
+        <value>Field Tracking</value>
+    </labels>
+    <labels>
+        <fullName>KindergartenDetailInformation</fullName>
+        <categories>Kindergarten</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Kindergarten Detail Information</shortDescription>
+        <value>Kindergarten Detail Information</value>
+    </labels>
+    <labels>
+        <fullName>KindergartenGeneralInformation</fullName>
+        <categories>Kindergarten</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Kindergarten General Information</shortDescription>
+        <value>Kindergarten General Information</value>
+    </labels>
+    <labels>
+        <fullName>NotClosedWonError</fullName>
+        <categories>RegisteContract</categories>
+        <language>ko</language>
+        <protected>false</protected>
+        <shortDescription>수주 성공 이후에 계약 등록이 가능합니다.</shortDescription>
+        <value>수주 성공 이후에 계약 등록이 가능합니다.</value>
+    </labels>
+    <labels>
+        <fullName>Nurturing</fullName>
+        <categories>Rating</categories>
+        <language>ko</language>
+        <protected>false</protected>
+        <shortDescription>Nurturing</shortDescription>
+        <value>Nurturing</value>
+    </labels>
+    <labels>
+        <fullName>NutritionClass</fullName>
+        <language>ko</language>
+        <protected>false</protected>
+        <shortDescription>NutritionClass</shortDescription>
+        <value>아래 사항에 해당하는 경우 영양사와 필히 사전협의 해주세요.
+
+① 수업 횟수가 4타임 이상인 경우
+② 수업인원 60명 이상의 고객사의 경우
+③ 영아반이 포함되어 있는 경우
+④ 비대면(아이온택트)로 진행할 경우</value>
+    </labels>
+    <labels>
+        <fullName>OpportunityInformation</fullName>
+        <categories>Bidding Contract Layout</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Opportunity Information</shortDescription>
+        <value>Opportunity Information</value>
+    </labels>
+    <labels>
+        <fullName>OpportunityRelated</fullName>
+        <categories>Related</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Opportunity Related</shortDescription>
+        <value>Opportunity Related List</value>
+    </labels>
+    <labels>
+        <fullName>PTRelatedList</fullName>
+        <categories>Related</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>PT Related List</shortDescription>
+        <value>PT Related List</value>
+    </labels>
+    <labels>
+        <fullName>PreSalesRelated</fullName>
+        <categories>Related</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Pre Sales Related</shortDescription>
+        <value>Pre Sales Related List</value>
+    </labels>
+    <labels>
+        <fullName>Precaution</fullName>
+        <language>ko</language>
+        <protected>false</protected>
+        <shortDescription>Precaution</shortDescription>
+        <value>Precaution</value>
+    </labels>
+    <labels>
+        <fullName>ProductRelatedList</fullName>
+        <categories>Product Related</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Product Related List</shortDescription>
+        <value>Product Related List</value>
+    </labels>
+    <labels>
+        <fullName>ProposalRelatedList</fullName>
+        <categories>Related</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Proposal Related List</shortDescription>
+        <value>Proposal Related List</value>
+    </labels>
+    <labels>
+        <fullName>Quote_Related</fullName>
+        <categories>Related</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Quote Related</shortDescription>
+        <value>Quote Related List</value>
+    </labels>
+    <labels>
+        <fullName>RequiredProperty</fullName>
+        <language>ko</language>
+        <protected>false</protected>
+        <shortDescription>필요 기물</shortDescription>
+        <value>영양교육 - 노트북, 빔프로젝트, HDMI선, 책상, 의자
+쿠킹클래스 - 책상, 의자, 주방 기물 사용</value>
+    </labels>
+    <labels>
+        <fullName>SalesProcess</fullName>
+        <categories>Opportunity</categories>
+        <language>ko</language>
+        <protected>false</protected>
+        <shortDescription>SalesProcess</shortDescription>
+        <value>Sales Process</value>
+    </labels>
+    <labels>
+        <fullName>SampleFoodRelated</fullName>
+        <categories>Related</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Sample Food Related</shortDescription>
+        <value>Sample Food Related List</value>
+    </labels>
+    <labels>
+        <fullName>SearchAddress</fullName>
+        <categories>Search Address</categories>
+        <language>ko</language>
+        <protected>false</protected>
+        <shortDescription>Search Address</shortDescription>
+        <value>Address</value>
+    </labels>
+    <labels>
+        <fullName>SelectNone</fullName>
+        <categories>Common</categories>
+        <language>ko</language>
+        <protected>true</protected>
+        <shortDescription>SelectNone</shortDescription>
+        <value>::select::</value>
+    </labels>
+    <labels>
+        <fullName>ServiceContents</fullName>
+        <categories>Related</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Service Contents</shortDescription>
+        <value>Service Contents Related List</value>
+    </labels>
+    <labels>
+        <fullName>SuccessRegisteContract</fullName>
+        <categories>RegisteContract</categories>
+        <language>ko</language>
+        <protected>false</protected>
+        <shortDescription>계약 정보가 성공적으로 등록되었습니다.</shortDescription>
+        <value>계약 정보가 성공적으로 등록되었습니다.</value>
+    </labels>
+    <labels>
+        <fullName>SystemInformation</fullName>
+        <categories>Bidding Contract Layout</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>System Information</shortDescription>
+        <value>System Information</value>
+    </labels>
+    <labels>
+        <fullName>TransactionCondition</fullName>
+        <categories>Bidding Contract Layout</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Transaction Condition</shortDescription>
+        <value>Transaction Condition</value>
+    </labels>
+    <labels>
+        <fullName>VIP</fullName>
+        <categories>Rating</categories>
+        <language>ko</language>
+        <protected>false</protected>
+        <shortDescription>VIP</shortDescription>
+        <value>VIP</value>
+    </labels>
+    <labels>
+        <fullName>VOCCommentRelated</fullName>
+        <categories>Related</categories>
+        <language>ko</language>
+        <protected>false</protected>
+        <shortDescription>VOC Comment Related</shortDescription>
+        <value>VOC Comment Related</value>
+    </labels>
+    <labels>
+        <fullName>VOCLineItemRelated</fullName>
+        <categories>Related</categories>
+        <language>ko</language>
+        <protected>false</protected>
+        <shortDescription>VOC Line Item Related</shortDescription>
+        <value>VOC Line Item Related</value>
+    </labels>
+    <labels>
+        <fullName>VOCRelated</fullName>
+        <categories>VOC Related</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>VOC Related</shortDescription>
+        <value>VOC Related List</value>
+    </labels>
+    <labels>
+        <fullName>VOCRelatedList</fullName>
+        <categories>Related</categories>
+        <language>ko</language>
+        <protected>false</protected>
+        <shortDescription>VOC Related List</shortDescription>
+        <value>VOC Related List</value>
+    </labels>
+    <labels>
+        <fullName>WayPoint</fullName>
+        <categories>Activity</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Way Point</shortDescription>
+        <value>Way Point</value>
+    </labels>
+    <labels>
+        <fullName>Work</fullName>
+        <language>ko</language>
+        <protected>false</protected>
+        <shortDescription>업무</shortDescription>
+        <value>업무</value>
+    </labels>
+    <labels>
+        <fullName>customTest</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>customTest</shortDescription>
+        <value>&amp;nbsp;</value>
+    </labels>
+    <labels>
+        <fullName>etcetera</fullName>
+        <categories>Rating</categories>
+        <language>ko</language>
+        <protected>false</protected>
+        <shortDescription>et cetera</shortDescription>
+        <value>et cetera</value>
+    </labels>
+</CustomLabels>

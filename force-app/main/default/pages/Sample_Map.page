@@ -1,0 +1,316 @@
+<!--
+  @description       : 
+  @author            : (서원) won.seo@daeunextier.com
+  @group             : 
+  @last modified on  : 08-03-2022
+  @last modified by  : (서원) won.seo@daeunextier.com
+-->
+<apex:page controller="PageMapController">
+    <style>
+        .search {
+            position: absolute;
+            z-index: 1000;
+            top: 20px;
+            left: 20px;
+        }
+        .search #address {
+            width: 150px;
+            height: 20px;
+            line-height: 20px;
+            border: solid 1px #555;
+            padding: 5px;
+            font-size: 12px;
+            box-sizing: content-box;
+        }
+        .search #submit {
+            height: 30px;
+            line-height: 30px;
+            padding: 0 10px;
+            font-size: 12px;
+            border: solid 1px #555;
+            border-radius: 3px;
+            cursor: pointer;
+            box-sizing: content-box;
+        }
+
+        .search #submit1 {
+            height: 30px;
+            line-height: 30px;
+            padding: 0 10px;
+            font-size: 12px;
+            border: solid 1px #555;
+            border-radius: 3px;
+            cursor: pointer;
+            box-sizing: content-box;
+        }
+        </style>
+
+    <!-- Script -->
+    <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=dlkz6dt5jj&submodules=geocoder"></script>
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> -->
+    <apex:includeScript value="{! $Resource.jquery }"/>
+    <!-- <apex:includeScript value="{! $Resource.navermap }"/> -->
+    
+    <div id="map" style="width:100%;height:100vh">
+        <div class="search">
+            <input id="address" type="text" placeholder="검색할 주소" value=""/>
+            <input id="submit" type="button" value="주소 검색"/>
+            <!-- <input id="submit1" type="button" value="검색" onclick="getKeyword()"/> -->
+            <!-- <apex:form >
+                <apex:actionFunction name="fnSearchPlace" action="{!searchPlace}" rerender="listContainer">
+                    <apex:param name="keyword" value="" assignTo="{!keyword}"/>                
+                </apex:actionFunction>
+            </apex:form>
+            <apex:outputPanel id="listContainer">
+                <apex:repeat value="{!itemResults}" var="a">
+                    <p>{!a.title}</p>
+                    <p>{!a.address}</p>
+                    <p>{!a.roadAddress}</p>
+                    <p>{!a.mapx}, {!a.mapy}</p>
+                </apex:repeat>
+
+            </apex:outputPanel> -->
+        </div>
+        
+    </div>
+
+    
+
+    <script type="text/javascript">
+
+        // function getKeyword() {
+        //     let keyword = $('#address').val();
+
+        //     console.log('keyword=========' + keyword);
+
+        //     fnSearchPlace(keyword);
+        // };
+
+        var map = new naver.maps.Map("map", {
+            center: new naver.maps.LatLng(37.5820663, 126.8889769),
+            zoom: 15,
+            mapTypeControl: true,
+            scaleControl: false,
+            logoControl: false,
+            mapDataControl: false,
+            zoomControl: true,
+            zoomControlOptions: {
+            position: naver.maps.Position.RIGHT_CENTER
+            }, 
+            minZoom: 6
+        });
+
+        var infoWindow = new naver.maps.InfoWindow({
+            anchorSkew: true
+        });
+
+        // var marker = new naver.maps.Marker({
+        //     position: new naver.maps.LatLng(37.3595316, 127.1052133),
+        //     map: map
+        // });
+
+        map.setCursor('pointer');
+
+        function searchCoordinateToAddress(latlng) {
+
+            infoWindow.close();
+
+            var addrInfo = [];
+            point = new naver.maps.Point(latlng.x, latlng.y);
+
+            naver.maps.Service.reverseGeocode({
+                coords: latlng,
+                orders: [
+                naver.maps.Service.OrderType.ADDR,
+                naver.maps.Service.OrderType.ROAD_ADDR
+                ].join(',')
+            }, function(status, response) {
+                if (status === naver.maps.Service.Status.ERROR) {
+                if (!latlng) {
+                    return alert('ReverseGeocode Error, Please check latlng');
+                }
+                if (latlng.toString) {
+                    return alert('ReverseGeocode Error, latlng:' + latlng.toString());
+                }
+                if (latlng.x && latlng.y) {
+                    return alert('ReverseGeocode Error, x:' + latlng.x + ', y:' + latlng.y);
+                }
+                return alert('ReverseGeocode Error, Please check latlng');
+                }
+
+                var address = response.v2.address,
+                    htmlAddresses = [];
+
+                    console.log('English===========' + address);
+
+                if (address.jibunAddress !== '') {
+                    htmlAddresses.push('[지번 주소] ' + address.jibunAddress);
+                    if (address.roadAddress !== '') {
+                        addrInfo.push(address.jibunAddress);
+                        addrInfo.push(point);
+                    }
+                }
+
+                if (address.roadAddress !== '') {
+                    htmlAddresses.push('[도로명 주소] ' + address.roadAddress);
+                    addrInfo.push(address.roadAddress);
+                    addrInfo.push(point);
+                }
+
+                infoWindow.setContent([
+                    '<div style="padding:10px;min-width:200px;line-height:150%;">',
+                    '<h4 style="margin-top:5px;">검색 좌표</h4><br />',
+                    htmlAddresses.join('<br />'),
+                    '</div>'
+                ].join('\n'));
+                
+                sendMsgToParent(addrInfo);
+                infoWindow.open(map, latlng);
+            });
+        }
+
+        function searchAddressToCoordinate(address) {
+
+            var addrInfo = [];
+            var coord = [];
+
+            naver.maps.Service.geocode({
+                query: address
+            }, function(status, response) {
+                if (status === naver.maps.Service.Status.ERROR) {
+                if (!address) {
+                    return alert('Geocode Error, Please check address');
+                }
+                return alert('Geocode Error, address:' + address);
+                }
+
+                if (response.v2.meta.totalCount === 0) {
+                    return alert('No result.');
+                }
+
+                var htmlAddresses = [],
+                item = response.v2.addresses[0],
+                point = new naver.maps.Point(item.x, item.y);
+
+                if (item.roadAddress) {
+                    htmlAddresses.push('[도로명 주소] ' + item.roadAddress);
+                    addrInfo.push(item.roadAddress);
+                    addrInfo.push(point);
+                }
+
+                if (item.jibunAddress) {
+                    htmlAddresses.push('[지번 주소] ' + item.jibunAddress);
+                    if (!item.roadAddress) {
+                        addrInfo.push(item.jibunAddress);
+                        addrInfo.push(point);
+                    }
+                }
+
+                if (item.englishAddress) {
+                    htmlAddresses.push('[영문명 주소] ' + item.englishAddress);
+                }
+
+                infoWindow.setContent([
+                    '<div style="padding:10px;min-width:200px;line-height:150%;">',
+                    '<h4 style="margin-top:5px;">검색 주소 : '+ address +'</h4><br />',
+                    htmlAddresses.join('<br />'),
+                    '</div>'
+                ].join('\n'));
+                
+                sendMsgToParent(addrInfo);
+                map.setCenter(point);
+                infoWindow.open(map, point);
+            });
+        }
+
+        var startCoord = '';
+        var goalCoord = '';
+
+        // 부모에게 메시지 전달
+        function sendMsgToParent( msg ) {
+            window.parent.postMessage( msg, '*' );
+        }
+
+        function initGeocoder() {
+
+            // naver.maps.Event.addListener(map, 'click', function(e) {
+            //     marker.setPosition(e.coord);
+            // });
+
+            map.addListener('click', function(e) {
+                searchCoordinateToAddress(e.coord);
+            });
+
+            $('#address').on('keydown', function(e) {
+                var keyCode = e.which;
+
+                if (keyCode === 13) { // Enter Key
+                    searchAddressToCoordinate($('#address').val());
+                }
+            });
+
+            $('#submit').on('click', function(e) {
+                e.preventDefault();
+
+                searchAddressToCoordinate($('#address').val());
+            });
+
+            searchAddressToCoordinate('월드컵북로54길 25');
+
+        }
+
+        naver.maps.onJSContentLoaded = initGeocoder;
+
+        window.addEventListener( 'message', receiveMsgFromParent );
+
+        function receiveMsgFromParent(e) {
+            // console.log("Child::: ============" + e.data);
+
+            let msg = e.data
+
+            if(msg.includes('/')) {
+                let coord = [];
+                let coordStartList = [];
+                let coordGoalList = [];
+
+                coord = msg.split('/');
+                // console.log("coordChild::: ============" + coord);
+                coordStartList = coord[0].split(',');
+                // console.log("coordStartListChild::: ============" + coordStartList);
+                coordGoalList = coord[1].split(',');
+                // console.log("coordGoalListChild::: ============" + coordGoalList);
+
+                var proj = map.getProjection();
+                var distance = proj.getDistance(new naver.maps.Point(coordStartList[0], coordStartList[1]), new naver.maps.Point(coordGoalList[0], coordGoalList[1]))
+                // console.log("distance(Child)::: ============" + distance);
+                let distanceInKm = distance / 1000;
+                // console.log("distanceInKm(Child)::: ============" + distanceInKm.toFixed(2));
+
+                sendMsgToParent(distanceInKm.toFixed(2));
+            } else {
+                // console.log("Child::: ============" + e.data);
+                let coord = [];
+
+                coord = msg.split(',');
+                // var latlng = {
+                //     lat: coord[1],
+                //     lng: coord[0]
+                // }
+                var tm128 = new naver.maps.Point(coord[0], coord[1]);
+                // console.log("tm128::: ============" + tm128);
+                
+                var latlng = naver.maps.TransCoord.fromTM128ToLatLng(tm128);
+                // console.log("latlng::: ============" + latlng);
+
+                searchCoordinateToAddress(latlng);
+
+                point = new naver.maps.Point(latlng.x, latlng.y);
+                map.setCenter(point);
+
+            }
+
+
+        }
+
+    </script>
+</apex:page>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>VOCCommentCompactLayout</fullName>
+    <fields>DateofAction__c</fields>
+    <fields>SolutionCode__c</fields>
+    <fields>CustomerSideResponder__c</fields>
+    <fields>IsPartnerDisclosure__c</fields>
+    <fields>ResolverName__c</fields>
+    <fields>VOC__c</fields>
+    <label>VOC Comment Compact Layout</label>
+</CompactLayout>

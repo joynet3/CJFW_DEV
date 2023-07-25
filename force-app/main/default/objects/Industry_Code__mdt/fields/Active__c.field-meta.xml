@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Active__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>업종목록 활성화</description>
+    <externalId>false</externalId>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <inlineHelpText>리드에 저장되는 업종목록을 활성화 비활성화 시킬수 있음</inlineHelpText>
+    <label>Active</label>
+    <type>Checkbox</type>
+</CustomField>

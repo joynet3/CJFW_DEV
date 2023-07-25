@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>56.0</apiVersion>
+    <description>영업활동의 주소를 고객의 주소로 연동</description>
+    <interviewLabel>영업활동 주소 업데이트 {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>영업활동 주소 업데이트</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>FREE_FORM_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <description>영업활동의 주소를 고객 주소로 연동</description>
+        <name>UpdateOpptyAddress</name>
+        <label>영업활동 주소 업데이트</label>
+        <locationX>692</locationX>
+        <locationY>381</locationY>
+        <inputAssignments>
+            <field>AddressDetails__c</field>
+            <value>
+                <elementReference>$Record.Account.AddressDetails__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Address__c</field>
+            <value>
+                <elementReference>$Record.Account.Address__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>PostalCode__c</field>
+            <value>
+                <elementReference>$Record.Account.PostalCode__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>650</locationX>
+        <locationY>48</locationY>
+        <connector>
+            <targetReference>UpdateOpptyAddress</targetReference>
+        </connector>
+        <object>Opportunity</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

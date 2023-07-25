@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Classification__c</fullName>
+    <externalId>false</externalId>
+    <label>Classification</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>조식</fullName>
+                <default>false</default>
+                <label>조식</label>
+            </value>
+            <value>
+                <fullName>중식</fullName>
+                <default>false</default>
+                <label>중식</label>
+            </value>
+            <value>
+                <fullName>석식</fullName>
+                <default>false</default>
+                <label>석식</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

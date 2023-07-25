@@ -1,0 +1,509 @@
+<!--
+* ==================================================================================
+*   File Name   : QuoteSendEmail.cmp
+*   Author      : yj.Chun
+*   Date        : 2022.12.26
+*   Description : Quote Send Email (견적 복제)
+*   Modification Log
+* ==================================================================================
+*   Ver     Date          Author          Modification
+* ==================================================================================
+*   1.0     2022.12.26    yj.Chun         Create
+* ==================================================================================
+-->
+
+
+<aura:component access="global" implements="force:appHostable,force:lightningQuickActionWithoutHeader,force:hasRecordId"
+                controller="QuoteSendEmailController">
+    <aura:html tag="style">
+        .slds-modal__container{
+        min-width: 85% !important;
+        max-width: fit-content !important;
+        padding: 0 20px;
+        }
+        .cuf-content {
+        padding: 0 0rem !important;
+        }
+        .slds-p-around--medium {
+        padding: 0rem !important;
+        }
+        .slds-modal__content {
+        overflow: initial;
+        overflow-y: hidden !important;
+        height: unset !important;
+        max-height: unset !important;
+        }
+        .modal-container .modal-header .slds-button {
+        visibility : hidden !important;
+        }
+    </aura:html>
+
+    <!-- Common Attributes -->
+    <aura:attribute name="isShowSpinner"	        type="Boolean" default="true"      description="Show Spinner Flag 값"/>
+    <aura:attribute name="label"                    type="String"  default=""          description=""/>
+    <aura:attribute name="value"                    type="String"  default=""          description=""/>
+    <aura:attribute name="enteredValue"             type="String"  default=""          description=""/>
+
+    <!-- 옵션 선택 Attributes -->
+    <aura:attribute name="options"                  type="List"    default="[{'label': '생성', 'value': 'Y'}]"                                                                         description="견적 생성 여부 옵션 목록"/>
+    <aura:attribute name="options1"                 type="List"    default="[{'label': 'PDF', 'value': 'PDF'},{'label': 'Excel', 'value': 'Excel'},{'label': '미생성', 'value': 'N'}]" description="파일 생성 여부 옵션 목록"/>
+    <aura:attribute name="options2"                 type="List"    default="[{'label': '발송', 'value': 'Y'},{'label': '미발송', 'value': 'N'}]"                                        description="메일 전송 여부 옵션 목록"/>
+
+    <aura:attribute name="createQuoteYN"            type="String"  default="Y"      description="견적 생성 여부 선택값"/>
+    <aura:attribute name="fileType"                 type="String"  default="PDF"    description="파일 생성 여부 선택값"/>
+    <aura:attribute name="sendYN"                   type="String"  default="Y"      description="이메일 전송 여부 선택값"/>
+    <aura:attribute name="listAvailable"            type="List"    default="[]"     description="견적 파일에 표시 가능한 필드 목록"/>
+    <aura:attribute name="listRequiredField"        type="List"    default="[]"     description="견적 파일에 필수로 표시되는 필드 목록"/>
+    <aura:attribute name="listSelected"             type="List"    default="[]"     description="견적 파일에 표시할 필드 목록"/>
+
+    <!-- Init Data Attributes -->
+    <aura:attribute name="listQuoteLineItems"       type="List"    default="[]"     description="기존 Quote Line Item 리스트"        access="global" />
+    <aura:attribute name="objQuote"                 type="Quote"   default="[]"     description="기존 Quote"                        access="global" />
+
+    <!-- Email 전송 Attributes -->
+    <aura:attribute name="userName"	                type="String"                   description="현재 로그인한 사용자 이름 (이메일 전송 시 보내는 사람)"/>
+    <aura:attribute name="userEmail"	            type="String"                   description="현재 로그인한 사용자 이메일 (이메일 전송 시 보내는 사람)"/>
+    <aura:attribute name="emailSubject"             type="String"                   description="메일의 제목"/>
+    <aura:attribute name="emailContent"             type="String"                   description="메일의 내용"/>
+
+
+    <!-- 1. Account Attributes -->
+    <aura:attribute name="listSearchResult"         type="List"    default="[]"     description="검색한 Account의 결과 목록"                                 access="global"/>
+    <aura:attribute name="listSelectedData"         type="List"    default="[]"     description="검색 목록에서 선택한 Account의 선택 목록"                     access="global"/>
+    <aura:attribute name="setSelectedData"          type="Set"     default="[]"     description="검색 목록에서 선택한 Account의 Id 목록"                       access="global"/>
+    <aura:attribute name="pageRecords"              type="List"    default="[]"     description="DN_Paging으로 분기 처리된 검색한 Account의 목록"              access="global"/>
+    <aura:attribute name="SelectedPageRecords"      type="List"    default="[]"     description="DN_Paging으로 분기 처리된 검색 목록에서 선택한 Account의 목록"  access="global"/>
+
+    <!-- 모달 Paging Attributes -->
+    <aura:attribute name="countPage"                type="Integer" default="1"      description="현재 페이지 위치"/>
+    <aura:attribute name="isFirstPage"              type="Boolean" default="false"  description="1번째 페이지 Flag 값"/>
+    <aura:attribute name="isSecondPage"             type="Boolean" default="false"  description="2번째 페이지 Flag 값"/>
+    <aura:attribute name="isThirdPage"              type="Boolean" default="false"  description="3번째 페이지 Flag 값"/>
+    <aura:attribute name="isForthPage"              type="Boolean" default="false"  description="4번째 페이지 Flag 값"/>
+    <aura:attribute name="isActiveNextBtn"          type="Boolean" default="true"   description="Next Button 활성화 Flag 값"/>
+    <aura:attribute name="isActiveSaveBtn"          type="Boolean" default="false"  description="Save 활성화 Flag 값"/>
+    <aura:attribute name="isShowProgressBar"        type="Boolean" default="false"  description="Next Button Label 값"/>
+    <aura:attribute name="isOpenFieldSelect"        type="Boolean" default="false"  description="Next Button Label 값"/>
+
+    <!-- 검색 결과 & 선택 목록 Paging Attribute -->
+    <aura:attribute name="pageNumber"               type="Integer" default="1"      description="using for store page Number" />
+    <aura:attribute name="page"                     type="Integer"                  description="using for store page Number" />
+    <aura:attribute name="pages"                    type="Integer"                  description="using for store All Pages page Number" />
+    <aura:attribute name="total"                    type="Integer"                  description="total records count store " />
+    <aura:attribute name="maxPage"                  type="Integer" default="1"      description=""/>
+    <aura:attribute name="SelectedPageNumber"       type="Integer" default="1"      description=""/>
+    <aura:attribute name="SelectedPage"             type="Integer"                  description="using for store page Number" />
+    <aura:attribute name="SelectedPages"            type="Integer"                  description="using for store All Pages page Number" />
+    <aura:attribute name="SelectedTotal"            type="Integer"                  description="total records count store " />
+    <aura:attribute name="SelectedMaxPage"          type="Integer" default="1"      description=""/>
+
+    <!-- Action(Batch) Attributes -->
+    <aura:attribute name="batchCount"               type="Integer" default="1"      description="Opportunity, Quote 생성 시 한 Call 에 담을 DataSize"/>
+    <aura:attribute name="LineItemBatchCount"       type="Integer" default="200"    description="Quote Line Item 생성 시 한 Call 에 담을 DataSize"/>
+    <aura:attribute name="SendEmailBatchCount"      type="Integer" default="1"      description="File 생성, Email 전송 시 한 Call 에 담을 DataSize"/>
+    <aura:attribute name="progress"                 type="Integer" default="0"      description="견적 복제 시, 상태바"/>
+    <aura:attribute name="allComplete"              type="Boolean" default="false"  description="견적 복제 작업이 모두 완료되었는지 flag 값"/>
+    <aura:attribute name="currentAccountIdx"        type="Integer" default="0"      description="견적 복제 시 현재 복제가 진행중인 Account 목록의 Index"             access="global"/>
+    <aura:attribute name="currentLineItemIdx"       type="Integer" default="0"      description="견적 복제 시 현재 복제가 진행중인 Quote Line Item 목록의 Index"/>
+    <aura:attribute name="currentEmailIdx"          type="Integer" default="0"      description="이메일 전송 시 현재 전송 완료된 Email 개수"/>
+
+    <!-- 4.생성 완료된 Quote 목록 -->
+    <aura:attribute name="listCreatedQuote"         type="List"    default="[]"     description="생성 완료된 Quote 목록"           access="global"/>
+    <aura:attribute name="listColumn"               type="List"                     description="생성 완료된 Quote 목록 컬럼"       access="global"/>
+
+    <!-- Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.fnInit}" />
+    <aura:handler name="change" value="{!v.countPage}" action="{!c.fnSetDisability}" />
+    <aura:handler name="change" value="{!v.pageNumber}" action="{!c.fnRenderPage}" />
+    <aura:handler name="change" value="{!v.SelectedPageNumber}" action="{!c.fnRenderSelectedPage}" />
+    <aura:handler name="QuoteSendEmail_SelectContact_evt" event="c:QuoteSendEmail_SelectContact_evt" action="{!c.fnSearchTarget}"/>
+
+    <!-- Contents -->
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-id" aria-modal="true" aria-describedby="modal-content-id" class="slds-modal slds-modal_large slds-fade-in-open">
+        <aura:if isTrue="{!v.isShowSpinner}">
+            <lightning:spinner aura:id="spinner" alternativeText="Loading" size="large" variant="brand" />
+        </aura:if>
+
+        <div class="slds-modal__container" style="min-width:100%; max-width:100%; padding:0; height:100vh;">
+            <header class="modal-header slds-modal__header">
+                <lightning:buttonIcon iconName="utility:close" size="small" alternativeText="Close" variant="bare-inverse" class="slds-modal__close" onclick="{!c.fnCancel}" />
+                <h2 id="modal-heading-id" class="slds-text-heading_medium slds-hyphenate">
+                    견적 복제
+                </h2>
+            </header>
+            <div class="modal-body slds-modal__content" style="{!if(v.countPage != 1, 'min-height:70vh; max-height:70vh;', '')}">
+                <div class="slds-grid" style="margin:0; height:100%; width:100%">
+                    <!-- (1/4) Quote 생성, 파일생성 및 이메일 전송 여부 체크-->
+                    <aura:if isTrue="{!v.isFirstPage}">
+                        <div class="slds-col slds-size_4-of-4" style="padding-top:1vh;padding-bottom:1vh;padding-right:1vh;padding-left:1vh">
+                            <div>
+                                <div style="text-align:left;">
+                                    <h3 class="slds-section__title slds-theme_shade slds-size_1-of-1 slds-m-bottom_x-small">
+                                            <span class="slds-truncate slds-p-horizontal_small" title="옵션 선택" style="font-weight:bold">
+                                                옵션 선택
+                                            </span>
+                                    </h3>
+                                    <div class="slds-box">
+                                        <lightning:radioGroup name="radioGroup"
+                                                              label="견적 생성 여부"
+                                                              options="{! v.options }"
+                                                              value="{! v.createQuoteYN }"
+                                                              type="radio"/>
+                                    </div>
+                                    <div class="slds-box">
+                                        <lightning:layout multipleRows="true">
+                                            <lightning:layoutItem size="4">
+                                                <lightning:radioGroup name="radioGroup1"
+                                                                      label="견적 파일 생성 여부"
+                                                                      options="{! v.options1 }"
+                                                                      value="{! v.fileType }"
+                                                                      type="radio"/>
+                                            </lightning:layoutItem>
+                                            <aura:if isTrue="{!if(v.fileType=='N', false, true)}">
+                                                <lightning:layoutItem size="8">
+                                                    <lightning:dualListbox  variant="label-hidden"
+                                                                            options="{!v.listAvailable}"
+                                                                            requiredOptions="{!v.listRequiredField}"
+                                                                            value="{!v.listSelected}"
+                                                                            sourceLabel="사용 가능한 필드"
+                                                                            selectedLabel="표시 필드"
+                                                                            label="항목 변경"
+                                                    />
+                                                </lightning:layoutItem>
+                                            </aura:if>
+                                        </lightning:layout>
+                                    </div>
+                                    <aura:if isTrue="{!if(v.fileType=='N', false, true)}">
+                                        <div class="slds-box">
+                                            <lightning:radioGroup name="radioGroup2"
+                                                                  label="이메일 발송 여부"
+                                                                  options="{! v.options2 }"
+                                                                  value="{! v.sendYN }"
+                                                                  type="radio"/>
+                                        </div>
+                                    </aura:if>
+                                </div>
+                            </div>
+                            <!--                                <aura:if isTrue="{!v.isOpenFieldSelect}">
+                                                                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                                                                    <div class="slds-modal__container" style="{!v.isMobile ? 'margin:0; padding:0; width: 100%; min-width: 100% !important' : ' width:fit-content;' }">
+                                                                        <header class="slds-modal__header">
+                                                                            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate"> 항목 변경 </h2>
+                                                                        </header>
+                                                                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height: 35%;">
+                                                                            <lightning:layout multipleRows="true">
+                                                                                <lightning:layoutItem size="12">
+                                                                                    <lightning:dualListbox  variant="label-hidden"
+                                                                                                            options="{!v.listAvailable}"
+                                                                                                            requiredOptions="{!v.listRequiredField}"
+                                                                                                            value="{!v.listSelected}"
+                                                                                                            onchange="{!c.fnHandleChangeDuallistBox}"
+                                                                                                            sourceLabel="사용 가능한 필드"
+                                                                                                            selectedLabel="표시 필드"
+                                                                                    />
+                                                                                </lightning:layoutItem>
+                                                                            </lightning:layout>
+                                                                        </div>
+                                                                        <footer class="slds-modal__footer">
+                                                                            <lightning:button variant="neutral" label="취소" onclick="{! c.fnToggleFieldSelect }"/>
+                                                                            <lightning:button variant="brand" label="저장" onclick="{! c.fnSaveFieldSelect }"/>
+                                                                        </footer>
+                                                                    </div>
+                                                                </section>
+                                                                <div class="slds-backdrop slds-backdrop_open"></div>
+                                                            </aura:if>-->
+                        </div>
+                    </aura:if>
+                    <!-- (2/4) Account 검색 -->
+                    <aura:if isTrue="{!v.isSecondPage}">
+                        <div class="slds-col slds-size_12-of-12 slds-text-align_center " style="padding-top:1vh;padding-bottom:1vh;padding-left:1vh;padding-right:1vh;">
+                            <div class="slds-col slds-size_4-of-4"  style="height:-webkit-calc(90% - 6.5rem); justify-content:left;">
+                                <div>
+                                    <div style="text-align:center;">
+                                        <h3 class="slds-section__title slds-theme_shade slds-size_1-of-1 slds-m-bottom_x-small">
+                                        <span class="slds-truncate slds-p-horizontal_small" title="고객 검색" style="font-weight:bold">
+                                            고객사 검색
+                                        </span>
+                                        </h3>
+                                    </div>
+                                    <div style="text-align:left; margin:1vh">
+                                        <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none" onkeyup="{!c.fnSearchAccount}">
+                                            <lightning:input variant="label-hidden" style="width:100%;" class="slds-col" value="{!v.enteredValue}" type="search" aura:id="SearchKey" placeholder="고객사명으로 검색"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div style="text-align:center;">
+                                        <h3 class="slds-section__title slds-theme_shade slds-size_1-of-1 slds-m-bottom_x-small">
+                                            <span class="slds-truncate slds-p-horizontal_small" title="검색 결과" style="font-weight:bold">
+                                                검색 결과
+                                            </span>
+                                        </h3>
+                                    </div>
+                                </div>
+                                <div class="tableFixHead slds-scrollable_y" style="-webkit-calc(90% - 6.5rem)">
+                                    <table class="custom-table slds-table slds-table_bordered slds-table_col-bordered" width="100%;height:inherit;">
+                                        <thead>
+                                        <tr class="slds-hint-parent">
+                                            <th class="slds-text-align_center">
+                                                <lightning:input aura:Id="selectAll" type="checkbox" checked="{!if(checked, 'checked', false)}" name="selectAll" onchange="{!c.fnSelectRow}"/>
+                                            </th>
+                                            <th class="slds-text-align_center" id="Code">
+                                                <span>고객사명</span>
+                                            </th>
+                                            <th class="slds-text-align_center" id="Code">
+                                                <span>전화번호</span>
+                                            </th>
+                                            <th class="slds-text-align_center" id="Code">
+                                                <span>도로명 주소</span>
+                                            </th>
+                                            <th class="slds-text-align_center" id="Code">
+                                                <span>고객 사이트</span>
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <aura:iteration items="{!v.pageRecords}" var="obj" indexVar="index">
+                                            <tr aria-selected="false" class="slds-hint-parent">
+                                                <td class="slds-text-align_center" role="gridcell">
+                                                    <lightning:input type="checkbox" checked="{!obj.checked}" name="{!index}" aura:Id="checkplz" onchange="{!c.fnSelectRow}"/>
+                                                </td>
+                                                <td>{!obj.Name}</td>
+                                                <td>{!obj.Phone}</td>
+                                                <td>{!obj.Address__c}</td>
+                                                <td></td>
+                                            </tr>
+                                        </aura:iteration>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="slds-col slds-align_absolute-center slds-p-top_medium">
+                                    <c:DN_Paging currentPageNumber="{!v.pageNumber}" maxPageNumber="{!v.maxPage}" />
+                                </div>
+                            </div>
+                        </div>
+                    </aura:if>
+                    <!-- (3/4) 선택한 Account 목록 및 Email 지정 -->
+                    <aura:if isTrue="{!v.isThirdPage}">
+                        <div class="slds-col slds-size_12-of-12 slds-text-align_center " style="padding-top:1vh;padding-bottom:1vh;padding-left:1vh;padding-right:1vh;">
+                            <div class="slds-col slds-size_4-of-4" style="justify-content:left;">
+                                <div>
+                                    <div style="text-align:center;">
+                                        <h3 class="slds-section__title slds-theme_shade slds-size_1-of-1 slds-m-bottom_x-small">
+                                        <span class="slds-truncate slds-p-horizontal_small" title="Account 검색" style="font-weight:bold">
+                                            선택 목록
+                                        </span>
+                                        </h3>
+                                    </div>
+                                </div>
+                                <div class="tableFixHead slds-scrollable_y" style="-webkit-calc(90% - 6.5rem)">
+                                    <table class="custom-table slds-table slds-table_bordered slds-table_col-bordered" width="100%;height:inherit;">
+                                        <thead>
+                                        <tr class="slds-hint-parent">
+                                            <th class="slds-text-align_center">선택 해제</th>
+                                            <th class="slds-text-align_center" id="Code">
+                                                <span>고객사명</span>
+                                            </th>
+                                            <aura:if isTrue="{!if(v.sendYN == 'Y', true, false)}">
+                                                <th class="slds-text-align_center" id="Email">
+                                                    <span>이메일</span>
+                                                </th>
+                                                <th class="slds-text-align_center" id="Search">
+                                                    <span>연락처 검색</span>
+                                                </th>
+                                            </aura:if>
+                                        </tr>
+                                        </thead>
+                                        <tbody class="slds-scrollable_y">
+                                        <aura:iteration items="{!v.SelectedPageRecords}" var="obj" indexVar="index">
+                                            <tr data-index="{!index}">
+                                                <td class="slds-text-align_center" role="gridcell" data-label="button" scope="row" data-index="{!index}">
+                                                    <a onclick="{!c.fnSelectDelete}" data-record="{!index}" data-index="{!index}">
+                                                        <lightning:icon iconName="utility:close" size="xx-small" alternativeText="Delete"/>
+                                                        <span class="slds-assistive-text">Delete</span>
+                                                    </a>
+                                                </td>
+                                                <td role="gridcell" data-label="Account" scope="row" data-index="{!index}">
+                                                    <p><lightning:formattedUrl value="{!obj.AccountNameURL}" tooltip="고객사 페이지 바로가기" label="{!obj.Name}" target="_blank" /></p>
+                                                </td>
+                                                <aura:if isTrue="{!if(v.sendYN == 'Y', true, false)}">
+                                                    <td role="gridcell" data-label="Contact" scope="row" data-index="{!index}">
+                                                        <aura:if isTrue="{!obj.ContactEmail}">
+                                                            <span class="slds-pill slds-pill_link" style="width:100%">
+                                                              <span class="slds-pill__icon_container">
+                                                                  <lightning:icon iconName="standard:contact" size="xx-small" alternativeText="Contact"/>
+                                                              </span>
+                                                              <a href="{!obj.ContactURL}" target="_blank" class="slds-pill__action" title="연락처 수정 바로가기">
+                                                                <span class="slds-pill__label">{!obj.ContactName}&nbsp;
+                                                                    <aura:if isTrue="{!obj.ContactEmail}">
+                                                                      ({!obj.ContactEmail})
+                                                                      <aura:set attribute="else">
+                                                                            <lightning:helptext content="해당 연락처의 이메일 주소를 입력하세요." class="helptextCSS"/>
+                                                                      </aura:set>
+                                                                    </aura:if>
+                                                                </span>
+                                                              </a>
+                                                                <!--<div class="slds-pill__action" onclick="{!c.editRecord}" data-index="{!index}">
+                                                                <span class="slds-pill__label">{!obj.ContactName}&nbsp;
+                                                                    <aura:if isTrue="{!obj.ContactEmail}">
+                                                                      ({!obj.ContactEmail})
+                                                                      <aura:set attribute="else">
+                                                                            <lightning:helptext content="해당 Contact의 Email 주소를 입력하세요." class="helptextCSS"/>
+                                                                      </aura:set>
+                                                                  </aura:if>
+                                                                </span>
+                                                                </div>-->
+                                                                <!--                                                          <button class="slds-button slds-button_icon slds-button_icon slds-pill__remove" title="Remove">
+                                                                                                                            <lightning:icon aura:id="articleOne" iconName="utility:close" size="x-small" alternativeText="switch"/>
+                                                                                                                              <span class="slds-assistive-text">Remove</span>
+                                                                                                                          </button>-->
+                                                            </span>
+                                                            <aura:set attribute="else">
+                                                                <aura:if isTrue="{!obj.ContactSize == 0}">
+                                                                    해당 고객사에 연락처가 존재하지 않습니다. 고객사명을 클릭하여 연락처를 먼저 등록해 주세요.
+                                                                    <aura:set attribute="else">
+                                                                        <aura:if isTrue="{!obj.ContactSize == 1}">
+                                                                            연락처에 이메일이 등록되어 있지 않습니다.
+                                                                            <aura:set attribute="else">
+                                                                                [연락처 검색] 버튼을 눌러 하나의 연락처를 지정해 주세요.
+                                                                            </aura:set>
+                                                                        </aura:if>
+                                                                    </aura:set>
+                                                                </aura:if>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </td>
+                                                    <td>
+                                                        <c:QuoteSendEmail_SelectContact aura:id="QuoteSendEmail_SelectContact" objAccountId="{!obj.Id}" objContactSize="{!obj.ContactSize}"/>
+                                                        <!--<lightning:button label="연락처 검색" variant="{!if(obj.ContactSize > 1, 'brand', 'neutral')}"  disabled="{!if(obj.ContactSize == 0, true, false)}"/>-->
+                                                    </td>
+                                                </aura:if>
+                                            </tr>
+                                        </aura:iteration>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="slds-col slds-align_absolute-center slds-p-top_medium">
+                                    <c:DN_Paging currentPageNumber="{!v.SelectedPageNumber}" maxPageNumber="{!v.SelectedMaxPage}" />
+                                </div>
+                            </div>
+                        </div>
+                    </aura:if>
+                    <!-- (4/4) Email 작성(Email 전송 여부 체크 시)-->
+                    <aura:if isTrue="{!v.isForthPage}">
+                        <div class="slds-col slds-size_12-of-12" style="padding:0;height:inherit;padding-top:1vh;padding-bottom:1vh;padding-left:1vh;padding-right:1vh">
+                            <!--<div class="slds-col slds-size_4-of-4"  style="margin-bottom:0; height:50%; justify-content:left; ">-->
+                            <div class="slds-grid">
+                                <h3 class="slds-section__title slds-theme_shade slds-size_1-of-1 slds-m-bottom_x-small">
+                                        <span class="slds-truncate slds-p-horizontal_small" title="이메일 발송" style="font-weight:bold;">
+                                            이메일 작성
+                                        </span>
+                                </h3>
+                            </div>
+                            <!--From : 송신자 항목 -->
+                            <div class="slds-form-element slds-form-element_horizontal">
+                                <label class="slds-form-element__label" for="horizontal-input-id-01" style="width:10%">보낸 사람 : </label>
+                                <div class="slds-pill_container">
+                                            <span class="slds-pill">
+                                              <lightning:icon aura:id="articleOne" iconName="utility:email" size="x-small" alternativeText="switch"/>&nbsp;&nbsp;
+                                              <span class="slds-pill__label">{!v.userName} ({!v.userEmail})</span>
+                                            </span>
+                                </div>
+                            </div>
+                            <!--To : 수신자 항목-->
+                            <div class="slds-form-element slds-form-element_horizontal">
+                                <label class="slds-form-element__label" for="horizontal-input-id-01" style="width:10%">받는 사람 : </label>
+                                <div class="slds-pill_container">
+                                    <aura:iteration items="{!v.listSelectedData}" var="obj" indexVar="index">
+                                                    <span class="slds-pill">
+                                                        <lightning:icon aura:id="articleOne" iconName="utility:email" size="x-small" alternativeText="switch"/>&nbsp;&nbsp;
+                                                        <span class="slds-pill__label">{!obj.ContactName} ({!obj.ContactEmail})</span>
+                                                    </span>
+                                    </aura:iteration>
+                                </div>
+                            </div>
+                            <div class="slds-form-element slds-form-element_horizontal subjectCSS">
+                                <label class="slds-form-element__label" for="horizontal-input-id-01">제목 : </label>
+                                <lightning:input type="text" value="{!v.emailSubject}"/>
+                            </div>
+                            <!--Rich Text Area 입력 항목-->
+                            <lightning:inputRichText value="{!v.emailContent}" class="richTextAreaCSS"/>
+                        </div>
+                    </aura:if>
+                    <aura:if isTrue="{!v.isShowProgressBar}">
+                        <div class="slds-col slds-size_12-of-12 slds-text-align_center slds-grid_vertical-align-center" style="{!if(v.allComplete, 'text-align:center;padding:0;height:inherit;padding-top:10vh;padding-bottom:5vh;padding-left:10vh;padding-right:10vh', 'text-align:center;padding:0;height:inherit;padding-top:5vh;padding-bottom:5vh;padding-left:10vh;padding-right:10vh')}">
+                            <aura:if isTrue="{!if(v.allComplete, false, true)}">
+                            <div class="slds-page-header" style="margin-bottom:5vh;font-size:large">
+                                <div class="slds-page-header__row">
+                                    <div class="slds-page-header__col-title">
+                                        <div class="slds-media">
+                                            <div class="slds-media__body">
+                                                <lightning:icon aura:id="articleOne" iconName="action:clone" size="x-small" alternativeText="switch"/>&nbsp;&nbsp;
+                                                견적 복사중입니다. 작업이 완료되기 전까지 <span style="color:red;font-weight:bold;">창을 종료하지 마십시오.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            </aura:if>
+                            <div class="slds-progress-bar slds-progress-bar_large" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" aria-label="{{Placeholder for description of progress bar}}" role="progressbar">
+                              <span class="{!if(v.progress == 100, 'slds-progress-bar__value slds-progress-bar__value_success', 'slds-progress-bar__value')}" style="{!'width: ' + v.progress +'%'}">
+                              </span>
+                            </div>
+                            <!--                            <lightning:progressBar value="{!v.progress}" size="large" class="{!if(v.progress == 100, 'slds-progress-bar__value_success progressBarCSS', 'progressBarCSS')}" variant="base"/> -->
+                            <aura:if isTrue="{!v.allComplete}">
+                                <div style="margin-top:5vh;">
+                                    <div style="margin-top:3vh;">
+                                        <lightning:progressRing value="100" variant="base-autocomplete" />
+                                    </div>
+                                    <div style="margin-top:2vh;">
+                                        <span style="font-size:large">작업이 완료되었습니다.</span>
+                                    </div>
+                                </div>
+                                <div style="margin-top:5vh;height:35vh;width:100%;vertical-align:middle;text-align:center">
+                                    <lightning:datatable
+                                            aura:id             = "targetRows"
+                                            keyField            = "Id"
+                                            data                = "{!v.listCreatedQuote}"
+                                            columns             = "{!v.listColumn}"
+                                            showRowNumberColumn = "true"
+                                            hideCheckboxColumn  = "true"
+                                    />
+                                </div>
+                                <aura:set attribute="else">
+                                    <div style="margin-top:3vh;">
+                                        <span style="font-size:large"><b>{!v.listSelectedData.length}</b> 개 견적 중 <b>{!v.currentAccountIdx+1}</b> 번째 견적을 복사하고 있습니다.
+                                            <aura:if isTrue="{!if(v.listQuoteLineItems.length > v.LineItemBatchCount)}" >
+                                                 ({!v.currentLineItemIdx} / {!v.listQuoteLineItems.length})
+                                            </aura:if>
+                                        </span><br/>
+                                    </div>
+                                    <aura:if isTrue="{!if(v.sendYN == 'Y', true, false)}">
+                                        <div style="margin-top:1vh;">
+                                            <span style="font-size:large"><b>{!v.currentEmailIdx}</b> 개의 메일이 전송 완료 되었습니다.</span>
+                                        </div>
+                                    </aura:if>
+                                </aura:set>
+                            </aura:if>
+                        </div>
+                    </aura:if>
+                </div>
+            </div>
+            <footer class="modal-footer slds-modal__footer">
+                <!-- <aura:if isTrue="{!if(v.fileType=='N', false, true)}">
+                     <lightning:button label="항목 변경" onclick="{!c.fnToggleFieldSelect}" variant="brand"/>
+                 </aura:if>-->
+                <lightning:button label="닫기"  onclick="{!c.fnCancel}" variant="neutral"   />
+                <aura:if isTrue="{!if(v.isShowProgressBar == false, true, false)}">
+                    <lightning:button label="이전"  onclick="{!c.fnPrevPage}" variant="brand" disabled="{!if(v.countPage > 1, false, true)}"/>
+                    <aura:if isTrue="{!v.isActiveSaveBtn}">
+                        <lightning:button label="견적 복제" onclick="{!c.fnSave}" variant="brand" />
+                        <aura:set attribute="else">
+                            <lightning:button label="다음" onclick="{!c.fnNextPage}" variant="brand" disabled="{!if(v.isActiveNextBtn, false, true)}"/>
+                        </aura:set>
+                    </aura:if>
+                </aura:if>
+            </footer>
+        </div>
+    </section>
+</aura:component>

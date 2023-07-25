@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RestaurantOpptyCompactLayoutFinal</fullName>
+    <fields>Name</fields>
+    <fields>IsDrop__c</fields>
+    <fields>Dropsize__c</fields>
+    <fields>NumberOfExclSKU__c</fields>
+    <fields>Excl__c</fields>
+    <fields>Gen__c</fields>
+    <fields>SKUSales__c</fields>
+    <fields>FinalClient__c</fields>
+    <label>Restaurant Oppty Compact Layout Final</label>
+</CompactLayout>

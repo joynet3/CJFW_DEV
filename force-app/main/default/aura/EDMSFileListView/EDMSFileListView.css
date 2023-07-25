@@ -1,0 +1,12 @@
+.THIS .slds-card__header{
+    background: #f3f3f3;
+/*    background: var(--slds-g-color-neutral-base-95, var(--lwc-pageHeaderColorBackground,rgb(243, 243, 243)));*/
+}
+.THIS .slds-card__body{
+    border-top-width:1px;
+    margin-top:0px;
+}
+.THIS .slds-page-header{
+    border-bottom: var(--lwc-borderWidthThin) solid var(--lwc-cardColorBorder);
+
+}

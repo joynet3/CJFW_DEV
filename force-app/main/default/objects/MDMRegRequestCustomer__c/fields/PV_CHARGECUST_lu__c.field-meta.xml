@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>PV_CHARGECUST_lu__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <externalId>false</externalId>
+    <label>PV_CHARGECUST_lu</label>
+    <lookupFilter>
+        <active>true</active>
+        <filterItems>
+            <field>Account.CustomerType__c</field>
+            <operation>equals</operation>
+            <value>본점, 판매처</value>
+        </filterItems>
+        <isOptional>true</isOptional>
+    </lookupFilter>
+    <referenceTo>Account</referenceTo>
+    <relationshipLabel>MDMRegRequestCustomer (PV_CHARGECUST_lu)</relationshipLabel>
+    <relationshipName>MDMRegRequestCustomer_PV_CHARGECUST</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

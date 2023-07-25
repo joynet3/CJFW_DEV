@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>fm_PriceEffectiveDate__c</fullName>
+    <externalId>false</externalId>
+    <formula>Date(Value(Year__c), Value(Text(Month__c)), 1)</formula>
+    <label>fm_PriceEffectiveDate</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Date</type>
+</CustomField>

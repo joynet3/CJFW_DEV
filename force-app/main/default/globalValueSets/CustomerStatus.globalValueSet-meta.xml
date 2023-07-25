@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>가망처</fullName>
+        <default>false</default>
+        <label>가망처</label>
+    </customValue>
+    <customValue>
+        <fullName>무매출처</fullName>
+        <default>false</default>
+        <label>무매출처</label>
+    </customValue>
+    <customValue>
+        <fullName>중단처</fullName>
+        <default>false</default>
+        <label>중단처</label>
+    </customValue>
+    <description>전략사업부에서 사용하는 상태 필드의 선택목록</description>
+    <masterLabel>고객상태_전략사업부</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

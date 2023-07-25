@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CJOilPriceCompactLayout_Final</fullName>
+    <fields>Name</fields>
+    <fields>Year__c</fields>
+    <fields>Month__c</fields>
+    <fields>fm_PriceEffectiveDate__c</fields>
+    <fields>RetailPrice__c</fields>
+    <fields>WholesalePrice__c</fields>
+    <label>CJ Oil Price Compact Layout Final</label>
+</CompactLayout>

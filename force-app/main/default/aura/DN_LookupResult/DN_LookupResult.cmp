@@ -1,0 +1,34 @@
+<!--
+* ==================================================================================
+*   File Name   : DN_LookupResult.cmp
+*   Author      : Soyoung.Jung
+*   Date        : 2019.03.25
+*   Description : Daeunextier common lookup component
+                (https://github.com/jungleeforce/lookupcomponent)
+*   Modification Log
+* ==================================================================================
+*   Ver     Date          Author          Modification
+* ==================================================================================
+*   1.0     2019.03.25    Soyoung.Jung    Create
+* ==================================================================================
+-->
+
+<aura:component >
+    
+    <aura:attribute name="object" type="Object" description="Object"/>
+    <aura:attribute name="fieldName" type="String" description="필드명"/>
+    <aura:attribute name="alternateFieldList" type="String[]" description="대체필드리스트"/>
+    <aura:attribute name="alternateFieldValueList" type="String[]" description="대체필드Value리트스"/>
+    <aura:attribute name="recordDisplayName" type="String" description="레코드View명"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <span class="slds-listbox__option-text slds-listbox__option-text_entity">&nbsp;&nbsp;<b>{!v.recordDisplayName}</b></span>
+        <span class="slds-listbox__option-meta slds-listbox__option-meta_entity secondaryFieldDisplay" style="color:#787878;">&nbsp;
+        <aura:iteration items="{!v.alternateFieldValueList}" var="secondaryFieldValues" indexVar="ind">
+            <aura:if isTrue="{!ind != 0}"> • </aura:if>
+            {!secondaryFieldValues}
+        </aura:iteration>
+    </span>
+
+</aura:component>

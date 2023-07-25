@@ -1,0 +1,4 @@
+<design:component >
+    <design:attribute name="ButtonLabel" label="버튼명" /> 
+    <design:attribute name="FileId" label="파일링크" /> 
+</design:component >

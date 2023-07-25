@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>담당자 구분</label>
+    <name>ManagerCategoryCode__c</name>
+    <picklistValues>
+        <masterLabel>MA</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>SMA</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>없음</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>점포관리자</masterLabel>
+        <translation></translation>
+    </picklistValues>
+</CustomFieldTranslation>

@@ -1,0 +1,344 @@
+<!--
+  @description       : 
+  @author            : youngmin.kim@daeunextier.com
+  @group             : 
+  @last modified on  : 03-09-2023
+  @last modified by  : admin
+-->
+<aura:component access="global" implements="force:appHostable,force:lightningQuickActionWithoutHeader,force:hasRecordId" controller="MDMReferenceCodeSearch">
+    <!--
+    사용방법
+    <c:MDMReferenceCodeSearch
+        groupId="SALESGROUPH"
+        label="영업그룹"
+        Id="{!v.objCustomer.PV_VKGRP__c}"
+        value="{!v.objCustomer.PV_VKGRP__c}"
+        inputText="{!v.inputText}"
+        isRequired="false"
+        isDisabled="false"
+    />
+    -->
+    <!-- Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.fnInit}" />
+
+    <aura:attribute name="index" type="Integer" default=""/>    
+    <aura:attribute name="groupId" type="String" default="" description="MDM참조코드 그룹Id"/>
+    <aura:attribute name="Code" type="String" default="" description="MDM참조코드 코드명"/>
+    <aura:attribute name="isShowInput" type="Boolean" default="true" description="Input Html View 여부"/>
+    <aura:attribute name="isShowPopup" type="Boolean" default="false" description="팝업창 View 여부"/>
+    <aura:attribute name="isRequired" type="Boolean" default="false" description="필수여부"/>
+    <aura:attribute name="isDisabled" type="Boolean" default="false" description="활성화여부"/>    
+    <aura:attribute name="label" type="String" default="Product" description="팝업창 헤더명"/>
+    <aura:attribute name="id" type="String" default="" description="Record Id"/>
+    <aura:attribute name="value" type="String" default="" description="값"/>
+    <aura:attribute name="inputText" type="String" default="" description="입력값"/>
+    <aura:attribute name="inputTextLabel" type="String" default="" description="입력한 데이터명"/>
+    <aura:attribute name="searchWord" type="String" default="" description="검색어"/>
+    <aura:attribute name="isError" type="String" default="false" description="오류여부"/>    
+    <aura:attribute name="isShowSpinnerSearchModal"	type="Boolean"  default="false" description="로딩바 활성화여부"/>    
+
+    <!-- 검색결과 -->
+    <aura:attribute name="listSearchResult" type="List" default="[]" description="검색결과"/>    
+    <aura:attribute name="curCount" type="Integer" default="0" description="현재 검색수"/>
+    <aura:attribute name="totalCount" type="Integer" default='0' description="전체검색수"/>    
+    <aura:attribute name="viewCount" type="Integer" default="30" description="한번에 보여지는 검색 리스트 수"/>    
+    
+    <!--
+    <aura:if isTrue="{!v.isShowSpinnerSearchModal}">
+        <lightning:spinner aura:id="spinner" alternativeText="Loading" variant="brand" size="large" />
+    </aura:if>
+    -->
+
+    <aura:if isTrue="{!v.isShowInput}">
+        <div class="slds-form-element NLUSearch slds-size_1-of-1 ">
+            <aura:if isTrue="{!if(v.label == null || v.label == '', false, true)}">
+                <label class="{!if(v.isRequired, 'slds-form-element__label customRequired', 'slds-form-element__label')}" for="combobox-id-1">{!v.label}</label>
+            </aura:if>
+            <div class="slds-form-element__control">
+                <div class="slds-combobox_container slds-has-selection">
+                    <aura:if isTrue="{!if(or(v.value == null, v.value ==''), true, false)}">
+                        <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open" aria-expanded="false" aria-haspopup="listbox" role="combobox">
+                            <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right mb_05" role="none">
+                                <input
+                                    class="{!if(AND(v.isError, v.isRequired), 'slds-input slds-combobox__input slds-grid isRequiredField', 'slds-input slds-combobox__input slds-grid')}"
+                                    autocomplete="off"
+                                    role="textbox"
+                                    type="text"
+                                    placeholder="{!'Search ' + v.label + '.....'}"
+                                    value = "{!v.inputTextLabel}"
+                                    onclick="{!c.handlerClick}"
+                                    readonly="readonly"
+                                    disabled="{!if(v.isDisabled, 'disabled', false)}"
+                                />
+                                <span class="slds-icon_container slds-icon-utility-search slds-input__icon slds-input__icon_right">
+		            			<lightning:icon aura:id="articleOne" iconName="utility:search" size="x-small" alternativeText="switch"/>
+		            		</span>
+                            </div>
+                        </div>
+                        <aura:set attribute="else">
+                            <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click" aria-expanded="false" aria-haspopup="listbox" role="combobox">
+                                <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_left-right mb_05" role="none">
+                                    <input class="{!if(v.isDisabled, 'isDisabled', '')+' slds-input slds-combobox__input slds-combobox__input-value'}" style="padding-left:0.5rem !important" id="combobox-id-5" aria-controls="listbox-id-5" autocomplete="off" role="textbox" type="text" placeholder="" readonly="readonly"
+                                        value="{!v.inputTextLabel}"
+                                    />
+                                    <aura:if isTrue="{!!v.isDisabled}">
+                                        <button class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" title="Remove selected option">
+                                            <lightning:icon aura:id="articleOne" iconName="utility:close" size="x-small" alternativeText="switch" onclick="{!c.handlerInputCancel}"/>
+                                            <span class="slds-assistive-text">Remove selected option</span>
+                                        </button>
+                                    </aura:if>
+                                </div>
+                            </div>
+
+                        </aura:set>
+                    </aura:if>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+
+    <aura:if isTrue="{!v.isShowPopup}">
+        <div class="slds-is-relative">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_large">
+                <aura:if isTrue="{!v.isShowSpinnerSearchModal}">
+                    <lightning:spinner aura:id="spinner" alternativeText="Loading" variant="brand" size="large" />
+                </aura:if>
+
+                <div class="slds-modal__container">
+                    <!-- ###### MODAL BOX HEADER Start ######-->
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon 
+                            iconName="utility:close"
+                            onclick="{!c.fnCancel}"
+                            alternativeText="close"
+                            variant="bare-inverse"
+                            class="slds-modal__close"
+                        />
+                    </header>
+                    <!--###### MODAL BOX BODY Part Start######-->
+                    <div class="slds-scrollable">
+                        <div class="slds-modal__content slds-p-around_medium slds-scrollable" id="modal-content-id-1">
+                            <div class="slds-clearfix">
+                            </div>
+                            <div class="slds-form-element slds-size_1-of-1 slds-box">
+                                <aura:if isTrue="{!if(v.label == null || v.label == '', false, true)}">
+                                    <label class="{!if(v.isRequired, 'slds-form-element__label customRequired', 'slds-form-element__label')}" for="combobox-id-1"> {!v.label}</label>
+                                </aura:if>
+
+                                <div class="slds-form-element__control">
+                                    <div class="slds-combobox_container">
+                                        <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open" aria-expanded="false" aria-haspopup="listbox" role="combobox">
+                                            <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                                                <lightning:layout multipleRows="true">
+                                                    <lightning:layoutItem size="12">
+                                                        <div class="slds-section slds-is-open">
+                                                            <h3 class="slds-section__title slds-theme_shade">
+                                                                <span class="slds-truncate slds-p-horizontal_small" title="조회정보">
+                                                                    조회정보
+                                                                    <!--{!$Label.c.InquryInformation}-->
+                                                                </span>
+                                                            </h3>
+                                                        </div>
+                                                    </lightning:layoutItem>
+                                                    <lightning:layoutItem size="12">
+                                                        <lightning:layout multipleRows="true">
+                                                            <lightning:layoutItem size="{!if($Browser.isPhone, 6, 4)}" padding="horizontal-small">
+                                                                <div onkeypress="{!c.fnHandleKeyup}">
+                                                                    <lightning:input aura:id="customSearch" type="text" name="input1" label="검색어" value="{!v.searchWord}" class="width_100"/>
+                                                                </div>
+                                                            </lightning:layoutItem>
+                                                        </lightning:layout>
+                                                    </lightning:layoutItem>
+
+                                                    <lightning:layoutItem size="12" class="slds-text-align_right">
+                                                        <lightning:button class="slds-m-top_small" variant="brand" name="Save" label="조회" onclick="{!c.fnSearch}"/>
+                                                    </lightning:layoutItem>
+                                                    
+                                                    <!--
+                                                    <lightning:layoutItem size="{!if($Browser.isPhone, 6, 4)}" padding="horizontal-small">
+                                                        <lightning:select name="select1" label="{!$Label.c.Company}" required="false" value="{!v.company}" class="width_100">
+                                                            <aura:iteration items="{!v.listSelectCompany}" var="data">
+                                                                <option text="{!data.label}" value="{!data.value}"></option>
+                                                            </aura:iteration>
+                                                        </lightning:select>
+                                                    </lightning:layoutItem>
+                                                    <lightning:layoutItem size="{!if($Browser.isPhone, 12, 4)}" padding="horizontal-small">
+                                                        <label for="input-52" class="slds-form-element__label">Purchase Date</label>
+                                                        <lightning:layout multipleRows="true">
+                                                            <lightning:layoutItem size="{!if($Browser.isPhone, 3, 4)}">
+                                                                <lightning:input type="date" name="input1" variant="label-hidden" value="{!v.purchaseStartDate}" class="inlineBlock"/>
+                                                            </lightning:layoutItem>
+                                                            <lightning:layoutItem size="1">
+                                                                <div align="center">~</div>
+                                                            </lightning:layoutItem>
+                                                            <lightning:layoutItem size="{!if($Browser.isPhone, 3, 4)}">
+                                                                <lightning:input type="date" name="input1" variant="label-hidden" value="{!v.purchaseEndDate}" class="inlineBlock"/>
+                                                            </lightning:layoutItem>
+                                                        </lightning:layout>
+                                                    </lightning:layoutItem>
+
+                                                    <lightning:layoutItem size="12">
+                                                        <lightning:layout multipleRows="true">
+                                                            <lightning:layoutItem size="{!if($Browser.isPhone, 6, 4)}" padding="horizontal-small">
+                                                                <lightning:select name="select1" label="{!$Label.c.Brand}" required="false" value="{!v.brand}" class="width_100">
+                                                                    <aura:iteration items="{!v.listSelectBrand}" var="data">
+                                                                        <option text="{!data.label}" value="{!data.label}"></option>
+                                                                    </aura:iteration>
+                                                                </lightning:select>
+                                                            </lightning:layoutItem>
+                                                            <lightning:layoutItem size="{!if($Browser.isPhone, 6, 4)}" padding="horizontal-small">
+                                                                <lightning:select name="select1" label="{!$Label.c.Warehouse}" required="false" value="{!v.warehouse}" class="width_100">
+                                                                    <aura:iteration items="{!v.listSelectWarehouse}" var="data">
+                                                                        <option text="{!data.label}" value="{!data.value}"></option>
+                                                                    </aura:iteration>
+                                                                </lightning:select>
+                                                            </lightning:layoutItem>
+                                                        </lightning:layout>
+                                                    </lightning:layoutItem>
+
+                                                    <lightning:layoutItem size="12">
+                                                        <lightning:layout multipleRows="true">
+                                                            <lightning:layoutItem size="{!if($Browser.isPhone, 6, 4)}" padding="horizontal-small">
+                                                                <lightning:select name="select1" label="{!$Label.c.Platform}" required="false" value="{!v.platform}" class="width_100">
+                                                                    <aura:iteration items="{!v.listSelectPlatform}" var="data">
+                                                                        <option text="{!data.label}" value="{!data.value}"></option>
+                                                                    </aura:iteration>
+                                                                </lightning:select>
+                                                            </lightning:layoutItem>
+                                                            <lightning:layoutItem size="{!if($Browser.isPhone, 6, 4)}" padding="horizontal-small">
+                                                                <lightning:input aura:id="customSearch" type="text" name="input1" label="{!$Label.c.SerialNumber}" value="{!v.serialNumber}" class="width_100"/>
+                                                            </lightning:layoutItem>
+                                                        </lightning:layout>
+                                                    </lightning:layoutItem>
+
+                                                    <lightning:layoutItem size="12" class="slds-text-align_right">
+                                                        <lightning:button class="slds-m-top_small" variant="brand" name="Save" label="{!$Label.c.Search}" onclick="{!c.fnSearch}"/>
+                                                    </lightning:layoutItem>
+                                                    -->
+                                                </lightning:layout>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>                                
+
+                                <div class='slds-p-top_small slds-p-bottom_small'>
+                                    <lightning:layout multipleRows="true">
+                                        <lightning:layoutItem size="12">
+                                            <div class="slds-section slds-is-open">
+                                                <h3 class="slds-section__title slds-theme_shade">
+                                                    <span class="slds-truncate slds-p-horizontal_small" title="">
+                                                        조회결과
+                                                        <!--
+                                                        {!$Label.c.Search_result}
+                                                        -->
+                                                    </span>
+                                                </h3>
+                                            </div>
+                                        </lightning:layoutItem>
+                                    </lightning:layout>
+
+                                    <div class="slds-grid slds-p-right_small slds-p-top_small slds-p-bottom_small">
+                                        <div class="slds-col slds-grid slds-size_1-of-1 slds-p-right_small">
+                                            조회 결과 : {! v.curCount } / {!v.totalCount}
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="height:300px;overflow-y:auto;">
+                                        <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                                            <thead>
+                                                <tr class="slds-line-height_reset">
+                                                    <th class="" scope="col">
+                                                        <div class="slds-truncate" title="">코드명</div>
+                                                    </th>
+                                                    <th class="" scope="col">
+                                                        <div class="slds-truncate" title="">코드</div>
+                                                    </th>
+                                                    <th class="" scope="col">
+                                                        <div class="slds-truncate" title="">비고</div>
+                                                    </th>
+                                                    <th class="" scope="col">
+                                                        <div class="slds-truncate" title="">활성화 여부</div>
+                                                    </th>
+                                                    <th class="" scope="col">
+                                                        <div class="slds-truncate" title=""></div>
+                                                    </th>
+
+                                                    <!--
+                                                    <th class="" scope="col">
+                                                        <div class="slds-truncate" title="">{!$Label.c.Brand}</div>
+                                                    </th>
+                                                    <th class="" scope="col">
+                                                        <div class="slds-truncate" title="">{!$Label.c.SerialNumber}</div>
+                                                    </th>
+                                                    <th class="" scope="col">
+                                                        <div class="slds-truncate" title="">{!$Label.c.Platform}</div>
+                                                    </th>
+                                                    <th class="" scope="col">
+                                                        <div class="slds-truncate" title="">{!$Label.c.Warehouse}</div>
+                                                    </th>
+                                                    <th class="" scope="col">
+                                                        <div class="slds-truncate" title="">{!$Label.c.PurchaseDate}</div>
+                                                    </th>
+                                                    <th class="" scope="col">
+                                                        <div class="slds-truncate" title="">{!$Label.c.Installation}</div>
+                                                    </th>
+                                                    -->
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <aura:iteration items="{!v.listSearchResult}" var="item" indexVar="index" end="{!v.curCount}">
+                                                    <tr class="slds-hint-parent" data-index="{!index}" onclick="{!c.handlerClickList}" style="cursor:pointer">
+                                                        <th data-label="{!item.Name}" scope="row" data-index="{!index}">
+                                                            <div class="slds-truncate" title="" data-index="{!index}">{!item.Name}</div>
+                                                        </th>
+                                                        <td data-label="Account Name" data-index="{!index}">
+                                                            <div class="slds-truncate" title="" data-index="{!index}">{!item.CODE__c}</div>
+                                                        </td>
+                                                        <td data-label="Account Name" data-index="{!index}">
+                                                            <div class="slds-truncate" title="" data-index="{!index}">{!item.NAME_KO__c}</div>
+                                                        </td>
+                                                        <td data-label="Prospecting" data-index="{!index}">
+                                                            <div class="slds-truncate" title="" data-index="{!index}">
+                                                                <lightning:input label="" type="checkbox" checked="{!item.IsActive__c}" aura:id=""/>
+                                                            </div>
+                                                        </td>                                                        
+                                                        <!--
+                                                        <td data-label="Prospecting" data-index="{!index}">
+                                                            <div class="slds-truncate" title="" data-index="{!index}">
+                                                                <lightning:input type="checkbox" variant="label-hidden" name="input1" checked="{!if(item.Activation, 'checked', false)}" value="{!item.Activation}"/>
+                                                            </div>
+                                                        </td>
+                                                        -->
+                                                    </tr>
+                                                </aura:iteration>
+                                            </tbody>
+                                        </table>
+
+                                        <aura:if isTrue="{! and(v.totalCount > v.viewCount , v.totalCount > v.curCount )}">
+                                            <div class="slds-grid slds-p-top_small slds-align_absolute-center">
+                                                <lightning:buttonIcon iconName="utility:down"  variant="bare" alternativeText="View More"/>
+                                                <a class="slds-button" href="javascript:void(0);" onclick="{!c.fnListMore}">Show More...</a>
+                                            </div>
+                                        </aura:if>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <footer class="slds-modal__footer">
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem size="12" class="slds-text-align_right">
+                                <lightning:button name="닫기" label="닫기" onclick="{!c.fnCancel}"/>
+                                <!--
+                                <lightning:button name="닫기" label="{!$Label.c.Cancel}" onclick="{!c.fnCancel}"/>
+                                -->
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>
+</aura:component>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>구성비 유형</label>
+    <name>TypeofComposition__c</name>
+    <picklistValues>
+        <masterLabel>식단가</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>운영경비</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>재료비</masterLabel>
+        <translation></translation>
+    </picklistValues>
+</CustomFieldTranslation>

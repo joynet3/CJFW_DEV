@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>fm_SalesCost__c</fullName>
+    <externalId>false</externalId>
+    <formula>ORDR_REAL_BUY_UNPRC__c *  RLSTK_UNIT_RLSTK_QTY__c</formula>
+    <label>Sales Cost</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <trackTrending>false</trackTrending>
+    <type>Currency</type>
+</CustomField>

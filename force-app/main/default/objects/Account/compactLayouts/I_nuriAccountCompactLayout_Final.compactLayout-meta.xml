@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>I_nuriAccountCompactLayout_Final</fullName>
+    <fields>Name</fields>
+    <fields>RecordTypeId</fields>
+    <fields>OwnerId</fields>
+    <fields>AnnualRevenue</fields>
+    <fields>NumberofChildren__c</fields>
+    <fields>AuthorizedCapacity__c</fields>
+    <label>I-nuri Account Compact Layout Final</label>
+</CompactLayout>

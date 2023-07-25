@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>부가서비스 내역</value>
+    </caseValues>
+    <fieldSets>
+        <label></label>
+        <name>ExtraServiceTracking</name>
+    </fieldSets>
+    <nameFieldLabel>부가서비스 신청 번호</nameFieldLabel>
+    <recordTypes>
+        <label></label>
+        <name>CommoditySupport</name>
+    </recordTypes>
+    <recordTypes>
+        <label>부가서비스 신청(급식솔루션)</label>
+        <name>GroupMealExtraService</name>
+    </recordTypes>
+    <recordTypes>
+        <label>부가서비스 신청(헬씨누리)</label>
+        <name>HealthyNuriExtraService</name>
+    </recordTypes>
+    <recordTypes>
+        <label>부가서비스 신청(아이누리)</label>
+        <name>I_NuriExtraService</name>
+    </recordTypes>
+    <recordTypes>
+        <label>부가서비스 신청</label>
+        <name>SchoolChefExtraService</name>
+    </recordTypes>
+    <recordTypes>
+        <label></label>
+        <name>SubstituteChefApplicant</name>
+    </recordTypes>
+    <validationRules>
+        <errorMessage></errorMessage>
+        <name>ApplicationPossibleValidCheck</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage></errorMessage>
+        <name>CheckApplicationDate</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage></errorMessage>
+        <name>CheckApplicationDate_Cooking</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage></errorMessage>
+        <name>ExceedCheck</name>
+    </validationRules>
+</CustomObjectTranslation>

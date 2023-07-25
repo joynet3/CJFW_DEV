@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>fm_LAR_CLS_ID__c</fullName>
+    <externalId>false</externalId>
+    <formula>CASE(gd_cls_lvl_dpt__c ,
+					&apos;2&apos;, ProductCategory__r.gd_cls_id__c, 
+					&apos;3&apos;, ProductCategory__r.ProductCategory__r.gd_cls_id__c, 
+					&apos;4&apos;, ProductCategory__r.ProductCategory__r.ProductCategory__r.gd_cls_id__c, 
+					&apos;&apos;)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>fm_LAR_CLS_ID</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

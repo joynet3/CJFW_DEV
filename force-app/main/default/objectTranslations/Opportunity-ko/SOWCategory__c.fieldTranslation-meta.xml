@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>SOW 구분</label>
+    <name>SOWCategory__c</name>
+    <picklistValues>
+        <masterLabel>밀키트</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>사이드 메뉴</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>신메뉴</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>전용 상품</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>직수입/독점/특화 상품</masterLabel>
+        <translation></translation>
+    </picklistValues>
+</CustomFieldTranslation>

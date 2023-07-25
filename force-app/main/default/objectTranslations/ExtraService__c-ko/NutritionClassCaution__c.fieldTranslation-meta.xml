@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>[영양교육 신청 시 주의사항 문구]</label>
+    <name>NutritionClassCaution__c</name>
+</CustomFieldTranslation>

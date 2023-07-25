@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>IsRegionalRestrictionYN__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>전자입찰 참여 당시 지역제한 여부</description>
+    <externalId>false</externalId>
+    <label>Regional Restriction Y/N</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

@@ -1,0 +1,21 @@
+<template>
+    <!-- This is static help text -->
+    <div class="slds-align_absolute-center slds-text-align_center 
+        slds-text-color_weak">
+    </div>
+    <div class="slds-text-align_center">
+        <lightning-icon icon-name="action:fallback" size="x-small" alternative-text="Delete" onclick={handleBeginScanClick} title="Delete"></lightning-icon>
+        <!-- <lightning:icon iconName="action:fallback" size="x-small" alternativeText="Delete" onclick="{!c.fnBarcodeScan}"/> -->
+        <br/>
+        <small><small>스캔(Cam)</small></small>
+        <!-- <lightning-button
+                variant="brand"
+                class="slds-var-m-left_x-small"
+                disabled={scanButtonDisabled}
+                icon-name="utility:cases"
+                label="바코드 스캔"
+                title="Open a camera view and look for a barcode to scan"
+                onclick={handleBeginScanClick}>
+        </lightning-button> -->
+    </div>
+</template>

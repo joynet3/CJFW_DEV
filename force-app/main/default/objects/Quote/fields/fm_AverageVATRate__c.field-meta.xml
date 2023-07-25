@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>fm_AverageVATRate__c</fullName>
+    <description>(총 VAT 포함가 - 총 견적가) / 총 견적가</description>
+    <externalId>false</externalId>
+    <formula>( ru_TotalPriceWithVAT__c -  ru_TotalUnitPrice__c ) /  ru_TotalUnitPrice__c</formula>
+    <label>Average Vat Rate</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <type>Percent</type>
+</CustomField>

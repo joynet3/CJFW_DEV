@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSetTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <valueTranslation>
+        <masterLabel>Approved</masterLabel>
+        <translation>승인</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>None</masterLabel>
+        <translation>대상아님</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>Rejected</masterLabel>
+        <translation>반려</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>Request</masterLabel>
+        <translation>제출완료</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>Writing</masterLabel>
+        <translation>작성중</translation>
+    </valueTranslation>
+</GlobalValueSetTranslation>

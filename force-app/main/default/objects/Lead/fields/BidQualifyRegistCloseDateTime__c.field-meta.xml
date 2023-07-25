@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>BidQualifyRegistCloseDateTime__c</fullName>
+    <description>나라장터 입찰 참가 자격 등록 마감 일시</description>
+    <externalId>false</externalId>
+    <label>Bid Qualify Regist Close Date/Time</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>DateTime</type>
+</CustomField>

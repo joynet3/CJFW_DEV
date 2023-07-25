@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>TodayVOC</fullName>
+    <booleanFilter>1 OR 2 OR 3</booleanFilter>
+    <columns>NAME</columns>
+    <columns>IssueType__c</columns>
+    <columns>TeamBranch__c</columns>
+    <columns>ManagementAddress__c</columns>
+    <columns>MA__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>CallTypeCode__c</field>
+        <operation>equals</operation>
+        <value>1</value>
+    </filters>
+    <filters>
+        <field>PriorityCode__c</field>
+        <operation>equals</operation>
+        <value>1</value>
+    </filters>
+    <filters>
+        <field>VOCOriginCode__c</field>
+        <operation>equals</operation>
+        <value>10</value>
+    </filters>
+    <label>금일 내 고객사의 VOC</label>
+</ListView>

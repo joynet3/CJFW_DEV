@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>부가서비스 유형</label>
+    <name>ServiceDivision__c</name>
+    <picklistValues>
+        <masterLabel>간식&amp;물품 지원</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>강사 교육</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>대체조리사</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>셰프가 간다.</masterLabel>
+        <translation></translation>
+    </picklistValues>
+</CustomFieldTranslation>

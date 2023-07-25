@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>isExtractOfOilType__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>레코드 생성시 선택한 유류유형과 업로드한 자동차등록증에서 OCR로 추출한 유류유형이 일치하는지 여부</description>
+    <externalId>false</externalId>
+    <label>유류유형추출값일치여부</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

@@ -1,0 +1,128 @@
+<!--
+* ==================================================================================
+*   File Name   : QuotePDFCreate.vfp
+*   Author      : Minje.Kim
+*   Date        : 2022.08.08
+*   Description : Quote PDF Create
+*   Modification Log
+* ==================================================================================
+*   Ver     Date          Author          Modification
+* ==================================================================================
+*   1.0     2022.08.08    Minje.Kim    Create
+* ==================================================================================
+-->
+ <apex:page controller="ChildCareLeadFileCreateController" 
+ showheader="false"
+ contentType="application/vnd.ms-excel" 
+ sidebar="false"  
+ standardStylesheets="false" 
+ applyHtmlTag="false" 
+ applyBodyTag="false" 
+ cache="false"
+ readOnly="true">    
+ <html> 
+    
+     <meta http-equiv="Content-Type" content="text/html" charset="UTF-8"/>
+     <body> 
+         <table>
+             <tr>
+                 <td style="text-align:center">
+                    ​<apex:variable var="counter" value="{!1}"/>
+                </td>
+                 <apex:repeat value="{!listSelectedField}" var="strField"> 
+                     <apex:outputPanel layout="none" rendered="{!strField == 'Company'}">
+                         <td class="bg_color_gray" >
+                             {!mapField[strField]}
+                         </td>
+                     </apex:outputPanel>   
+                     <apex:outputPanel layout="none" rendered="{!strField == 'KindergartenCode__c'}">
+                         <td class="bg_color_gray">
+                              {!mapField[strField]} 
+                         </td>
+                     </apex:outputPanel>
+                    <apex:outputPanel layout="none" rendered="{!strField == 'AddressDetails__c'}">
+                        <td class="bg_color_gray">
+                             {!mapField[strField]} 
+                        </td>
+                    </apex:outputPanel>
+                    <apex:outputPanel layout="none" rendered="{!strField == 'Phone'}">
+                        <td class="bg_color_gray">
+                             {!mapField[strField]} 
+                        </td>
+                    </apex:outputPanel>
+                    <apex:outputPanel layout="none" rendered="{!strField == 'Fax'}">
+                        <td class="bg_color_gray">
+                             {!mapField[strField]} 
+                        </td>
+                    </apex:outputPanel>
+                    <apex:outputPanel layout="none" rendered="{!strField == 'Website'}">
+                        <td class="bg_color_gray">
+                             {!mapField[strField]} 
+                        </td>
+                    </apex:outputPanel>
+                    <apex:outputPanel layout="none" rendered="{!strField == 'AuthorizedCapacity__c'}">
+                        <td class="bg_color_gray">
+                             {!mapField[strField]} 
+                        </td>
+                    </apex:outputPanel>
+                    <apex:outputPanel layout="none" rendered="{!strField == 'AuthorizationDate__c'}">
+                        <td class="bg_color_gray">
+                             {!mapField[strField]} 
+                        </td>
+                    </apex:outputPanel>
+                 </apex:repeat>
+             </tr>
+             <apex:repeat value="{!listLead}" var="listSubQuoteLineItem"> 
+                 <apex:repeat value="{!listSubQuoteLineItem}" var="objQuoteLineItem"> 
+                 <tr>
+                     <td>{!counter}</td> 
+                     <apex:repeat value="{!listSelectedField}" var="strField"> 
+                        <apex:outputPanel layout="none" rendered="{!strField == 'Company'}">
+                             <td >
+                                 {!objQuoteLineItem[strField]}
+                             </td>
+                         </apex:outputPanel>
+                         <apex:outputPanel layout="none" rendered="{!strField == 'KindergartenCode__c'}">
+                             <td >
+                                 {!objQuoteLineItem[strField]}
+                             </td>
+                         </apex:outputPanel>
+                        <apex:outputPanel layout="none" rendered="{!strField == 'AddressDetails__c'}">
+                            <td >
+                                {!objQuoteLineItem[strField]}
+                            </td>
+                        </apex:outputPanel>
+                        <apex:outputPanel layout="none" rendered="{!strField == 'Phone'}">
+                            <td >
+                                {!objQuoteLineItem[strField]}
+                            </td> 
+                        </apex:outputPanel>
+                        <apex:outputPanel layout="none" rendered="{!strField == 'Fax'}">
+                            <td >
+                                {!objQuoteLineItem[strField]}
+                            </td>
+                        </apex:outputPanel>
+                        <apex:outputPanel layout="none" rendered="{!strField == 'Website'}">
+                            <td >
+                                {!objQuoteLineItem[strField]}
+                            </td>
+                        </apex:outputPanel>
+                        <apex:outputPanel layout="none" rendered="{!strField == 'AuthorizedCapacity__c'}">
+                            <td >
+                                {!objQuoteLineItem[strField]}
+                            </td>
+                        </apex:outputPanel>
+                        <apex:outputPanel layout="none" rendered="{!strField == 'AuthorizationDate__c'}">
+                            <td >
+                                {!objQuoteLineItem[strField]}
+                            </td>
+                        </apex:outputPanel>
+                    </apex:repeat>
+                 </tr>
+                 <apex:variable var="counter" value="{!counter+ 1}"/>
+                 </apex:repeat>
+             </apex:repeat>
+         </table>
+     </body> 
+ </html>
+</apex:page>

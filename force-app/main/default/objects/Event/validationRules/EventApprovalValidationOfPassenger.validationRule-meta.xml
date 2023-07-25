@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>EventApprovalValidationOfPassenger</fullName>
+    <active>true</active>
+    <description>주유비 처리상태가 승인요청, 승인 상태일 때 동행/비동행 변경 불가</description>
+    <errorConditionFormula>AND (		
+ISCHANGED( isPassenger__c ),		
+OR(		
+fm_ApprovalStatus__c = &apos;Request&apos;,		
+fm_ApprovalStatus__c = &apos;Approved&apos;		
+)		
+)</errorConditionFormula>
+    <errorMessage>주유비 처리상태가 승인요청, 승인상태 일 때 동행여부 변경이 불가합니다.</errorMessage>
+</ValidationRule>

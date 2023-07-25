@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>VOC</value>
+    </caseValues>
+    <nameFieldLabel>VOC 번호</nameFieldLabel>
+    <recordTypes>
+        <label></label>
+        <name>Etc</name>
+    </recordTypes>
+    <recordTypes>
+        <label></label>
+        <name>OwnCustomer</name>
+    </recordTypes>
+</CustomObjectTranslation>

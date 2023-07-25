@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label></label>
+    <name>MidCategory__c</name>
+    <picklistValues>
+        <masterLabel>고객(본점) 생성 프로세스</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>고객(판매처) 생성 프로세스</masterLabel>
+        <translation></translation>
+    </picklistValues>
+</CustomFieldTranslation>

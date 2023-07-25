@@ -1,0 +1,118 @@
+<!--
+  * ===============================================================
+  * File Name   : DN_SingFileMgmt.cmp
+  * Author      : Minje.Kim
+  * Date        : 2021.11.02
+  * Description : 파일을 업로드하고, 첨부된 파일 관리
+  * Modification Log
+  * ===============================================================
+  * Ver     Date        Author          Modification
+  * ===============================================================
+  * 1.0     2021.11.02  Minje.Kim       Create
+  * ===============================================================
+-->
+
+<aura:component controller="DN_SingleFileMgmtController" implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName">
+
+    <!-- Parameter Attribute -->
+    <aura:attribute name="fileTitle" type="String" default="" description="제목"/>
+    <aura:attribute name="fileFieldLabel" type="String" default="" description="필드 라벨명"/>
+    <aura:attribute name="fileFieldAPIName" type="String" default="" description="필드 API명"/>
+    <aura:attribute name="filePermissionField" type="String" default="" description="파일 수정 가능 여부를 판단할 수 있는 수식 필드명" />
+    <aura:attribute name="isFileEditable" type="Boolean" description="파일 삭제 가능 여부" />
+
+    <aura:attribute name="listFields" type="List" />
+    <aura:attribute name="listLabel" type="List" />
+
+    <aura:attribute name="isUploadFileExist" type="Boolean" default="false" description="업로드된 파일 존재 여부" />
+    <aura:attribute name="isUploadable" type="Boolean" default="false"  description="현재 업로드가 가능한 지 여부"/>
+    <aura:attribute name="isReady" type="Boolean" default="false" description="로직이 전부 진행되었는 지 여부"/>
+
+    <aura:attribute name="showSpinner" type="boolean" default="false" />
+
+    <aura:attribute name="objWrapFile" type="DN_SingleFileMgmtController.DataWrapper" />
+    <aura:attribute name="CommonConfirm" type="Aura.Component" />
+    
+    <!-- Handler -->
+    <aura:handler name="init" action="{!c.fnInit}" value="{!this}" />
+
+    <!-- Event -->
+    <aura:handler event="force:refreshView" action="{!c.fnInit}" />
+
+
+    <!-- Contents -->
+    <article class="slds-card">
+        <aura:if isTrue="{!v.showSpinner}">
+            <lightning:spinner aura:id="spinner" alternativeText="Loading" variant="brand" />
+        </aura:if>
+
+        <aura:if isTrue="{!v.fileTitle != ''}">
+            <div class="slds-card__header slds-grid">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    <div class="slds-media__figure">
+                        <span class="slds-icon_container slds-icon-standard-contact" title="description of icon when needed">
+                                <lightning:icon iconName="standard:file" size="small" />
+                            </span>
+                    </div>
+                    <div class="slds-media__body">    
+                        <h1 class="slds-page-header__title slds-truncate slds-align-middle" style="font-size: 16px; padding-left: 0px; padding-top: 4px;">
+                            {!v.fileTitle}
+                        </h1>
+                    </div>
+                </header>   
+            </div>          
+        </aura:if>
+        <div class="slds-card__body slds-card__body_inner">
+            <aura:if isTrue="{!v.isReady}">
+                <div class="slds-form-element slds-m-left_xx-large slds-m-top_small" width="100%">
+                    <div class="slds-form-element__control">
+                        <aura:if isTrue="{!v.isUploadFileExist == false}">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_5-of-12" >
+                                    <span class="slds-form-element__label" id="file-selector-primary-label">{!v.fileFieldLabel}</span>
+                                    <lightning:fileUpload   name="attachFile"
+                                                            multiple="false"
+                                                            accept=".pdf,.png,.jpg,.jpeg"
+                                                            disabled="false"
+                                                            recordId="{!v.recordId}"
+                                                            class="custom-label_none"
+                                                            onuploadfinished="{!c.fnUploadFinished}" />
+                                </div>
+                                <div class="slds-col slds-size_4-of-12">
+                                </div>
+                                <div class="slds-col slds-size_3-of-12">
+            
+                                </div>
+                            </div>
+            
+                            <aura:set attribute="else">
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-col slds-size_5-of-12">
+                                        <span class="slds-form-element__label" id="file-selector-primary-label">{!v.fileFieldLabel}</span><br/>
+                                        <a href="" onclick="{!c.fnFilePreview}">{!v.objWrapFile.fileName}</a>
+                                        <aura:set attribute="else">
+                                            <a href="{!'/sfc/servlet.shepherd/version/download/' + v.objWrapFile.versionId}">{!v.objWrapFile.fileName}</a>
+                                        </aura:set>
+                                    </div>
+                                    <div class="slds-col slds-size_4-of-12">
+
+                                    </div>
+                                    <aura:if isTrue="{!v.isFileEditable}">
+                                        <div class="slds-col slds-size_3-of-12" style="padding-top:23px; text-align:left">
+                                            <button class="slds-button slds-button_neutral" onclick="{!c.fnOpenModal}">
+                                                <lightning:icon class="uploadcolor" iconName="utility:delete" size="xx-small" />&nbsp;파일삭제
+                                            </button>
+                                        </div>
+                                    </aura:if>
+                                </div>
+                            </aura:set>
+                        </aura:if>
+                    </div>
+                </div>
+            </aura:if>
+        </div>
+    </article>
+
+    <!-- Delete confirm modal -->
+    {!v.CommonConfirm}
+</aura:component>

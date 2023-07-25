@@ -1,0 +1,67 @@
+<!--
+  @description       : EDMS 파일 리스트 View
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 03-09-2023
+  @last modified by  : admin
+-->
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId" access="global"
+                controller="EDMSFileListView">
+
+    <aura:attribute name="recordId" type="String"/>
+
+    <!-- 조회결과 -->
+    <aura:attribute name="listSearchWrapper" type="List" description="조회결과 리스트"/>
+<!--    <aura:attribute name="currentRecords" type="List" />-->
+<!--    <aura:attribute name="isData" type="Boolean" default="false" />-->
+
+    <!-- DataTable 용도-->
+    <aura:attribute name="listColumn" type="List" description="컬림리스트"/>
+    <aura:attribute name="sortedBy" type="String" default="Name" description="정렬타겟"/>
+    <aura:attribute name="sortedDirection" type="String" default="asc" description="정렬방향"/>
+    <aura:attribute name="keyField" type="String" default="Id" description="Row Unique Key"/>
+
+    <!-- Spinner-->
+    <aura:attribute name="showSpinner" type="Boolean" default="false" description="로딩바 활성화 여부"/>
+
+    <!-- event -->
+    <aura:handler event="c:EDMSFileViewRefresh_evt" action="{!c.doRefreshView}"/> 
+    
+    <!-- Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.fnInit}"/>
+
+    <article class="slds-card slds-card_boundary  forceRelatedListCardDesktop ">
+        <aura:if isTrue="{!v.showSpinner}">
+            <lightning:spinner aura:id="spinner" alternativeText="Loading" variant="brand" size="small" />
+        </aura:if>
+<!--        <div class="slds-card__header slds-grid">-->
+        <div class="slds-page-header slds-page-header_joined slds-page-header_bleed slds-shrink-none test-headerRegion slds-is-relative slds-page-header--object-home">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="slds-media__figure">
+                    <lightning:icon iconName="standard:file" size="small" />
+                </div>
+                <div class="slds-media__body" >
+                    <h2 class="slds-card__header-title" >
+                        <p class="slds-card__header-link slds-truncate">
+                            <span>고객사 문서 파일</span>
+                        </p>
+                    </h2>
+                </div>
+            </header>
+        </div>
+        <div class="slds-card__body scrollable">
+                <lightning:datatable
+                        aura:id = "trgetListRows"
+                        keyField="{!v.keyField}"
+                        columns="{!v.listColumn}"
+                        data="{!v.listSearchWrapper}"
+                        onrowselection="{!c.fnSelected}"
+                        hideCheckboxColumn="true"
+                        showRowNumberColumn="true"
+                        sortedBy="{!v.sortedBy}"
+                        sortedDirection="{!v.sortedDirection}"
+                        onsort="{!c.fnColumnSorting}"
+                />
+        </div>
+    </article>
+</aura:component>

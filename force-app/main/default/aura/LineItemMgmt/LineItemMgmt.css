@@ -1,0 +1,78 @@
+.THIS .custom_scrollerSize {
+    height: 90%;
+}
+
+.THIS .tableFixHead { 
+    overflow: auto; 
+    height: 550px; 
+} 
+
+.THIS .tableFixHead table { 
+    border-collapse: inherit; 
+    border : 1px solid rgb(243, 243, 243);
+    width: 100%; 
+}
+
+.THIS .tableFixHead th { 
+    position: sticky; 
+    top: 0; 
+    background: rgb(243, 243, 243); 
+    z-index: 2; 
+}
+
+.THIS .custom-input .slds-input { 
+    padding-left: 0; 
+    padding-right: 0;
+    min-height:auto;
+    line-height: 1.2rem;
+    text-align: center;
+    width:inherit;
+}
+
+
+.THIS .custom-input-center .slds-input { 
+    text-align: center;
+    padding-left: 0; 
+    padding-right: 0;
+}
+
+.THIS .custom-toggle-nodesc .slds-form-element__control .slds-checkbox_faux_container .slds-checkbox_on { 
+    display:none;
+}
+
+.THIS .custom-toggle-nodesc .slds-form-element__control .slds-checkbox_faux_container .slds-checkbox_off { 
+    display:none;
+}
+
+.THIS .slds-modal__header .slds-modal__close{
+    display:none
+}
+
+
+.THIS .custom-form-element{
+    padding-left: 0.75rem;
+}
+
+.THIS .Icon_Red svg{
+    fill:crimson
+}
+
+.THIS .Icon_Green svg{
+    fill:limegreen
+}
+
+.THIS .Icon_Blue svg{
+    fill:royalblue
+}
+
+.THIS .Icon_Gray svg{
+    fill: gray;
+}
+
+.THIS .Icon_LightGray svg{
+    fill: lightgray;
+}
+
+.THIS .custom-selectedRow td{
+    background-color: #ffe98f !important;
+}

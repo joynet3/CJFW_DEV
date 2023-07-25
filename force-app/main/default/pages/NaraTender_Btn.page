@@ -1,0 +1,28 @@
+<!--
+  @description       : 
+  @author            : AhnTaeJin(tj.ahn@daeunextier.com)
+  @group             : 
+  @last modified on  : 10-04-2022
+  @last modified by  : AhnTaeJin(tj.ahn@daeunextier.com)
+-->
+<apex:page standardController="Lead" recordSetVar="Leads">
+
+    <apex:includeLightning />
+    <div id="lightning" />
+
+    <script>    
+        if(SfdcApp.projectOneNavigator) {
+            SfdcApp.projectOneNavigator.fireContainerEvent(
+                "force:navigateToComponent",
+                {
+                    componentDef: 'c:NaraTenderListBtn',
+                    componentAttributes: {
+                        "sObjName" : "Lead",
+                    },
+                    resetHistory: false
+                }
+            );
+        }
+    </script>
+
+</apex:page>

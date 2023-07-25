@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>납품서하단유형</label>
+    <name>StatementOfDeliveryType2__c</name>
+    <picklistValues>
+        <masterLabel>공급자정보 변경형(당사배송)</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>공급자정보 변경형(자차배송)</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>부가정보 제공없음</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>부가정보기본형</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>영업사원정보 제외형</masterLabel>
+        <translation></translation>
+    </picklistValues>
+</CustomFieldTranslation>

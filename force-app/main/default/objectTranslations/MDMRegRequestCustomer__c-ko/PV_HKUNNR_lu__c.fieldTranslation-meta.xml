@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>본점코드</label>
+    <name>PV_HKUNNR_lu__c</name>
+    <relationshipLabel></relationshipLabel>
+</CustomFieldTranslation>

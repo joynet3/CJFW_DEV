@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ExtraServiceCompactLayout_Final</fullName>
+    <fields>Name</fields>
+    <fields>Category__c</fields>
+    <fields>Region__c</fields>
+    <fields>ServiceContents__c</fields>
+    <fields>Instructor__c</fields>
+    <fields>ServiceStartDateTime__c</fields>
+    <fields>ProgressTime__c</fields>
+    <label>Extra Service Compact Layout Final</label>
+</CompactLayout>

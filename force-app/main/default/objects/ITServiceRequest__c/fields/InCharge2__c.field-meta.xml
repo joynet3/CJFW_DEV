@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>InCharge2__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <externalId>false</externalId>
+    <inlineHelpText>개발/조치 등 실제 업무를 처리한 담당자</inlineHelpText>
+    <label>담당자(실무)</label>
+    <referenceTo>User</referenceTo>
+    <relationshipName>ITService_Incharge2</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

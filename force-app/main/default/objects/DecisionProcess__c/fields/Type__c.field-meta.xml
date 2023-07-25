@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Type__c</fullName>
+    <externalId>false</externalId>
+    <label>유형</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>CRM001</fullName>
+                <default>false</default>
+                <label>Risk 점검 의뢰서</label>
+            </value>
+            <value>
+                <fullName>CRM002</fullName>
+                <default>false</default>
+                <label>법인 (사용)인감 신청</label>
+            </value>
+            <value>
+                <fullName>CRM003</fullName>
+                <default>false</default>
+                <label>사용인감 반출 신청</label>
+            </value>
+            <value>
+                <fullName>CRM004</fullName>
+                <default>false</default>
+                <label>제안 품의</label>
+            </value>
+            <value>
+                <fullName>CRM005</fullName>
+                <default>false</default>
+                <label>오픈 품의</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

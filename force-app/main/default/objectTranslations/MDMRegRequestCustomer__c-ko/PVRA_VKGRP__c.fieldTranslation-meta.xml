@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>영업그룹(유효기간 관리) - 현재 속성의 VALID FROM</label>
+    <name>PVRA_VKGRP__c</name>
+</CustomFieldTranslation>

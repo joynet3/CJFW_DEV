@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>EventCompactLayoutFinal</fullName>
+    <fields>fm_EventName__c</fields>
+    <fields>Subject</fields>
+    <fields>StartDateTime</fields>
+    <fields>EndDateTime</fields>
+    <label>Event Compact Layout Final</label>
+</CompactLayout>

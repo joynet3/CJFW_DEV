@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>PT</value>
+    </caseValues>
+    <fieldSets>
+        <label></label>
+        <name>PTTracking</name>
+    </fieldSets>
+    <nameFieldLabel>활동사항</nameFieldLabel>
+    <validationRules>
+        <errorMessage></errorMessage>
+        <name>StartEndDateTimeValidCheck</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage></errorMessage>
+        <name>TwoWeekvaildCheck</name>
+    </validationRules>
+</CustomObjectTranslation>

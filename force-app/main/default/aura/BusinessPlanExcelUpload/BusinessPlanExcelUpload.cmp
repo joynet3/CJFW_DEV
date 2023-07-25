@@ -1,0 +1,246 @@
+<!--
+  @description       : 경영계획 엑셀 업로드
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 03-09-2023
+  @last modified by  : admin
+-->
+<aura:component implements="force:appHostable,flexipage:availableForRecordHome,force:hasRecordId" access="global" controller="BusinessPlanExcelUpload" >
+    <ltng:require scripts="{!join(',', $Resource.sheetjs + '/sheetjs/jszip.js', $Resource.sheetjs + '/sheetjs/xlsx.js')}" afterScriptsLoaded="{!c.fnAfterScriptLoad}" />
+    
+    <!-- Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.fnInit}"/>
+    
+    <aura:attribute name="showSpinner" type="Boolean" default="false" description="로딩바 활성화 여부"/>
+
+    <!-- Datatable Attr -->
+    <aura:attribute name="listResultColumn" type="List" description="컬럼리스트"/>
+    <aura:attribute name="listSuccessWrapper" type="List" description="엑셀 업로드 성공 리스트"/>
+    <aura:attribute name="listErrorWrapper" type="List" description="엑셀 업로드 오류 리스트"/>
+
+    <aura:attribute name="totalSize" type="Integer" description="전체건수"/>
+    <aura:attribute name="successSize" type="Integer" description="성공건수"/>
+    <aura:attribute name="errorSize" type="Integer" description="오류건수"/>
+
+    <aura:attribute name="isDisabled" type="Boolean" default="true" description="업로드 버튼 활성화 여부"/>
+
+    <!-- excel download select list--> 
+    <aura:attribute name="selectedHeadOffice" type="String" description="선택된 본부"/>
+    <aura:attribute name="selectedSU" type="String" description="선택된 SU"/>
+    <aura:attribute name="selectedTeam" type="String" description="선택된 Team"/>
+    
+    <aura:attribute name="listSelectHeadOffice" type="List" description="본부 Select 리스트"/>
+    <aura:attribute name="isDisableHeadOffice" type="Boolean" default="true" description="본부 활성화 여부"/>
+    <aura:attribute name="listSelectSU" type="List" description="SU Select 리스트"/>    
+    <aura:attribute name="mapSelectSU" type="Map" description="본부, SU 종속성"/>
+    <aura:attribute name="isDisableSU" type="Boolean" default="false" description="SU 활성화 여부"/> 
+    <aura:attribute name="listSelectTeam" type="List" description="Team Select 리스트"/>
+    <aura:attribute name="mapSelectTeam" type="Map" description="SU 팀 종속성"/>
+    <aura:attribute name="isDisableTeam" type="Boolean" default="true" description="Team 활성화 여부"/>
+    
+    <aura:attribute name="listDownloadWrapper" type="List" description="엑셀 템플릿 Wrapper"/>
+
+    <aura:attribute name="modalStatus" type="String" default="Hide" description="Hide, Download"/>
+
+    <aura:attribute name="isFS" type="Boolean" default="false" description="FS여부"/>
+    
+    
+
+    <!--
+    <aura:html tag="style">
+        .slds-modal__container{
+            min-width: 125px !important;        
+            max-width: fit-content !important;
+            padding: 0 20px;
+        }
+        .cuf-content {
+            padding: 0 0rem !important;
+        }
+        .slds-p-around-medium {
+            padding: 0rem !important;
+        }
+        .slds-modal__content {
+            overflow-y: hidden !important;
+            height: unset !important;
+            max-height: unset !important;
+        }
+    </aura:html> 
+    -->
+    <div class="slds-col modal-body scrollable slds-p-around--medium divContent">
+        <aura:if isTrue="{!v.showSpinner}">                
+            <lightning:spinner variant="brand" size="medium" />
+        </aura:if>
+        <!-- Modal Header -->
+        <!--
+        <div class="slds-modal__header">
+            
+            <lightning:buttonIcon iconName="utility:close" size="large" alternativeText="Close" variant="bare-inverse" class="slds-modal__close" onclick="{!c.fnCancel}" />
+            <h2 class="title slds-text-heading-medium">                
+                <label>경영계획 업로드</label>
+            </h2>
+        </div>
+        -->
+
+        <!-- (Style) divContentDetail : 전체 Modal 내용 크기 조절 -->
+        <div class="divContentDetail" style="position:relative">
+            <div>
+                <article class="slds-card slds-card_boundary related_list_card_border_top forceRelatedListCardDesktop">
+                    <div class="related_list_themed_border_top forceRelatedListCardHeader"></div>
+                    <div class="slds-card__header slds-grid">
+                        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                            <div class="slds-media__figure">
+                                <lightning:icon iconName="standard:file" size="small" />
+                            </div>
+                            <div class="slds-media__body">
+                                <h2 class="slds-card__header-title">
+                                    <span href="javascript:void(0);" class="slds-card__header-link slds-truncate">
+                                        경영계획 업로드 
+                                    </span>
+                                </h2>
+                            </div>
+                            <div class="slds-no-flex" style="width:35rem">
+                                <lightning:layout >
+                                    <lightning:layoutItem size="6">
+                                        <div style="padding-top:0.2rem;text-align:right;">
+                                            <lightning:button variant="brand" value="Download" label="양식 Download" title="Add action" onclick="{!c.fnOpenModal}"/>
+                                        </div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="6">
+                                        <div style="text-align:right;">
+                                            <lightning:input type="file" aura:id="fileInput" variant="label-hidden" multiple="false" accept=".xlsx,.xls" onchange="{!c.fnHandleFilesChange}" />
+                                        </div>
+                                    </lightning:layoutItem>
+                                </lightning:layout> 
+                            </div>
+                        </header>
+                    </div>
+
+                    <div class="slds-card__body" >
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem size="12" padding="around-small">
+                                <h3 class="title slds-text-heading--medium">
+                                    <label>업로드 결과</label>
+                                </h3>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="12" padding="around-small">
+                                <lightning:layout multipleRows="true">
+                                    <lightning:layoutItem size="4" padding="around-small">
+                                        <div class="slds-col slds-grid slds-has-flexi-truncate  full forcePageBlockItem forcePageBlockItemView" data-aura-class="forcePageBlockItem forcePageBlockItemView">
+                                            <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                                <div class="test-id__field-label-container slds-form-element__label">
+                                                    <span class="test-id__field-label">총 건수</span>
+                                                </div>
+                                                <div class="slds-form-element__control slds-grid itemBody">
+                                                    <span class="test-id__field-value slds-form-element__static slds-grow ">
+                                                        <span>{!v.totalSize}</span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="4" padding="around-small">
+                                        <div class="slds-col slds-grid slds-has-flexi-truncate  full forcePageBlockItem forcePageBlockItemView" data-aura-class="forcePageBlockItem forcePageBlockItemView">
+                                            <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                                <div class="test-id__field-label-container slds-form-element__label">
+                                                    <span class="test-id__field-label" >성공 건수</span>
+                                                </div>
+                                                <div class="slds-form-element__control slds-grid itemBody">
+                                                    <span class="test-id__field-value slds-form-element__static slds-grow ">
+                                                        <span>{!v.successSize}</span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="4" padding="around-small">
+                                        <div class="slds-col slds-grid slds-has-flexi-truncate  full forcePageBlockItem forcePageBlockItemView" data-aura-class="forcePageBlockItem forcePageBlockItemView">
+                                            <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                                <div class="test-id__field-label-container slds-form-element__label">
+                                                    <span class="test-id__field-label">오류 건수</span>
+                                                </div>
+                                                <div class="slds-form-element__control slds-grid itemBody">
+                                                    <span class="test-id__field-value slds-form-element__static slds-grow ">
+                                                        <span>{!v.errorSize}</span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </lightning:layoutItem>
+                                </lightning:layout>
+                            </lightning:layoutItem>                
+                            <lightning:layoutItem size="12" padding="around-small">
+                                <div style="overflow-y:auto !important;height:320px !important">
+                                    <lightning:datatable aura:id="listErrorWrapper"
+                                        keyField="Id"
+                                        data="{!v.listErrorWrapper}"
+                                        columns="{!v.listResultColumn}"
+                                        hideCheckboxColumn="true"
+                                    />
+                                </div>
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                    </div>
+                </article>  
+                
+            </div>
+        </div>
+
+        <div class="slds-col modal-footer slds-modal__footer" style="margin-top:10px">        
+            <lightning:button label="취소" title="Cancel action" onclick="{!c.fnCancel }"/>
+            <lightning:button variant="brand" label="업로드" title="Add action" onclick="{!c.fnAddItem }" disabled="{!v.isDisabled}"/>
+        </div>
+    </div>
+
+    <aura:if isTrue="{!v.modalStatus == 'Download'}">
+        <section role="dialog" tabindex="-3" class="slds-modal slds-fade-in-open slds-modal_small" style="z-index:9002 !important;">
+            
+            <aura:if isTrue="{!v.showSpinner}">                
+                <lightning:spinner variant="brand" size="medium" />
+            </aura:if>
+            <div class="slds-align_absolute-center slds-modal__container" style="min-width:30%; width:30%">
+                <div class="cuCheckModalCSS" style="width:100%">
+                    <div class="slds-modal__header" >
+                        <lightning:buttonIcon iconName="utility:close" size="large" alternativeText="Close" variant="bare-inverse" class="slds-modal__close" onclick="{!c.fnCloseModal}" />
+                        <h2 class="title slds-text-heading--medium">
+                            <label>양식 Download</label>
+                        </h2>
+                    </div>
+                    <div class="slds-modal__content scrollable" style="padding:15px;">                          
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem size="6" padding="horizontal-small">
+                                <lightning:select name="colorId" label="본부" value="{!v.selectedHeadOffice}" onchange="{!c.fnChangeHeadOffice}" disabled="{!v.isDisableHeadOffice}" variant="label-inline" required="true">
+                                    <option value="none"> 전체 </option>        
+                                    <aura:iteration items="{!v.listSelectHeadOffice}" var="option">
+                                        <option text="{!option.label}" value="{!option.value}" selected="{!option.selected}"/>
+                                    </aura:iteration>
+                                </lightning:select>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="6" padding="horizontal-small">
+                                <lightning:select name="colorId" label="SU" value="{!v.selectedSU}" onchange="{!c.fnChangeSU}" disabled="{!v.isDisableSU}" variant="label-inline" required="true">
+                                    <option value="none"> 전체 </option>    
+                                    <aura:iteration items="{!v.listSelectSU}" var="option">
+                                        <option text="{!option.label}" value="{!option.value}" selected="{!option.selected}"/>
+                                    </aura:iteration>
+                                </lightning:select>
+                            </lightning:layoutItem>
+                            <!-- <lightning:layoutItem size="4" padding="horizontal-small">
+                                <lightning:select name="colorId" label="팀" aura:id="colorId" value="{!v.selectedTeam}" disabled="{!v.isDisableTeam}" variant="label-inline">
+                                    <option value="none"> 전체 </option>
+                                    <aura:iteration items="{!v.listSelectTeam}" var="option">
+                                        <option text="{!option.label}" value="{!option.value}" selected="{!option.selected}"/>
+                                    </aura:iteration>
+                                </lightning:select>
+                            </lightning:layoutItem> -->
+                        </lightning:layout>        
+                    </div>
+                    <div class="modal-footer slds-modal__footer">
+                        <lightning:button variant="brand" label="다운로드" onclick="{!c.fnExcelExport}"/> 
+                        <lightning:button variant="neutral" label="닫기" onclick="{!c.fnCloseModal}"/>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" style="z-index:9001 !important;"></div>
+    </aura:if>
+</aura:component>

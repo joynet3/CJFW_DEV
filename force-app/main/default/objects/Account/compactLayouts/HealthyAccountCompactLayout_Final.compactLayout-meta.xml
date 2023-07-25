@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>HealthyAccountCompactLayout_Final</fullName>
+    <fields>Name</fields>
+    <fields>RecordTypeId</fields>
+    <fields>OwnerId</fields>
+    <fields>Foundation__c</fields>
+    <fields>BusinessPath__c</fields>
+    <fields>AnnualRevenue</fields>
+    <label>Healthy Account Compact Layout Final</label>
+</CompactLayout>

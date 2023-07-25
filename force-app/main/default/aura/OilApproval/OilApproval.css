@@ -1,0 +1,23 @@
+/* 공통 label */
+.THIS .slds-tabs_default__content {
+    padding : 0px !important;
+}
+
+.THIS .slds-tabs_default__nav {
+    padding: 10px 1px 0px 10px;
+    font-size: 16px;
+}
+
+
+/* DataTable : WrapText/ClipText drop down 제어 */
+.THIS lightning-primitive-header-actions {
+    display: none;
+}
+
+.THIS .slds-has-focus{
+    box-shadow : none !important;
+}
+
+.THIS .slds-resizable__divider:before {
+    background-color : white !important;
+}

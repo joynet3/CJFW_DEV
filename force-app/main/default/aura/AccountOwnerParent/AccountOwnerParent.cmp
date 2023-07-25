@@ -1,0 +1,42 @@
+<!--
+* ==================================================================================
+*   File Name   : AccountOwnerParent.cmp
+*   Author      : sy.Lee
+*   Date        : 2023.05.26
+*   Description : admin용 고객 담당자 변경 화면
+*   Modification Log
+* ==================================================================================
+*   Ver     Date          Author          Modification
+* ==================================================================================
+*   1.0     2023.05.26    sy.Lee          Create
+* ==================================================================================
+-->
+<aura:component implements="force:appHostable" controller="AccountOwnerParentController">
+
+    <!-- Attribute -->
+    <aura:attribute name="isIT" type="Boolean" default="false" description="관리자 여부"/>
+    <aura:attribute name="isSMA" type="Boolean" default="false" description="SMA 사용자 여부"/>
+    <aura:attribute name="isFS" type="Boolean" default="false" description="FS 사용자 여부"/>      
+    <!-- Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.fnInit}"/>
+
+    <lightning:layout multipleRows="true">
+        <!-- Contents [S] -->
+        <lightning:layoutItem size="12">
+            <lightning:tabset aura:id="tab">  
+                <aura:if isTrue="{!or(v.isIT, v.isSMA)}">
+                    <lightning:tab label="고객 SMA 담당자 변경">
+                        <c:AccountOwnerUpdate/>
+                    </lightning:tab>
+                </aura:if>      
+                <aura:if isTrue="{!or(v.isIT, v.isFS)}">
+                    <lightning:tab label="고객 FS 담당자 변경">
+                        <c:AccountOwnerUpdateFS/>
+                    </lightning:tab>                
+                </aura:if>                
+            </lightning:tabset>
+        </lightning:layoutItem>
+        <!-- Contents [E] -->
+    </lightning:layout>
+    
+</aura:component>

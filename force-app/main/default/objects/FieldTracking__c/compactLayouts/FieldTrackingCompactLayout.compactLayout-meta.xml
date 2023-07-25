@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>FieldTrackingCompactLayout</fullName>
+    <fields>Label__c</fields>
+    <fields>ChangeDT__c</fields>
+    <fields>User__c</fields>
+    <label>Field Tracking Compact Layout</label>
+</CompactLayout>

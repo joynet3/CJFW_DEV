@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>LocalDataCompactLayout_Final</fullName>
+    <fields>Name</fields>
+    <fields>RecordTypeId</fields>
+    <fields>LocationStateProvince__c</fields>
+    <fields>trdStateNm__c</fields>
+    <fields>apvCancelYmd__c</fields>
+    <fields>apvPermYmd__c</fields>
+    <fields>Area__c</fields>
+    <label>LocalDataCompactLayout_Final</label>
+</CompactLayout>

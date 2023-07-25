@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>isScheduled__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>분 단위 스케줄 여부</description>
+    <externalId>false</externalId>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <label>isScheduled</label>
+    <type>Checkbox</type>
+</CustomField>

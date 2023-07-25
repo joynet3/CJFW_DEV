@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>OrderDetail</fullName>
+    <fields>Name</fields>
+    <fields>MATNR__c</fields>
+    <fields>EBELP__c</fields>
+    <fields>MENGE__c</fields>
+    <label>주문내역상세</label>
+</CompactLayout>

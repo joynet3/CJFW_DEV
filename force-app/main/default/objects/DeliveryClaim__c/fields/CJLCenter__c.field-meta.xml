@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CJLCenter__c</fullName>
+    <externalId>false</externalId>
+    <label>CJL배송센터</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>값추후입력예정</fullName>
+                <default>false</default>
+                <label>값추후입력예정</label>
+            </value>
+            <value>
+                <fullName>인천신선센터</fullName>
+                <default>false</default>
+                <label>인천신선센터</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

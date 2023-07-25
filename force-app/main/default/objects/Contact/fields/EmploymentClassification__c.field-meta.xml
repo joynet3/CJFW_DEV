@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>EmploymentClassification__c</fullName>
+    <externalId>false</externalId>
+    <label>EmploymentClassification</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>정규</fullName>
+                <default>false</default>
+                <label>정규</label>
+            </value>
+            <value>
+                <fullName>계약</fullName>
+                <default>false</default>
+                <label>계약</label>
+            </value>
+            <value>
+                <fullName>임시</fullName>
+                <default>false</default>
+                <label>임시</label>
+            </value>
+            <value>
+                <fullName>위탁</fullName>
+                <default>false</default>
+                <label>위탁</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

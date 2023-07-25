@@ -1,0 +1,338 @@
+<!--
+* ==================================================================================
+*   File Name   : AccountOwnerUpdate.cmp
+*   Author      : Kwanwoo.Jeon
+*   Date        : 2022.12.28
+*   Description : Account Owner Dummy Update
+*   Modification Log
+* ==================================================================================
+*   Ver     Date          Author          Modification
+* ==================================================================================
+*   1.0     2022.12.28    Kwanwoo.Jeon    Create
+*   1.1     2023.04.12    sy.lee          update
+* ==================================================================================
+-->
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes" controller="AccountOwnerUpdateController">
+    <!-- 조회조건 -->
+    <aura:attribute name="selectedLocationStateProvince" type="String" description="지역(시/도)" />
+    <aura:attribute name="selectedLocationState" type="String" description="지역"/>
+    <aura:attribute name="selectedUserId" type="String" default="" description="담당자 Id"/>
+    <aura:attribute name="selectedUserName" type="String" default="" description="담당자 명"/>
+    <aura:attribute name="requiredYn" type="Boolean" default="true" description="필수 조회 조건"/>  
+    <aura:attribute name="childValue" type="String" default="" description="담당자 선택된 정보 담는 용도"/>  
+
+    <!-- 조회결과 -->
+    <aura:attribute name="listSearchWrapper" type="List" description="조회 리스트"/>
+    <aura:attribute name="isData" type="Boolean" default="false" description="데이터 여부"/>
+
+    <!-- select list-->
+    <aura:attribute name="listLocationStateProvince" type="List" description="지역(시/도) Select 리스트"/>
+    <aura:attribute name="listLocationState" type="List" description="지역 Select 리스트"/>
+    <aura:attribute name="listSmaCustMngGrdCd" type="List" description="SMA 고객 관리 등급 코드 리스트"/>
+    <aura:attribute name="mapLocation" type="Map" description="지역(시/도) 지역 종속성"/>    
+
+    <!-- 선택된 SMA 고객 관리 등급 코드-->
+    <aura:attribute name="selectedSmaCustMngGrdCd" type="String" default="none" description="정렬타겟"/>
+
+    <!-- DataTable 용도-->
+    <aura:attribute name="listColumn" type="List" description="컬럼리스트"/>
+    <aura:attribute name="sortedBy" type="String" default="Name" description="정렬타겟"/>
+    <aura:attribute name="sortedDirection" type="String" default="asc" description="정렬방향"/>
+    <aura:attribute name="keyField" type="String" default="Id" description="Row Unique Key"/>
+    <aura:attribute name="listSelected" type="List" description="선택된 리스트"/>
+    <aura:attribute name="selectedRows" type="List" description="선택된 리스트의 KeyFields"/>
+    <aura:attribute name="openModal" type="String" default="Hide" description="Hide, User, Check, Change"/>
+    <aura:attribute name="totalCount" type="Integer" default="0" description="검색된 현재 건수"/>
+    <aura:attribute name="totalNum" type="Integer" default="0" description="검색된 총건수"/>
+    <aura:attribute name="rowNumber" type="Integer" default="0" description="행번호 계산을 시작할 위치"/>
+
+    <!-- User 조회결과 -->
+    <aura:attribute name="listSearchWrapperUser" type="List" description="조회된 사용자리스트"/>
+    <aura:attribute name="isDataUser" type="Boolean" default="false" description="사용자 검색 여부"/>  
+    <aura:attribute name="displayedvalue" type="String" default="" description="담당자 입력값"/>      
+
+    <!-- User DataTable 용도-->
+    <aura:attribute name="listColumnUser" type="List" description="컬럼시스트"/>
+    <aura:attribute name="sortedByUser" type="String" default="name" description="정렬타겟"/>
+    <aura:attribute name="sortedDirectionUser" type="String" default="asc" description="정렬방향"/>
+    <aura:attribute name="keyFieldUser" type="String" default="Id" description="Row Unique Key"/>
+    <aura:attribute name="listSelectedUser" type="object" description="선택된 리스트"/>
+    <aura:attribute name="selectedRowsUser" type="list" description="선택된 리스트의 KeyFields"/>
+    <aura:attribute name="isSelectUser" type="Boolean" default="true" description="사용자 선택 여부"/>
+
+    <!-- Change Data 조회결과 -->
+    <aura:attribute name="listSearchWrapperChange" type="List" description="변경된 데이터 리스트"/>
+
+    <!-- Change Data DataTable 용도-->
+    <aura:attribute name="listColumnChange" type="List" description="컬럼리스트"/>
+    <aura:attribute name="sortedByChange" type="String" default="name" description="정렬타겟"/>
+    <aura:attribute name="sortedDirectionChange" type="String" default="asc" description="정렬방향"/>
+    <aura:attribute name="keyFieldChange" type="String" default="Id" description="Row Unique Key"/>
+
+    <!-- ETC-->
+    <aura:attribute name="showSpinner" type="Boolean" default="false"/>
+    <aura:attribute name="chunkSize" type="Integer" default="600" description="한 Call에 담을 DataSize"/> 
+    <aura:attribute name="reportUrl" type="String" default="" description="전체리스트 버튼에 연결된 보고서 URL"/>
+
+    <!-- Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.fnInit}"/>
+    <aura:handler name="change" value="{!v.selectedUserId}" action="{!c.selectedUserIdChange}" />
+
+    <aura:if isTrue="{!v.showSpinner}">
+        <lightning:spinner aura:id="spinner" alternativeText="Loading" variant="brand" size="medium" />
+    </aura:if>
+
+    <div class="slds-col modal-body scrollable slds-p-around--medium divContent" style="padding:0">
+        <!-- Modal Header -->
+        <div>
+            <div class="slds-page-header">
+                <div class="slds-page-header__row">
+                    <div class="slds-page-header__col-title">
+                        <div class="slds-media">
+                            <div class="slds-media__body">
+                                <lightning:layout multipleRows="true">
+                                    <lightning:layoutItem size="4">
+                                        <lightning:layout multipleRows="true">                                            
+                                            <lightning:layoutItem size="12" padding="horizontal-small">
+                                                <div style="padding: 0.1rem; text-align:center; font-weight: bold;">
+                                                    <lightning:badge label="지역 기준 검색" class="badge"/>
+                                                </div>  
+                                                <div style="border: solid 0.5px gray; border-radius: 10px;">
+                                                    <div style="display: flex;">
+                                                        <lightning:layoutItem size="12" padding="horizontal-small">
+                                                            <div style="display: flex; padding: 0.757rem;">
+                                                                <lightning:layoutItem size="6" padding="horizontal-small">
+                                                                    <lightning:select name="pv" label="지역(시/도)" value="{!v.selectedLocationStateProvince}" onchange="{!c.fnChangeSiDo}" variant="label-inline" required="{!v.requiredYn}">
+                                                                        <option value="none"> == 선택 == </option>
+                                                                        <aura:iteration items="{!v.listLocationStateProvince}" var="option">
+                                                                            <option text="{!option.label}" value="{!option.value}" selected="{!option.selected}"/>
+                                                                        </aura:iteration>
+                                                                    </lightning:select>                                                            
+                                                                </lightning:layoutItem>
+                                                                <lightning:layoutItem size="6" padding="horizontal-small">
+                                                                    <lightning:select name="st" label="지역(시/군/구)" value="{!v.selectedLocationState}" variant="label-inline">
+                                                                        <option value="none"> == 선택 == </option>
+                                                                        <aura:iteration items="{!v.listLocationState}" var="option">
+                                                                            <option text="{!option.label}" value="{!option.value}" selected="{!option.selected}"/>
+                                                                        </aura:iteration>
+                                                                    </lightning:select>                                                                
+                                                                </lightning:layoutItem>
+                                                            </div>                                                            
+                                                        </lightning:layoutItem>
+                                                    </div>                                                                                                
+                                                </div>                                                
+                                            </lightning:layoutItem>   
+                                        </lightning:layout>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="2">
+                                        <div style="padding: 0.1rem; text-align:center; font-weight: bold;">
+                                            <lightning:badge label="담당자 기준 검색" class="badge"/>
+                                        </div>
+                                        <div style="border: solid 0.5px gray; border-radius: 10px; padding: 10px">
+                                            <span class="slds-form-element__label" style="padding-left:5px;">담당자</span>
+                                            <c:DN_Lookup
+                                                    uniqueLookupIdentifier="AccountOwnerSearch"
+                                                    objectName="User"
+                                                    fieldSet="['Name', 'EmployeeNumber', 'toLabel(Team__c)', 'toLabel(CJTitle__c)']"
+                                                    whereCondition="{!' AND SU__c = \'4709\''}"
+                                                    limit="100"
+                                                    comparisonField="['Name', 'EmployeeNumber']"
+                                                    primaryDisplayField="Name"
+                                                    alternateDisplayField="['EmployeeNumber']"
+                                                    lightningIconName="standard:user"
+                                                    selectedId="{!v.selectedUserId}"
+                                                    displayLabel="{!v.selectedUserName}"
+                                                    compact="true"
+                                                    readOnly="false"
+                                                    minimumCharacter="1"
+                                                    enteredValue="{!v.displayedvalue}"
+                                                    requiredYn="{!v.requiredYn}"
+                                            />  
+                                        </div>   
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="6" class="slds-text-align_right">
+                                        <lightning:layout multipleRows="true">
+                                            <lightning:layoutItem size="12" class="btnSearch">
+                                                <aura:if isTrue="{!v.isData}">
+                                                    <span style="padding-right: 0.5rem">{!v.totalCount} / {!v.totalNum}</span>
+                                                </aura:if>
+                                                <lightning:button variant="Neutral" label="조회" onclick="{!c.fnSearch}" />
+                                                <lightning:button variant="brand" label="담당자 변경" onclick="{!c.fnOpenModal}" disabled="{!! and(v.isData, v.totalCount > 0) }" title="{!! and(v.isData, v.totalCount > 0)? '조회 후 대상을 선택하면 해당 버튼이 활성화 됩니다':'' }" />
+                                                <lightning:button variant="brand" label="고객 등급 변경" onclick="{!c.fnOpenModalOfChgCd}" disabled="{!! and(v.isData, v.totalCount > 0) }" title="{!! and(v.isData, v.totalCount > 0)? '조회 후 대상을 선택하면 해당 버튼이 활성화 됩니다':'' }"/>                                                
+                                                <lightning:button variant="brand" label="전체 고객 리스트" onclick="{!c.fnOpenReport}"/>
+                                            </lightning:layoutItem>
+                                        </lightning:layout>
+                                    </lightning:layoutItem>
+                                </lightning:layout>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DataTable - (Style) divContentDetail : 전체 Modal 내용 크기 조절 -->
+        <div class="divContentDetail" style="position:relative">
+            <div>
+                <lightning:layout multipleRows="true">
+                    <lightning:layoutItem size="12" >
+                        <div class="custom-picture_box slds-box" style="height: 55vh; padding:0">
+                            <lightning:datatable
+                                aura:id = "targetListRows"
+                                keyField="{!v.keyField}"
+                                columns="{!v.listColumn}"
+                                data="{!v.listSearchWrapper}"
+                                onrowselection="{!c.fnSelected}"
+                                hideCheckboxColumn="false"
+                                showRowNumberColumn="true"
+                                rowNumberOffset="{!v.rowNumber}"
+                                selectedRows="{!v.selectedRows}"
+                                sortedBy="{!v.sortedBy}"
+                                sortedDirection="{!v.sortedDirection}"
+                                onsort="{!c.fnColumnSorting}"
+                            />
+                        </div>
+                    </lightning:layoutItem>
+                </lightning:layout>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 사용자 변경 Modal -->
+    <aura:if isTrue="{!v.openModal == 'User'}">
+        <section role="dialog" tabindex="-3" class="slds-modal slds-fade-in-open slds-modal_small slds-scrollable" style="z-index:9002 !important;">
+            <div class="slds-align_absolute-center slds-modal__container">
+                <div class="selectUserCSS">
+                    <div class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close" size="large" alternativeText="Close" variant="bare-inverse" class="slds-modal__close" onclick="{!c.fnCloseModal}" />
+                        <h2 class="title slds-text-heading--medium">
+                            <label>담당자 선택</label>
+                        </h2>
+                    </div>
+                    <div class="slds-modal__content scrollable" style="padding:15px;">
+                        <!-- User DataTable -->
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem size="12" >
+                                <div class="custom-picture_box slds-box" style="height: 100%; max-height: 18rem; padding:0">
+                                    <lightning:datatable
+                                            aura:id = "trgetUserListRows"
+                                            keyField="{!v.keyFieldUser}"
+                                            columns="{!v.listColumnUser}"
+                                            data="{!v.listSearchWrapperUser}"
+                                            onrowselection="{!c.fnUserSelected}"
+                                            hideCheckboxColumn="false"
+                                            selectedRows="{!v.selectedRowsUser}"
+                                            sortedBy="{!v.sortedByUser}"
+                                            sortedDirection="{!v.sortedDirectionUser}"
+                                            onsort="{!c.fnUserColumnSorting}"
+                                            maxRowSelection="1"
+                                    />
+                                </div>
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                    </div>
+                    <div class="modal-footer slds-modal__footer">
+                        <lightning:button variant="neutral" label="취소" onclick="{!c.fnCloseModal}"/>
+                        <lightning:button variant="brand" label="확인" disabled="{!v.isSelectUser}" onclick="{!c.fnOpenChangeModal}"/>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" style="z-index:9001 !important;"></div>
+    </aura:if>
+    <!-- 지역 당담자가 다를 시 재확인하는 Modal -->
+    <aura:if isTrue="{!v.openModal == 'Check'}">
+        <section role="dialog" tabindex="-3" class="slds-modal slds-fade-in-open slds-modal_small slds-scrollable" style="z-index:9002 !important;">
+            <div class="slds-align_absolute-center slds-modal__container">
+                <div class="selectUserCSS">
+                    <div class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close" size="large" alternativeText="Close" variant="bare-inverse" class="slds-modal__close" onclick="{!c.fnCloseModal}" />
+                        <h2 class="title slds-text-heading--medium">
+                            <label>경고</label>
+                        </h2>
+                    </div>
+                    <div class="slds-modal__content scrollable" style="padding:15px;">
+                            일부 고객의 담당자가 다릅니다.
+                    </div>
+                    <div class="modal-footer slds-modal__footer">
+                        <lightning:button variant="neutral" label="닫기" onclick="{!c.fnCloseModal}"/>
+                        <lightning:button variant="destructive" label="무시하고 진행" onclick="{!c.fnprogress}"/>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" style="z-index:9001 !important;"></div>
+    </aura:if>
+
+    <!-- 변경되는 데이터 확인 Modal -->
+    <aura:if isTrue="{!v.openModal == 'Change'}">
+        <section role="dialog" tabindex="-3" class="slds-modal slds-fade-in-open slds-modal_small slds-scrollable" style="z-index:9002 !important;">
+            <div class="slds-align_absolute-center slds-modal__container">
+                <div class="selectUserCSS">
+                    <div class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close" size="large" alternativeText="Close" variant="bare-inverse" class="slds-modal__close" onclick="{!c.fnCloseModal}" />
+                        <h2 class="title slds-text-heading--medium">
+                            <label>데이터 변경 확인</label>
+                        </h2>
+                    </div>
+                    <div class="slds-modal__content" style="padding:15px;">
+                        <!-- Change DataTable -->
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem size="12" >
+                                <div class="custom-picture_box slds-box" style="height: 100%; max-height: 18rem; padding:0">
+                                    <lightning:datatable
+                                            aura:id = "targetChangeListRows"
+                                            keyField="{!v.keyFieldChange}"
+                                            columns="{!v.listColumnChange}"
+                                            data="{!v.listSearchWrapperChange}"
+                                            hideCheckboxColumn="true"
+                                            showRowNumberColumn="true"
+                                            sortedBy="{!v.sortedByChange}"
+                                            sortedDirection="{!v.sortedDirectionChange}"
+                                            onsort="{!c.fnChangeColumnSorting}"
+                                    />
+                                </div>
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                    </div>
+                    <div class="modal-footer slds-modal__footer">
+                        <lightning:button variant="neutral" label="취소" onclick="{!c.fnCloseModal}"/>
+                        <lightning:button variant="brand" label="변경" onclick="{!c.fnChangeOwner}"/>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" style="z-index:9001 !important;"></div>
+    </aura:if>
+    <!-- SMA 고객 관리 등급 코드 변경 Modal -->
+    <aura:if isTrue="{!v.openModal == 'ChangeCd'}">
+        <section role="dialog" tabindex="-3" class="slds-modal slds-fade-in-open slds-modal_small slds-scrollable" style="z-index:9002 !important;">
+            <div class="slds-align_absolute-center slds-modal__container">
+                <div class="selectUserCSS">
+                    <div class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close" size="large" alternativeText="Close" variant="bare-inverse" class="slds-modal__close" onclick="{!c.fnCloseModal}" />
+                        <h2 class="title slds-text-heading--medium">
+                            <label>SMA 고객 관리 등급 코드 변경</label>
+                        </h2>
+                    </div>
+                    <div class="slds-modal__content" style="padding:15px;">
+                        <lightning:layoutItem size="12" padding="horizontal-small">
+                            <lightning:select name="custCd" label="SMA 고객 관리 등급 코드" aura:id="custCd" value="{!v.selectedSmaCustMngGrdCd}" variant="label-inline">
+                                <option value="none"> == 선택 == </option>
+                                <aura:iteration items="{!v.listSmaCustMngGrdCd}" var="option">
+                                    <option text="{!option.label}" value="{!option.value}" selected="{!option.selected}"/>
+                                </aura:iteration>
+                            </lightning:select>
+                        </lightning:layoutItem>
+                    </div>
+                    <div class="modal-footer slds-modal__footer">
+                        <lightning:button variant="neutral" label="취소" onclick="{!c.fnCloseModal}"/>
+                        <lightning:button variant="brand" label="변경" onclick="{!c.fnChangeSmaCustMngGrdCd}"/>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" style="z-index:9001 !important;"></div>
+    </aura:if>
+</aura:component>

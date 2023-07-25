@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>fm_RecentApprovalInfo__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(  
+   NOT(ISBLANK(approvedUserName__c)),
+   approvedUserName__c &amp;&quot;(&quot;&amp; approvedUserType__c&amp;&quot;) &quot;&amp; approvedDate__c,
+   &quot;&quot;
+)</formula>
+    <label>최근 결재 이력</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

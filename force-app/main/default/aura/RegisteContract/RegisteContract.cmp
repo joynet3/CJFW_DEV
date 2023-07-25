@@ -1,0 +1,82 @@
+<!--
+ - Created by kw on 2022-12-28.
+ -->
+
+<aura:component description="RegisteContract"
+                implements="force:lightningQuickAction,flexipage:availableForAllPageTypes,force:hasRecordId,flexipage:availableForRecordHome,force:appHostable,force:lightningQuickActionwithoutheader"
+                controller="RegisteContractController">
+    <!--attribute-->
+    <aura:attribute name="recordId" type="String" description="레코드Id"/>
+    <aura:attribute name="startDate" type="Date" description="조회시작일자"/>
+    <aura:attribute name="contractPeriod" type="Integer" description="계약기간(월)"/>
+    <aura:attribute name="expirationNoti" type="string" description="담당MA 만료 알림"/>
+    <aura:attribute name="description" type="string" description="설명"/>
+    <aura:attribute name="isVisible" type="Boolean" default="false" description="View 활성화여부"/>
+    <aura:attribute name="isMobile" type="Boolean" default="false" description="모바일여부"/>
+    <aura:attribute name="inputSize" type="String" default="6" description="layout 사이즈"/>
+
+    <!-- Spinner-->
+    <aura:attribute name="showSpinner" type="Boolean" default="false" description="로딩바 활성화 여부"/>
+
+    <!--handler-->
+    <aura:handler name="init" value="{!this}" action="{!c.fnInit}"/>
+
+    <aura:if isTrue="{!v.isVisible}">
+        <section role="alertdialog" tabindex="1" aria-labelledby="modal-heading-id" aria-describedby="modal-content-id"
+                 class="slds-modal slds-modal_large slds-fade-in-open" aria-modal="true">
+            <aura:if isTrue="{!v.showSpinner}">
+                    <div role="status" class="slds-spinner slds-spinner_large slds-spinner_brand">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+            </aura:if>
+
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <h2 class="slds-text-heading_medium" id="modal-heading-id">계약 등록</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <lightning:layout multipleRows="true">
+                        <aura:if isTrue="{!v.isMobile}">
+                            <lightning:layoutItem flexibility="auto" padding="horizontal-small" size="{!v.inputSize}">
+                                <lightning:input class="dateInput" type="date" label="계약 시작 날짜" value="{!v.startDate}"
+                                                 required="true" dateStyle="short"/>
+                            </lightning:layoutItem>
+                        </aura:if>
+                        <aura:if isTrue ="{!not(v.isMobile)}">
+                            <lightning:layoutItem flexibility="auto" padding="horizontal-small" size="{!v.inputSize}">
+                                <lightning:input type="date" label="계약 시작 날짜" value="{!v.startDate}"
+                                                 required="true" dateStyle="short"/>
+                            </lightning:layoutItem>
+                        </aura:if>
+                        <lightning:layoutItem flexibility="auto" padding="horizontal-small" size="{!v.inputSize}">
+                            <lightning:input label="계약 기간(월)" value="{!v.contractPeriod}"
+                                             required="true"/>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem flexibility="auto" padding="horizontal-small" size="{!v.inputSize}">
+                            <lightning:textarea class="dateInput" label="설명" value="{!v.description}"/>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem flexibility="auto" padding="horizontal-small" size="{!v.inputSize}">
+                            <lightning:select aura:id="expirationNoti" class="dateInput" name="expirationNoti"
+                                              label="담당MA 만료 알림" value="{!v.expirationNoti}">
+                                <option value="">-- 없음 --</option>
+                                <option value="15">15일</option>
+                                <option value="30">30일</option>
+                                <option value="45">45일</option>
+                                <option value="60">60일</option>
+                                <option value="90">90일</option>
+                                <option value="120">120일</option>
+                            </lightning:select>
+                        </lightning:layoutItem>
+                    </lightning:layout>
+                </div>
+                <footer class="slds-modal__footer">
+                    <!--            <footer style="text-align : right">-->
+                    <lightning:button name='Cancel' label='취소' onclick='{!c.fnCancel}'/>
+                    <lightning:button variant="brand" name='Accept' label='저장' onclick='{!c.fnSave}'/>
+                </footer>
+            </div>
+        </section>
+    </aura:if>
+</aura:component>

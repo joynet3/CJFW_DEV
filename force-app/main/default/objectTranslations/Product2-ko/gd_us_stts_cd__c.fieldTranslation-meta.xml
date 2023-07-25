@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>상품 사용 상태</label>
+    <name>gd_us_stts_cd__c</name>
+    <picklistValues>
+        <masterLabel>[BLCK]사용중지</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>[NRML]사용중</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>[TEMP]현지구매</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>[WAIT]보류</masterLabel>
+        <translation></translation>
+    </picklistValues>
+</CustomFieldTranslation>

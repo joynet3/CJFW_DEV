@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CheckApplicationDate_Cooking</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND( ADDMONTHS(DATEVALUE(ServiceStartDateTime__c),2)  &lt; QuarterOpenDate__c, Text(Category__c) = &quot;쿠킹클래스&quot;)</errorConditionFormula>
+    <errorMessage>쿠킹클래스  컨텐츠는 오픈분기 2개월전부터 신청 가능합니다.</errorMessage>
+</ValidationRule>

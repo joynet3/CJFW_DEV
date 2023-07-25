@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>fm_OurHeadOffice__c</fullName>
+    <externalId>false</externalId>
+    <formula>if( Text(CRG_MA__r.HeadOffice__c) =  Text($User.HeadOffice__c) , &quot;Y&quot; , &quot;N&quot; )</formula>
+    <label>OurHeadOffice</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

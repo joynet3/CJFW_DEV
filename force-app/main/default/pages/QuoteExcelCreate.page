@@ -1,0 +1,282 @@
+<!--
+* ==================================================================================
+*   File Name   : QuotePDFCreate.vfp
+*   Author      : Minje.Kim
+*   Date        : 2022.08.08
+*   Description : Quote PDF Create
+*   Modification Log
+* ==================================================================================
+*   Ver     Date          Author          Modification
+* ==================================================================================
+*   1.0     2022.08.08    Minje.Kim    Create
+* ==================================================================================
+-->
+ <!-- contentType="application/vnd.ms-excel#{!fileName}.xls" -->
+<apex:page controller="QuoteFileCreateController" 
+        showheader="false"
+        contentType="application/vnd.ms-excel" 
+        sidebar="false"  
+        standardStylesheets="false" 
+        applyHtmlTag="false" 
+        applyBodyTag="false" 
+        cache="false"
+        readOnly="true">    
+        <html> 
+            <style>
+                @page {
+                    size: A4 landscape;
+                }
+                
+                body {
+                    font-family: Arial Unicode MS;
+                }
+                
+                
+                table, th, tr {
+                    border-collapse: collapse;
+                    font-size : 13px;
+                }
+                
+                td{
+                    font-family: Arial Unicode MS; 
+                    border:1px solid rgb(204, 204, 204);
+                    word-wrap: break-word;
+                    font-size: 13px;
+                    padding: 2mm;
+                    box-shadow: none;
+                }
+                
+                .bg_color_gray{
+                    background-color: #f1f1f1; !important;
+                    -webkit-print-color-adjust: exact;
+                    color-adjust: exact;
+                    font-size: 13px;
+                    font-weight: bold;
+                    text-align: center;
+                }
+                
+                .custom-table {
+                    width: 1000px;
+                    margin-top:0; 
+                    padding-top:0; 
+                    margin-bottom:0; 
+                    padding-bottom:0;
+                    border-style:none;
+                    border-collapse: collapse;
+                }
+
+                .custom-table2 {
+                    width: 100%;
+                    border: 1px solid #444444;
+                    border-collapse: collapse;
+                    font-size: 6pt;
+                }
+
+                .custom-table td {
+                    border-style: none;
+                }
+
+                .custom-caption {
+                    height: 100px;
+                    font-size: 30px;
+                }
+                .custom-caption th {
+                    border: none !important;
+                    /* background-color: orange; */
+                }
+            </style>
+            <meta http-equiv="Content-Type" content="text/html" charset="UTF-8"/>
+            <body> 
+                <table class="custom-table" border="1px">                    
+                    <tr>
+                        <td rowspan="3" colspan="4" style="text-align:center">
+                            <apex:image value="https://cjck--c.documentforce.com/sfc/dist/version/download/?oid=00D5i0000051CB8&ids=0685i0000091gL4&d=%2Fa%2F5i000000kfHl%2F50ZgunLGOWRMjLylPquKMSTGikgWkh4mW5BCK2LCPT0&asPdf=false" width="180" height="75"/>
+                        </td>
+                        <td rowspan="3" colspan="1" style="text-align:center">
+                            <apex:image value="https://cjck--c.documentforce.com/sfc/dist/version/download/?oid=00D5i0000051CB8&ids=0685i0000091g4h&d=%2Fa%2F5i000000kfHg%2FWhR3Cb4ISsbKHpDOVcQC_i8uurFzGQIGapi_4hWsZrs&asPdf=false" width="288" height="48"/>
+                        </td>
+                    </tr>
+                </table>
+                <table class="custom-table" border="1px">
+                    <tr>
+                        <td rowspan="1" colspan="{!ExcelColummLength}" style="text-align:center">
+                            
+                        </td>
+                        <td rowspan="1" colspan="4" style="border-style:none; text-align:center; line-height:15px; font-weight:bold">
+                            영업담당자 : {!objOwner.Name} / tel : {!objOwner.MobilePhone}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td rowspan="1" colspan="{!ExcelColummLength}" style="text-align:center">
+                            ​<apex:variable var="counter" value="{!1}"/>
+                        </td>
+                        <td rowspan="1" colspan="4" style="border:none; border-top: 2px solid black; line-height:15px; text-align:center">
+                            <apex:outputText value="{0,date,yy년   MM월   dd일}">
+                                <apex:param value="{!objQuote.EffectiveStartDate__c}"/>
+                            </apex:outputText> ~&nbsp;
+                            <apex:outputText value="{0,date,yy년   MM월   dd일}">
+                                <apex:param value="{!objQuote.ExpirationDate}"/>
+                            </apex:outputText>
+                            (단위;원 / VAT별도)
+                        </td>
+                    </tr>
+                </table>
+                <table border="0px" width="700px" align="center" style="border-color:black; ">
+                    <tr>
+                        <td colspan="1" class="bg_color_gray"></td> 
+                        <apex:repeat value="{!listSelectedField}" var="strField"> 
+                            <apex:outputPanel layout="none" rendered="{!strField == 'fm_PriceBookEntryName__c'}">
+                                <td colspan="6" class="bg_color_gray" >
+                                    {!mapField[strField]}
+                                </td>
+                            </apex:outputPanel>   
+                            <apex:outputPanel layout="none" rendered="{!strField == 'fm_ProductCode__c'}">
+                                <td colspan="1" class="bg_color_gray">
+                                    &nbsp; {!mapField[strField]} &nbsp;
+                                </td>
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="none" rendered="{!strField == 'LogisticsCenter__c'}">
+                                <td colspan="1" class="bg_color_gray">
+                                    {!mapField[strField]}
+                                </td>
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="none" rendered="{!strField == 'Month__c'}">
+                                <td colspan="1" class="bg_color_gray">
+                                    &nbsp; {!mapField[strField]} &nbsp;
+                                </td>
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="none" rendered="{!strField == 'TaxTypeName__c'}">
+                                <td colspan="1" class="bg_color_gray">
+                                    &nbsp; {!mapField[strField]} &nbsp;
+                                </td>
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="none" rendered="{!strField == 'VAT__c'}">
+                                <td colspan="1" class="bg_color_gray">
+                                    &nbsp; &nbsp; {!mapField[strField]} &nbsp; &nbsp; 
+                                </td>
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="none" rendered="{!strField == 'UnitPriceWithVAT__c'}">
+                                <td colspan="1" class="bg_color_gray">
+                                    {!mapField[strField]}
+                                </td>
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="none" rendered="{!strField == 'UnitPrice'}">
+                                <td colspan="1" class="bg_color_gray">
+                                    &nbsp; &nbsp; {!mapField[strField]} &nbsp; &nbsp; 
+                                </td>
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="none" rendered="{!strField == 'fm_QuantityUnitOfMeasure__c'}">
+                                <td colspan="1" class="bg_color_gray">
+                                    &nbsp; &nbsp; &nbsp; {!mapField[strField]} &nbsp; &nbsp; &nbsp; 
+                                </td>
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="none" rendered="{!strField == 'CountryOfOriginName__c'}">
+                                <td colspan="1" class="bg_color_gray">
+                                    &nbsp; &nbsp; {!mapField[strField]} &nbsp; &nbsp; 
+                                </td>
+                            </apex:outputPanel>
+                        </apex:repeat>
+                    </tr>
+                    
+                    <apex:repeat value="{!listQuoteLineItem}" var="listSubQuoteLineItem"> 
+                        <apex:repeat value="{!listSubQuoteLineItem}" var="objQuoteLineItem"> 
+                        <tr>
+                            <td colspan="1">{!counter}</td> 
+                            <apex:repeat value="{!listSelectedField}" var="strField"> 
+                                <apex:outputPanel layout="none" rendered="{!strField == 'fm_ProductCode__c'}">
+                                    <td colspan="1">
+                                        {!objQuoteLineItem[strField]}
+                                    </td>
+                                </apex:outputPanel>
+                                <apex:outputPanel layout="none" rendered="{!strField == 'fm_PriceBookEntryName__c'}">
+                                    <td colspan="6">
+                                        <p style="padding:0; margin:0; text-align:left" >  &nbsp;{!objQuoteLineItem[strField]}</p>
+                                    </td>
+                                </apex:outputPanel>
+                                <apex:outputPanel layout="none" rendered="{!strField == 'LogisticsCenter__c'}">
+                                    <td colspan="1">
+                                        {!objQuoteLineItem[strField]}
+                                    </td>
+                                </apex:outputPanel>
+                                <apex:outputPanel layout="none" rendered="{!strField == 'Month__c'}">
+                                    <td colspan="1">
+                                        {!objQuoteLineItem[strField]}
+                                    </td>
+                                </apex:outputPanel>
+                                <apex:outputPanel layout="none" rendered="{!strField == 'TaxTypeName__c'}">
+                                    <td colspan="1">
+                                        {!objQuoteLineItem[strField]}
+                                    </td>
+                                </apex:outputPanel>
+                                <apex:outputPanel layout="none" rendered="{!strField == 'VAT__c' || strField == 'UnitPriceWithVAT__c' || strField == 'BasePurchasePrice__c' || strField == 'UnitPrice'}">
+                                    <td colspan="1">
+                                        <apex:outputText value="{0, Number, ###,###,###,##0}">  
+                                            <apex:param value="{!objQuoteLineItem[strField]}" />
+                                        </apex:outputText> 
+                                    </td>
+                                </apex:outputPanel>
+                                <apex:outputPanel layout="none" rendered="{!strField == 'fm_QuantityUnitOfMeasure__c'}">
+                                    <td colspan="1">
+                                        {!objQuoteLineItem[strField]}
+                                    </td>
+                                </apex:outputPanel>
+                                <apex:outputPanel layout="none" rendered="{!strField == 'CountryOfOriginName__c'}">
+                                    <td colspan="1">
+                                        {!objQuoteLineItem[strField]}
+                                    </td>
+                                </apex:outputPanel>
+                            </apex:repeat>
+                        </tr>
+                        <apex:variable var="counter" value="{!counter+ 1}"/>
+                        </apex:repeat>
+                    </apex:repeat>
+                    <!-- <apex:repeat value="{!listQuoteLineItem}" var="listSubQuoteLineItem"> 
+                        <apex:repeat value="{!listSubQuoteLineItem}" var="objQuoteLineItem"> 
+                        <tr>
+                            <td>{!counter}</td> 
+                            
+                            <apex:repeat value="{!listSelectedField}" var="strField"> 
+                                <td>
+                                    {!objQuoteLineItem[strField]}
+                                </td> 
+                            </apex:repeat>
+                        </tr>
+                        <apex:variable var="counter" value="{!counter+ 1}"/>
+                        </apex:repeat>
+                    </apex:repeat> -->
+                </table>
+                <!-- <table border="0px" width="700px" align="center" style="border-color:black; ">
+                    <tr>
+                        <td class="bg_color_gray"></td> 
+                        <td class="bg_color_gray">상품</td> 
+                        <td class="bg_color_gray">상품코드</td> 
+                        <td class="bg_color_gray">단위</td>
+                        <td class="bg_color_gray">원산지</td>
+                        <td class="bg_color_gray">면세여부</td>
+                        <td class="bg_color_gray">견적가 </td>  
+                    </tr>
+                    <apex:repeat value="{!listQuoteLineItem}" var="listSubQuoteLineItem"> 
+                        <apex:repeat value="{!listSubQuoteLineItem}" var="objQuoteLineItem"> 
+                        <tr>
+                            <td>{!counter}</td> 
+                            <td>{!objQuoteLineItem.fm_PriceBookEntryName__c}</td> 
+                            <td>{!objQuoteLineItem.fm_ProductCode__c}</td> 
+                            <td>{!objQuoteLineItem.fm_QuantityUnitOfMeasure__c}</td> 
+                            <td>{!objQuoteLineItem.fm_CountryOfOrigin__c}</td> 
+                            <td>
+                                <apex:outputPanel layout="none" rendered="{!objQuoteLineItem.fm_IsTaxFreeYN__c}">
+                                    면세
+                                </apex:outputPanel>
+                                <apex:outputPanel layout="none" rendered="{!!objQuoteLineItem.fm_IsTaxFreeYN__c}">
+                                    과세
+                                </apex:outputPanel> 
+                            </td>
+                            <td>{!objQuoteLineItem.UnitPrice}</td> 
+                        </tr>
+                        <apex:variable var="counter" value="{!counter+ 1}"/>
+                        </apex:repeat>
+                    </apex:repeat>
+                </table> -->
+            </body> 
+        </html>
+    </apex:page>

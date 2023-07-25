@@ -1,0 +1,21 @@
+.THIS .custom-beige-bgColor .slds-tabs_scoped__nav{
+    background-color: rgb(217 246 220);
+}
+
+.THIS .custom-beige-bgColor .slds-tabs_scoped__content{
+    height:90%;
+}
+
+.THIS .custom-beige-bgColor{
+    height:100%;
+    position:relative;
+}
+
+.THIS .custom-toggle-nodesc .slds-form-element__control .slds-checkbox_faux_container .slds-checkbox_on { 
+    display:none;
+}
+
+.THIS .custom-toggle-nodesc { 
+    margin-top: 0.3rem;
+    margin-bottom: 0.3rem;
+}

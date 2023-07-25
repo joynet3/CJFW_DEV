@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>OwnerChnageRule</fullName>
+    <active>false</active>
+    <errorConditionFormula>AND( ISCHANGED(OwnerId),   CreatedBy.LastName &lt;&gt; &quot;안태진&quot;,  CreatedById &lt;&gt;  $User.Id )</errorConditionFormula>
+    <errorMessage>타인 계정을 변경할 수 없습니다.</errorMessage>
+</ValidationRule>

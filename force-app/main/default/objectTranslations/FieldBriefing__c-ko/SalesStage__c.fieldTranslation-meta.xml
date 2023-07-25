@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>영업단계</label>
+    <name>SalesStage__c</name>
+    <picklistValues>
+        <masterLabel>고객 및 키맨 인터뷰</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>운영 기초 정보 파악</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>해당없음</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>현장실사 및 시설파악</masterLabel>
+        <translation></translation>
+    </picklistValues>
+</CustomFieldTranslation>

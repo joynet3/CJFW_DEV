@@ -1,0 +1,190 @@
+<!--
+  @description       : 
+  @author            : (서원) won.seo@daeunextier.com
+  @group             : 
+  @last modified on  : 09-15-2022
+  @last modified by  : (서원) won.seo@playful-impala-5wzu0.com
+-->
+<aura:component access="global" implements="force:appHostable,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes" controller="CmpMapController">
+
+    <!-- Attribute -->
+    <aura:attribute name="iframeUrl" type="String"/>
+    <aura:attribute name="tmapIframeUrl" type="String"/>
+
+    <aura:attribute name="tmapIframeUrl2" type="String"/>
+    <aura:attribute name="isTmap2" type="Boolean" default="false"/>
+
+    <aura:attribute name="addrInfo" type="List" default=""/>
+    <aura:attribute name="start" type="String" default=""/>
+    <aura:attribute name="startCoord" type="String" default=""/>
+    <aura:attribute name="goal" type="String" default=""/>
+    <aura:attribute name="goalCoord" type="String" default=""/>
+    <aura:attribute name="btnClick" type="String" default=""/>
+    <aura:attribute name="distance" type="Decimal" default="0"/>
+    <aura:attribute name="childMsg" type="Decimal" default="0"/>
+    <aura:attribute name="lineDistance" type="Decimal" default="0"/>
+
+    <aura:attribute name="resultList" type="List" default=""/>
+    <!-- <aura:attribute name="tmapResultList" type="List" default=""/> -->
+    <aura:attribute name="coord" type="String" default=""/>
+
+    <aura:attribute name="isModalOpen" type="boolean" default="false"/>
+    <aura:attribute name="isList" type="boolean" default="false"/>
+    <aura:attribute name="isTmapModalOpen" type="boolean" default="false"/>
+    <!-- <aura:attribute name="isTmapList" type="boolean" default="false"/> -->
+
+    <aura:attribute name="tmapDistance" type="String" default=""/>
+    <aura:attribute name="tmapStartAddr" type="String" default=""/>
+    <aura:attribute name="tmapEndAddr" type="String" default=""/>
+
+    <aura:attribute name="vfPage" type="String" default=""/>
+
+    <!-- Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.fnInit}"/>
+
+    <div id="container">
+        <div id="distanceContainer">
+            <lightning:button aura:id="distanceBtn" variant="neutral" label="거리 측정" onclick="{!c.fnTmapOpenModel}"/>
+            <br/> 
+            <lightning:button aura:id="distanceBtn2" variant="neutral" label="거리 측정2" onclick="{!c.fnTmapOpenModel2}"/>
+            <b>
+                <lightning:input label="출발지:" id="tmapStart" readonly="true" value="{!v.tmapStartAddr}"/>
+                <lightning:input label="도착지:" id="tmapEnd" readonly="true" value="{!v.tmapEndAddr}"/>
+                <lightning:input label="운행거리(km):" id="tmapDistance" readonly="true" value="{!v.tmapDistance}"/>
+            </b>
+            <br/>
+        </div>
+        <aura:if isTrue="{!v.isTmapModalOpen}">
+            <!-- Modal/Popup Box starts here-->
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_large">
+                <!-- spinner -->
+                <lightning:spinner aura:id="loadingSpinner" class="slds-hide" alternativeText="Loading" size="small" />
+
+                <div class="slds-modal__container">
+                    <!-- Modal/Popup Box Header Starts here-->
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close"
+                                              onclick="{! c.fnCloseModel }"
+                                              alternativeText="close"
+                                              variant="bare-inverse"
+                                              class="slds-modal__close"/>
+                    </header>
+                    <!--Modal/Popup Box Body Starts here-->
+                    <div class="slds-modal__content slds-var-p-around_medium" id="modal-content-id-1">
+                        <div id="modal_child_mapDiv">
+                            <aura:if isTrue="{!v.isTmap2}">
+                                <iframe id="tmapIframeMap" aura:id="tmapIframeMap" src="{!v.tmapIframeUrl2}" frameborder="0"></iframe>
+                                <aura:set attribute="else">
+                                    <iframe id="tmapIframeMap" aura:id="tmapIframeMap" src="{!v.tmapIframeUrl}" frameborder="0"></iframe>
+                                </aura:set>
+                            </aura:if>
+                        </div>
+                        
+                    </div>
+                    <!--Modal/Popup Box Footer Starts here-->
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral"
+                                          label="Cancel"
+                                          title="Cancel"
+                                          onclick="{! c.fnCloseModel }"/>
+                        <lightning:button variant="brand"
+                                          aura:id="OK"
+                                          label="OK"
+                                          title="OK"
+                                          onclick="{!c.fnTmapSubmitDetails}"/>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </aura:if>
+        <aura:if isTrue="{!v.isModalOpen}">
+            <!-- Modal/Popup Box starts here-->
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_large">
+                <div class="slds-modal__container">
+                    <!-- Modal/Popup Box Header Starts here-->
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close"
+                                              onclick="{! c.fnCloseModel }"
+                                              alternativeText="close"
+                                              variant="bare-inverse"
+                                              class="slds-modal__close"/>
+                    </header>
+                    <!--Modal/Popup Box Body Starts here-->
+                    <div class="slds-modal__content slds-var-p-around_medium" id="modal-content-id-1">
+                        <div id="modal_child_listDiv">
+                            <div class="slds-var-p-around_small" id="searchContainer" onkeyup="{!c.fnFormPress}">
+                                <lightning:input class="keyword" aura:id="keyword" placeholder="장소 검색" value=""/>
+                                <lightning:button class="findKeyword" aura:id="findKeyword" variant="neutral" label="검색" onclick="{!c.fnButtonPress}"/>
+                            </div>
+                            <div id="listContainer">
+                                <ul>
+                                    <aura:if isTrue="{!v.isList}">
+                                        <aura:iteration items="{!v.resultList}" var="localInfo" indexVar="index">
+                                            <li>
+                                                <span class="slds-assistive-text" aria-live="polite"></span>
+                                                <button id="listButton" class="slds-coordinates__item-action slds-media" aria-pressed="false" data-record="{!index}" onclick="{!c.fnLocalSelect}">
+                                                <span class="slds-media__body" id="">
+                                                    <span class="slds-text-link">{!localInfo.title} </span>
+                                                    <span>{!localInfo.address}</span>
+                                                    <span>{!localInfo.roadAddress}</span>
+                                                </span>
+                                                </button>
+                                            </li>
+                                        </aura:iteration>
+                                    </aura:if>
+                                </ul>
+                            </div>
+                        </div>
+                        <div id="modal_child_mapDiv">
+                            <iframe id="iframeMap" aura:id="iframeMap" src="{!v.iframeUrl}" frameborder="0"></iframe>
+                        </div>
+                        
+                    </div>
+                    <!--Modal/Popup Box Footer Starts here-->
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral"
+                                          label="Cancel"
+                                          title="Cancel"
+                                          onclick="{! c.fnCloseModel }"/>
+                        <lightning:button variant="brand"
+                                          aura:id="OK"
+                                          label="OK"
+                                          title="OK"
+                                          onclick="{!c.fnSubmitDetails}"/>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </aura:if>
+        <div id="startDiv">
+            <lightning:button aura:id="startBtn" variant="neutral" label="출발지 찾기" onclick="{!c.fnOpenModel}"/>
+            <br/> 
+            <b>출발지: 
+                <lightning:input id="start" value="{!v.start}"/>
+            </b>
+            <br/>
+            <br/>
+        </div>
+        <div id="goalDiv"> 
+            <lightning:button aura:id="goalBtn" variant="neutral" label="도착지 찾기" onclick="{!c.fnOpenModel}"/>
+            <br/>
+            <b>도착지: 
+                <lightning:input id="goal" value="{!v.goal}"/>
+            </b>
+            <br/>
+            <br/>
+        </div>
+
+        <div id="distanceDiv">
+            <lightning:button aura:id="distanceBtn" variant="neutral" label="거리 측정" onclick="{!c.fnGetDistance}"/>
+            <br/>
+            <b>운행거리(km): 
+                <lightning:input id="distance" value="{!v.distance}"/>
+            </b>
+            <br/>
+            <b>직선거리(km): 
+                <lightning:input id="lineDistance" value="{!v.lineDistance}"/>
+            </b>
+        </div>
+    </div>
+</aura:component>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SOWOppportunityCompactLayout_Final</fullName>
+    <fields>Name</fields>
+    <fields>AccountId</fields>
+    <fields>ProposalDate__c</fields>
+    <fields>SOWProductName__c</fields>
+    <fields>ProposedCostRate__c</fields>
+    <label>SOW Oppportunity Compact Layout_Final</label>
+</CompactLayout>

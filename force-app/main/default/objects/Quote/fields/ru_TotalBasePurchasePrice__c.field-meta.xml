@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ru_TotalBasePurchasePrice__c</fullName>
+    <description>총 기준 매입가</description>
+    <externalId>false</externalId>
+    <label>Total Base Purchase Price</label>
+    <summarizedField>QuoteLineItem.BasePurchasePrice__c</summarizedField>
+    <summaryForeignKey>QuoteLineItem.QuoteId</summaryForeignKey>
+    <summaryOperation>sum</summaryOperation>
+    <trackHistory>false</trackHistory>
+    <type>Summary</type>
+</CustomField>

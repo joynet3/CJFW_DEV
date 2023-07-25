@@ -1,0 +1,60 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 11-24-2022
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<aura:component implements="force:appHostable,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes,force:hasRecordId" access="global" controller="VOCImageView">
+    <aura:attribute name="listImage" type="List"/>
+    <aura:attribute name="detailURL" type="String"/>
+    <aura:attribute name="isOpenPopup" type="Boolean" default="false"/>    
+
+	<!-- Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.fnInit}"/>
+
+    <aura:if isTrue="{!v.showSpinner}">
+        <lightning:spinner aura:id="spinner" alternativeText="Loading" variant="brand" size="medium" />
+    </aura:if>
+
+    <div style="margin:10px 0px 10px 0px">
+        <article class="{!v.isMobile ? '' : 'slds-card slds-card_boundary related_list_card_border'}" style="padding:0px">
+    <lightning:card variant="Narrow" title="VOC 이미지" iconName="{!v.isMobile ? '' : 'standard:template'}" footer="">
+        <aura:set attribute="actions">            
+        </aura:set>
+        <p class="slds-p-horizontal_small">
+            <lightning:layout multipleRows="true">            
+                <aura:iteration items="{!v.listImage}" var="obj">
+                    <lightning:layoutItem size="4" padding="around-small">
+                        <img src="{!obj}" onclick="{!c.clickDetail}" style="cursor:pointer;"/>
+                    </lightning:layoutItem>
+                </aura:iteration>
+            </lightning:layout>            
+        </p>
+    </lightning:card>
+    </article></div>
+
+    <aura:if isTrue="{!v.isOpenPopup}">
+        <section role="dialog" tabindex="-3" class="slds-modal slds-fade-in-open slds-modal_small" style="z-index:9002 !important;">
+            <div class="slds-align_absolute-center slds-modal__container">
+                <div style="width:60%">
+                    <div class="slds-modal__header">
+                        <!-- <lightning:buttonIcon iconName="utility:close" size="large" alternativeText="Close" variant="bare-inverse" class="slds-modal__close" onclick="{!c.fnCloseModal}" /> -->
+                        <h2 class="title slds-text-heading--medium">
+                            <label></label>
+                        </h2>
+                    </div>
+                    <div class="slds-modal__content scrollable" style="padding:15px;">                                
+                        <div class="slds-form-element slds-form-element_horizontal">
+                            <img src="{!v.detailURL}" style="width:"/>
+                        </div>
+                    </div>
+                    <div class="modal-footer slds-modal__footer">
+                        <lightning:button variant="neutral" label="닫기" onclick="{!c.fnCloseModal}"/>                        
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" style="z-index:9001 !important;"></div>
+    </aura:if>
+</aura:component>

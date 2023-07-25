@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>BidLetterSubmitCloseDateTime__c</fullName>
+    <description>귝방전자조달시스템 입찰서 제출 마감일시</description>
+    <externalId>false</externalId>
+    <label>Bid Letter Submit Close Date/Time</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>DateTime</type>
+</CustomField>

@@ -1,0 +1,22 @@
+<apex:page standardController="RELEASE_H__c" recordSetVar="RELEASEs">
+
+    <apex:includeLightning />
+    <div id="lightning" />
+
+    <script>    
+        if(SfdcApp.projectOneNavigator) {
+            SfdcApp.projectOneNavigator.fireContainerEvent(
+                "force:navigateToComponent",
+                {
+                    componentDef: 'c:CK_ManualSyncData',
+                    componentAttributes: {
+                        "sObjName" : "RELEASE_H__c",
+                        "pSyncType" : "RECONFIRM" 
+                    },
+                    resetHistory: false
+                }
+            );
+        }
+    </script>
+
+</apex:page>

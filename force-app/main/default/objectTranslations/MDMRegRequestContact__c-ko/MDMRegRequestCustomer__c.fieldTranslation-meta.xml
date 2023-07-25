@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>MDM 고객 등록 요청</label>
+    <name>MDMRegRequestCustomer__c</name>
+    <relationshipLabel>담당자 정보</relationshipLabel>
+</CustomFieldTranslation>

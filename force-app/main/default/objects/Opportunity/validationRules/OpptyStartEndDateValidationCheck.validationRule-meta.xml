@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>OpptyStartEndDateValidationCheck</fullName>
+    <active>true</active>
+    <description>마감 일자가 개시일시 이전일 경우 ValidationCheck</description>
+    <errorConditionFormula>CloseDate &lt; Datevalue(rgstDt__c)</errorConditionFormula>
+    <errorMessage>마감 일자를 게시일시 이후로 설정해주세요.</errorMessage>
+</ValidationRule>

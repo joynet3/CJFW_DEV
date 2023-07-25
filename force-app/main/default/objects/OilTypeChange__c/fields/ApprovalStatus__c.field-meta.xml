@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ApprovalStatus__c</fullName>
+    <externalId>false</externalId>
+    <label>ApprovalStatus</label>
+    <required>false</required>
+    <trackFeedHistory>true</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>작성중</fullName>
+                <default>true</default>
+                <label>작성중</label>
+            </value>
+            <value>
+                <fullName>승인요청</fullName>
+                <default>false</default>
+                <label>승인요청</label>
+            </value>
+            <value>
+                <fullName>반려</fullName>
+                <default>false</default>
+                <label>반려</label>
+            </value>
+            <value>
+                <fullName>승인</fullName>
+                <default>false</default>
+                <label>승인</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

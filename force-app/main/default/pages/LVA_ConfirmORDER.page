@@ -1,0 +1,22 @@
+<apex:page standardController="ORDER_H__c" recordSetVar="ORDERs">
+
+    <apex:includeLightning />
+    <div id="lightning" />
+
+    <script>    
+        if(SfdcApp.projectOneNavigator) {
+            SfdcApp.projectOneNavigator.fireContainerEvent(
+                "force:navigateToComponent",
+                {
+                    componentDef: 'c:CK_ManualSyncData',
+                    componentAttributes: {
+                        "sObjName" : "ORDER_H__c",
+                        "pSyncType" : "RECONFIRM" 
+                    },
+                    resetHistory: false
+                }
+            );
+        }
+    </script>
+
+</apex:page>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Proposal_Type__c</fullName>
+    <externalId>false</externalId>
+    <label>Proposal_Type</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>신규제안</fullName>
+                <default>false</default>
+                <label>신규제안</label>
+            </value>
+            <value>
+                <fullName>기타(오픈)</fullName>
+                <default>false</default>
+                <label>기타(오픈)</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

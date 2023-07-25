@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>오븐 보유 여부</label>
+    <name>oven_poss_yn__c</name>
+    <picklistValues>
+        <masterLabel>미보유</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>보유</masterLabel>
+        <translation></translation>
+    </picklistValues>
+</CustomFieldTranslation>

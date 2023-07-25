@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fieldSets>
+        <label></label>
+        <name>LeadItemFileCreate</name>
+    </fieldSets>
+    <fieldSets>
+        <label></label>
+        <name>LeadTracking</name>
+    </fieldSets>
+    <recordTypes>
+        <label>유통사업부 리드</label>
+        <name>DeliveryDepartment</name>
+    </recordTypes>
+    <recordTypes>
+        <label>EAT 리드</label>
+        <name>EATLead</name>
+    </recordTypes>
+    <recordTypes>
+        <label>FS개발사업부 리드</label>
+        <name>FSDiscoveryDepartment</name>
+    </recordTypes>
+    <recordTypes>
+        <label>급식솔루션사업부 리드</label>
+        <name>GroupMealSolutionDepartment</name>
+    </recordTypes>
+    <recordTypes>
+        <label>헬씨누리사업부 리드</label>
+        <name>HealthyNuriDepartment</name>
+    </recordTypes>
+    <recordTypes>
+        <label>아이누리사업부 리드</label>
+        <name>INuriDepartment</name>
+    </recordTypes>
+    <recordTypes>
+        <description></description>
+        <label>어린이집 리드</label>
+        <name>KindergartenLead</name>
+    </recordTypes>
+    <recordTypes>
+        <label>지방행정인허가 리드</label>
+        <name>LeadLocalData</name>
+    </recordTypes>
+    <recordTypes>
+        <description></description>
+        <label>국방조달 리드</label>
+        <name>MilitaryLead</name>
+    </recordTypes>
+    <recordTypes>
+        <description></description>
+        <label>나라장터 리드</label>
+        <name>NaraMarketLead</name>
+    </recordTypes>
+    <recordTypes>
+        <label>외식중부사업부 리드</label>
+        <name>RestaurantBusinessDepartment</name>
+    </recordTypes>
+    <recordTypes>
+        <label>원료솔루션사업부 리드</label>
+        <name>StrategyDepartment</name>
+    </recordTypes>
+    <recordTypes>
+        <label></label>
+        <name>catering_business</name>
+    </recordTypes>
+    <recordTypes>
+        <description></description>
+        <label></label>
+        <name>distributor</name>
+    </recordTypes>
+    <recordTypes>
+        <description></description>
+        <label></label>
+        <name>food_service_business</name>
+    </recordTypes>
+    <validationRules>
+        <errorMessage></errorMessage>
+        <name>OwnerExpriationNoticeValidationCheck</name>
+    </validationRules>
+    <webLinks>
+        <label>입찰공고 URL</label>
+        <name>BidDetailLink</name>
+    </webLinks>
+    <webLinks>
+        <label></label>
+        <name>GoogleMaps</name>
+    </webLinks>
+    <webLinks>
+        <label></label>
+        <name>GoogleNews</name>
+    </webLinks>
+    <webLinks>
+        <label></label>
+        <name>GoogleSearch</name>
+    </webLinks>
+    <webLinks>
+        <label></label>
+        <name>NaraTenderBtn</name>
+    </webLinks>
+</CustomObjectTranslation>
