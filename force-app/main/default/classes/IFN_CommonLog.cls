@@ -57,15 +57,11 @@ global class IFN_CommonLog {
         {
 
             List<IFMaster__c> ifObj = [SELECT ID,Name, ClassName__c, Description__c, IsRealLogInsert__c,ContentType__c,Header__c,Method__c,Param1__c,Param2__c,Param3__c,Param4__c FROM IFMaster__c WHERE Name=:InterfaceId];
-            // 2021 11 10 ClassName__c 김성규 추가
-            // 2021 11 10 Description__c 김성규 추가
-
-            System.debug('### ifObj = ' + ifObj);
 
             if(!ifObj.isEmpty())
             {
-                this.IF_ProgramClassName = ifObj[0].ClassName__c; // 2021 11 10 ClassName__c 김성규 추가
-                this.IF_ProgramDescription = ifObj[0].Description__c; // 2021 11 10 Description__c 김성규 추가   
+                this.IF_ProgramClassName = ifObj[0].ClassName__c; 
+                this.IF_ProgramDescription = ifObj[0].Description__c; 
                 this.IF_Program  = ifObj[0];
                 this.isRealLogInsert = ifObj[0].IsRealLogInsert__c;
             }

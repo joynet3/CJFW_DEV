@@ -22,7 +22,96 @@ public with sharing class IFN_Util {
     public static String STATUS_DUPLICATION = 'D';
     public static String STATUS_EXCEPT = 'X';
  
+        
+
+    /**
+     * 세일즈 포스 알람 전송용 함수
+     * @param recipientsIds 
+     * @param targetId 
+     * @param pageRef 
+     * @param notificationTypeId 
+     * @param title 
+     * @param body 
+     */
+    public static void notifyUsers(Set<String> recipientsIds, String targetId, String pageRef, String notificationTypeId, String title, String body) {             
+        // Create a new custom notification
+        Messaging.CustomNotification notification = new Messaging.CustomNotification();
+        
+        // Set the contents for the notification
+        notification.setTitle(title);
+        notification.setBody(body);
+        
+        // Set the notification type and target
+        notification.setNotificationTypeId(notificationTypeId);
+        if(targetId != null) {
+            notification.setTargetId(targetId);
+        } else if(pageRef != null) {	// ex) String pageRef = '{"type": "standard__objectPage","attributes": {"objectApiName": "Account","actionName": "list"},"state":{"filterName":"Recent"}}';
+            notification.setTargetPageRef(pageRef);
+        }
+        
+        // Actually send the notification
+        try {
+            notification.send(recipientsIds);
+        }
+        catch (Exception e) {
+            System.debug('Problem sending notification: ' + e.getMessage());
+        }
+    }
+
+    /**
+     * 테이블 쿼기 
+     * @param sObjectName 
+     * @param fieldSetName 
+     * @return  `String`
+     */
+    public static String getSObjectQuery(String sObjectName, String fieldSetName){        
+        List<Schema.FieldSetMember> fmList = getFieldSetMembers(sObjectName, fieldSetName);
+        
+        String query = 'SELECT ';
+        
+        for(Schema.FieldSetMember f : fmList) {
+            query += f.getFieldPath() + ', ';
+        }
+        query = query.removeEnd(', ');
+        query += ' FROM '+ sObjectName;
+        return query;
+    }
+
+    /**
+     * Sobject 필드 리스트 추출
+     * @param objectTypeName 
+     * @param fieldSetName 
+     * @return  `List<Schema.FieldSetMember>`
+     */
+    private static List<Schema.FieldSetMember> getFieldSetMembers(String objectTypeName, String fieldSetName) {
+        System.debug(fieldSetName);
+        DescribeSObjectResult[] describes = Schema.describeSObjects(new String[] {
+            objectTypeName
+                });
+        
+        if (describes != null && describes.size() > 0) {
+            System.debug(describes[0].fieldSets);
+            System.debug(describes[0].fieldSets.getMap());
+            Schema.FieldSet fs = describes[0].fieldSets.getMap().get(fieldSetName);
+            System.debug(fs.getFields());
+            return fs.getFields();
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * obj의 recordtype name을 통해 id가져오기
+     * @param objName 
+     * @param recrodTypeDevName 
+     * @return  `Id`
+     */
+    public static Id getRecordTypeId(String objName, String recrodTypeDevName)
+    {
+        return Schema.getGlobalDescribe().get(objName).getDescribe().getRecordTypeInfosByDeveloperName().get(recrodTypeDevName).getRecordTypeId();
+    }
     
+
     //숫자 외 제거
     public static String replaceText(String value){
         String result = '';
@@ -660,22 +749,15 @@ public with sharing class IFN_Util {
                                         FROM CronTrigger 
                                         WHERE CronJobDetail.Name = :mb[0].ScheduleClass__c LIMIT 1];
             
-                // System.debug(cronTr[0].Id);
-                System.debug(mb[0]);
                 if(!cronTr.isEmpty()) System.abortJob(cronTr[0].Id);
                 
                 IFN_Scheduler sch = new IFN_Scheduler(mb[0].ScheduleClass__c, String.valueOf(mb[0].ScopeSize__c));
-                System.debug('ScopeSize : ' + mb[0].ScopeSize__c);
-                System.debug('ScopeSize sch : ' + sch.scopSize);
                 String cronExp = '';
                 
                 Datetime dt = Datetime.now().addMinutes(Integer.valueOf(mb[0].Interval__c));
                 cronExp = dt.format('s mm HH') + ' * * ?';
 
-                System.debug(cronExp);
-                System.debug(sch);
-
-                // 20211202 테스트시 실행 되지않도록 수정 김덕준  
+                // 테스트시 실행 되지않도록 함
                 if(!Test.isRunningTest()){
                     system.schedule(mb[0].ScheduleClass__c.trim(), cronExp, sch);
                 }

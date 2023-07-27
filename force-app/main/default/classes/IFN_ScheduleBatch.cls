@@ -6,6 +6,8 @@
 * @Version : 1.0
 * @Description : 
 * @Modified : 인터페이스 스케쥴 배치
+    - Batch_Sequence__mdt 에 등록된 스케쥴링 배치에 대하여 재 등록수행
+    - 배치 프로그램이 죽어서 스케쥴이 돌아 가지 않는 부분에 대하여 보완하기 위함
 *  ----------------------------------------------
 *  NO | Date       | Modifier       | Description 
 *  ----------------------------------------------
@@ -13,10 +15,6 @@
 * */
 global class IFN_ScheduleBatch extends MasterBatchBase implements Database.AllowsCallouts {
     global Integer sTime;
-    /*
-    IFN_ScheduleBatch batch = new IFN_ScheduleBatch();
-    Database.executeBatch(batch, 200);
-    */
 
     public IFN_ScheduleBatch(){}
     
@@ -133,11 +131,6 @@ global class IFN_ScheduleBatch extends MasterBatchBase implements Database.Allow
         catch(System.Exception e) 
         {
             logWrap.ErrorText.add(e.getMessage());
-
-            System.debug('Exception : ' + e.getMessage());
-            System.debug('Exception : ' + e.getLineNumber());
-            System.debug('Exception : ' + e.getStackTraceString());
-
             logWrap.LogText.add('### Exception.getMessage() = ' + e.getMessage() );
             logWrap.LogText.add('### Exception.getLineNumber() = ' + e.getLineNumber() );
             logWrap.LogText.add('### Exception.getStackTraceString() = ' + e.getStackTraceString() );
