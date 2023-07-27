@@ -1,16 +1,16 @@
 /**
-* Desc : 
-* TEST : 
-
-* @Modified : IFLog__c에 로그를 기록하기 위한 기능함수
-*  ---------------------------------------------
-*  NO | Date       | Modifier      | Description 
-*  ---------------------------------------------
-*  1. | 2020-05-19 | Hyeongjun, Jo | 최초작성
-*  2. | 2022-12-15 | Ain, Yoo	   | Warning Log 처리 추가
-*  3. | 2022-12-15 | 김태신   	    | Dummy 클래스 연결 로직 추가
-*/
-
+* @Class : IFN_CommonLog
+* @group Framework : Common
+* @Author : 조일근 
+* @Date : 2023. 07. 18
+* @Version : 1.0
+* @Description : 
+* @Modified : 인터페이스 로그 공통 함수
+*  ----------------------------------------------
+*  NO | Date       | Modifier       | Description 
+*  ----------------------------------------------
+*  1. | 2023. 07. 18 | 조일근    | 최초작성
+* */
 global class IFN_CommonLog {
     
     public String className; //클래스명
@@ -38,7 +38,7 @@ global class IFN_CommonLog {
         @AuraEnabled public Integer       IFTotalCount{get;set;}
         @AuraEnabled public Integer       IFSuccessCount{get;set;}
         @AuraEnabled public Integer       IFFailCount{get;set;}
-        @AuraEnabled public String        LogText{get;set;}
+        @AuraEnabled public List<String>        LogText{get;set;}
         @AuraEnabled public IFMaster__c   IF_Program{get;set;}
         @AuraEnabled public String        IF_ProgramClassName{get;set;} // 2021 11 10 ClassName__c 김성규 추가
         @AuraEnabled public String        IF_ProgramDescription{get;set;} // 2021 11 10 Description__c 김성규 추가
@@ -108,7 +108,7 @@ global class IFN_CommonLog {
             this.ResponseBody    = '';
             this.ResponseHeader  = '';
             this.ResponseTime    = null;
-            this.LogText         = '';
+            this.LogText         = new List<String>();
             this.Status          = '';
             this.DMLInfo         = '';
             this.DMLSuccessInfo  = '';
@@ -128,13 +128,13 @@ global class IFN_CommonLog {
             if(String.isNotBlank(this.RequestHeader))  result.RequestHeader__c  = this.RequestHeader;
             if(String.isNotBlank(this.ResponseBody))   result.ResponseBody__c   = getText(this.ResponseBody);
             if(String.isNotBlank(this.ResponseHeader)) result.ResponseHeader__c = this.ResponseHeader;
-            if(String.isNotBlank(this.LogText))        result.LogText__c           = getText(this.LogText);
 
             if(this.BatchStartTime != null)  result.BatchStartTime__c   = this.BatchStartTime;
             if(this.BatchEndTime   != null)  result.BatchEndTime__c     = this.BatchEndTime;
             if(this.RequestTime    != null)  result.RequestTime__c   = this.RequestTime;
             if(this.ResponseTime   != null)  result.ResponseTime__c  = this.ResponseTime;
             if(this.ErrorText      != null)  result.ErrorText__c        = getText(JSON.serialize(this.ErrorText));
+            if(this.LogText      != null)  result.LogText__c        = getText(JSON.serialize(this.LogText));
 
 
 
@@ -259,7 +259,6 @@ global class IFN_CommonLog {
         catch(Exception e) 
         {
 
-            //progLog.LogText__c   = '';
             progLog.ErrorText__c += e.getStackTraceString() + ' / ' + e.getMessage();
             progLog.Status__c    = 'Error';
 

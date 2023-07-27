@@ -1,0 +1,107 @@
+{
+
+
+	"annotation to header": {
+	
+	"prefix": ">header",
+	
+	"body": [
+	
+	   "/**"
+	
+	   ," * @Class : ${TM_FILENAME}"
+	
+	   ," * @group Framework : ${1}"
+	
+	   ," * @Author : ${2}"
+	
+	   ," * @Date : ${CURRENT_YEAR}-${CURRENT_MONTH}-${CURRENT_DATE}"
+	
+	   ," * @Version : 1.0"
+	
+	   ," * @Description : ${3}"
+	
+	   ," * @Modified : "
+	
+	   ," * ----------------------------------------------"
+	
+	   ," *  NO | Date       | Modifier       | Description"
+	
+	   ," * ----------------------------------------------"
+	
+	   ," *  1. | ${CURRENT_YEAR}.${CURRENT_MONTH}.${CURRENT_DATE} | ${4} | 최초작성"
+	
+	   ," * */"
+	
+	],
+	
+	"description": "header annotation"
+	
+	},
+	
+	
+	"annotation to method": {
+	
+	"prefix": ">method",
+	
+	"body": [
+	
+	"/**",
+	
+	"*${1} 메소드 설명 작성",
+	
+	"*",
+	
+	"*@param ${2} 변수명 파라미터 설명 (있는경우)",
+	
+	"*@return ${3} 리턴값 설명 (있는경우)",
+	
+	"*@exception ${4} 메소드가 발생시키는 예외에 대한 설명 또는 목록",
+	
+	"*@example ",
+	
+	"*${5} 예제코드 태그 아래줄에서 예제 작성",
+	
+	"*/"
+	
+	],
+	
+	"description": "method annotation"
+	
+	},
+	
+	
+	"annotation to update": {
+	
+	"prefix": ">update",
+	
+	"body": [
+	
+	"*@author ${1}",
+	
+	"*@since ${CURRENT_YEAR}-${CURRENT_MONTH}-${CURRENT_DATE} ${2} 내용 작성",
+	
+	],
+	
+	"description": "method update"
+	
+	},
+	
+	
+	
+	"annotation to since": {
+	
+	"prefix": ">since",
+	
+	"body": [
+	
+	"*@since ${CURRENT_YEAR}-${CURRENT_MONTH}-${CURRENT_DATE} ${1} 내용 작성",
+	
+	],
+	
+	"description": "since "
+	
+	},
+	
+	
+	}

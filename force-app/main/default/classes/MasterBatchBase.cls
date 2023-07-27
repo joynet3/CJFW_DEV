@@ -14,7 +14,6 @@
 
 
 public abstract inherited sharing class MasterBatchBase implements Database.Batchable<sObject>, Database.Stateful {
-    //public IF_CommonLog utilLog;
     public Date 		ifDate;			 //Interface Date
     public Date         stD;             //Interface Date
     public Date         edD;             //Interface Date
@@ -24,8 +23,7 @@ public abstract inherited sharing class MasterBatchBase implements Database.Batc
     public Boolean      isSchedule = true;
     public Integer      gCnt = 0;               //guess count
     public Integer      tCnt = 0;               //total count
-    // public IF_CommonLog utilLog = new IF_CommonLog();	//로그 저장
-    // public IF_Settings__mdt ifs = new IF_Settings__mdt();
+    public IFN_CommonLog utilLog = new IFN_CommonLog();	//로그 저장
     public Boolean isTest = false;	//테스트시 true
     public Boolean filter = false;
 
@@ -33,8 +31,8 @@ public abstract inherited sharing class MasterBatchBase implements Database.Batc
     public String failJson;
 
 
-    public LogWrapper logWrap = new LogWrapper();
-    public List<LogWrapper> logWrapList = new List<LogWrapper>();
+    public IFN_CommonLog.logWrap logwrap = new IFN_CommonLog.logWrap();
+    public List<IFN_CommonLog.LogWrap> logWrapList = new List<IFN_CommonLog.LogWrap>();
 
 
     //공통변수
@@ -59,18 +57,18 @@ public abstract inherited sharing class MasterBatchBase implements Database.Batc
             System.debug('### [Batch finish] ###');
             logWrapList.add(logwrap);
             System.debug('### [logwrap] ### : '  + logwrap);
-            // if(!logWrapList.isEmpty()) utilLog.InsertLog(logWrapList);
+            if(!logWrapList.isEmpty()) utilLog.InsertLog(logWrapList);
             
-            // //isContinue = true이면 다음 배치 수행(Metadata) / 기본값 : false
-            // if(isContinue) IF_CommonUtil.NextBatchCheck(currentClassName);
-            // //스케줄 체크
-            // if(isSchedule) IF_CommonUtil.NextScheduleCheck(currentClassName);
+            //isContinue = true이면 다음 배치 수행(Metadata) / 기본값 : false
+            if(isContinue) IFN_Util.NextBatchCheck(currentClassName);
+            //스케줄 체크
+            if(isSchedule) IFN_Util.NextScheduleCheck(currentClassName);
             
         } catch(System.Exception e) {
             logwrap.ErrorText.add(e.getStackTraceString() + ' / ' + e.getMessage());
             
-            // utilLog = new IF_CommonLog();
-            // utilLog.insertLog(logwrap);
+            utilLog = new IFN_CommonLog();
+            utilLog.insertLog(logwrap);
         }
     }
 }

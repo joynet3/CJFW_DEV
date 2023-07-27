@@ -1,3 +1,16 @@
+/**
+* @Class : IFN_ApiGateWay
+* @group Framework : Common
+* @Author : 조일근 
+* @Date : 2023. 07. 18
+* @Version : 1.0
+* @Description : 
+* @Modified : 인터페이스 호출용 공통 프로그램
+*  ----------------------------------------------
+*  NO | Date       | Modifier       | Description 
+*  ----------------------------------------------
+*  1. | 2023. 07. 18 | 조일근    | 최초작성
+* */
 public with sharing class IFN_ApiGateWay {
 
     public IFMaster__c objIFMaster;

@@ -5,44 +5,44 @@
 *@author 진현욱
 *@since 2023-07-24  최초 작성
 */
-public virtual without sharing class CJFW_NotiHandler {
+public virtual without sharing class NotiHandler {
     
     public static Map<String,User> allUserMap;
 
     protected Map<String,String> categoryMapping = new Map<String, String>{
-        'App' => 'CJFW_AppTemplate'
-        ,'Email' => 'CJFW_EmailTemplate'
+        'App' => 'AppTemplate'
+        ,'Email' => 'EmailTemplate'
     }; //Mapping Object 설정으로 뺼지 고려필요
 
     protected Map<String,String> categoryAlertMapping = new Map<String, String>{
-        'App' => 'CJFW_AppAlert'
-        ,'Email' => 'CJFW_NotiAlert'
+        'App' => 'AppAlert'
+        ,'Email' => 'NotiAlert'
     }; //Mapping Object 설정으로 뺼지 고려필요
 
-    protected CJFW_Notification__c noti;
+    protected Notification__c noti;
     /*데이터 형식
         {
             'App' : { 
-                    'ko':CJFW_AppTemplate
-                    ,'en_US':CJFW_AppTemplate
+                    'ko':AppTemplate
+                    ,'en_US':AppTemplate
             }
-            ,'Email': [CJFW_NotiTemplate]
+            ,'Email': [NotiTemplate]
         }
     */
-    protected Map<String, Map<String,CJFW_NotiTemplate>> categoryTemplateMapMap;
+    protected Map<String, Map<String,NotiTemplate>> categoryTemplateMapMap;
     /*데이터 형식
         {
             
-            'App':[CJFW_AppTemplate]
-            ,'Eamil':[CJFW_NotiTemplate]
+            'App':[AppTemplate]
+            ,'Eamil':[NotiTemplate]
             
         }
     */
-    protected Map<String, List<CJFW_NotiTemplate>> categorySendDataListMap;
+    protected Map<String, List<NotiTemplate>> categorySendDataListMap;
     protected Set<Id> recipientIdSet;
     protected Map<String, String> customNotiTypeIdMap;
 
-    public CJFW_NotiHandler() {
+    public NotiHandler() {
 
     }
 
@@ -51,11 +51,11 @@ public virtual without sharing class CJFW_NotiHandler {
     *
     *@param  noti 
     */
-    public void setNotiData(CJFW_Notification__c noti) {
+    public void setNotiData(Notification__c noti) {
         this.noti = noti;
         
-        this.categoryTemplateMapMap = new Map<String, Map<String,CJFW_NotiTemplate>>();
-        this.categorySendDataListMap = new Map<String, List<CJFW_NotiTemplate>>();
+        this.categoryTemplateMapMap = new Map<String, Map<String,NotiTemplate>>();
+        this.categorySendDataListMap = new Map<String, List<NotiTemplate>>();
         this.recipientIdSet = new Set<Id>();
         this.customNotiTypeIdMap = new Map<String, String>();
         for(CustomNotificationType customNoti :[
@@ -73,7 +73,7 @@ public virtual without sharing class CJFW_NotiHandler {
             String userFields = 'Id,Email'; //설정으로 해당 정보 수정하게끔?
 
             List<String> fieldList = userFields.split(',');
-            System.debug(fieldList);
+            //System.debug(fieldList);
     
             for(User u : database.query('select '+userFields+ ',LanguageLocaleKey' +' from User where IsActive = true')) {
                 for(String field : fieldList) {
@@ -86,19 +86,19 @@ public virtual without sharing class CJFW_NotiHandler {
     /**
     * Category: APP,Email 등.. Template 정보 가져오기
     *
-    *@return  Map<String, List<CJFW_NotiTemplate>> Category 별 템플릿
+    *@return  Map<String, List<NotiTemplate>> Category 별 템플릿
     */
-    protected Map<String, Map<String,CJFW_NotiTemplate>> getTemplate() {
-        for(CJFW_NotificationTemplate__c template : noti.Notification_Template__r) {
-            CJFW_NotiTemplate notiTemplate;
+    protected Map<String, Map<String,NotiTemplate>> getTemplate() {
+        for(NotificationTemplate__c template : noti.Notification_Template__r) {
+            NotiTemplate notiTemplate;
             switch on template.RecordType.DeveloperName {
                 when 'App'{
-                    notiTemplate = new CJFW_AppTemplate();
+                    notiTemplate = new AppTemplate();
                     notiTemplate.setMessage(template.Message__c);
                     notiTemplate.setTitle(template.Title__c);
                     notiTemplate.setLang(template.Language__c);
                     notiTemplate.setTemplateId(this.customNotiTypeIdMap.get(noti.CustomNotificationTypeId__c));
-                    ((CJFW_AppTemplate)notiTemplate).setPageReference(noti.PageReference__c);
+                    ((AppTemplate)notiTemplate).setPageReference(noti.PageReference__c);
                 }
                 when 'Email'{
                     //TBD Email Template 복사 구현 필요
@@ -109,27 +109,27 @@ public virtual without sharing class CJFW_NotiHandler {
                 // }
             }
             String category = notiTemplate.getCategory();
-            
-            //같은 언어의 템플릿은 중복 될 수 가 없음
+            System.debug('카테고리:: '+category);
+            //같은 언어의 템플릿은 중복 될 수 가 없기 때문에
             if(categoryTemplateMapMap.containsKey(category)) {
                 categoryTemplateMapMap.get(category).put(notiTemplate.getLang() , notiTemplate);
             }else {
-                Map<String,CJFW_NotiTemplate> langTemplateMap = (Map<String,CJFW_NotiTemplate>)Type.forName('Map<String,'+getMappingClass('',category)+'>').newInstance();
+                Map<String,NotiTemplate> langTemplateMap = (Map<String,NotiTemplate>)Type.forName('Map<String,'+getMappingClass('',category)+'>').newInstance();
                 langTemplateMap.put(notiTemplate.getLang(), notiTemplate);
                 categoryTemplateMapMap.put(category, langTemplateMap);
             }
-            
+            System.debug('categoryTemplateMapMap:: '+categoryTemplateMapMap);
         }
 
         return categoryTemplateMapMap;
     }
 
     /**
-    * CJFW_NotificationTarget__c 에서 관리하고 있는 수신자로 등록
+    * NotificationTarget__c 에서 관리하고 있는 수신자로 등록
     *
     */
     protected Set<Id> getRicipientIdSet() {
-        Map<String, Schema.RecordTypeInfo> includedRecordTypeMap = Schema.SObjectType.CJFW_NotificationTarget__c.getRecordTypeInfosByDeveloperName();
+        Map<String, Schema.RecordTypeInfo> includedRecordTypeMap = Schema.SObjectType.NotificationTarget__c.getRecordTypeInfosByDeveloperName();
 
         Map<String, Set<Id>> userTypeMap = new Map<String, Set<Id>>{
             'Group' => new Set<Id>(),
@@ -137,7 +137,7 @@ public virtual without sharing class CJFW_NotiHandler {
         };
 
         // Record type 별 Id 할당
-        for(CJFW_NotificationTarget__c tg : noti.Notification_Target__r) {
+        for(NotificationTarget__c tg : noti.Notification_Target__r) {
             if(tg.RecordTypeId == includedRecordTypeMap.get('User').getRecordTypeId()) recipientIdSet.add(tg.User__c);
             else if(tg.RecordTypeId == includedRecordTypeMap.get('Group').getRecordTypeId()) userTypeMap.get('Group').add(tg.GroupId__c);
             else if(tg.RecordTypeId == includedRecordTypeMap.get('Role').getRecordTypeId()) userTypeMap.get('Role').add(tg.RoleId__c);
@@ -197,11 +197,11 @@ public virtual without sharing class CJFW_NotiHandler {
     *@example 
     * 예제코드 태그 아래줄에서 예제 작성
     */
-    protected void setCategorySendDataListMap(Map<String, List<CJFW_NotiTemplate>> categorySendDataListMap, String category, CJFW_NotiTemplate notiTemplate) {
+    protected void setCategorySendDataListMap(Map<String, List<NotiTemplate>> categorySendDataListMap, String category, NotiTemplate notiTemplate) {
         if(categorySendDataListMap.containsKey(category)) {
             categorySendDataListMap.get(category).add(notiTemplate);
         }else {
-            List<CJFW_NotiTemplate> templateList = (List<CJFW_NotiTemplate>)Type.forName(getMappingClass('List',category)).newInstance();
+            List<NotiTemplate> templateList = (List<NotiTemplate>)Type.forName(getMappingClass('List',category)).newInstance();
             templateList.add(notiTemplate);
             categorySendDataListMap.put(category, templateList);
         }
@@ -217,16 +217,15 @@ public virtual without sharing class CJFW_NotiHandler {
     }
 
     /**
-    * 기본적으로 Category 별 템플릿으로 실제 알림 보낼 데이터로 변환 
+    * NotiTemplate 레코드에 등록된 수신자외에 수신자 등록
     *
-    *@param  targetIdSet 알림 내용을 만드는 데이터 Id
     *@param  recipientMap 레코드 데이터가 아닌 코드에서 추가하는 수신자 Map
     */
-    public virtual void manuFactureNoti(Set<String> targetIdSet, Map<String,List<User>> recipientListMap) {
+    public NotiHandler setUserListMap(Map<String,List<User>> recipientListMap) {
         getTemplate();
         getRicipientIdSet();
 
-        if(recipientListMap != null) {
+        if(recipientListMap != null && recipientListMap.containsKey('Id')) {
             for(User u : recipientListMap.get('Id')) {
                 this.recipientIdSet.add(u.Id);
             }
@@ -234,40 +233,58 @@ public virtual without sharing class CJFW_NotiHandler {
         /*
          TBD 이메일만 있을경우 어떻게 처리할지 생각
         */
-
         setExcludeRecipient();
 
+        return this;
+    }
+
+    /**
+    * 알림 템플릿 개인화시에 필요한 레코드 정보(Id Set or Record List)
+    *
+    *@param  targetIdSet 개인화할 레코드 데이터 Id Set
+    *@param  targetObjectList 개인화할 레코드 데이터 List
+    */
+    public void execute(Set<String> targetIdSet, List<sObject> targetObjectList) {
+        
+        if(targetIdSet != null && !targetIdSet.isEmpty()) manuFactureNoti(targetIdSet);
+        else if(targetObjectList != null && !targetObjectList.isEmpty()) manuFactureNoti(targetObjectList); 
+        
+        sendHandler();
+    }
+
+    /**
+    * 발송 처리
+    *
+    */
+    protected void sendHandler() {
+        String category = noti.RecordType.DeveloperName;
+        NotiAlert alertHandler = (NotiAlert)Type.forName(categoryAlertMapping.get(category)).newInstance();
+        if(!categorySendDataListMap.isEmpty()) alertHandler.send(categorySendDataListMap.get(category));
+    }
+
+    /**
+    * 기본적으로 Category 별 템플릿으로 실제 알림 보낼 데이터로 변환 
+    *
+    *@param  targetIdSet 알림 내용을 만드는 데이터 Id Set
+    */
+    public virtual void manuFactureNoti(Set<String> targetIdSet) {
+        
         String query = 'SELECT ' + noti.TargetFields__c + ' FROM ' + noti.SObject__c + ' WHERE Id IN :targetIdSet ';
         
         List<sObject> datas;
         if(!targetIdSet.isEmpty()) datas = Database.query(query);
 
         makePersonalize(datas);
-
-        for(String category : categorySendDataListMap.keySet()) {
-            CJFW_NotiAlert alertHandler = (CJFW_NotiAlert)Type.forName(categoryAlertMapping.get(category)).newInstance();
-            alertHandler.send(categorySendDataListMap.get(category));
-        }
     }
 
     /**
     * 기본적으로 Category 별 템플릿으로 실제 알림 보낼 데이터로 변환
     *
-    *@param  targetIdSet 알림 내용을 만드는 데이터 Id
-    *@param  recipientMap 레코드 데이터가 아닌 코드에서 추가하는 수신자 Map
+    *@param  targetObjectList 알림 내용을 만드는 데이터 리스트
     */
-    public virtual void manuFactureNoti(List<sObject> targetObjectList, Map<String,User> recipientMap) {
-        getTemplate();
-        getRicipientIdSet();
-        
-        setExcludeRecipient();
+    public virtual void manuFactureNoti(List<sObject> targetObjectList) {
 
         makePersonalize(targetObjectList);
-
-        for(String category : categorySendDataListMap.keySet()) {
-            CJFW_NotiAlert alertHandler = (CJFW_NotiAlert)Type.forName(categoryAlertMapping.get(category)).newInstance();
-            alertHandler.send(categorySendDataListMap.get(category));
-        }
     }
 
     /**
@@ -293,13 +310,13 @@ public virtual without sharing class CJFW_NotiHandler {
             }
 
             if(categoryTemplateMapMap.containsKey('App')) {
-                Map<String,CJFW_AppTemplate> langTemplateMap = (Map<String,CJFW_AppTemplate>)categoryTemplateMapMap.get('App');
+                Map<String,AppTemplate> langTemplateMap = (Map<String,AppTemplate>)categoryTemplateMapMap.get('App');
                 
                 for(String recipientId : this.recipientIdSet) {
                     User recipient = allUserMap.get(recipientId);
                     if(recipient == null) continue;
-                    CJFW_AppTemplate template = langTemplateMap.get(recipient.LanguageLocaleKey);
-                    CJFW_AppTemplate cloneTemplateData = template == null ? (CJFW_AppTemplate) langTemplateMap.get('ko').cloneTemplate() : (CJFW_AppTemplate) langTemplateMap.get(recipient.LanguageLocaleKey).cloneTemplate();
+                    AppTemplate template = langTemplateMap.get(recipient.LanguageLocaleKey);
+                    AppTemplate cloneTemplateData = template == null ? (AppTemplate) langTemplateMap.get('ko').cloneTemplate() : (AppTemplate) langTemplateMap.get(recipient.LanguageLocaleKey).cloneTemplate();
                     cloneTemplateData.setTitle(setMessage(fieldsMap, cloneTemplateData.getTitle()));
                     cloneTemplateData.setMessage(setMessage(fieldsMap, cloneTemplateData.getMessage()));
                     cloneTemplateData.setToAddresses(new Set<String>{recipientId});

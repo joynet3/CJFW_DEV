@@ -1,25 +1,28 @@
 /**
 * @Class : IFN_ScheduleBatch
-*
-* @Author : Jo Hyeong Jun
-* @Date : 2020. 01. 27
+* @group Framework : Common
+* @Author : 조일근 
+* @Date : 2023. 07. 18
 * @Version : 1.0
-* @Modified : 
+* @Description : 
+* @Modified : 인터페이스 스케쥴 배치
 *  ----------------------------------------------
 *  NO | Date       | Modifier       | Description 
 *  ----------------------------------------------
-*  1. | 2020-01-27 | Jo Hyeong Jun   | 최초작성
-* 
+*  1. | 2023. 07. 18 | 조일근    | 최초작성
 * */
 global class IFN_ScheduleBatch extends MasterBatchBase implements Database.AllowsCallouts {
     global Integer sTime;
+    /*
+    IFN_ScheduleBatch batch = new IFN_ScheduleBatch();
+    Database.executeBatch(batch, 200);
+    */
 
-    
     public IFN_ScheduleBatch(){}
     
     //배치 시작(Scope에 담을 데이터 쿼리 동작)
     public override Database.QueryLocator start(Database.BatchableContext bc) {
-        logwrap = new LogWrapper();//로그 기록
+        logwrap = new IFN_CommonLog.logWrap('dummy', 'Batch');//로그 기록
 
         if(sTime == null) sTime = System.now().addhours(1).hour();
         
@@ -38,8 +41,8 @@ global class IFN_ScheduleBatch extends MasterBatchBase implements Database.Allow
                                                 , Label
                                                 , QualifiedApiName
                                                 , IsActive__c
-                                                , ScopeSize__c
                                                 , NextBatchName__c
+                                                , ScopeSize__c
                                                 , isScheduled__c
                                                 , ScheduleClass__c
                                                 , Interval__c
@@ -83,7 +86,7 @@ global class IFN_ScheduleBatch extends MasterBatchBase implements Database.Allow
 
             for(Batch_Sequence__mdt schedule : scList)
             {
-                if(schedule.CronExpression__c != null && schedule.Interval__c == null)
+                if(schedule.CronExpression__c != null)
                 {
                     List<String> cronList = schedule.CronExpression__c.split(' ');
 
@@ -119,19 +122,25 @@ global class IFN_ScheduleBatch extends MasterBatchBase implements Database.Allow
             {
                 if(itCheckMap.get(it.ScheduleClass__c) == null)
                 {
-                    IFUtil.NextScheduleCheck(it.DeveloperName);
+                    IFN_Util.NextScheduleCheck(it.DeveloperName);
                 }
             }
 
+            logwrap.IFTotalCount  += 1;
+            logwrap.IFRequestSize += 1;
             logWrap.LogText.add(JSON.serialize(executeList));
         } 
         catch(System.Exception e) 
         {
-
             logWrap.ErrorText.add(e.getMessage());
-            logWrap.LogText.add('### Exception.getMessage() = ' + e.getMessage());
-            logWrap.LogText.add('### Exception.getLineNumber() = ' + e.getLineNumber());
-            logWrap.LogText.add('### Exception.getStackTraceString() = ' + e.getStackTraceString());
+
+            System.debug('Exception : ' + e.getMessage());
+            System.debug('Exception : ' + e.getLineNumber());
+            System.debug('Exception : ' + e.getStackTraceString());
+
+            logWrap.LogText.add('### Exception.getMessage() = ' + e.getMessage() );
+            logWrap.LogText.add('### Exception.getLineNumber() = ' + e.getLineNumber() );
+            logWrap.LogText.add('### Exception.getStackTraceString() = ' + e.getStackTraceString() );
         }
     }
 }
