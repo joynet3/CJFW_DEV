@@ -48,8 +48,9 @@ global class IFN_CommonLog {
         @AuraEnabled public Integer       IFRequestSize{get;set;}
         @AuraEnabled public Integer       IFResponseSize{get;set;}
         @AuraEnabled public String        RecordTypeId{get;set;}
-        @AuraEnabled public Boolean       isRealLogInsert{get;set;}
-        
+        @AuraEnabled public Boolean       isRealLogInsert{get;set;}        
+        @AuraEnabled public String        resultCode{get;set;}
+        @AuraEnabled public String        resultMessage{get;set;}
 
         public LogWrap(){}
 
@@ -110,6 +111,8 @@ global class IFN_CommonLog {
             this.DMLSuccessInfo  = '';
             this.IFRequestSize  = 0;
             this.IFResponseSize = 0;
+            this.resultCode     = '';
+            this.resultMessage  = '';
         }
 
         public IFLog__c convert()
@@ -132,6 +135,9 @@ global class IFN_CommonLog {
             if(this.ErrorText      != null)  result.ErrorText__c        = getText(JSON.serialize(this.ErrorText));
             if(this.LogText      != null)  result.LogText__c        = getText(JSON.serialize(this.LogText));
 
+
+            if(String.isNotBlank(this.resultCode))      result.resultCode__c         = this.resultCode;
+            if(String.isNotBlank(this.ResponseBody))   result.resultMessage__c   = getText(this.ResponseBody);
 
 
 

@@ -90,11 +90,10 @@ public with sharing class IFN_ApiGateWay {
         String responseBody;
 		String resultCode = '0';
         String resultMessage = '';
-        LogWrapper objWrapper = new LogWrapper();
-        
+        this.logwrap = new IFN_CommonLog.logWrap();
         try {
             
-            objWrapper.requestTime = Datetime.now();
+            this.logWrap.requestTime = Datetime.now();
 
 
             if(String.isNotBlank(this.ifKeyId) && this.objIFAuthHeadInfoLst.size() >0) {
@@ -134,12 +133,11 @@ public with sharing class IFN_ApiGateWay {
             request.setHeader('Content-Type', contentType);
             
             if(contentType.contains('multipart')) {                
-                //request.setHeader('Content-Length', String.valueOf(requestBody.length()));
                 request.setBodyAsBlob(EncodingUtil.base64Decode(requestBody));
                 contentType = contentType+' charset=utf-8; boundary='+'vguardiance';
             }
             
-            objWrapper.requestBody = requestBody;
+            this.logWrap.requestBody = requestBody;
 
             
             // request.setBody를 할 경우 Method GET으로 설정을 해도 실제로는 POST로 전송되기 때문에 분기처리해준다
@@ -151,7 +149,6 @@ public with sharing class IFN_ApiGateWay {
             }else if(objIFMaster.Method__c == 'PUT') {
                 endPointUrl = endPointUrl +'?_HttpMethod=PATCH';
                 request.setMethod('POST');
-                //request.setHeader('X-HTTP-Method-Override', 'PATCH');
                 request.setBody(requestBody);
 
             }else if(objIFMaster.Method__c == 'GET' && (requestBody <> null && requestBody != '')) {
@@ -188,7 +185,6 @@ public with sharing class IFN_ApiGateWay {
             request.setEndpoint(endPointUrl);
 
 
-            System.debug('request :: ' + request);
             response = http.send(request);
             
             responseBody = response.getBody();
@@ -197,21 +193,21 @@ public with sharing class IFN_ApiGateWay {
 
             if(response.getStatusCode() == 200 || response.getStatusCode() == 201) {
                 if(responseBody <> null && responseBody != '') {
-                   
-                    
+                    resultCode   = String.valueOf(response.getStatusCode());
+                    resultMessage = response.getStatus();
                 }else {
                     responseBody = 'Not ResponseBody';
                 }
 
-                objWrapper.responseTime = Datetime.now();
-                objWrapper.responseBody = responseBody;
+                this.logWrap.responseTime = Datetime.now();
+                this.logWrap.responseBody = responseBody;
             }          
             else {
                 String loc = response.getHeader('Location'); // get location of the redirect
 
                 status = 'ERROR';
                 resultCode = String.valueOf(response.getStatusCode());
-                resultMessage = responseBody;
+                resultMessage = response.getStatus();
             }
             
         }catch(Exception e) {
@@ -220,17 +216,13 @@ public with sharing class IFN_ApiGateWay {
             resultMessage = e.getMessage()+'ERROR Line : '+e.getLineNumber();
         }
 
-        /*
-        System.debug('================> webCallout resultCode : '+resultCode);
-        System.debug('================> webCallout resultMessage : '+resultMessage);
-        */
         
-        objWrapper.status = status;
-        objWrapper.resultCode = resultCode;
-        objWrapper.resultMessage = resultMessage;
+        this.logWrap.status = status;
+        this.logWrap.resultCode = resultCode;
+        this.logWrap.resultMessage = resultMessage;
 
         if(isLogInsert) {
-            //setLog(objWrapper);
+            commlog.insertLog(this.logWrap);
         }
         return response;
     }
