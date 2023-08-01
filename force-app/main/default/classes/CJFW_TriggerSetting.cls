@@ -6,6 +6,7 @@
 *@since 2023-07-24  생성
 */
 public with sharing class CJFW_TriggerSetting {
+    
     private static CJFW_TriggerSetting instance;
     
     private Map<String, Boolean> trActiveMap;
@@ -13,13 +14,13 @@ public with sharing class CJFW_TriggerSetting {
     private CJFW_TriggerSetting() {
         trActiveMap = new Map<String, Boolean>();
 
-        CJFW_TriggerSetting__c userTS = CJFW_TriggerSetting__c.getValues(UserInfo.getUserId());
-        CJFW_TriggerSetting__c profileTS = CJFW_TriggerSetting__c.getValues(UserInfo.getProfileId());
-        CJFW_TriggerSetting__c orgTS = CJFW_TriggerSetting__c.getOrgDefaults();
+        CJFW_ModuleSetting__c userTS = CJFW_ModuleSetting__c.getValues(UserInfo.getUserId());
+        CJFW_ModuleSetting__c profileTS = CJFW_ModuleSetting__c.getValues(UserInfo.getProfileId());
+        CJFW_ModuleSetting__c orgTS = CJFW_ModuleSetting__c.getOrgDefaults();
         
-        if(userTS != null) trActiveMap.put('user', userTS.IsActive__c);
-        if(profileTS != null) trActiveMap.put('profile', profileTS.IsActive__c);
-        if(orgTS.getPopulatedFieldsAsMap().containsKey('IsActive__c')) trActiveMap.put('org', orgTS.IsActive__c);
+        if(userTS != null) trActiveMap.put('user', userTS.IsTriggerActive__c);
+        if(profileTS != null) trActiveMap.put('profile', profileTS.IsTriggerActive__c);
+        if(orgTS.getPopulatedFieldsAsMap().containsKey('IsTriggerActive__c')) trActiveMap.put('org', orgTS.IsTriggerActive__c);
     }
 
     public static CJFW_TriggerSetting getInstance() {
@@ -28,11 +29,9 @@ public with sharing class CJFW_TriggerSetting {
     }
 
     /**
-    * Trigger Setting 의 상태를 검사하여 Trigger Handler를 패스시킬지 여부 체크
+    * Trigger Setting 의 상태를 검사하여 Trigger Handler를 동작 여부 체크
     *
-    *@return  Boolean 패스: true, 작동: false
-    *@example 
-    * 예제코드 태그 아래줄에서 예제 작성
+    *@return  Boolean 끄기: true, 작동: false
     */
     public boolean checkByPass() {
         Boolean isPass = false;
@@ -54,4 +53,5 @@ public with sharing class CJFW_TriggerSetting {
 
         return isPass;
     }
+    
 }

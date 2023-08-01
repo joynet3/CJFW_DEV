@@ -7,20 +7,27 @@
 */
 public virtual with sharing class NotiTemplate {
     
-    @TestVisible protected String category;
-    @TestVisible protected Set<String> toAddresses;
-    //@TestVisible protected List<String> ccAddresses;
-    //@TestVisible protected List<String> bccAddresses;
-    @TestVisible protected String title;
-    @TestVisible protected String message;
-    @TestVisible protected String targetId;
-    @TestVisible protected String templateId;
-    @TestVisible protected String lang;
+    @TestVisible protected String category;               //App, Email, 등..
+    @TestVisible protected Set<String> toAddresses;       //수신자
+    @TestVisible protected String title;                  //제목
+    @TestVisible protected String body;                   //본문
+    @TestVisible protected String targetId;               //
+    @TestVisible protected String templateId;             //App : CustomNotificationType.Id, Email: EmailTemplate.DeveloperName
+    @TestVisible protected String lang;                   //언어
+    @TestVisible protected Map<String, String> fieldsMap; //key: 필드, value: 값 > 개인화할떄 필요한 값
     
     //@TestVisible private String pageReference;
 
     public NotiTemplate() {
 
+    }
+
+    public void setFieldsMap(Map<String, String> fieldsMap) {
+        this.fieldsMap = fieldsMap;
+    }
+
+    public Map<String, String> getFieldsMap() {
+        return this.fieldsMap;
     }
 
     public String getLang() {
@@ -46,22 +53,6 @@ public virtual with sharing class NotiTemplate {
     public void setToAddresses(Set<String> toAddresses) {
         this.toAddresses = toAddresses;
     }
-    /*
-    public Set<String> getCcAddresses() {
-        return this.ccAddresses;
-    }
-
-    public void setCcAddresses(Set<String> ccAddresses) {
-        this.ccAddresses = ccAddresses;
-    }
-
-    public Set<String> getBccAddresses() {
-        return this.bccAddresses;
-    }
-
-    public void setBccAddresses(Set<String> bccAddresses) {
-        this.bccAddresses = bccAddresses;
-    }*/
 
     public String getTitle() {
         return this.title;
@@ -71,12 +62,12 @@ public virtual with sharing class NotiTemplate {
         this.title = title;
     }
 
-    public String getMessage() {
-        return this.message;
+    public String getBody() {
+        return this.body;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setBody(String body) {
+        this.body = body;
     }
 
     public String getTargetId() {
@@ -104,11 +95,32 @@ public virtual with sharing class NotiTemplate {
         NotiTemplate cloneTemplate = new NotiTemplate();
         cloneTemplate.setToAddresses(this.getToAddresses());
         cloneTemplate.setTitle(this.getTitle());
-        cloneTemplate.setMessage(this.getMessage());
+        cloneTemplate.setBody(this.getBody());
         cloneTemplate.setTargetId(this.getTargetId());
         cloneTemplate.setTemplateId(this.getTemplateId());
         cloneTemplate.setCategory(this.getCategory());
         
         return cloneTemplate;
+    }
+
+    /**
+     * Noti 발송을 위한 Message 가공
+     * @param msg 
+     * @return `String`
+     */
+    public virtual String setMessage(String msg) {
+        Pattern pattern = Pattern.compile('\\{[0-9]\\}');
+        Matcher matcher = pattern.matcher(msg);
+        
+        if(matcher.find() && this.fieldsMap != null){
+            List<String> fields = new List<String>();
+            fields.addAll(this.fieldsMap.values());
+            return String.format(
+                msg
+                ,fields
+            );
+        }else{
+            return msg;
+        }
     }
 }

@@ -7,11 +7,12 @@
 */
 @isTest
 public with sharing class CJFW_TriggerSetting_Test {
+   
     @isTest
     static void noDataCJFW_TriggerSetting() {
         Test.startTest();
 
-        System.debug(CJFW_TriggerSetting__c.getInstance());
+        System.debug(CJFW_ModuleSetting__c.getInstance());
 
         System.assert(false == CJFW_TriggerSetting.getInstance().checkByPass());
         Test.stopTest();
@@ -22,23 +23,23 @@ public with sharing class CJFW_TriggerSetting_Test {
         Test.startTest();
 
         
-        CJFW_TriggerSetting__c orgSetting = CJFW_TriggerSetting__c.getOrgDefaults();
-        orgSetting.IsActive__c = false;
+        CJFW_ModuleSetting__c orgSetting = CJFW_ModuleSetting__c.getOrgDefaults();
+        orgSetting.IsTriggerActive__c = false;
         insert orgSetting;
 
-        CJFW_TriggerSetting__c profileSetting = new CJFW_TriggerSetting__c();
+        CJFW_ModuleSetting__c profileSetting = new CJFW_ModuleSetting__c();
         profileSetting.Name = 'CustomSettingName (Profile)';
-        profileSetting.IsActive__c = true;
+        profileSetting.IsTriggerActive__c = true;
         profileSetting.SetupOwnerId = UserInfo.getProfileId();
         insert profileSetting;
 
-        CJFW_TriggerSetting__c userSetting = new CJFW_TriggerSetting__c();
+        CJFW_ModuleSetting__c userSetting = new CJFW_ModuleSetting__c();
         userSetting.Name = 'CustomSettingName (User)';
-        userSetting.IsActive__c = true;
+        userSetting.IsTriggerActive__c = true;
         userSetting.SetupOwnerId = UserInfo.getUserId();
         insert userSetting;
 
-        //System.debug(CJFW_TriggerSetting__c.getOrgDefaults());
+        //System.debug(CJFW_ModuleSetting__c.getOrgDefaults());
 
         System.assert(true ==CJFW_TriggerSetting.getInstance().checkByPass());
 
@@ -50,23 +51,23 @@ public with sharing class CJFW_TriggerSetting_Test {
         Test.startTest();
 
         
-        CJFW_TriggerSetting__c orgSetting = CJFW_TriggerSetting__c.getOrgDefaults();
-        orgSetting.IsActive__c = true;
+        CJFW_ModuleSetting__c orgSetting = CJFW_ModuleSetting__c.getOrgDefaults();
+        orgSetting.IsTriggerActive__c = true;
         insert orgSetting;
 
-        CJFW_TriggerSetting__c profileSetting = new CJFW_TriggerSetting__c();
+        CJFW_ModuleSetting__c profileSetting = new CJFW_ModuleSetting__c();
         profileSetting.Name = 'CustomSettingName (Profile)';
-        profileSetting.IsActive__c = false;
+        profileSetting.IsTriggerActive__c = false;
         profileSetting.SetupOwnerId = UserInfo.getProfileId();
         insert profileSetting;
 
-        CJFW_TriggerSetting__c userSetting = new CJFW_TriggerSetting__c();
+        CJFW_ModuleSetting__c userSetting = new CJFW_ModuleSetting__c();
         userSetting.Name = 'CustomSettingName (User)';
-        userSetting.IsActive__c = true;
+        userSetting.IsTriggerActive__c = true;
         userSetting.SetupOwnerId = UserInfo.getUserId();
         insert userSetting;
 
-       //System.debug(CJFW_TriggerSetting__c.getOrgDefaults());
+       //System.debug(CJFW_ModuleSetting__c.getOrgDefaults());
 
         System.assert(true ==CJFW_TriggerSetting.getInstance().checkByPass());
         Test.stopTest();
@@ -77,23 +78,23 @@ public with sharing class CJFW_TriggerSetting_Test {
         Test.startTest();
 
         
-        CJFW_TriggerSetting__c orgSetting = CJFW_TriggerSetting__c.getOrgDefaults();
-        orgSetting.IsActive__c = true;
+        CJFW_ModuleSetting__c orgSetting = CJFW_ModuleSetting__c.getOrgDefaults();
+        orgSetting.IsTriggerActive__c = true;
         insert orgSetting;
 
-        CJFW_TriggerSetting__c profileSetting = new CJFW_TriggerSetting__c();
+        CJFW_ModuleSetting__c profileSetting = new CJFW_ModuleSetting__c();
         profileSetting.Name = 'CustomSettingName (Profile)';
-        profileSetting.IsActive__c = true;
+        profileSetting.IsTriggerActive__c = true;
         profileSetting.SetupOwnerId = UserInfo.getProfileId();
         insert profileSetting;
 
-        CJFW_TriggerSetting__c userSetting = new CJFW_TriggerSetting__c();
+        CJFW_ModuleSetting__c userSetting = new CJFW_ModuleSetting__c();
         userSetting.Name = 'CustomSettingName (User)';
-        userSetting.IsActive__c = false;
+        userSetting.IsTriggerActive__c = false;
         userSetting.SetupOwnerId = UserInfo.getUserId();
         insert userSetting;
 
-        //System.debug(CJFW_TriggerSetting__c.getOrgDefaults());
+        //System.debug(CJFW_ModuleSetting__c.getOrgDefaults());
         System.assert(true ==CJFW_TriggerSetting.getInstance().checkByPass());
         
         Test.stopTest();
@@ -104,23 +105,23 @@ public with sharing class CJFW_TriggerSetting_Test {
         Test.startTest();
 
         
-        CJFW_TriggerSetting__c orgSetting = CJFW_TriggerSetting__c.getOrgDefaults();
-        orgSetting.IsActive__c = false;
+        CJFW_ModuleSetting__c orgSetting = CJFW_ModuleSetting__c.getOrgDefaults();
+        orgSetting.IsTriggerActive__c = false;
         insert orgSetting;
 
-        CJFW_TriggerSetting__c profileSetting = new CJFW_TriggerSetting__c();
+        CJFW_ModuleSetting__c profileSetting = new CJFW_ModuleSetting__c();
         profileSetting.Name = 'CustomSettingName (Profile)';
-        profileSetting.IsActive__c = true;
+        profileSetting.IsTriggerActive__c = true;
         profileSetting.SetupOwnerId = UserInfo.getProfileId();
         insert profileSetting;
 
-        CJFW_TriggerSetting__c userSetting = new CJFW_TriggerSetting__c();
+        CJFW_ModuleSetting__c userSetting = new CJFW_ModuleSetting__c();
         userSetting.Name = 'CustomSettingName (User)';
-        userSetting.IsActive__c = false;
+        userSetting.IsTriggerActive__c = false;
         userSetting.SetupOwnerId = UserInfo.getUserId();
         insert userSetting;
 
-        //System.debug(CJFW_TriggerSetting__c.getOrgDefaults());
+        //System.debug(CJFW_ModuleSetting__c.getOrgDefaults());
         System.assert(true == CJFW_TriggerSetting.getInstance().checkByPass());
         
         Test.stopTest();

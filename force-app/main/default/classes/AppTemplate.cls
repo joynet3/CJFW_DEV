@@ -25,7 +25,7 @@ public with sharing class AppTemplate extends NotiTemplate{
         AppTemplate cloneTemplate = new AppTemplate();
         cloneTemplate.setToAddresses(this.getToAddresses());
         cloneTemplate.setTitle(this.getTitle());
-        cloneTemplate.setMessage(this.getMessage());
+        cloneTemplate.setBody(this.getBody());
         cloneTemplate.setTargetId(this.getTargetId());
         cloneTemplate.setTemplateId(this.getTemplateId());
         cloneTemplate.setCategory(this.getCategory());

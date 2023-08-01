@@ -56,8 +56,7 @@ public with sharing class IFN_ApiGateWay {
             where IfHeaderKeyId__c = :objIFMaster.ifKeyId__c
             and keyValueSp__c = 'param'
             ];
-            this.objIFAuthGetParamInfoLst = objIFAuthgetParamInfo;
-
+            this.objIFAuthGetParamInfoLst = objIFAuthgetParamInfo;            
             this.ifKeyId = objIFMaster.ifKeyId__c;
 
         }
@@ -95,8 +94,8 @@ public with sharing class IFN_ApiGateWay {
             
             this.logWrap.requestTime = Datetime.now();
 
-
-            if(String.isNotBlank(this.ifKeyId) && this.objIFAuthHeadInfoLst.size() >0) {
+            
+            if(String.isNotBlank(this.ifKeyId) && this.objIFAuthHeadInfoLst !=null && this.objIFAuthHeadInfoLst.size() >0) {
 
                 for (API_Authenticationkey__mdt hdmap : objIFAuthHeadInfoLst) {
                     request.setHeader(hdmap.HeaderLab__c, hdmap.HeaderKey__c);
@@ -104,6 +103,7 @@ public with sharing class IFN_ApiGateWay {
                 if(this.ifKeyId.equals('IF_RELAY_INFO')) {
                     request.setHeader('Interface_req_dt', String.valueOf(Datetime.now().format('yyyyMMddHHmmss')));
                 }
+                
                 
                 // if 프로그램에 세팅된 헤더값이 있는경우
                 Map<String,String> header = String.isNotEmpty(objIFMaster.Header__c) ? null 
@@ -119,7 +119,6 @@ public with sharing class IFN_ApiGateWay {
                 }
 
             }
-
 
             
             String endPointUrl = this.objIFMaster.Endpoint__c;
@@ -139,6 +138,9 @@ public with sharing class IFN_ApiGateWay {
             
             this.logWrap.requestBody = requestBody;
 
+
+            
+
             
             // request.setBody를 할 경우 Method GET으로 설정을 해도 실제로는 POST로 전송되기 때문에 분기처리해준다
             if(objIFMaster.Method__c == 'POST') {
@@ -153,6 +155,7 @@ public with sharing class IFN_ApiGateWay {
 
             }else if(objIFMaster.Method__c == 'GET' && (requestBody <> null && requestBody != '')) {
 
+
                 endPointUrl = String.isNotBlank(requestBody) ?  endPointUrl+'?'+requestBody : endPointUrl;
 
                 endPointUrl = String.isNotBlank(this.objIFMaster.Param1__c) ?                 
@@ -166,12 +169,10 @@ public with sharing class IFN_ApiGateWay {
                 endPointUrl = String.isNotBlank(this.objIFMaster.Param3__c) ?                 
                 (endPointUrl.contains('?') ?  endPointUrl + '&' + this.objIFMaster.Param3__c :endPointUrl + '?' + this.objIFMaster.Param3__c)
                 : endPointUrl;        
-                
+
                 endPointUrl = String.isNotBlank(this.objIFMaster.Param4__c) ?                 
                 (endPointUrl.contains('?') ?  endPointUrl + '&' + this.objIFMaster.Param4__c :endPointUrl + '?' + this.objIFMaster.Param4__c)
                 : endPointUrl;
-
-
 
 
                if(String.isNotBlank(this.ifKeyId) && this.objIFAuthGetParamInfoLst.size() >0) {
@@ -214,16 +215,16 @@ public with sharing class IFN_ApiGateWay {
             status = 'ERROR';
             resultCode = '-1';
             resultMessage = e.getMessage()+'ERROR Line : '+e.getLineNumber();
+            System.debug(e.getLineNumber() + ':::' + e.getMessage());
         }
 
-        
         this.logWrap.status = status;
         this.logWrap.resultCode = resultCode;
         this.logWrap.resultMessage = resultMessage;
 
-        if(isLogInsert) {
-            commlog.insertLog(this.logWrap);
-        }
+        // if(isLogInsert) {
+        //     commlog.insertLog(this.logWrap);
+        // }
         return response;
     }
     

@@ -180,6 +180,7 @@ public without sharing class LineItemMgmtController {
     **/
     @AuraEnabled
     public static Map<String, Object> doSearch(Map<String, Object> mapParam) {
+        system.debug('doSearch start : mapParam -> ' + mapParam);
         datetime qryStart = datetime.now();
         Id Pricebook2Id  = (Id) String.valueOf(mapParam.get('Pricebook2Id'));
         String selectedMonth  = String.valueOf(mapParam.get('selectedMonth'));
@@ -220,7 +221,7 @@ public without sharing class LineItemMgmtController {
         }
         query += ' LIMIT    50000 ' ; 
 
-        System.debug('query : ' + query);
+        System.debug('do Search query : ' + query);
 
         List<PriceBookEntry> listPriceBookEntry = new List<PriceBookEntry>();
         List<PriceBookEntry> listCurrentEntry = new List<PriceBookEntry>();
@@ -369,6 +370,7 @@ public without sharing class LineItemMgmtController {
     
     /**
      * 대상 상품 코드 리스트로 상품 데이터 리스트 조회
+     * 중단제어 적용할 경우 : i-fresh 상에서 해당 고객에 비활성화 된 상품은 선택할 수 없도록 처리 (customerID = Account.CustomerID__c)
      *  
      * @param  listTargetEntryCode : 대상 상품코드 리스트
      * @param  selectedCenter : 선택된 물류센터
@@ -386,6 +388,9 @@ public without sharing class LineItemMgmtController {
     @AuraEnabled
     public static Map<String, Object> getCurrentEntry(List<String> listTargetEntryCode, String selectedCenter, String selectedMonth, String sortStatus, String selectedControl, String customerID) {
         
+        System.debug('c.1 > customerID  : ' + customerID);
+        System.debug('c.1.1 > listTargetEntryCode  : ' + listTargetEntryCode);
+        System.debug('c.1.2 > list size   : ' + listTargetEntryCode.size());
         String ERR_CD = '0000';
         String ERR_MSG_CTT = '';
         System.debug('sortStatus : ' + sortStatus);
@@ -416,12 +421,12 @@ public without sharing class LineItemMgmtController {
             query += ' ORDER BY ' + selectedMonth + '__c ' + 'ASC ';
         }
 
-        System.debug('query : ' + query);
+        System.debug('c.1.3 >  getCurrentEntry query -> ' + query);
 
         List<PriceBookEntry> listCurrentEntry = new List<PriceBookEntry>();
         listCurrentEntry = Database.query(query);
 
-        
+        System.debug('c.1.4 > getCurrentEntry query Size : ' + listCurrentEntry.size() );
         List<String> listCurrentEntryCode = new List<String>();
         for ( PriceBookEntry objCurrentEntry : listCurrentEntry){
             listCurrentEntryCode.add( objCurrentEntry.Product2.gd_no__c);

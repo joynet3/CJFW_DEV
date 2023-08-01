@@ -5,7 +5,7 @@
 *@author 진현욱
 *@since 2023-07-24  최초생성
 */
-public with sharing class AppAlert implements NotiAlert {
+public without sharing class AppAlert implements NotiAlert {
     public AppAlert() {
 
     }
@@ -21,7 +21,7 @@ public with sharing class AppAlert implements NotiAlert {
             Messaging.CustomNotification notification = new Messaging.CustomNotification();
     
             String subject = sendDatum.getTitle();
-            String body    = sendDatum.getMessage();
+            String body    = sendDatum.getBody();
     
             notification.setTitle(subject);
             notification.setBody(body);

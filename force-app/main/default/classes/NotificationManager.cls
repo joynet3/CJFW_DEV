@@ -11,20 +11,15 @@ public with sharing class NotificationManager {
 
     @testVisible private Map<String, Notification__c> notiMap;
     @testVisible protected Set<String> targetIdSet;
-    @testVisible protected List<sObject> targetObjectList;
+    @testVisible protected List<sObject> targetSObjectList;
+    @testVisible protected Object targetObject;
 
     /* Data 형식
         {
-            'Id': [
-                User : {
-                    Id:''
-                    Email:''
-                }
-            ]
-            ,'Email':[User]
+            'recordId': [NotiTarget]
         }
     */
-    @testVisible protected Map<String,List<User>> recipientListMap;
+    @testVisible protected Map<String,List<NotiTarget>> recipientListMap;
 
     private NotificationManager() {
         notiMap = new Map<String, Notification__c>();
@@ -41,6 +36,7 @@ public with sharing class NotificationManager {
                 , TargetFields__c
                 , IsSendToSender__c
                 , RecordType.DeveloperName
+                , IsNotiTest__c
                 ,(   select 
                         Title__c
                         , Message__c
@@ -65,21 +61,28 @@ public with sharing class NotificationManager {
         }
     }
 
-
+    public NotificationManager setTargetObject(Object targetObject) {
+        instance.targetObject = targetObject;
+        return instance;
+    }
 
     public NotificationManager setTargetIdSet(Set<String> targetIdSet) {
         instance.targetIdSet = targetIdSet;
         return instance;
     }
 
-    public NotificationManager setTargetObjectList(List<sObject> targetObjectList) {
-        instance.targetObjectList = targetObjectList;
+    public NotificationManager setTargetSObjectList(List<sObject> targetSObjectList) {
+        instance.targetSObjectList = targetSObjectList;
         return instance;
     }
 
-    public NotificationManager setRecipientListMap(Map<String,List<User>> recipientListMap) {
+    public NotificationManager setRecipientListMap(Map<String,List<NotiTarget>> recipientListMap) {
         instance.recipientListMap = recipientListMap;
         return instance;
+    }
+
+    public Map<String,List<NotiTarget>> getRecipientListMap() {
+        return instance.recipientListMap;
     }
 
     public static NotificationManager getInstance() {
@@ -98,10 +101,11 @@ public with sharing class NotificationManager {
         }
         NotiHandler notiHandler = (NotiHandler)Type.forName(className).newInstance();
         notiHandler.setNotiData(noti);
-        notiHandler.setUserListMap(recipientListMap);
+        //notiHandler.setUserListMap(recipientListMap);
         
-         if(instance.targetIdSet != null) notiHandler.execute(instance.targetIdSet, null);
-         else if(instance.targetObjectList != null) notiHandler.execute(null, instance.targetObjectList);
+         if(instance.targetIdSet != null) notiHandler.execute(instance.targetIdSet, null, null);
+         else if(instance.targetSObjectList != null) notiHandler.execute(null, instance.targetSObjectList, null);
+         else if(instance.targetObject != null ) notiHandler.execute(null, null, instance.targetObject);
 
         instance.resetData();
 
@@ -109,7 +113,8 @@ public with sharing class NotificationManager {
 
     private void resetData() {
         instance.setTargetIdSet(null);
-        instance.setTargetObjectList(null);
+        instance.setTargetSObjectList(null);
         instance.setRecipientListMap(null);
+        instance.setTargetObject(null);
     }
 }

@@ -1,6 +1,4 @@
 public with sharing class IF_TEST {
-
-
     public IF_TEST() {
 
 
@@ -60,26 +58,6 @@ public with sharing class IF_TEST {
 
 
     public void testIf() {
-
-
-        IFUtil ifutilWrapper = new IFUtil('IF_SFDC_EACCT_INQ_OIL_AMOUNT');
-
-        Map<String, String> mapRequestBody = new Map<String, String>();
-        mapRequestBody.put('system_type_cd','LIF1007');
-        mapRequestBody.put('opcode','EC001');
-        mapRequestBody.put('COM_CD','FW00');
-        mapRequestBody.put('BASE_MON', '202212');
-        mapRequestBody.put('OIL_TYPE_CD', '1');
-
-        String strJsonRequestBody = JSON.serialize(mapRequestBody);
-        System.debug('param :::: ' +  strJsonRequestBody);
-
-        HttpResponse response = ifutilWrapper.webCallout(strJsonRequestBody, true);
-        if(response.getStatusCode() == 200) {
-                    
-            system.debug( '중계서버 연결 성공 ::: ');
-            system.debug(response.getBody());
-        }
-
+        
     }
 }
