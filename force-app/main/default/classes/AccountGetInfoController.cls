@@ -12,13 +12,24 @@ public with sharing class AccountGetInfoController {
     customerType - 고객사 유형 : 본점 or 판매처 or 관리처
     */
     @AuraEnabled(cacheable=true)
-    public static Account getAccInfo(String searchKey , String customerType){
-         system.debug('AccountGetInfoController #getAccInfo => ' );
-         Account accList = [SELECT id ,CustomerID__c, Name , CompanyRegisterNumber__c, CustomerStatus__c, PIC__r.Name, PICCode__c 
-         FROM Account 
-         WHERE searchKey__c  LIKE :'%'+searchKey+'%' AND toLabel(CustomerType__c) =: customerType];
-         
-         system.debug('return => ' + accList);
+    public static List<Account> getAccInfo(String searchKey , String accountType){
+        system.debug('AccountGetInfoController #getAccInfo => ' );
+        
+        List<Account> accList = new List<Account>();
+        if(searchKey == null){
+            System.debug('searchKey Null');
+        }else if(accountType == null){
+            System.debug('accountType Null');
+        }else if( searchKey == null && accountType == null){
+            System.debug('All Null');
+        }else{
+            System.debug('All Data');
+            accList = [SELECT id ,CustomerID__c, Name ,searchKey__c, fm_empname__c , fm_empId__c , tolabel(CustomerStatus__c), CompanyRegisterNumber__c, PIC__r.Name, PICCode__c 
+            FROM Account 
+            WHERE (searchKey__c  LIKE :'%'+searchKey+'%' AND toLabel(CustomerType__c) LIKE :'%'+accountType+'%') ];   
+        	
+            system.debug('return => ' + accList);
+        }
         return accList;
     }
 }

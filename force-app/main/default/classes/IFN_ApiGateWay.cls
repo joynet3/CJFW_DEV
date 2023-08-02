@@ -123,7 +123,9 @@ public with sharing class IFN_ApiGateWay {
             
             String endPointUrl = this.objIFMaster.Endpoint__c;
             
+            endPointUrl = endPointUrl.replaceAll('https://gwmsqa.ifresh.co.kr', 'http://127.0.0.1:8060');
 
+system.debug('endPointUrl>>>>>>>>>> ' + endPointUrl);
             request.setMethod(this.objIFMaster.Method__c);
             request.setTimeout(110000);         
 
