@@ -233,4 +233,97 @@ public without sharing class COMM_Util {
     
         return organiztionType;
     }
+
+
+    /**
+     * Object의 모든 Picklist Field Label, Value 가져오기
+     * @param   objectApiName           objectApiName
+     * @return  Map<String, Object>     Map<String fieldApiName, Map<key를 각각 'label', 'value'로 가짐>>
+     */
+    @AuraEnabled(cacheable=false)
+    public static Map<String,Object> getAllPicklistOptionType(String objectApiName){
+        Map<String,Object> rtnData = new Map<String,Object>();
+
+        SchemaInfo schemaInfo = new SchemaInfo(objectApiName);
+        Map<String, Schema.SObjectField> fieldMap = schemaInfo.getFieldMap();
+
+        // Get Field Api Name of Picklist Type
+        List<String> picklistFieldList = new List<String>();
+        for (String fieldName: fieldMap.keySet()) {
+            String fieldLabel = fieldMap.get(fieldName).getDescribe().getLabel();
+            Schema.DisplayType fielddataType = fieldMap.get(fieldName).getDescribe().getType();
+            if(fielddataType == Schema.DisplayType.Picklist) {
+                picklistFieldList.add(fieldName);
+            }
+        }
+        
+        // PickList API Name List Loop 
+        for(String fieldApiName : picklistFieldList){
+            Schema.DescribeFieldResult pickList = Schema.getGlobalDescribe().get(objectApiName).getDescribe().fields.getMap().get(fieldApiName).getDescribe();  //지정한 Object Api 및 Field Api 명을 넣어주어 요약
+            List<Schema.PicklistEntry> values = pickList.getPicklistValues();              
+            
+            // Label Value 가져오기
+            List<Object> pickMapList = new List<Object>();
+            for(Schema.PicklistEntry pick : values){
+                Map<String, String> pickMap = new Map<String, String>();
+                pickMap.put('label', pick.getLabel());
+                pickMap.put('value', pick.getValue());
+                pickMapList.add(pickMap);
+            }
+            rtnData.put(fieldApiName, pickMapList);
+        }
+        
+        return rtnData;
+    }
+
+
+
+    /**
+    * 필드 정보 가져오기
+    *
+    *@param  objectApiName sObject API 명
+    *@return  오브젝트의 필드들을 리스트
+    */
+    public static List<Schema.SObjectField> getFieldList(String objectApiName){
+        SchemaInfo schemaInfo = new SchemaInfo(objectApiName);
+        
+        List<Schema.SObjectField> listResult = new List<Schema.SObjectField>();
+        
+        for(Schema.SObjectField f : schemaInfo.getFieldMap().values()){
+            try{
+                DescribeFieldResult dfr = f.getDescribe();
+                if(dfr.isAccessible()) listResult.add(f);
+            }
+            catch(Exception e){}
+        }
+        
+        return listResult;
+    }
+
+
+    /**
+    * 필드 정보 Map 가져오기 
+    *
+    *@param  objectApiName sObject API 명
+    *@return Map<String,String> key: fieldApiName , value : fieldLabel
+    */
+    @AuraEnabled(cacheable=false)
+    public static Map<String,String> getFieldToLabelMap(String objectApiName){
+        SchemaInfo schemaInfo = new SchemaInfo(objectApiName);
+
+        Map<String,String> fieldInfoMap = new  Map<String,String>();
+        
+        for(Schema.SObjectField sfield : schemaInfo.getFieldMap().values()){
+            Map<String,String> sfMap = new  Map<String,String>();
+            DescribeFieldResult dfr = sfield.getDescribe();
+            if(dfr.isAccessible()){
+                String fieldApiName = sfield.getDescribe().getName();
+                String fieldLabel   = sfield.getDescribe().getLabel();
+                
+                fieldInfoMap.put(fieldApiName, fieldLabel);
+            }
+        }
+        
+        return fieldInfoMap;
+    }
 }

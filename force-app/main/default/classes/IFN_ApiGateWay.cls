@@ -77,10 +77,11 @@ public with sharing class IFN_ApiGateWay {
      * 
      * @param requestBody 요청값
      * @param isLogInsert Log(IFLog__c) 생성여부
+     * @param dynamicHd   헤더 값이 프로그램에서 만들어지는 헤더값
      * @return
      *         
     **/
-    public HttpResponse webCallout(String requestBody, Boolean isLogInsert) {
+    public HttpResponse webCallout(String requestBody,Map<String,String> dynamicHd, Boolean isLogInsert) {
         HttpRequest request = new HttpRequest();
 		HttpResponse response = new HttpResponse();
 		Http http = new Http();
@@ -94,38 +95,44 @@ public with sharing class IFN_ApiGateWay {
             
             this.logWrap.requestTime = Datetime.now();
 
-            
+            // if 정보 메타 데이터 정보상의 헤더값 리스트가 있는 경우 헤더 세팅
             if(String.isNotBlank(this.ifKeyId) && this.objIFAuthHeadInfoLst !=null && this.objIFAuthHeadInfoLst.size() >0) {
 
                 for (API_Authenticationkey__mdt hdmap : objIFAuthHeadInfoLst) {
                     request.setHeader(hdmap.HeaderLab__c, hdmap.HeaderKey__c);
                 }
-                if(this.ifKeyId.equals('IF_RELAY_INFO')) {
-                    request.setHeader('Interface_req_dt', String.valueOf(Datetime.now().format('yyyyMMddHHmmss')));
-                }
-                
-                
-                // if 프로그램에 세팅된 헤더값이 있는경우
-                Map<String,String> header = String.isNotEmpty(objIFMaster.Header__c) ? null 
-                : (Map<String,String>)JSON.deserializeStrict((String)objIFMaster.Header__c, Map<String,String>.class);
 
-                if(header != null && !header.isEmpty())
+            }
+
+            // if 프로그램에 세팅된 헤더값이 있는경우
+            Map<String,String> header = new Map<String,String>();
+            if(String.isNotEmpty(objIFMaster.Header__c)) {
+                header =  (Map<String,String>)JSON.deserializeStrict((String)objIFMaster.Header__c, Map<String,String>.class);
+            }
+
+            if(header != null && !header.isEmpty())
+            {
+                for(String key : header.keySet())
                 {
-                  for(String key : header.keySet())
-                    {
-                        request.setHeader(key, (String) header.get(key));
-                    }
-                    this.logWrap.RequestHeader = Json.serialize(header);
+                    request.setHeader(key, (String) header.get(key));
                 }
+                this.logWrap.RequestHeader = Json.serialize(header);
+            }
 
+
+            // 프로그램 로직으로 헤더 정보를 전달해야 하는 헤더 값이 있는 경우
+            if(dynamicHd !=null && !dynamicHd.isEmpty()) {
+                for(String key : dynamicHd.keySet())
+                {
+                    system.debug('header set :::::: key ::: ' + key);
+
+                    request.setHeader(key, (String) dynamicHd.get(key));
+                }
             }
 
             
             String endPointUrl = this.objIFMaster.Endpoint__c;
-            
-            endPointUrl = endPointUrl.replaceAll('https://gwmsqa.ifresh.co.kr', 'http://127.0.0.1:8060');
 
-system.debug('endPointUrl>>>>>>>>>> ' + endPointUrl);
             request.setMethod(this.objIFMaster.Method__c);
             request.setTimeout(110000);         
 
@@ -133,6 +140,8 @@ system.debug('endPointUrl>>>>>>>>>> ' + endPointUrl);
 
             request.setHeader('Content-Type', contentType);
             
+            system.debug('endPointUrl>>>>>>>>>> contentType ' + contentType);
+
             if(contentType.contains('multipart')) {                
                 request.setBodyAsBlob(EncodingUtil.base64Decode(requestBody));
                 contentType = contentType+' charset=utf-8; boundary='+'vguardiance';
@@ -141,8 +150,7 @@ system.debug('endPointUrl>>>>>>>>>> ' + endPointUrl);
             this.logWrap.requestBody = requestBody;
 
 
-            
-
+            system.debug('Method__c>>>>>>>>>>  ' + objIFMaster.Method__c);
             
             // request.setBody를 할 경우 Method GET으로 설정을 해도 실제로는 POST로 전송되기 때문에 분기처리해준다
             if(objIFMaster.Method__c == 'POST') {
@@ -185,16 +193,21 @@ system.debug('endPointUrl>>>>>>>>>> ' + endPointUrl);
                 }
             }
 
+            System.debug('requestBody  >>>>>>>>>> ' + requestBody);
             request.setEndpoint(endPointUrl);
 
 
             response = http.send(request);
             
-            responseBody = response.getBody();
+
+            System.debug('response  >>>>>>>>>>  ' + response);
 
             Boolean redirect;
 
             if(response.getStatusCode() == 200 || response.getStatusCode() == 201) {
+
+                responseBody = response.getBody();
+
                 if(responseBody <> null && responseBody != '') {
                     resultCode   = String.valueOf(response.getStatusCode());
                     resultMessage = response.getStatus();
@@ -224,9 +237,9 @@ system.debug('endPointUrl>>>>>>>>>> ' + endPointUrl);
         this.logWrap.resultCode = resultCode;
         this.logWrap.resultMessage = resultMessage;
 
-        // if(isLogInsert) {
-        //     commlog.insertLog(this.logWrap);
-        // }
+        if(isLogInsert) {
+            commlog.insertLog(this.logWrap);
+        }
         return response;
     }
     

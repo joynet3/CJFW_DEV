@@ -28,7 +28,7 @@ public with sharing class AccountGetInfoController {
             FROM Account 
             WHERE (searchKey__c  LIKE :'%'+searchKey+'%' AND toLabel(CustomerType__c) LIKE :'%'+accountType+'%') ];   
         	
-            system.debug('return => ' + accList);
+            system.debug('return => ' + accList.size() );
         }
         return accList;
     }

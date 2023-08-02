@@ -18,25 +18,27 @@ global  class IFN_SFDC_LIF1007_EC001_REQ {
         IFN_SFDC_LIF1007_EC001_REQ.requstParam reqparam = new IFN_SFDC_LIF1007_EC001_REQ.requstParam();
         reqparam.BASE_MON = String.valueof(dateToday.year()) + String.valueof(dateToday.month()).leftPad(2, '0');
         reqparam.OIL_TYPE_CD = 'A';
-        System.debug('aaaaaaaaaaa');
         
         try {
             IFN_ApiGateWay gateway = new IFN_ApiGateWay(this.interfaceId);
             String requestBody = JSON.serialize(reqparam);
+            Map<String,String> hemap = new Map<String,String>();
+            hemap.put('Interface_req_dt',String.valueOf(Datetime.now().format('yyyyMMdd')));
+            hemap.put('Interface_tracekey',String.valueOf(Datetime.now().format('yyyyMMddHHmmss')));
 
             
-            system.debug( 'check Input ::: ' + requestBody );
-            HttpResponse response = gateway.webCallout(requestBody, true);
+            HttpResponse response = gateway.webCallout(requestBody,hemap, true);
 
-
-            system.debug( 'response.getStatusCode() ::: ' + response.getStatusCode() );
-            system.debug( 'check Output ::: ' + response.getBody() );
+            
+            
+            (List<IFX_SSIG_USER_INFO_Send.UserInfoList_element>)JSON.deserializeStrict((String) params, Map<Object,Object>.class);
 
 
         } catch (Exception e) {
             this.logWrap.ErrorCode = '-1';
             this.logWrap.ErrorText.add(e.getLineNumber()+e.getMessage() + e.getStackTraceString()); 
             this.logWrap.Status = 'ERROR';
+            System.debug(e.getLineNumber() + ':::' + e.getMessage());
 
         }
 
@@ -51,7 +53,7 @@ global  class IFN_SFDC_LIF1007_EC001_REQ {
      * 조회 파라메터  
      */
     global class requstParam{
-        public String system_type_cd ='LIF1007';
+        public String system_type_cd ='LIF007';
         public String opcode = 'EC001';
         public String COM_CD = 'FW00';
         public String BASE_MON {get;set;}

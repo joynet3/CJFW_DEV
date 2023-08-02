@@ -20,7 +20,7 @@ public with sharing class IFN_SFDC_LIF1007_EC001_REQ_TEST {
     static void test01() {
         test.startTest();
 
-        Test.setMock(HttpCalloutMock.class, new IFN_SFDC_LIF1007_EC001_REQCalloutMock());
+        Test.setMock(HttpCalloutMock.class, new IFN_SFDC_LIF1007_EC001_REQCalloutMock('',200));
         IFN_SFDC_LIF1007_EC001_REQ req = new IFN_SFDC_LIF1007_EC001_REQ();
         req.callout();
 

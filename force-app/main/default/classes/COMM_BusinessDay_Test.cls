@@ -21,7 +21,7 @@ public class COMM_BusinessDay_Test {
     @IsTest
     static void testUserTimeZone(){
         Test.startTest();
-        COMM_BusinessDay.getInstance();
+        
         COMM_BusinessDay bDayKR = COMM_BusinessDay.getInstance('Asia/Seoul');
         
         DateTime dtAfterHour = bDayKR.calcTargetAfterHour(targetDt, 4);
@@ -51,8 +51,27 @@ public class COMM_BusinessDay_Test {
         DateTime dtPrevBday = bDayKR.prevBusinessDay(targetDt.addDays(1));
         // System.assertEquals('1999-01-01 00:00:00 AM', makeGMTFormatStr(dtNextBday));
 
+        List<DateTime> dtNextWorkdays = bDayKr.nextBusinessDays(targetDt, 2, false);
+
+        List<DateTime> dtNextWorkday2s = bDayKr.nextBusinessDays(targetDt, 0, false);
+
+        
+
         Test.stopTest();
         
+    }
+
+    @IsTest
+    static void testUserTimeZone2(){
+        Test.startTest();
+
+        COMM_BusinessDay bDay = COMM_BusinessDay.getInstance();
+
+        System.debug(bDay.isBusinessDay (System.now()));
+
+        //bDay.prevBusinessDay(System.now());
+
+        Test.stopTest();
     }
 
     /**
