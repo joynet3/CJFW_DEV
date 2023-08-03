@@ -1,4 +1,4 @@
-global  class IFN_SFDC_LIF1007_EC001_REQ {
+public  class IFN_SFDC_LIF1007_EC001_REQ {
 
     public Map<String, String> mapRequestBody = new Map<String, String>();
     public String interfaceId = 'IF_SFDC_EACCT_INQ_OIL_AMOUNT';
@@ -7,17 +7,26 @@ global  class IFN_SFDC_LIF1007_EC001_REQ {
     public IFN_CommonLog commlog;
         
 
-    public IFN_SFDC_LIF1007_EC001_REQ() {}
 
-    global String callout() {
+    public String callout() {
 
-        IFX_LIF007_Callout.EC001ResultWrapper res = new IFX_LIF007_Callout.EC001ResultWrapper();
+        IFN_LIF007_Callout.EC001ResultWrapper ifRes = new IFN_LIF007_Callout.EC001ResultWrapper();
 
         
         try {
+            IFN_LIF007_Callout callout = new IFN_LIF007_Callout();
+            IFN_CalloutResult calloutResult =  callout.getResponse(this.interfaceId, null);
 
-            
-            
+            if('S'.equals(calloutResult.result)) {
+
+                try {
+                    ifRes =  (IFN_LIF007_Callout.EC001ResultWrapper)calloutResult.response;
+                    System.debug(ifRes.ERR_CD);
+                }  catch (Exception e) {
+
+                }
+
+            }
             
 
         } catch (Exception e) {
@@ -30,7 +39,7 @@ global  class IFN_SFDC_LIF1007_EC001_REQ {
 
         commlog.insertLog(this.logWrap);
 
-        return Json.serialize(res);
+        return Json.serialize(ifRes);
 
     }
 

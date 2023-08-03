@@ -53,7 +53,39 @@ public class IFN_LIF007_Callout {
     
 
 
-    //B2BI_TRDX_EA_TERMINALINFO_01 - https://testapi.tradlinx.com/berthplan
+    /**
+     * 주유비 조회 인터페이스
+     * @param interfaceId dlsxjvpdltm ID
+     * @param params 추가 파라메터
+     * @return  `IFN_CalloutResult`
+     * @request Sample
+       {
+            "OIL_TYPE_CD": "1",
+            "BASE_MON": "202212",
+            "COM_CD": "FW00",
+            "opcode": "EC001",
+            "system_type_cd": "LIF007"
+        }
+    * @response Sample
+        {
+            "ERR_CD": "S",
+            "ERR_MSG_CTT": "",
+            "DS_MASTER": {
+                "data": [
+                    {
+                        "OIL_UNITP": 201,
+                        "BASE_MON": "202212",
+                        "COM_CD": "FW00",
+                        "OIL_TYPE_CD": "1",
+                        "DPRC_UNITP": 101
+                    }
+                ],
+                "SVC_ERR_MSG_TEXT": "",
+                "ErrorCode": 0
+            }
+        }
+
+     */
     public IFN_CalloutResult IF_SFDC_EACCT_INQ_OIL_AMOUNT(String interfaceId, Object params){
         IFN_CalloutResult result = new IFN_CalloutResult();
 
@@ -72,7 +104,7 @@ public class IFN_LIF007_Callout {
             Date dateToday = Date.today();
             this.logwrap = new IFN_CommonLog.logWrap();
     
-            IFN_SFDC_LIF1007_EC001_REQ.requstParam reqparam = new IFN_SFDC_LIF1007_EC001_REQ.requstParam();
+            EC001RequstWrapper reqparam = new EC001RequstWrapper();
             reqparam.BASE_MON = String.valueof(dateToday.year()) + String.valueof(dateToday.month()).leftPad(2, '0');
             reqparam.OIL_TYPE_CD = 'A';
 
@@ -99,9 +131,6 @@ public class IFN_LIF007_Callout {
                 this.commlog.logWrap.ErrorText.add(response.getStatus());
             }
 
-
-
-
         } catch(Exception e) {
             
             result_code = 'F';
@@ -119,8 +148,6 @@ public class IFN_LIF007_Callout {
             , infResponse
         );
 
-
-        System.debug('ssssssssssssssssssssssssssssss - last - result:' + result);
         return result;
     }
     
