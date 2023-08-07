@@ -13,6 +13,9 @@ public with sharing class NotiEmailTemplate extends NotiTemplate{
     @TestVisible protected Set<String> bccAddresses;
     @TestVisible protected Set<String> attachmentIds;
     @TestVisible protected Boolean isCustom = false;
+    @TestVisible protected Boolean isSystem = false;
+    @TestVisible protected Boolean isUseOWE = false;
+    @TestVisible protected Boolean isSaveAsActivity = false;
 
     public Set<String> getCcAddresses() {
         return this.ccAddresses;
@@ -21,6 +24,7 @@ public with sharing class NotiEmailTemplate extends NotiTemplate{
     public void setCcAddresses(Set<String> ccAddresses) {
         this.ccAddresses = ccAddresses;
     }
+
     public Set<String> getBccAddresses() {
         return this.bccAddresses;
     }
@@ -29,8 +33,44 @@ public with sharing class NotiEmailTemplate extends NotiTemplate{
         this.bccAddresses = bccAddresses;
     }
 
+    public Set<String> getAttachmentIds() {
+        return this.attachmentIds;
+    }
+
+    public void setAttachmentIds(Set<String> attachmentIds) {
+        this.attachmentIds = attachmentIds;
+    }
+
     public Boolean getIsCustom() {
         return this.isCustom;
+    }
+
+    public void setIsCustom(Boolean isCustom) {
+        this.isCustom = isCustom;
+    }
+
+    public Boolean getIsSystem() {
+        return this.isSystem;
+    }
+
+    public void setIsSystem(Boolean isSystem) {
+        this.isSystem = isSystem;
+    }
+
+    public Boolean getIsUseOWE() {
+        return this.isUseOWE;
+    }
+
+    public void setIsUseOWE(Boolean isUseOWE) {
+        this.isUseOWE = isUseOWE;
+    }
+
+    public Boolean getIsSaveAsActivity() {
+        return this.isSaveAsActivity;
+    }
+
+    public void setIsSaveAsActivity(Boolean isSaveAsActivity) {
+        this.isSaveAsActivity = isSaveAsActivity;
     }
 
     /**
@@ -43,11 +83,16 @@ public with sharing class NotiEmailTemplate extends NotiTemplate{
         cloneTemplate.setToAddresses(this.getToAddresses());
         cloneTemplate.setCcAddresses(this.getCcAddresses());
         cloneTemplate.setBccAddresses(this.getBccAddresses());
+        cloneTemplate.setAttachmentIds(this.getAttachmentIds());
         cloneTemplate.setTitle(this.getTitle());
         cloneTemplate.setBody(this.getBody());
         cloneTemplate.setTargetId(this.getTargetId());
         cloneTemplate.setTemplateId(this.getTemplateId());
         cloneTemplate.setCategory(this.getCategory());
+        cloneTemplate.setIsCustom(this.getIsCustom());
+        cloneTemplate.setIsSystem(this.getIsSystem());
+        cloneTemplate.setIsUseOWE(this.getIsUseOWE());
+        cloneTemplate.setIsSaveAsActivity(this.getIsSaveAsActivity());
         
         return cloneTemplate;
     }

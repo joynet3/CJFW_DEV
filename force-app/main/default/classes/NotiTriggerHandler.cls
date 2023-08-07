@@ -1,18 +1,23 @@
 public with sharing class NotiTriggerHandler extends TriggerHandler{
     
-    private List<Notification__c> newList; 
-    private List<Notification__c> oldList; 
-    private Map<Id, Notification__c> oldMap; 
-    private Map<Id, Notification__c> newMap;
-    private Map<String, Schema.RecordTypeInfo> recordTypeMap;
-    private static Map<String,CustomNotificationType> customNotiTypeMap;
+    @testVisible private List<Notification__c> newList; 
+    @testVisible private List<Notification__c> oldList; 
+    @testVisible private Map<Id, Notification__c> oldMap; 
+    @testVisible private Map<Id, Notification__c> newMap;
+    @testVisible private static Map<String, Schema.RecordTypeInfo> recordTypeMap;
+    @testVisible private static Map<String,CustomNotificationType> customNotiTypeMap;
+    @testVisible private static COMM_Util.SchemaInfo schemaInfo; 
+
     
     public NotiTriggerHandler() {
         newList = (List<Notification__c>) Trigger.new;
         oldList = (List<Notification__c>) Trigger.old;
         newMap  = (Map<Id,Notification__c>) Trigger.newMap;
         oldMap  = (Map<Id,Notification__c>) Trigger.oldMap;
-        if(recordTypeMap == null)recordTypeMap = Schema.SObjectType.Notification__c.getRecordTypeInfosByDeveloperName();
+
+        if(schemaInfo == null) schemaInfo = new COMM_Util.SchemaInfo('Notification__c');
+
+        if(recordTypeMap == null)recordTypeMap = schemaInfo.getRecordTypeMapByDeveloperNames();
 
         if(customNotiTypeMap == null) customNotiTypeMap = new Map<String,CustomNotificationType>();
         if(customNotiTypeMap.isEmpty()) {

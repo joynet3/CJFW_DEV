@@ -11,6 +11,38 @@ public with sharing class CJFW_SurveyController {
     }
 
     /**
+    * surveyType 정보 가져오기
+    *
+    *@return  result Map<String,Object>
+    */
+   @AuraEnabled
+    public static Map<String,Object> getSurveyType(){
+        try {
+            Map<String,Object> result = new Map<String,Object>();
+            List<selectOption> optionList = new List<selectOption>();
+            List<CJFW_Survey__c> surveyList =[
+                select
+                    Id
+                    , Name
+                    , Description__c
+                from CJFW_Survey__c 
+            ];
+
+            for(CJFW_Survey__c survey : surveyList) {
+                optionList.add(new selectOption(survey.Name , survey.Id));
+            }
+            result.put('surveyList', surveyList);
+            result.put('optionList', optionList);
+
+            return result;
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+        
+    }
+
+
+    /**
     * survey 정보 가져오기
     *
     *@param  params Map<String,Object>
@@ -21,6 +53,7 @@ public with sharing class CJFW_SurveyController {
         try {
             Map<String,Object> result = new Map<String,Object>();
             result.put('params', params);
+            String recordId = (String) params.get('recordId');
 
             Set<String> questionIdSet = new Set<String>();
             Set<String> optionIdSet = new Set<String>();
@@ -106,6 +139,16 @@ public with sharing class CJFW_SurveyController {
             return result;
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
+        }
+    }
+
+    public class selectOption {
+        @AuraEnabled public String label;
+        @AuraEnabled public String value;
+        public selectOption(){}
+        public selectOption(String label, String value){
+            this.label = label;
+            this.value = value;
         }
     }
 }

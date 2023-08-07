@@ -175,8 +175,10 @@ public without sharing class LineItemMgmtController {
      *         - selectedCenter : 선택된 물류센터
      *         - selectedCategoryL : 선택된 상품분류(대)
      *         - sortStatus  : 조회 정렬 기준
+     *         - objUser : 검색을 한 유저정보
      * @return Map<String, Object> mapInitData
      *         - listAllEntry : 조회된 상품 리스트
+     * 23.08.03 : mapParam 안에 objUser 정보 추가
     **/
     @AuraEnabled
     public static Map<String, Object> doSearch(Map<String, Object> mapParam) {
@@ -187,6 +189,9 @@ public without sharing class LineItemMgmtController {
         String selectedCenter  = String.valueOf(mapParam.get('selectedCenter'));
         String selectedCategoryL  = String.valueOf(mapParam.get('selectedCategoryL'));
         String sortStatus  = String.valueOf(mapParam.get('sortStatus'));
+        String objUser  = String.valueOf(mapParam.get('objUser'));
+
+        System.debug(' objUser ->'+ objUser );
         
         datetime qryEnd = datetime.now(); 
         system.debug(logginglevel.WARN, (qryEnd.getTime() - qryStart.getTime()) /1000);
@@ -389,6 +394,7 @@ public without sharing class LineItemMgmtController {
     public static Map<String, Object> getCurrentEntry(List<String> listTargetEntryCode, String selectedCenter, String selectedMonth, String sortStatus, String selectedControl, String customerID) {
         System.debug('# LineItemMgmtController # getCurrentEntry ');
         System.debug('listTargetEntryCode -> ' + listTargetEntryCode);
+        System.debug('listTargetEntryCode size -> ' + listTargetEntryCode.size() );
         System.debug('selectedCenter -> ' + selectedCenter);
         System.debug('selectedMonth -> ' + selectedMonth);
         System.debug('sortStatus -> ' + sortStatus);
@@ -399,6 +405,7 @@ public without sharing class LineItemMgmtController {
         String ERR_MSG_CTT = '';
         // PriceBookEntryList 조회
         String query = '';
+        String queryCnt = ''; 
         query += 'SELECT    Id, Name, ProductCode, Product2.gd_no__c, UnitPrice, toLabel(Product2.bas_unit_cd__c), toLabel(Product2.migr_orinat_cd__c), toLabel(Product2.strg_cond_cd__c), Product2.taxt_cl_cd__c, Product2.lgs_ctr_id__c, ';
         query += '          Product2.fm_TaxType__c, Product2.fm_LAR_CLS_NM__c,Product2.fm_MID_CLS_NM__c, Product2.fm_XSM_CLS_CD__c';
         query += '          , ' + selectedMonth + '__c, Old' + selectedMonth + '__c ';
@@ -431,12 +438,36 @@ public without sharing class LineItemMgmtController {
 
         System.debug('# getCurrentEntry 최종검색쿼리 SIZE -> ' + listCurrentEntry.size() );
 
+        /* 
+        로직추가 -> [Start] 검색을 하는 사용자의 사업부 기준으로 카운팅 가능하도록 
+        */
+/* 
+        queryCnt += ' SELECT id , SearchCNTschoolSolution__c FROM Product2 ';
+        queryCnt += ' WHERE ProductCode IN : listTargetEntryCode ';
+        System.debug(' 검색 카운트용 쿼리 -> ' + queryCnt );
+
+        List<Product2> CntProdList = new List<Product2>();
+        CntProdList = Database.query(queryCnt);
+        
+        for(Product2 addCnt : CntProdList){
+            addCnt.SearchCNTschoolSolution__c = addCnt.SearchCNTschoolSolution__c + 1;
+            System.debug('# count 확인 ' + addCnt.SearchCNTschoolSolution__c + 1);
+        }
+        update CntProdList;
+         */
+        /* 
+        로직추가 -> [END] 
+        */
+
+
+
         List<String> listCurrentEntryCode = new List<String>();
         for ( PriceBookEntry objCurrentEntry : listCurrentEntry){
             listCurrentEntryCode.add( objCurrentEntry.Product2.gd_no__c);
         }
         List<String> listControlEntry = new List<String>();
 
+        // 중단제어 적용시 
         if ( selectedControl == 'Y' && !listCurrentEntryCode.isEmpty()){
             
             Input objInput = new Input();

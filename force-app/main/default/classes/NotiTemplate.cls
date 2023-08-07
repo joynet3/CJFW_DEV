@@ -15,6 +15,7 @@ public virtual with sharing class NotiTemplate {
     @TestVisible protected String templateId;             //App : CustomNotificationType.Id, Email: EmailTemplate.DeveloperName
     @TestVisible protected String lang;                   //언어
     @TestVisible protected Map<String, String> fieldsMap; //key: 필드, value: 값 > 개인화할떄 필요한 값
+    @TestVisible protected String errorMsg;
     
     //@TestVisible private String pageReference;
 
@@ -28,6 +29,14 @@ public virtual with sharing class NotiTemplate {
 
     public Map<String, String> getFieldsMap() {
         return this.fieldsMap;
+    }
+
+    public String getErrorMsg() {
+        return this.errorMsg;
+    }
+
+    public void setErrorMsg(String errorMsg) {
+        this.errorMsg = errorMsg;
     }
 
     public String getLang() {

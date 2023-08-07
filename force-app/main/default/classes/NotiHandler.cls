@@ -7,7 +7,7 @@
 */
 public virtual without sharing class NotiHandler {
     
-    public static Map<String,User> allUserMap;
+    public static Map<String,User> allUserMap;          //전체 Active 유저 soql query 호출 수 줄이기 위해
 
     protected NotiClassManagement__mdt managementData;
 
@@ -101,7 +101,10 @@ public virtual without sharing class NotiHandler {
                     notiTemplate = new NotiEmailTemplate();
                     notiTemplate.setLang(template.Language__c);
                     notiTemplate.setTemplateId(template.EmailDeveloperName__c);
-
+                    if(noti.IsDynamic__c) ((NotiEmailTemplate)notiTemplate).setIsCustom(noti.IsDynamic__c);
+                    ((NotiEmailTemplate)notiTemplate).setIsSystem(noti.IsSystemEmail__c);
+                    ((NotiEmailTemplate)notiTemplate).setIsUseOWE(noti.IsUseOWE__c);
+                    ((NotiEmailTemplate)notiTemplate).setIsSaveAsActivity(noti.IsSaveAsActivity__c);
                 }
                 //TBD Category(알림 보낼 방법) 추가 될 때마다 when 문 추가 필요
                 // when 'Category' {                    
@@ -126,6 +129,7 @@ public virtual without sharing class NotiHandler {
     /**
     * NotificationTarget__c 에서 관리하고 있는 수신자로 등록
     *
+    *@return  Set<String> NotiTargetObject 에 저장된 수신자 Id Set
     */
     @testVisible protected Set<String> getRicipientIdSet() {
         Map<String, Schema.RecordTypeInfo> includedRecordTypeMap = Schema.SObjectType.NotificationTarget__c.getRecordTypeInfosByDeveloperName();
@@ -168,7 +172,7 @@ public virtual without sharing class NotiHandler {
     *
     *@param  collectionType List, Set CollectionType
     *@param  category App, Email
-    *@return  형변환할 ClassName
+    *@return  String 형변환할 ClassName
     */
     @testVisible protected String getMappingClass(String collectionType, String category) {
         String className = managementData.TemplateClass__c;
@@ -241,11 +245,18 @@ public virtual without sharing class NotiHandler {
     @testVisible protected void sendHandler() {
         String category = noti.RecordType.DeveloperName;
         CJFW_ModuleSetting__c setting = CJFW_ModuleSetting__c.getInstance();
-        if(noti.IsNotiTest__c && setting.getPopulatedFieldsAsMap().containsKey('IsTriggerActive__c') && setting.IsTriggerActive__c) {
+        if(noti.IsNotiTest__c && setting.getPopulatedFieldsAsMap().containsKey('IsNotiTest__c') && setting.IsNotiTest__c) {
             //TBD Test 일때 이력만 생성
+            IFLog__c objLog = new IFLog__c();
+            objLog.Status__c = 'SUCCESS';
+            String resultDataStr = 'Noti Test : \n' + JSON.serialize(categorySendDataListMap.get(category));
+            objLog.ResultMessage__c = resultDataStr <> null && resultDataStr.length() > 130000 ? resultDataStr.substring(0,130000) : resultDataStr;
+            
+            NotificationManager.saveHistory(new List<IFLog__c>{objLog});
+
         }else {
             NotiAlert alertHandler = (NotiAlert)Type.forName(managementData.AlertClass__c).newInstance();
-            System.debug('categorySendDataListMap:: ' +JSON.serialize(categorySendDataListMap));
+            //System.debug('categorySendDataListMap:: ' +JSON.serialize(categorySendDataListMap));
             if(!categorySendDataListMap.isEmpty()) alertHandler.send(categorySendDataListMap.get(category));
         }
     }
@@ -275,7 +286,7 @@ public virtual without sharing class NotiHandler {
     }
 
     /**
-    * Object로 Category 별 템플릿 개인화 하기 위해 확장 클래스에서 필수적으로 구현이 필요함 
+    * Object로 Category 별 템플릿 개인화 하기 위해 확장 클래스(자식)에서 필수적으로 구현이 필요함 
     * override 시 Map<String, List<NotiTemplate>> categorySendDataListMap 값 저장 필수
     *@param  targetObject 알림 내용을 만드는 Object 데이터
     */
@@ -283,8 +294,20 @@ public virtual without sharing class NotiHandler {
         
     }
 
-
-    @testVisible protected void setEmailPersonalize(Map<String,NotiEmailTemplate> langTemplateMap, Map<String, String> fieldsMap,String targetId,String lang, Set<String> toAddresses, Set<String> ccAddresses, Set<String> bccAddresses) {
+    /**
+    * Email Template 개인화 공통 로직
+    * 수신자 및 송신할 데이터 저장
+    *
+    *@param  langTemplateMap 언어별 Template Master Map
+    *@param  fieldsMap 개인화시 필요한 key: fieldApi, value: fieldValue
+    *@param  targetId 개인화시에 필요한 SingleEmailMessage WhatId
+    *@param  lang 수신자 언어
+    *@param  toAddresses 수신자
+    *@param  ccAddresses 참조
+    *@param  bccAddresses 숨은참조
+    *@param  attachmentIds 첨부파일 Id Set
+    */
+    @testVisible protected void setEmailPersonalize(Map<String,NotiEmailTemplate> langTemplateMap, Map<String, String> fieldsMap, String targetId, String lang, Set<String> toAddresses, Set<String> ccAddresses, Set<String> bccAddresses, Set<String> attachmentIds) {
         NotiEmailTemplate template = langTemplateMap.get(lang);
         NotiEmailTemplate cloneTemplateData = template == null ? (NotiEmailTemplate) langTemplateMap.get('ko').cloneTemplate() : (NotiEmailTemplate) langTemplateMap.get(lang).cloneTemplate();
         cloneTemplateData.setFieldsMap(fieldsMap);
@@ -292,6 +315,7 @@ public virtual without sharing class NotiHandler {
         cloneTemplateData.setCcAddresses(ccAddresses);
         cloneTemplateData.setBccAddresses(bccAddresses);
         cloneTemplateData.setTargetId(targetId);
+        cloneTEmplateData.setAttachmentIds(attachmentIds);
         setCategorySendDataListMap(categorySendDataListMap ,cloneTemplateData.getCategory(), cloneTemplateData);
     }
 
@@ -319,16 +343,17 @@ public virtual without sharing class NotiHandler {
 
                 fieldsMap.put(field, value);
             }
+            Set<String> tmpRecipientIdSet = new Set<String>(this.recipientIdSet);
             List<NotiTarget> recipientList = recipientListMap.get(targetId);
             if(categoryTemplateMapMap.containsKey('App')) {
                 for(NotiTarget recipient : recipientList) {
-                    if('id'.equals(recipient.getType())) this.recipientIdSet.addAll(recipient.getToAddresses());
+                    if('id'.equals(recipient.getType())) tmpRecipientIdSet.addAll(recipient.getToAddresses());
                 }
 
                 Map<String,AppTemplate> langTemplateMap = (Map<String,AppTemplate>)categoryTemplateMapMap.get('App');
                 if(langTemplateMap.isEmpty()) continue;
 
-                for(String recipientId : this.recipientIdSet) {
+                for(String recipientId : tmpRecipientIdSet) {
                     User recipient = allUserMap.get(recipientId);
                     if(recipient == null) continue;
                     AppTemplate template = langTemplateMap.get(recipient.LanguageLocaleKey);
@@ -351,7 +376,16 @@ public virtual without sharing class NotiHandler {
                 for(NotiTarget recipient : recipientList) {
                     if('id'.equals(recipient.getType())) {
                         if(recipient.getToAddresses().size() > 1) {
-                            setEmailPersonalize(langTemplateMap, fieldsMap, targetId, recipient.getLang(), recipient.getToAddresses(), recipient.getCcAddresses(), recipient.getBccAddresses());
+                            setEmailPersonalize(
+                                langTemplateMap
+                                , fieldsMap
+                                , targetId
+                                , recipient.getLang()
+                                , recipient.getToAddresses()
+                                , recipient.getCcAddresses()
+                                , recipient.getBccAddresses()
+                                , recipient.getAttachmentIds()
+                            );
                             
                         }else if(recipient.getToAddresses().size() > 0) {
                             //size가 1이라 List 로 변환해서 첫번째 데이터 꺼내오기
@@ -359,21 +393,32 @@ public virtual without sharing class NotiHandler {
                         
                             User user = allUserMap.get(tmpToAddressList.get(0));
                             if(user == null) continue;
-                            setEmailPersonalize(langTemplateMap, fieldsMap, targetId, user.LanguageLocaleKey, recipient.getToAddresses(), recipient.getCcAddresses(), recipient.getBccAddresses());
+                            setEmailPersonalize(
+                                langTemplateMap
+                                , fieldsMap
+                                , targetId
+                                , user.LanguageLocaleKey
+                                , recipient.getToAddresses()
+                                , recipient.getCcAddresses()
+                                , recipient.getBccAddresses()
+                                , recipient.getAttachmentIds()
+                            );
                             
                         }
 
                     }else if('email'.equals(recipient.getType())) {
                         if(recipient.getToAddresses().size() > 1) {
-                            setEmailPersonalize(langTemplateMap, fieldsMap, targetId, recipient.getLang(), recipient.getToAddresses(), recipient.getCcAddresses(), recipient.getBccAddresses());
-                            // NotiEmailTemplate template = langTemplateMap.get(recipient.getLang());
-                            // NotiEmailTemplate cloneTemplateData = template == null ? (NotiEmailTemplate) langTemplateMap.get('ko').cloneTemplate() : (NotiEmailTemplate) langTemplateMap.get(recipient.getLang()).cloneTemplate();
-                            // cloneTemplateData.setFieldsMap(fieldsMap);
-                            // cloneTemplateData.setToAddresses(recipient.getToAddresses());
-                            // cloneTemplateData.setCcAddresses(recipient.getCcAddresses());
-                            // cloneTemplateData.setBccAddresses(recipient.getBccAddresses());
-                            // cloneTemplateData.setTargetId(targetId);
-                            // setCategorySendDataListMap(categorySendDataListMap ,cloneTemplateData.getCategory(), cloneTemplateData);
+                            setEmailPersonalize(
+                                langTemplateMap
+                                , fieldsMap
+                                , targetId
+                                , recipient.getLang()
+                                , recipient.getToAddresses()
+                                , recipient.getCcAddresses()
+                                , recipient.getBccAddresses()
+                                , recipient.getAttachmentIds()
+                            );
+                            
                         }else if(recipient.getToAddresses().size() > 0) {
                             //size가 1이라 List 로 변환해서 첫번째 데이터 꺼내오기
                             List<String> tmpToAddressList = new List<String>(recipient.getToAddresses());
@@ -381,16 +426,34 @@ public virtual without sharing class NotiHandler {
                             User user = allUserMap.get(tmpToAddressList.get(0));
                             //비회원일 경우 
                             if(user == null) user = new User(LanguageLocaleKey=recipient.getLang());
-                            setEmailPersonalize(langTemplateMap, fieldsMap, targetId, user.LanguageLocaleKey, recipient.getToAddresses(), recipient.getCcAddresses(), recipient.getBccAddresses());
+                            setEmailPersonalize(
+                                langTemplateMap
+                                , fieldsMap
+                                , targetId
+                                , user.LanguageLocaleKey
+                                , recipient.getToAddresses()
+                                , recipient.getCcAddresses()
+                                , recipient.getBccAddresses()
+                                , recipient.getAttachmentIds()
+                            );
                         }
                     }
                 }
                 
                 //Record에 추가된 수신자
-                for(String recipientId : this.recipientIdSet) {
+                for(String recipientId : tmpRecipientIdSet) {
                     User user = allUserMap.get(recipientId);
                     if(user == null) continue;
-                    setEmailPersonalize(langTemplateMap, fieldsMap, targetId, user.LanguageLocaleKey, new Set<String>{user.Email}, null, null);
+                    setEmailPersonalize(
+                        langTemplateMap
+                        , fieldsMap
+                        , targetId
+                        , user.LanguageLocaleKey
+                        , new Set<String>{user.Email}
+                        , null
+                        , null
+                        , null
+                    );
                 }
             }
 

@@ -50,7 +50,18 @@ public with sharing class TaxIssuanceStatusSearchController {
 
         return result;
     }
-
+    /**
+     * @description  interface로 데이터 보내기
+     *
+     * @param params 
+     * @return       `String`
+     */
+    @AuraEnabled
+    public static String calloutInterface(String params){
+        System.debug('Received Params: ' + params);
+        
+        return null;
+    }
     
     public class TaxWrapper{
         @AuraEnabled public String  id {get;set;}

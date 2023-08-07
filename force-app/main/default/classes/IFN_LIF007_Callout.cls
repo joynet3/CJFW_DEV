@@ -80,7 +80,7 @@ public class IFN_LIF007_Callout {
         String result_code = 'S';
         String result_message = '';
         
-        EC001ResultWrapper infResponse = new EC001ResultWrapper();  
+        IFN_SFDC_LIF1007_EC001_REQ.EC001ResultWrapper infResponse = new IFN_SFDC_LIF1007_EC001_REQ.EC001ResultWrapper();  
         
 
         try{
@@ -90,15 +90,8 @@ public class IFN_LIF007_Callout {
     
             System.debug('params >>>>>>>>>>>>>>>>>>>>>>>>>' + params);
 
-            EC001RequstWrapper reqparam = new EC001RequstWrapper();
-            reqparam = (EC001RequstWrapper)params;
-
-            System.debug('reqparam >>>>>>>>>>>>>>>>>>>>>>>>>' + reqparam);
-
-            System.debug('reqparam.BASE_MON>>>>>>>>>>>>>>>>>' + reqparam.BASE_MON);
-            System.debug('reqparam.OIL_TYPE_CD>>>>>>>>>>>>>>>>>' + reqparam.OIL_TYPE_CD);
-
-
+            IFN_SFDC_LIF1007_EC001_REQ.EC001RequstWrapper reqparam = new IFN_SFDC_LIF1007_EC001_REQ.EC001RequstWrapper();
+            reqparam = (IFN_SFDC_LIF1007_EC001_REQ.EC001RequstWrapper)params;
 
             IFN_ApiGateWay gateway = new IFN_ApiGateWay(interfaceId);
             String requestBody = JSON.serialize(reqparam);
@@ -112,7 +105,7 @@ public class IFN_LIF007_Callout {
             if(response.getStatusCode() == 200) {
 
                 responsedata = response.getBody();
-                infResponse =  (EC001ResultWrapper)JSON.deserializeStrict((String)responsedata, EC001ResultWrapper.class);
+                infResponse =  (IFN_SFDC_LIF1007_EC001_REQ.EC001ResultWrapper)JSON.deserializeStrict((String)responsedata, IFN_SFDC_LIF1007_EC001_REQ.EC001ResultWrapper.class);
 
             } else {
                 result_code = 'F';
@@ -135,57 +128,6 @@ public class IFN_LIF007_Callout {
 
         return result;
     }
-    
-
-
-
-
-
-    /**
-     * ==================================== 
-     * 유류비 조회 Wrapper
-     * =================================
-     */
-    /**
-     * 요청 파라메터 결과 
-     */
-    public class EC001RequstWrapper{
-        public String system_type_cd ='LIF007';
-        public String opcode = 'EC001';
-        public String COM_CD = 'FW00';
-        public String BASE_MON {get;set;}
-        public String OIL_TYPE_CD {get;set;}
-    }
-
-    /**
-     * 조회 결과 
-     */
-    public class EC001ResultWrapper {
-        public String ERR_CD;
-        public String ERR_MSG_CTT;
-        public EC001DsMsterData DS_MASTER;
-    }
-
-    public class EC001DsMsterData {
-        public List<EC001DataList> data;
-        public String SVC_ERR_MSG_TEXT;
-        public Integer ErrorCode;
-    }
-
-    public class EC001DataList {
-        public Integer OIL_UNITP;
-        public String BASE_MON;
-        public String COM_CD;
-        public String OIL_TYPE_CD;
-        public Integer DPRC_UNITP;
-    }
-    /**
-     * ==================================== 
-     * 유류비 조회 Wrapper
-     * =================================
-     */
-
-
     
 
 }
