@@ -39,29 +39,30 @@ public with sharing class IFN_SFDC_TARG_SampleBatch extends MasterBatchBase impl
 
     public override void execute(Database.BatchableContext bc, List<SObject> scope){
 
-        IFN_SFDC_TARG_SampleBatch.requstParam reqparam = new IFN_SFDC_TARG_SampleBatch.requstParam();
-        Date dateToday = Date.today();
-        reqparam.BASE_MON = String.valueof(dateToday.year()) + String.valueof(dateToday.month()).leftPad(2, '0');
-        reqparam.OIL_TYPE_CD = 'A';
-        
+        List<IF_IFRESH_SFDC_VOC_INFO_DETAIL__c> ifDataLst = (List<IF_IFRESH_SFDC_VOC_INFO_DETAIL__c>)(scope);
+
         try{
+
+            for(IF_IFRESH_SFDC_VOC_INFO_DETAIL__c nowlow : ifDataLst) {
+                IFN_LIF007_Callout.EC001RequstWrapper param = new IFN_LIF007_Callout.EC001RequstWrapper();
+                param.BASE_MON = '202212'; // 쿼리에서 조회 된 파라메터를 이용하여 세팅
+                param.OIL_TYPE_CD = '1'; // 쿼리에서 조회 된 파라메터를 이용하여 세팅
+    
+                
+                IFN_LIF007_Callout callout = new IFN_LIF007_Callout(this.interfaceId, 'Real');
+                IFN_CalloutResult calloutResult =  callout.getResponse(this.interfaceId, param);
+    
+    
+                
+    
+                if('S'.equals(calloutResult.result)) {
+    
+                    // 수신 데이터 따로 입력이 필요한 경우 
+                    insIFX();
+                }
+            }            
             
-            IFN_ApiGateWay gateway = new IFN_ApiGateWay(this.interfaceId);
-            String requestBody = JSON.serialize(reqparam);
-            Map<String,String> hemap = new Map<String,String>();
-            hemap.put('Interface_req_dt',String.valueOf(Datetime.now().format('yyyyMMdd')));
-            hemap.put('Interface_tracekey',String.valueOf(Datetime.now().format('yyyyMMddHHmmss')));
 
-            
-            HttpResponse response = gateway.webCallout(requestBody,hemap, true);
-
-            
-
-            if('200'.equals(response.getStatus())){
-
-                // 수신 데이터 따로 입력이 필요한 경우 
-                insIFX();
-            }
 
         } catch(Exception e){
 

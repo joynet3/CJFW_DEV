@@ -24,7 +24,7 @@ public with sharing class AccountGetInfoController {
             System.debug('All Null');
         }else{
             System.debug('All Data');
-            accList = [SELECT id ,CustomerID__c, Name ,searchKey__c, fm_empname__c , fm_empId__c , tolabel(CustomerStatus__c), CompanyRegisterNumber__c, PIC__r.Name, PICCode__c 
+            accList = [SELECT id ,CustomerID__c, Name ,searchKey__c, fm_empname__c , fm_empId__c , tolabel(CustomerStatus__c), toLabel(CustomerType__c) , CompanyRegisterNumber__c, PIC__r.Name, PICCode__c 
             FROM Account 
             WHERE (searchKey__c  LIKE :'%'+searchKey+'%' AND toLabel(CustomerType__c) LIKE :'%'+accountType+'%') ];   
         	

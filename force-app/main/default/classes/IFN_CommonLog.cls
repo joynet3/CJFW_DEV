@@ -59,8 +59,11 @@ global class IFN_CommonLog {
 
             List<IFMaster__c> ifObj = [SELECT ID,Name, ClassName__c, Description__c, IsRealLogInsert__c,ContentType__c,Header__c,Method__c,Param1__c,Param2__c,Param3__c,Param4__c FROM IFMaster__c WHERE Name=:InterfaceId];
 
+
             if(!ifObj.isEmpty())
             {
+
+
                 this.IF_ProgramClassName = ifObj[0].ClassName__c; 
                 this.IF_ProgramDescription = ifObj[0].Description__c; 
                 this.IF_Program  = ifObj[0];
@@ -79,6 +82,8 @@ global class IFN_CommonLog {
                     this.isRealLogInsert = true;
                 }
             }
+
+
 
             if('Batch'.equals(type))
             {
@@ -119,6 +124,8 @@ global class IFN_CommonLog {
         {
             IFLog__c result = new IFLog__c();
             result.RecordTypeId = this.RecordTypeId;
+
+
             if(String.isNotBlank(this.BatchCronId))    result.BatchCronId__c       = this.BatchCronId;
             if(String.isNotBlank(this.BatchParameter)) result.BatchParameter__c    = this.BatchParameter;
             if(String.isNotBlank(this.ClassName))      result.ClassName__c         = this.ClassName;
@@ -135,17 +142,15 @@ global class IFN_CommonLog {
             if(this.ErrorText      != null)  result.ErrorText__c        = getText(JSON.serialize(this.ErrorText));
             if(this.LogText      != null)  result.LogText__c        = getText(JSON.serialize(this.LogText));
 
-
             if(String.isNotBlank(this.resultCode))      result.resultCode__c         = this.resultCode;
             if(String.isNotBlank(this.ResponseBody))   result.resultMessage__c   = getText(this.ResponseBody);
-
-
 
             if(this.IFRequestSize  != null && this.IFRequestSize > 0)   result.IF_RequestSize__c  = this.IFRequestSize;
             if(this.IFResponseSize != null && this.IFResponseSize > 0)  result.IF_ResponseSize__c = this.IFResponseSize;
 
             result.IFMaster__c  = this.IF_Program.Id;
-            result.Status__c      = this.ErrorText.isEmpty() ? 'Success' : 'Error';
+            //result.Status__c      = this.ErrorText.isEmpty() ? 'Success' : 'Error';
+
 
             return result;
         }
@@ -191,7 +196,6 @@ global class IFN_CommonLog {
                 
                 IFLog__c log = logWrap.convert();
                 
-
                 if(log.BatchEndTime__c == null) log.BatchEndTime__c = System.now();
                 
                 if(String.isNotBlank(log.BatchCronId__c)){
@@ -227,9 +231,9 @@ global class IFN_CommonLog {
             if(logWrap != null){
                 progLog = logWrap.convert();
                 
-                
                 if(String.isNotBlank(progLog.BatchCronId__c)) 
                 {
+
                     //처리중인 배치 클래스명 찾기
                     apexJobs = new List<AsyncApexJob>();
                     apexJobs = [SELECT CreatedById, JobItemsProcessed, Status, TotalJobItems, ApexClassId FROM AsyncApexJob
@@ -238,21 +242,17 @@ global class IFN_CommonLog {
                     if(!apexJobs.isEmpty())
                     {
                         apexJob = apexJobs[0];
-                        System.debug('### IFN_CommonLog :: insertLog  :: apexJob = ' + apexJob );
-
                         progLog.BatchTotalJobItems__c     = apexJob.TotalJobItems;
                         progLog.BatchJobItemsProcessed__c = apexJob.JobItemsProcessed;
                         progLog.BatchUser__c              = apexJob.CreatedById;
 
                         apexClass = new ApexClass();
                         apexClass = [SELECT Id, Name FROM ApexClass WHERE Id =: apexJob.ApexClassId];
-
-                        System.debug('### IFN_CommonLog :: insertLog  :: apexClass = ' + apexClass );
-
                         progLog.ClassName__c = apexClass.Name;
                     }
                     
                 } 
+
 
                 Insert progLog;
             }

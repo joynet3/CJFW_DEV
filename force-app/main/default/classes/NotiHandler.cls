@@ -245,6 +245,7 @@ public virtual without sharing class NotiHandler {
             //TBD Test 일때 이력만 생성
         }else {
             NotiAlert alertHandler = (NotiAlert)Type.forName(managementData.AlertClass__c).newInstance();
+            System.debug('categorySendDataListMap:: ' +JSON.serialize(categorySendDataListMap));
             if(!categorySendDataListMap.isEmpty()) alertHandler.send(categorySendDataListMap.get(category));
         }
     }
@@ -282,6 +283,18 @@ public virtual without sharing class NotiHandler {
         
     }
 
+
+    @testVisible protected void setEmailPersonalize(Map<String,NotiEmailTemplate> langTemplateMap, Map<String, String> fieldsMap,String targetId,String lang, Set<String> toAddresses, Set<String> ccAddresses, Set<String> bccAddresses) {
+        NotiEmailTemplate template = langTemplateMap.get(lang);
+        NotiEmailTemplate cloneTemplateData = template == null ? (NotiEmailTemplate) langTemplateMap.get('ko').cloneTemplate() : (NotiEmailTemplate) langTemplateMap.get(lang).cloneTemplate();
+        cloneTemplateData.setFieldsMap(fieldsMap);
+        cloneTemplateData.setToAddresses(toAddresses);
+        cloneTemplateData.setCcAddresses(ccAddresses);
+        cloneTemplateData.setBccAddresses(bccAddresses);
+        cloneTemplateData.setTargetId(targetId);
+        setCategorySendDataListMap(categorySendDataListMap ,cloneTemplateData.getCategory(), cloneTemplateData);
+    }
+
     /**
     * 데이터 기준으로 사용자 알림 템플릿 언어별 개인화 // 기본 언어 ko
     *
@@ -296,7 +309,7 @@ public virtual without sharing class NotiHandler {
 
         for(sObject datum : datas) {
             Map<String, String> fieldsMap = new Map<String, String>();
-
+            String targetId = String.valueOf(datum.get('Id'));
             for(String field : targetFields) {
                 String value = '';
                 List<String> relatedFieldList = field.split('\\.');
@@ -306,14 +319,15 @@ public virtual without sharing class NotiHandler {
 
                 fieldsMap.put(field, value);
             }
-            List<NotiTarget> recipientList = recipientListMap.get(String.valueOf(datum.get('Id')));
+            List<NotiTarget> recipientList = recipientListMap.get(targetId);
             if(categoryTemplateMapMap.containsKey('App')) {
                 for(NotiTarget recipient : recipientList) {
-                    if('Id'.equals(recipient.getType())) this.recipientIdSet.addAll(recipient.getToAddresses());
+                    if('id'.equals(recipient.getType())) this.recipientIdSet.addAll(recipient.getToAddresses());
                 }
 
                 Map<String,AppTemplate> langTemplateMap = (Map<String,AppTemplate>)categoryTemplateMapMap.get('App');
-                
+                if(langTemplateMap.isEmpty()) continue;
+
                 for(String recipientId : this.recipientIdSet) {
                     User recipient = allUserMap.get(recipientId);
                     if(recipient == null) continue;
@@ -323,7 +337,7 @@ public virtual without sharing class NotiHandler {
                     cloneTemplateData.setTitle(cloneTemplateData.setMessage(cloneTemplateData.getTitle()));
                     cloneTemplateData.setBody(cloneTemplateData.setMessage(cloneTemplateData.getBody()));
                     cloneTemplateData.setToAddresses(new Set<String>{recipientId});
-                    cloneTemplateData.setTargetId(String.valueOf(datum.get('Id')));
+                    cloneTemplateData.setTargetId(targetId);
                     setCategorySendDataListMap(categorySendDataListMap ,cloneTemplateData.getCategory(), cloneTemplateData);
                 }
                 
@@ -331,50 +345,52 @@ public virtual without sharing class NotiHandler {
     
             if(categoryTemplateMapMap.containsKey('Email')) {
                 Map<String,NotiEmailTemplate> langTemplateMap = (Map<String,NotiEmailTemplate>)categoryTemplateMapMap.get('Email');
+                if(langTemplateMap.isEmpty()) continue;
+
+                
                 for(NotiTarget recipient : recipientList) {
-                    if('Id'.equals(recipient.getType())) {
+                    if('id'.equals(recipient.getType())) {
                         if(recipient.getToAddresses().size() > 1) {
-                            for(String toAddress : recipient.getToAddresses()) {
-                                User user = allUserMap.get(toAddress);
-                                if(user == null) continue;
-                                NotiEmailTemplate template = langTemplateMap.get(user.LanguageLocaleKey);
-                                NotiEmailTemplate cloneTemplateData = template == null ? (NotiEmailTemplate) langTemplateMap.get('ko').cloneTemplate() : (NotiEmailTemplate) langTemplateMap.get(user.LanguageLocaleKey).cloneTemplate();
-                                cloneTemplateData.setFieldsMap(fieldsMap);
-                                cloneTemplateData.setToAddresses(new Set<String>{toAddress});
-                                cloneTemplateData.setCcAddresses(recipient.getCcAddresses());
-                                cloneTemplateData.setBccAddresses(recipient.getBccAddresses());
-                                cloneTemplateData.setTargetId(String.valueOf(datum.get('Id')));
-                                setCategorySendDataListMap(categorySendDataListMap ,cloneTemplateData.getCategory(), cloneTemplateData);
-                            }
+                            setEmailPersonalize(langTemplateMap, fieldsMap, targetId, recipient.getLang(), recipient.getToAddresses(), recipient.getCcAddresses(), recipient.getBccAddresses());
+                            
+                        }else if(recipient.getToAddresses().size() > 0) {
+                            //size가 1이라 List 로 변환해서 첫번째 데이터 꺼내오기
+                            List<String> tmpToAddressList = new List<String>(recipient.getToAddresses());
+                        
+                            User user = allUserMap.get(tmpToAddressList.get(0));
+                            if(user == null) continue;
+                            setEmailPersonalize(langTemplateMap, fieldsMap, targetId, user.LanguageLocaleKey, recipient.getToAddresses(), recipient.getCcAddresses(), recipient.getBccAddresses());
+                            
                         }
 
-                    }else if('Email'.equals(recipient.getType())) {
+                    }else if('email'.equals(recipient.getType())) {
                         if(recipient.getToAddresses().size() > 1) {
-                            for(String toAddress : recipient.getToAddresses()) {
-                                User user = allUserMap.get(toAddress);
-                                if(user == null) user = new User(Email=toAddress, LanguageLocaleKey = recipient.getLang());
-                                NotiEmailTemplate template = langTemplateMap.get(user.LanguageLocaleKey);
-                                NotiEmailTemplate cloneTemplateData = template == null ? (NotiEmailTemplate) langTemplateMap.get('ko').cloneTemplate() : (NotiEmailTemplate) langTemplateMap.get(user.LanguageLocaleKey).cloneTemplate();
-                                cloneTemplateData.setFieldsMap(fieldsMap);
-                                cloneTemplateData.setToAddresses(new Set<String>{toAddress});
-                                cloneTemplateData.setCcAddresses(recipient.getCcAddresses());
-                                cloneTemplateData.setBccAddresses(recipient.getBccAddresses());
-                                cloneTemplateData.setTargetId(String.valueOf(datum.get('Id')));
-                                setCategorySendDataListMap(categorySendDataListMap ,cloneTemplateData.getCategory(), cloneTemplateData);
-                            }
+                            setEmailPersonalize(langTemplateMap, fieldsMap, targetId, recipient.getLang(), recipient.getToAddresses(), recipient.getCcAddresses(), recipient.getBccAddresses());
+                            // NotiEmailTemplate template = langTemplateMap.get(recipient.getLang());
+                            // NotiEmailTemplate cloneTemplateData = template == null ? (NotiEmailTemplate) langTemplateMap.get('ko').cloneTemplate() : (NotiEmailTemplate) langTemplateMap.get(recipient.getLang()).cloneTemplate();
+                            // cloneTemplateData.setFieldsMap(fieldsMap);
+                            // cloneTemplateData.setToAddresses(recipient.getToAddresses());
+                            // cloneTemplateData.setCcAddresses(recipient.getCcAddresses());
+                            // cloneTemplateData.setBccAddresses(recipient.getBccAddresses());
+                            // cloneTemplateData.setTargetId(targetId);
+                            // setCategorySendDataListMap(categorySendDataListMap ,cloneTemplateData.getCategory(), cloneTemplateData);
+                        }else if(recipient.getToAddresses().size() > 0) {
+                            //size가 1이라 List 로 변환해서 첫번째 데이터 꺼내오기
+                            List<String> tmpToAddressList = new List<String>(recipient.getToAddresses());
+                        
+                            User user = allUserMap.get(tmpToAddressList.get(0));
+                            //비회원일 경우 
+                            if(user == null) user = new User(LanguageLocaleKey=recipient.getLang());
+                            setEmailPersonalize(langTemplateMap, fieldsMap, targetId, user.LanguageLocaleKey, recipient.getToAddresses(), recipient.getCcAddresses(), recipient.getBccAddresses());
                         }
                     }
                 }
                 
+                //Record에 추가된 수신자
                 for(String recipientId : this.recipientIdSet) {
-                    User recipient = allUserMap.get(recipientId);
-                    if(recipient == null) continue;
-                    NotiEmailTemplate template = langTemplateMap.get(recipient.LanguageLocaleKey);
-                    NotiEmailTemplate cloneTemplateData = template == null ? (NotiEmailTemplate) langTemplateMap.get('ko').cloneTemplate() : (NotiEmailTemplate) langTemplateMap.get(recipient.LanguageLocaleKey).cloneTemplate();
-                    cloneTemplateData.setFieldsMap(fieldsMap);
-                    cloneTemplateData.setToAddresses(new Set<String>{recipientId});
-                    cloneTemplateData.setTargetId(String.valueOf(datum.get('Id')));
-                    setCategorySendDataListMap(categorySendDataListMap ,cloneTemplateData.getCategory(), cloneTemplateData);
+                    User user = allUserMap.get(recipientId);
+                    if(user == null) continue;
+                    setEmailPersonalize(langTemplateMap, fieldsMap, targetId, user.LanguageLocaleKey, new Set<String>{user.Email}, null, null);
                 }
             }
 

@@ -9,7 +9,7 @@ public class IFN_LIF007_Callout {
 
     public IFN_LIF007_Callout(String interfaceId, String type){
         this.commlog         = new IFN_CommonLog();
-        this.commlog.logWrap = new IFN_CommonLog.LogWrap(interfaceId, type);
+        this.logWrap = new IFN_CommonLog.LogWrap(interfaceId, type);
     }
 
 
@@ -17,34 +17,21 @@ public class IFN_LIF007_Callout {
 
     public IFN_CalloutResult getResponse(String interfaceId, Object params){
         IFN_CalloutResult result = new IFN_CalloutResult();
-        this.commlog.logWrap = this.commlog.logWrap == null ? new IFN_CommonLog.LogWrap(interfaceId, 'REAL') : this.commlog.logWrap;             
 
         
         try {
             switch on interfaceId {
-                //----- 선박위치정보 조회용 access token 획득 I/F
+                //----- 테스트 IF
                 when 'IF_SFDC_EACCT_INQ_OIL_AMOUNT'{ 
+                    System.debug(' getResponse >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' + params);
                     result = IF_SFDC_EACCT_INQ_OIL_AMOUNT(interfaceId, params);
                 }
                 
-
-
-
             }
         } catch(Exception e) {
             result.setResult('E' , e.getMessage() , null); 
         } //end of try~catch
 
-
-        try{
-            if(this.commlog.logWrap.isRealLogInsert){
-                this.commlog.insertLog(this.commlog.logWrap);
-            }
-        } catch(Exception e){
-            System.debug('insertLog Error = '+ e.getMessage());
-        }
-
-        
 
         return result;
 
@@ -92,21 +79,24 @@ public class IFN_LIF007_Callout {
         String responsedata = '';
         String result_code = 'S';
         String result_message = '';
-
-        this.commlog.logwrap.RequestTime = System.now();
-        this.commlog.logWrap.RequestBody = (String) params;
-        
         
         EC001ResultWrapper infResponse = new EC001ResultWrapper();  
+        
+
         try{
 
 
             Date dateToday = Date.today();
-            this.logwrap = new IFN_CommonLog.logWrap();
     
+            System.debug('params >>>>>>>>>>>>>>>>>>>>>>>>>' + params);
+
             EC001RequstWrapper reqparam = new EC001RequstWrapper();
-            reqparam.BASE_MON = String.valueof(dateToday.year()) + String.valueof(dateToday.month()).leftPad(2, '0');
-            reqparam.OIL_TYPE_CD = 'A';
+            reqparam = (EC001RequstWrapper)params;
+
+            System.debug('reqparam >>>>>>>>>>>>>>>>>>>>>>>>>' + reqparam);
+
+            System.debug('reqparam.BASE_MON>>>>>>>>>>>>>>>>>' + reqparam.BASE_MON);
+            System.debug('reqparam.OIL_TYPE_CD>>>>>>>>>>>>>>>>>' + reqparam.OIL_TYPE_CD);
 
 
 
@@ -128,7 +118,6 @@ public class IFN_LIF007_Callout {
                 result_code = 'F';
                 result_message = 'Interface Error';
                 responsedata = '';
-                this.commlog.logWrap.ErrorText.add(response.getStatus());
             }
 
         } catch(Exception e) {
@@ -137,10 +126,6 @@ public class IFN_LIF007_Callout {
             result_message = 'Interface Error';
         }  
 
-        this.commlog.logwrap.ResponseTime = System.now();
-        this.commlog.logWrap.ResponseBody = responsedata;
-        
-        this.commLog.insertLog(this.logWrap);
         
         result.setResult(
             result_code

@@ -52,7 +52,7 @@ public without sharing class LineItemMgmtController {
     **/
     @AuraEnabled
     public static Map<String, Object> getLineItem(id recordId, String sObjectName) {
-
+        System.debug('# LineItemMgmtController # getLineItem ');
         List<QuoteLineItem> listQuoteLineItem = new List<QuoteLineItem>();
         Quote objQuote = new Quote();
 
@@ -180,7 +180,7 @@ public without sharing class LineItemMgmtController {
     **/
     @AuraEnabled
     public static Map<String, Object> doSearch(Map<String, Object> mapParam) {
-        system.debug('doSearch start : mapParam -> ' + mapParam);
+        System.debug('# LineItemMgmtController # doSearch ');
         datetime qryStart = datetime.now();
         Id Pricebook2Id  = (Id) String.valueOf(mapParam.get('Pricebook2Id'));
         String selectedMonth  = String.valueOf(mapParam.get('selectedMonth'));
@@ -221,7 +221,7 @@ public without sharing class LineItemMgmtController {
         }
         query += ' LIMIT    50000 ' ; 
 
-        System.debug('do Search query : ' + query);
+        System.debug('# doSearch 최종검색쿼리 -> ' + query);
 
         List<PriceBookEntry> listPriceBookEntry = new List<PriceBookEntry>();
         List<PriceBookEntry> listCurrentEntry = new List<PriceBookEntry>();
@@ -246,7 +246,7 @@ public without sharing class LineItemMgmtController {
     **/
     @AuraEnabled
     public static Map<String, Object> doSearchAI (Map<String, Object> mapParam) {
-
+        System.debug('# LineItemMgmtController # doSearchAI ');
         String searchKey  = String.valueOf(mapParam.get('searchKey'));
         String selectedCenter  = String.valueOf(mapParam.get('selectedCenter'));
 
@@ -338,7 +338,7 @@ public without sharing class LineItemMgmtController {
     **/
     @AuraEnabled
     public static void doSendLearningData (Map<String, Object> mapParam) {
-
+        System.debug('# LineItemMgmtController # doSendLearningData ');
         String search_term  = String.valueOf(mapParam.get('search_term'));
         String emp_code  = String.valueOf(mapParam.get('emp_code'));
         String product_code  = String.valueOf(mapParam.get('product_code'));
@@ -377,7 +377,7 @@ public without sharing class LineItemMgmtController {
      * @param  selectedMonth : 선택된 월
      * @param  sortStatus : 조회 정렬 기준
      * @param  selectedControl : 중단 제어 활성화 여부
-     * @param  customerID : 중단 제어 활성화 기준 고객 ID
+     * @param  customerID : 중단 제어 활성화 기준 고객 ID (Account.CustomerID__c)
      * @return Map<String, Object> mapInitData
      *         - ControllWrapper objControllWrapper
      *           - listControlEntry : 중단 제어 결과 사용가능 상품코드 리스트 
@@ -387,13 +387,16 @@ public without sharing class LineItemMgmtController {
     **/    
     @AuraEnabled
     public static Map<String, Object> getCurrentEntry(List<String> listTargetEntryCode, String selectedCenter, String selectedMonth, String sortStatus, String selectedControl, String customerID) {
-        
-        System.debug('c.1 > customerID  : ' + customerID);
-        System.debug('c.1.1 > listTargetEntryCode  : ' + listTargetEntryCode);
-        System.debug('c.1.2 > list size   : ' + listTargetEntryCode.size());
+        System.debug('# LineItemMgmtController # getCurrentEntry ');
+        System.debug('listTargetEntryCode -> ' + listTargetEntryCode);
+        System.debug('selectedCenter -> ' + selectedCenter);
+        System.debug('selectedMonth -> ' + selectedMonth);
+        System.debug('sortStatus -> ' + sortStatus);
+        System.debug('selectedControl -> ' + selectedControl);
+        System.debug('customerID -> ' + customerID);
+
         String ERR_CD = '0000';
         String ERR_MSG_CTT = '';
-        System.debug('sortStatus : ' + sortStatus);
         // PriceBookEntryList 조회
         String query = '';
         query += 'SELECT    Id, Name, ProductCode, Product2.gd_no__c, UnitPrice, toLabel(Product2.bas_unit_cd__c), toLabel(Product2.migr_orinat_cd__c), toLabel(Product2.strg_cond_cd__c), Product2.taxt_cl_cd__c, Product2.lgs_ctr_id__c, ';
@@ -421,12 +424,13 @@ public without sharing class LineItemMgmtController {
             query += ' ORDER BY ' + selectedMonth + '__c ' + 'ASC ';
         }
 
-        System.debug('c.1.3 >  getCurrentEntry query -> ' + query);
+        System.debug('# getCurrentEntry 최종검색쿼리 -> ' + query);
 
         List<PriceBookEntry> listCurrentEntry = new List<PriceBookEntry>();
         listCurrentEntry = Database.query(query);
 
-        System.debug('c.1.4 > getCurrentEntry query Size : ' + listCurrentEntry.size() );
+        System.debug('# getCurrentEntry 최종검색쿼리 SIZE -> ' + listCurrentEntry.size() );
+
         List<String> listCurrentEntryCode = new List<String>();
         for ( PriceBookEntry objCurrentEntry : listCurrentEntry){
             listCurrentEntryCode.add( objCurrentEntry.Product2.gd_no__c);
@@ -492,6 +496,7 @@ public without sharing class LineItemMgmtController {
     **/    
     @AuraEnabled
     public static void doChunkQuote(String chunkType, List<QuoteLineItem> listChunk) {
+        System.debug('# LineItemMgmtController # doChunkQuote ');
         try {
             if ( chunkType == 'Delete'){
                 if( !listChunk.isEmpty()){
@@ -520,6 +525,7 @@ public without sharing class LineItemMgmtController {
     **/    
     @AuraEnabled
     public static void doChunkOppty(String chunkType, List<OpportunityLineItem> listChunk) {
+        System.debug('# LineItemMgmtController # doChunkOppty ');
         try {
             if ( chunkType == 'Delete'){
                 if( !listChunk.isEmpty()){
@@ -546,6 +552,7 @@ public without sharing class LineItemMgmtController {
      * @param  selectedMonth : 선택된 월
     **/  
     private static String doGetTargetDate(String selectedMonth) {
+        System.debug('# LineItemMgmtController # doGetTargetDate ');
         selectedMonth = selectedMonth.toLowerCase();
         String strtargetDate = '';
         Datetime dateToday = Datetime.now();

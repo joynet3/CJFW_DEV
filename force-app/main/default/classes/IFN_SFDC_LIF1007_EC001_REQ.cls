@@ -12,18 +12,28 @@ public  class IFN_SFDC_LIF1007_EC001_REQ {
 
         IFN_LIF007_Callout.EC001ResultWrapper ifRes = new IFN_LIF007_Callout.EC001ResultWrapper();
 
+        IFN_LIF007_Callout.EC001RequstWrapper param = new IFN_LIF007_Callout.EC001RequstWrapper();
+        param.BASE_MON = '202212';
+        param.OIL_TYPE_CD = '1';
+
+
+
+        this.logWrap     = new IFN_CommonLog.logWrap(this.interfaceId, 'Real');
+        this.commlog     = new IFN_CommonLog();
+
         
         try {
-            IFN_LIF007_Callout callout = new IFN_LIF007_Callout();
-            IFN_CalloutResult calloutResult =  callout.getResponse(this.interfaceId, null);
+            IFN_LIF007_Callout callout = new IFN_LIF007_Callout(this.interfaceId, 'Real');
+            IFN_CalloutResult calloutResult =  callout.getResponse(this.interfaceId, param);
 
             if('S'.equals(calloutResult.result)) {
 
                 try {
                     ifRes =  (IFN_LIF007_Callout.EC001ResultWrapper)calloutResult.response;
-                    System.debug(ifRes.ERR_CD);
                 }  catch (Exception e) {
-
+                    this.logWrap.ErrorCode = '-1';
+                    this.logWrap.ErrorText.add(e.getLineNumber()+e.getMessage() + e.getStackTraceString()); 
+                    this.logWrap.Status = 'ERROR';
                 }
 
             }
@@ -33,8 +43,6 @@ public  class IFN_SFDC_LIF1007_EC001_REQ {
             this.logWrap.ErrorCode = '-1';
             this.logWrap.ErrorText.add(e.getLineNumber()+e.getMessage() + e.getStackTraceString()); 
             this.logWrap.Status = 'ERROR';
-            System.debug(e.getLineNumber() + ':::' + e.getMessage());
-
         }
 
         commlog.insertLog(this.logWrap);

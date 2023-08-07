@@ -76,6 +76,11 @@ public with sharing class COMM_Util_Test {
         String orgType = COMM_Util.getOrganizationType();
         System.debug('organization type: '+orgType);
 
+        Map<String,Object> result = COMM_Util.getAllPicklistOptionType('Account');
+        List<Schema.SObjectField> fieldList = COMM_Util.getFieldList('Notification__c');
+        Map<String,String> resultFieldMap = COMM_Util.getFieldToLabelMap('Account');
+
+
         Test.stopTest();
         
     }

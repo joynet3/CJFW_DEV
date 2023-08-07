@@ -28,9 +28,11 @@ public with sharing class IFN_ApiGateWay {
     
     public IFN_ApiGateWay(String ifId) {
 
-        IFMaster__c objIFMaster = new IFMaster__c();
+        List<IFMaster__c> objIFMaster = new List<IFMaster__c>();
         List<API_Authenticationkey__mdt> objIFAuthHeadInfo = new List<API_Authenticationkey__mdt>();
         List<API_Authenticationkey__mdt> objIFAuthgetParamInfo = new List<API_Authenticationkey__mdt>();
+
+        this.ifKeyId = ifId;        
 
         objIFMaster = [
             SELECT Id, Name,
@@ -38,34 +40,26 @@ public with sharing class IFN_ApiGateWay {
                     Param1__c,Param2__c,Param3__c,Param4__c
             FROM IFMaster__c
             WHERE Name =: ifId
-            limit 1
         ];
 
-        if(String.isNotBlank(objIFMaster.ifKeyId__c)) {
-            objIFAuthHeadInfo = [select  MasterLabel,    QualifiedApiName, KeyValue__c, DateRange__c,  
-            HeaderKey__c, HeaderLab__c, keyValueSp__c 
-            from API_Authenticationkey__mdt 
-            where IfHeaderKeyId__c = :objIFMaster.ifKeyId__c
-            and keyValueSp__c = 'head'
-            ];
-            this.objIFAuthHeadInfoLst = objIFAuthHeadInfo;
+        objIFAuthHeadInfo = [select  MasterLabel,    QualifiedApiName, KeyValue__c, DateRange__c,  
+        HeaderKey__c, HeaderLab__c, keyValueSp__c 
+        from API_Authenticationkey__mdt 
+        where IfHeaderKeyId__c = :ifId
+        and keyValueSp__c = 'head'
+        ];
 
-            objIFAuthgetParamInfo = [select  MasterLabel,    QualifiedApiName, KeyValue__c, DateRange__c,  
-            HeaderKey__c, HeaderLab__c, keyValueSp__c 
-            from API_Authenticationkey__mdt 
-            where IfHeaderKeyId__c = :objIFMaster.ifKeyId__c
-            and keyValueSp__c = 'param'
-            ];
-            this.objIFAuthGetParamInfoLst = objIFAuthgetParamInfo;            
-            this.ifKeyId = objIFMaster.ifKeyId__c;
+        this.objIFAuthHeadInfoLst = objIFAuthHeadInfo;
 
-        }
+        objIFAuthgetParamInfo = [select  MasterLabel,    QualifiedApiName, KeyValue__c, DateRange__c,  
+        HeaderKey__c, HeaderLab__c, keyValueSp__c 
+        from API_Authenticationkey__mdt 
+        where IfHeaderKeyId__c = :ifId
+        and keyValueSp__c = 'param'
+        ];
+        this.objIFAuthGetParamInfoLst = objIFAuthgetParamInfo;            
 
-
-
-
-        this.objIFMaster = objIFMaster;
-        
+        this.objIFMaster = objIFMaster[0];
 
 
     }
@@ -85,12 +79,14 @@ public with sharing class IFN_ApiGateWay {
         HttpRequest request = new HttpRequest();
 		HttpResponse response = new HttpResponse();
 		Http http = new Http();
-        
+        this.commlog         = new IFN_CommonLog();
+                
+
         String status = 'SUCCESS';
         String responseBody;
 		String resultCode = '0';
         String resultMessage = '';
-        this.logwrap = new IFN_CommonLog.logWrap();
+        this.logwrap = new IFN_CommonLog.logWrap(this.ifKeyId,'Real');
         try {
             
             this.logWrap.requestTime = Datetime.now();
@@ -124,8 +120,6 @@ public with sharing class IFN_ApiGateWay {
             if(dynamicHd !=null && !dynamicHd.isEmpty()) {
                 for(String key : dynamicHd.keySet())
                 {
-                    system.debug('header set :::::: key ::: ' + key);
-
                     request.setHeader(key, (String) dynamicHd.get(key));
                 }
             }
@@ -140,8 +134,6 @@ public with sharing class IFN_ApiGateWay {
 
             request.setHeader('Content-Type', contentType);
             
-            system.debug('endPointUrl>>>>>>>>>> contentType ' + contentType);
-
             if(contentType.contains('multipart')) {                
                 request.setBodyAsBlob(EncodingUtil.base64Decode(requestBody));
                 contentType = contentType+' charset=utf-8; boundary='+'vguardiance';
@@ -149,8 +141,6 @@ public with sharing class IFN_ApiGateWay {
             
             this.logWrap.requestBody = requestBody;
 
-
-            system.debug('Method__c>>>>>>>>>>  ' + objIFMaster.Method__c);
             
             // request.setBody를 할 경우 Method GET으로 설정을 해도 실제로는 POST로 전송되기 때문에 분기처리해준다
             if(objIFMaster.Method__c == 'POST') {
@@ -193,19 +183,16 @@ public with sharing class IFN_ApiGateWay {
                 }
             }
 
-            System.debug('requestBody  >>>>>>>>>> ' + requestBody);
+
             request.setEndpoint(endPointUrl);
-
-
-            response = http.send(request);
             
+            response = http.send(request);
 
-            System.debug('response  >>>>>>>>>>  ' + response);
+            
 
             Boolean redirect;
 
             if(response.getStatusCode() == 200 || response.getStatusCode() == 201) {
-
                 responseBody = response.getBody();
 
                 if(responseBody <> null && responseBody != '') {
@@ -219,7 +206,6 @@ public with sharing class IFN_ApiGateWay {
                 this.logWrap.responseBody = responseBody;
             }          
             else {
-                String loc = response.getHeader('Location'); // get location of the redirect
 
                 status = 'ERROR';
                 resultCode = String.valueOf(response.getStatusCode());
@@ -230,7 +216,6 @@ public with sharing class IFN_ApiGateWay {
             status = 'ERROR';
             resultCode = '-1';
             resultMessage = e.getMessage()+'ERROR Line : '+e.getLineNumber();
-            System.debug(e.getLineNumber() + ':::' + e.getMessage());
         }
 
         this.logWrap.status = status;

@@ -10,12 +10,16 @@ public with sharing class NotiTarget {
 
     }
 
+    public NotiTarget(String type) {
+        this.setType(type);
+    }
+
     public String getType() {
         return this.type;
     }
     
     public void setType(String type) {
-        this.type = type;
+        this.type = type.toLowerCase();
     }
 
     
