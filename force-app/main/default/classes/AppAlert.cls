@@ -52,27 +52,27 @@ public without sharing class AppAlert implements NotiAlert {
                 errorList.add(sendDatum);
 
             }
-
-            if(!successList.isEmpty()) {
-                IFLog__c objLog = new IFLog__c();
-                objLog.Status__c = 'SUCCESS';
-                String resultDataStr = JSON.serialize(successList);
-                objLog.ResultMessage__c = resultDataStr <> null && resultDataStr.length() > 130000 ? resultDataStr.substring(0,130000) : resultDataStr;
-                objLogList.add(objLog);
-            }
-
-
-            if(!errorList.isEmpty()) {
-                IFLog__c errorobjLog = new IFLog__c();
-                errorobjLog.Status__c = 'ERROR';
-                String errorDataStr = JSON.serialize(errorList);
-                errorobjLog.ResultMessage__c = errorDataStr <> null && errorDataStr.length() > 130000 ? errorDataStr.substring(0,130000) : errorDataStr;
-                objLogList.add(errorobjLog);
-            }
-
-            NotificationManager.saveHistory(objLogList);
             
         }
+
+        if(!successList.isEmpty()) {
+            IFLog__c objLog = new IFLog__c();
+            objLog.Status__c = 'SUCCESS';
+            String resultDataStr = JSON.serialize(successList);
+            objLog.ResultMessage__c = resultDataStr <> null && resultDataStr.length() > 130000 ? resultDataStr.substring(0,130000) : resultDataStr;
+            objLogList.add(objLog);
+        }
+
+
+        if(!errorList.isEmpty()) {
+            IFLog__c errorobjLog = new IFLog__c();
+            errorobjLog.Status__c = 'ERROR';
+            String errorDataStr = JSON.serialize(errorList);
+            errorobjLog.ResultMessage__c = errorDataStr <> null && errorDataStr.length() > 130000 ? errorDataStr.substring(0,130000) : errorDataStr;
+            objLogList.add(errorobjLog);
+        }
+
+        NotificationManager.saveHistory(objLogList);
 
     }
 }

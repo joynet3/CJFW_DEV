@@ -83,7 +83,8 @@ public with sharing class CJFW_Survey {
         @AuraEnabled public Boolean isMultiple = false;              //객관식 여부
         @AuraEnabled public Boolean isDate = false;                  //날짜 여부
         @AuraEnabled public Boolean isFromTo = false;                //날짜 From/To 여부
-
+        @AuraEnabled public Boolean isSelected = false;              //선택여부
+        @AuraEnabled public Boolean isShowDetail = true;             //설문지 디테일 보이기 여부
 
         public Question() {}
         public Question(CJFW_SurveyQuestion__c question) {
@@ -121,12 +122,15 @@ public with sharing class CJFW_Survey {
 
 
     public class QuestionOption implements Comparable {
-        @AuraEnabled public String  id;                     //객관식일 경우 Id 존재
-        @AuraEnabled public Integer no;                     //선택지 번호
-        @AuraEnabled public String  label;                  //선택지 라벨
-        @AuraEnabled public String  value;                  //선택지 내용
-        @AuraEnabled public List<Question> subQuestionList; //선택된 값에 대한 질문
-        @AuraEnabled public Boolean isParent = false;
+        @AuraEnabled public String  id;                             //객관식일 경우 Id 존재
+        @AuraEnabled public Integer no;                             //선택지 번호
+        @AuraEnabled public String  label;                          //선택지 라벨
+        @AuraEnabled public String  value;                          //선택지 내용
+        @AuraEnabled public List<Question> subQuestionList;         //선택된 값에 대한 질문
+        @AuraEnabled public Boolean isParent = false; 
+        @AuraEnabled public Boolean isFollowUp = false;              //선택여부                  
+        
+
         public QuestionOption(){}
         public QuestionOption(CJFW_SurveyOption__c option){
             this.id = option.Id;

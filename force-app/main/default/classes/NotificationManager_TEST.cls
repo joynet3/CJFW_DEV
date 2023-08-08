@@ -2,7 +2,7 @@
 public with sharing class NotificationManager_TEST {
     
     @testSetup
-    static void makeData() {
+    public static void makeData() {
         insert new IFMaster__c(Name = 'NotiAlert');
 
         List<CustomNotificationType> customNotiTypeList = [
@@ -19,8 +19,13 @@ public with sharing class NotificationManager_TEST {
         Id eamilRecordTypeId = recordTypeMap.get('Email').getRecordTypeId();
 
         List<Account> testAccountList = new List<Account>();
+        
         Account testAccount = new Account(Name='App Noti Test');
         testAccountList.add(testAccount);
+
+        Account testAccount2 = new Account(Name='App Noti Test2');
+        testAccountList.add(testAccount2);
+
         insert testAccountList;
         
         Notification__c appNoti = new Notification__c();

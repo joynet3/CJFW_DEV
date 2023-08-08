@@ -18,8 +18,6 @@ global without sharing class IFN_TEST_REST {
     global class Input {
         public List<Item> data; 
         public String transaction_Id;
-        public String err_code;
-        public String err_msg;
     }
 
     global class Item {
@@ -64,6 +62,8 @@ global without sharing class IFN_TEST_REST {
                 strStatus = 'ERROR';
                 strCode = '-1';
                 strMessage = 'request body value does not exist';
+                logWrap.ErrorCode = 'strStatus';
+                logWrap.ErrorText.add(strMessage);
             }else {
 
                 List<testIfData__c> upsertData = new List<testIfData__c>();
@@ -74,6 +74,7 @@ global without sharing class IFN_TEST_REST {
                     objDummy.testData2__c = item.testData2;
                     upsertData.add(objDummy);
                 }
+                logWrap.LogText.add(Json.serialize(upsertData));
                 upsert upsertData;
 
 

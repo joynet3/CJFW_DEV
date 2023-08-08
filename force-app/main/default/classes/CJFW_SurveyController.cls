@@ -81,7 +81,7 @@ public with sharing class CJFW_SurveyController {
                         from Survey_Option__r
                     )
                 from CJFW_SurveyQuestion__c       
-                where Survey__c = 'a1U0w000001cA9AEAU'
+                where Survey__c = :recordId
             ];
 
             for(CJFW_SurveyQuestion__c question : questionList) {

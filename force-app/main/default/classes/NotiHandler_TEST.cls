@@ -2,91 +2,13 @@
 public with sharing class NotiHandler_TEST {
     @testSetup
     static void makeData() {
-        insert new IFMaster__c(Name = 'NotiAlert');
-
-        List<CustomNotificationType> customNotiTypeList = [
-            select
-                Id, DeveloperName
-            from CustomNotificationType 
-        ];
-
-        List<Notification__c> notiList = new List<Notification__c>();
-
-        COMM_Util.SchemaInfo schemaInfo = new COMM_Util.SchemaInfo('Notification__c');
-        Map<String, Schema.RecordTypeInfo> recordTypeMap = schemaInfo.getRecordTypeMapByDeveloperNames(); 
-        Id appRecordTypeId = recordTypeMap.get('App').getRecordTypeId();
-        Id eamilRecordTypeId = recordTypeMap.get('Email').getRecordTypeId();
-
-        List<Account> testAccountList = new List<Account>();
-        Account testAccount = new Account(Name='App Noti Test');
-        testAccountList.add(testAccount);
-        insert testAccountList;
-        
-        Notification__c appNoti = new Notification__c();
-        appNoti.RecordTypeId = appRecordTypeId;
-        appNoti.Key__c = 'Sample_Noti_App';
-        appNoti.IsSendToSender__c = true;
-        appNoti.IsActive__c = true;
-        appNoti.sObject__c  = 'Account';
-        appNoti.TargetFields__c = 'Id,Name,Owner.Name';
-        appNoti.CustomNotificationTypeId__c = customNotiTypeList[0].DeveloperName;
-        notiList.add(appNoti);
-
-        Notification__c emailNoti = new Notification__c();
-        emailNoti.RecordTypeId = eamilRecordTypeId;
-        emailNoti.Key__c = 'Sample_Noti_Email';
-        emailNoti.IsSendToSender__c = true;
-        emailNoti.IsActive__c = true;
-        emailNoti.sObject__c  = 'Account';
-        emailNoti.TargetFields__c = 'Id,Name,Owner.Name';
-        notiList.add(emailNoti);
-
-        insert notiList;
-
-        //NotiTarget 추가
-        schemaInfo.setSchema('NotificationTarget__c');
-        Map<String, Schema.RecordTypeInfo> recordTypeNotiTargetMap = schemaInfo.getRecordTypeMapByDeveloperNames(); 
-        Id userRecordTypeId = recordTypeNotiTargetMap.get('User').getRecordTypeId();
-        Id groupRecordTypeId = recordTypeNotiTargetMap.get('Group').getRecordTypeId();
-        Id roleRecordTypeId = recordTypeNotiTargetMap.get('Role').getRecordTypeId();
-
-        List<NotificationTarget__c> notiTargetList = new List<NotificationTarget__c>();
-        NotificationTarget__c userTypeTarget = new NotificationTarget__c();
-        userTypeTarget.User__c = UserInfo.getUserId();
-        userTypeTarget.RecordTypeId = userRecordTypeId;
-        userTypeTarget.Notification__c = emailNoti.Id;
-        notiTargetList.add(userTypeTarget);
-
-        insert notiTargetList;
-
-        //Template 부터 추가 
-        schemaInfo.setSchema('NotificationTemplate__c');
-        Map<String, Schema.RecordTypeInfo> recordTypeTemplateMap = schemaInfo.getRecordTypeMapByDeveloperNames(); 
-        Id appTemplateRecordTypeId = recordTypeTemplateMap.get('App').getRecordTypeId();
-        Id eamilTemplateRecordTypeId = recordTypeTemplateMap.get('Email').getRecordTypeId();
-
-        List<NotificationTemplate__c> templateList = new List<NotificationTemplate__c>();
-
-        NotificationTemplate__c appTemplate = new NotificationTemplate__c();
-        appTemplate.RecordTypeId = appTemplateRecordTypeId;
-        appTemplate.Title__c = 'Test Title';
-        appTemplate.Message__c = 'Name : {1} , Id {0}';
-        appTemplate.Notification__c = appNoti.Id;
-        templateList.add(appTemplate);
-
-        NotificationTemplate__c emailTemplate = new NotificationTemplate__c();
-        emailTemplate.RecordTypeId = eamilTemplateRecordTypeId;
-        emailTemplate.EmailDeveloperName__c = 'ExtraServiceRejectedEmailTemplate';
-        emailTemplate.Notification__c = emailNoti.Id;
-        templateList.add(emailTemplate);
-
-
-        insert templateList;
+        NotificationManager_TEST.makeData();
         
     }
 
     @isTest
-    static void getMappingClass_TEST() {
+    static void testCase() {
+        //RecordType: App
         List<Notification__c> notiList = [
             select 
                 ClassName__c
@@ -128,7 +50,148 @@ public with sharing class NotiHandler_TEST {
         
         NotiHandler notiHandler = new NotiHandler();
         notiHandler.setNotiData(notiList[0]);
+
+        //getMappingClass_TEST
         System.assert('Set<AppTemplate>'.equals(notiHandler.getMappingClass('Set', notiList[0].RecordType.DeveloperName)));
         System.assert('List<AppTemplate>'.equals(notiHandler.getMappingClass('List', notiList[0].RecordType.DeveloperName)));
+
+
+        //getTemplate_TEST
+        notiHandler.getTemplate();
+
+        //getRicipientIdSet_TEST
+        notiHandler.getRicipientIdSet();
+
+        //setCategorySendDataListMap_TEST 알림 전송시에 필수적인 값: notiHandler.categorySendDataListMap
+        Map<String, Map<String,NotiTemplate>> categoryTemplateMapMap = notiHandler.categoryTemplateMapMap;
+        notiHandler.setCategorySendDataListMap(notiHandler.categorySendDataListMap ,'App', categoryTemplateMapMap.get('App').get('ko'));
+
+        //notiHandler_TEST
+        notiHandler.setExcludeRecipient();
+
+        List<Account> targetAccountList = [select Id, Name, Owner.Name from Account];
+        Set<String> targetIds = new Set<String>();
+
+        Map<String,List<NotiTarget>> recipientMap = new Map<String,List<NotiTarget>>();
+        NotiTarget recipientId = new NotiTarget('id');
+        recipientId.setToAddresses(new Set<String>{UserInfo.getUserId()});
+
+        for(Account ac : targetAccountList) {
+            targetIds.add(ac.Id);
+            recipientMap.put(ac.Id, new List<NotiTarget>{recipientId});
+        }
+
+        Id targetId = targetAccountList[0].Id;
+        String targetName = targetAccountList[0].Name;
+
+        String message = 'Name : '+targetName+' , Id '+String.valueOf(targetId);
+        //초기화
+        notiHandler.setNotiData(notiList[0]);
+        //수신자 set
+        NotificationManager.getInstance().setRecipientListMap(recipientMap);
+
+        //execute_TEST App
+        notiHandler.execute(targetIds, null, null);
+        for(String category : notiHandler.categorySendDataListMap.keySet()) {
+            for(NotiTemplate sendTemplate : notiHandler.categorySendDataListMap.get(category)) {
+                if(targetId == sendTemplate.getTargetId()){
+                    System.assert(message.equals(sendTemplate.getBody()));
+                }
+            }
+        }
+
+        notiList = [
+            select 
+                ClassName__c
+                , IsDynamic__c
+                , Key__c
+                , Description__c
+                , CustomNotificationTypeId__c
+                , PageReference__c
+                , sObject__c
+                , TargetFields__c
+                , IsSendToSender__c
+                , RecordType.DeveloperName
+                , IsNotiTest__c
+                , IsSystemEmail__c
+                , IsUseOWE__c
+                , IsSaveAsActivity__c
+                ,(   select 
+                        Title__c
+                        , Message__c
+                        , Language__c
+                        , EmailDeveloperName__c
+                        , RecordType.DeveloperName 
+                    from Notification_Template__r
+                )
+                ,(   select 
+                        GroupId__c
+                        , GroupName__c
+                        , RoleId__c
+                        , RoleName__c
+                        , User__c
+                        , RecordType.DeveloperName 
+                    from Notification_Target__r
+                )
+            from Notification__c
+            where 
+                IsActive__c = true
+                and Key__c = 'Sample_Noti_Email'
+        ];
+
+        //초기화
+        notiHandler.setNotiData(notiList[0]);
+
+        //수신자 set
+        NotificationManager.getInstance().setRecipientListMap(recipientMap);
+
+        //execute_TEST App
+        notiHandler.execute(targetIds, null, null);
+
+        recipientMap = new Map<String,List<NotiTarget>>();
+        NotiTarget recipientEmail = new NotiTarget('email');
+        recipientEmail.setToAddresses(new Set<String>{'test@test.com'});
+        recipientEmail.setCcAddresses(new Set<String>{'test2@test.com'});
+        recipientEmail.setBccAddresses(new Set<String>{'test3@test.com'});
+
+        NotiTarget recipientEmail2 = new NotiTarget('email');
+        recipientEmail2.setToAddresses(new Set<String>{'test4@test.com','test5@test.com'});
+        recipientEmail2.setCcAddresses(new Set<String>{'test6@test.com','test7@test.com'});
+        recipientEmail2.setBccAddresses(new Set<String>{'test8@test.com','test9@test.com'});
+
+        for(Account ac : targetAccountList) {
+            recipientMap.put(ac.Id, new List<NotiTarget>{recipientEmail});
+        }
+
+        targetId = targetAccountList[1].Id;
+        recipientMap.get(targetId).add(recipientEmail2);
+
+         //초기화
+         notiHandler.setNotiData(notiList[0]);
+
+        //수신자 set
+        NotificationManager.getInstance().setRecipientListMap(recipientMap);
+
+        //execute_TEST Email 단건, 다건
+        notiHandler.execute(targetIds, null, null);
+        for(String category : notiHandler.categorySendDataListMap.keySet()) {
+            for(NotiTemplate sendTemplate : notiHandler.categorySendDataListMap.get(category)) {
+                if(targetId == sendTemplate.getTargetId()){
+                    if(sendTemplate.getToAddresses().size() > 1) {
+                        System.assert(sendTemplate.getToAddresses().contains('test5@test.com'));
+                    }
+                    else {
+                        System.debug(sendTemplate.getToAddresses());
+                        if(new List<String>(sendTemplate.getToAddresses())[0].contains('@'))
+                        System.assert(sendTemplate.getToAddresses().contains('test@test.com'));
+                    }
+                }
+            }
+        }
+
+
+
     }
+
+
 }

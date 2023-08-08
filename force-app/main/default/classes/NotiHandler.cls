@@ -345,6 +345,8 @@ public virtual without sharing class NotiHandler {
             }
             Set<String> tmpRecipientIdSet = new Set<String>(this.recipientIdSet);
             List<NotiTarget> recipientList = recipientListMap.get(targetId);
+            if(recipientList == null) continue;
+
             if(categoryTemplateMapMap.containsKey('App')) {
                 for(NotiTarget recipient : recipientList) {
                     if('id'.equals(recipient.getType())) tmpRecipientIdSet.addAll(recipient.getToAddresses());
@@ -449,7 +451,7 @@ public virtual without sharing class NotiHandler {
                         , fieldsMap
                         , targetId
                         , user.LanguageLocaleKey
-                        , new Set<String>{user.Email}
+                        , new Set<String>{user.Id}
                         , null
                         , null
                         , null

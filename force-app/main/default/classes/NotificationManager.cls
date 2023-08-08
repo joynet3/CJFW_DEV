@@ -24,7 +24,7 @@ public with sharing class NotificationManager {
     */
     @testVisible protected Map<String,List<NotiTarget>> recipientListMap;
 
-    private NotificationManager() {
+    @testVisible private NotificationManager() {
         /* 임시 LogMaster  [s]  */
         if(logMasters == null) logMasters = new List<IFMaster__c>();
         if(logMasters.isEmpty())
@@ -203,6 +203,7 @@ public with sharing class NotificationManager {
     */
     public static void saveHistory(List<IFLog__c> logList) {
         if(!logList.isEmpty()) {
+            System.debug('logMasters :: '+JSON.serializePretty(logMasters));
             for(IFLog__c objLog : logList) {
                 objLog.IFMaster__c = logMasters[0]?.Id;
             }
