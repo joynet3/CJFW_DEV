@@ -350,6 +350,8 @@ public without sharing class LineItemMgmtController {
         String product_name  = String.valueOf(mapParam.get('product_name'));
         String cateL_name  = String.valueOf(mapParam.get('cateL_name'));
         String cateM_name  = String.valueOf(mapParam.get('cateM_name'));
+        String lgs_ctr_cd = String.valueOf(mapParam.get('lgs_ctr_cd'));//2023-08-09 dkbmc백영주대리[인터페이스 파라미터 추가 건]
+        String biz_dept_cd = String.valueOf(mapParam.get('biz_dept_cd'));//2023-08-10 dkbmc백영주대리[인터페이스 파라미터 추가 건]
 
         Map<String,Object> objInput = new Map<String,Object>();
         objInput.put('search_term', search_term); 
@@ -358,7 +360,9 @@ public without sharing class LineItemMgmtController {
         objInput.put('product_name', product_name); 
         objInput.put('cateL_name', cateL_name); 
         objInput.put('cateM_name', cateM_name); 
-        
+        objInput.put('lgs_ctr_cd', lgs_ctr_cd); //2023-08-09 dkbmc백영주대리[인터페이스 파라미터(물류센터코드) 추가 건]
+        objInput.put('biz_dept_cd', biz_dept_cd);//2023-08-10 dkbmc백영주대리[인터페이스 파라미터(사업부코드) 추가 건]
+
         List<String> listAIEntryCode = new List<String>();
     
         IFUtil ifutilWrapper = new IFUtil('IF_AI_SFDC_LEARNING_SEND');

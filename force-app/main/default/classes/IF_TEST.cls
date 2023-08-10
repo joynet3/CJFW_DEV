@@ -59,5 +59,17 @@ public with sharing class IF_TEST {
 
     public void testIf() {
         
+        // String schttl = '아이';
+        // String titleLike = '%' + schttl + '%';
+
+
+        // String query_total = 'select Max(id) ' +
+        // 'from ClassService__c ' +
+        // 'where ServiceContent__r.Name like  :titleLike';
+
+        // Integer totalSize = Database.countQuery(query_total)
+        // System.debug(totalSize);
+
+
     }
 }

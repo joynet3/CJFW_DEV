@@ -16,11 +16,12 @@ public with sharing class IFN_Util {
 
     public class IFN_UtilException extends Exception{}
     
-    public static String STATUS_ERROR = 'E';
-    public static String STATUS_FAILED = 'F';
-    public static String STATUS_SUCCESS = 'S';
-    public static String STATUS_DUPLICATION = 'D';
-    public static String STATUS_EXCEPT = 'X';
+    public static String STATUS_SUCCESS = '0000:SUCCESS';
+    public static String STATUS_EXCEPT = '9999:SERVER ERROR';
+    public static String STATUS_VALIDATION_ERROR = '9998:PARAMETER VAIDATION ERROR';
+    public static String STATUS_AUTH_ERROR = '9901:AUTH KEY INVALID';
+    public static String STATUS_PARAMETER_ERROR = '9997:SEND PARAMETER INVALD';
+
  
         
 

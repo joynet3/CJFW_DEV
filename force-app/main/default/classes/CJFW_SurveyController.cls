@@ -20,12 +20,27 @@ public with sharing class CJFW_SurveyController {
         try {
             Map<String,Object> result = new Map<String,Object>();
             List<selectOption> optionList = new List<selectOption>();
+
+            //Sample 용
+            Set<String> recordIdSet = new Set<String>{
+                'a1U0w000001cJd4EAE',  'a1U0w000001cJd9EAE'
+            };
+
+            if(UserInfo.getUserId() == Id.valueOf('0050w000005XKvNAAW')) {
+                // recordIdSet.add('a1U0w000001cA9AEAU');
+                // recordIdSet.add('a1U0w000001cHsbEAE');
+            }
+            //'a1U0w000001cA9AEAU' Sample 스무고개 설문 - 개발
+            //'a1U0w000001cHsbEAE' 주문목적 유형(TEST) - 개발
+            //'a1U0w000001cJd4EAE' //주문정보
+            //'a1U0w000001cJd9EAE' //확인사항
             List<CJFW_Survey__c> surveyList =[
                 select
                     Id
                     , Name
                     , Description__c
                 from CJFW_Survey__c 
+                where Id IN :recordIdSet //테스트시..
             ];
 
             for(CJFW_Survey__c survey : surveyList) {
@@ -54,81 +69,10 @@ public with sharing class CJFW_SurveyController {
             Map<String,Object> result = new Map<String,Object>();
             result.put('params', params);
             String recordId = (String) params.get('recordId');
-
-            Set<String> questionIdSet = new Set<String>();
-            Set<String> optionIdSet = new Set<String>();
-            //Map<String, CJFW_SurveyQuestion__c> questionMap = new Map<String, CJFW_SurveyQuestion__c>(); //questionId 로 put
-            Map<String,Set<String>> mappingKeySetMap  = new Map<String,Set<String>>(); //key: questionId, optionIdSet
-            CJFW_Survey survey;
-            List<CJFW_SurveyQuestion__c> questionList = [
-                select                              
-                    Id
-                    , Name                  //Auto Num
-                    , Name__c               //질문명
-                    , Survey__c             
-                    , Survey__r.Name     //설문 유형명
-                    , Survey__r.Description__c
-                    , Type__c               
-                    , MultipleChoice__c     
-                    , Order__c
-                    , DateType__c
-                    , (
-                        select  
-                            Id
-                            , Order__c
-                            , Name
-                            , SurveyQuestion__c
-                        from Survey_Option__r
-                    )
-                from CJFW_SurveyQuestion__c       
-                where Survey__c = :recordId
-            ];
-
-            for(CJFW_SurveyQuestion__c question : questionList) {
-                if(survey == null)  {
-                    survey = new CJFW_Survey();
-                    survey.id = question.Survey__c;
-                    survey.category = question.Survey__r.Name;
-                    survey.description = question.Survey__r.Description__c;
-                }
-                //questionMap.put(question.Id,question);
-
-                questionIdSet.add(question.Id);
-                for(CJFW_SurveyOption__c option : question.Survey_Option__r) {
-                    optionIdSet.add(option.Id);
-                }
-            }
-
-            List<CJFW_SurveyFollowUp__c> followUpList = [
-                select
-                    Id
-                    , SurveyQuestion__c
-                    , SurveyOption__c
-                from CJFW_SurveyFollowUp__c
-                where 
-                    SurveyQuestion__c IN :questionIdSet
-                and
-                    SurveyOption__c IN :optionIdSet
-            ];
-
-            for(CJFW_SurveyFollowUp__c sfu : followUpList) {
-                //String mappingKey = sfu.SurveyOption__c+'_'+sfu.SurveyQuestion__c;
-                if(mappingKeySetMap.containsKey(sfu.SurveyQuestion__c)) {
-                    mappingKeySetMap.get(sfu.SurveyQuestion__c).add(sfu.SurveyOption__c);
-                }else {
-                    mappingKeySetMap.put(sfu.SurveyQuestion__c, new Set<String>{sfu.SurveyOption__c});
-                }
-
-                if(mappingKeySetMap.containsKey(sfu.SurveyOption__c)) {
-                    mappingKeySetMap.get(sfu.SurveyOption__c).add(sfu.SurveyQuestion__c);
-                }else {
-                    mappingKeySetMap.put(sfu.SurveyOption__c, new Set<String>{sfu.SurveyQuestion__c});
-                }
-                
-            }
-
+            CJFW_Survey survey = new CJFW_Survey(recordId);
+            
             if(survey != null) {
-                survey.setQuestions(questionList, mappingKeySetMap);
+                
                 System.debug(
                     JSON.serializePretty(survey)
                 );
@@ -140,6 +84,121 @@ public with sharing class CJFW_SurveyController {
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
         }
+    }
+
+    /**
+    * 설문 응답 저장
+    *
+    *@return  result Map<String,Object>
+    */
+   @AuraEnabled
+    public static Map<String,Object> saveSurveyResponse(Map<String,Object> params){
+        try {
+            Map<String,Object> result = new Map<String,Object>();
+            result.put('params', params);
+
+            Id recordId =  Id.valueOf((String)params.get('recordId'));
+            String objectApiName = (String) params.get('objectApiName');
+            Id surveyTypeId  = Id.valueOf((String)params.get('surveyTypeId'));
+            
+            List<Object> objList = (List<Object>) JSON.deserializeUntyped(JSON.serialize(params.get('selectedValueList')));
+            System.debug(objList);
+            
+            /** */
+            CJFW_SurveyResponse__c response = new CJFW_SurveyResponse__c();
+            
+            switch on objectApiName {
+                when 'Lead' {
+                    response.Lead__c = recordId;
+                }when 'Account' {
+                    response.Account__c = recordId;
+                }when 'Opportunity' {
+                    response.Opportunity__c = recordId;
+                }
+            }
+
+            response.ResponseDate__c = Date.today();
+            response.Survey__c = surveyTypeId;
+
+            insert response;
+
+            List<CJFW_SurveyResult__c> responsResultList = new List<CJFW_SurveyResult__c>();
+
+            for(Object obj : objList) {
+                Map<String,Object> question = (Map<String,Object>) JSON.deserializeUntyped(JSON.serialize(obj));
+                CJFW_SurveyResult__c surveyResult = new CJFW_SurveyResult__c();
+                surveyResult.SurveyResponse__c = response.Id;
+                surveyResult.SurveyQuestion__c = Id.valueOf(String.valueOf(question.get('id')));
+                String type = String.valueOf(question.get('type'));
+
+                switch on type {
+                    when 'multiple' {
+                        //객관식
+                        //SurveyOption__c
+                        if(Boolean.valueOf(question.get('isMultipleChoice'))) {
+                            //복수선택
+                            List<String> selectedValueList = (List<String>) JSON.deserialize(JSON.serialize(question.get('selectedValue')), List<String>.class);
+                            for(String selectedValue : selectedValueList) {
+                                CJFW_SurveyResult__c fromData = surveyResult.clone(false, true, false, false);
+                                fromData.SurveyOption__c = selectedValue;
+                                //마지막 데이터 제외하고 Add 마지막 데이터는 마지막에 공통 Add
+                                responsResultList.add(fromData);
+                            }
+
+                            surveyResult.SurveyOption__c = selectedValueList[selectedValueList.size()-1];
+
+                        }else {
+                            //단수선택
+                            Map<String,Object> selectedValue = (Map<String,Object>)question.get('selectedValue');
+                            surveyResult.SurveyOption__c = Id.valueOf(String.valueOf(selectedValue.get('id')));
+
+                            //surveyResult.SurveyOption__c = ((CJFW_Survey.QuestionOption) JSON.deserialize(JSON.serialize(question.get('selectedValue')), CJFW_Survey.QuestionOption.class)).id;
+                            
+                        }
+                    }
+                    when 'date' {
+                        //날짜
+                        
+                        if(Boolean.valueOf(question.get('isFromTo'))) {
+                            List<Date> dateList = (List<Date>)JSON.deserialize(JSON.serialize(question.get('selectedValue')), List<Date>.class);
+                            CJFW_SurveyResult__c fromData = surveyResult.clone(false, true, false, false);
+                            fromData.DateResult__c = dateList[0];
+                            responsResultList.add(fromData);
+                            
+                            surveyResult.DateResult__c = dateList[1];
+                        }else{
+                            surveyResult.DateResult__c = Date.valueOf(String.valueOf(question.get('selectedValue')));
+                        }
+                    }when 'time' {
+                        //시간
+                        if(Boolean.valueOf(question.get('isFromTo'))) {
+                            List<Time> timeList = (List<Time>)JSON.deserialize(JSON.serialize(question.get('selectedValue')), List<Time>.class);
+                            CJFW_SurveyResult__c fromData = surveyResult.clone(false, true, false, false);
+                            fromData.TimeResult__c = timeList[0];
+                            responsResultList.add(fromData);
+
+                            surveyResult.TimeResult__c = timeList[1];
+                        }
+                    }when else {
+                        //주관식
+                        surveyResult.OpenEnded__c = (String) question.get('selectedValue');
+                    }
+                }
+                responsResultList.add(surveyResult);
+            }
+            insert responsResultList;
+            
+
+
+            result.put('insertData', response);
+            /* */
+            //result.put('')
+
+            return result;
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+        
     }
 
     public class selectOption {

@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 08-03-2023
+ * @last modified on  : 08-09-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -21,6 +21,7 @@ public with sharing class TaxIssuanceStatusSearchController {
         
         return result;
     }
+
     /**
      * @description 세금계산서 발행 Tab의 to발행일자 오늘날짜로 Setting
      *
@@ -35,7 +36,18 @@ public with sharing class TaxIssuanceStatusSearchController {
 
         return result;
     }
-    
+
+    /**
+     * @description 추후 본부/SU/팀은 User정보에 있는 값이 Default값으로 표시
+     *
+     * @return      X
+     */
+    @AuraEnabled
+    public static void getUserInfoDate() {
+        //추후 작성 예정
+
+    }
+
     /**
      * @description callout 호출 가정
      *
@@ -50,6 +62,7 @@ public with sharing class TaxIssuanceStatusSearchController {
 
         return result;
     }
+    
     /**
      * @description  interface로 데이터 보내기
      *
