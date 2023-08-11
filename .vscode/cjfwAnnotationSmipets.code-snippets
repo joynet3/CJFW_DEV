@@ -13,13 +13,13 @@
 	
 	   ," * @group Framework : ${1}"
 	
-	   ," * @Author : ${2}"
+	   ," * @Author : 조일근"
 	
 	   ," * @Date : ${CURRENT_YEAR}-${CURRENT_MONTH}-${CURRENT_DATE}"
 	
 	   ," * @Version : 1.0"
 	
-	   ," * @Description : ${3}"
+	   ," * @Description : ${2}"
 	
 	   ," * @Modified : "
 	
@@ -29,7 +29,7 @@
 	
 	   ," * ----------------------------------------------"
 	
-	   ," *  1. | ${CURRENT_YEAR}.${CURRENT_MONTH}.${CURRENT_DATE} | ${4} | 최초작성"
+	   ," *  1. | ${CURRENT_YEAR}.${CURRENT_MONTH}.${CURRENT_DATE} | 조일근 | 최초작성"
 	
 	   ," * */"
 	

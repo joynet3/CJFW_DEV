@@ -1,15 +1,15 @@
 /**
  * @Class : IFN_LIF1002_OD003_NOF004.cls
  * @group Framework : 
- * @Author : 
+ * @Author : 조일근
  * @Date : 2023-08-09
  * @Version : 1.0
- * @Description : 
+ * @Description : 교육 서비스신청 리스트
  * @Modified : 
  * ----------------------------------------------
  *  NO | Date       | Modifier       | Description
  * ----------------------------------------------
- *  1. | 2023.08.09 |  | 최초작성
+ *  1. | 2023.08.09 | 조일근         | 최초작성
  * */
 @RestResource(urlMapping='/lif1002/od003/nof004')
 global with sharing class IFN_LIF1002_OD003_NOF004 {
@@ -39,7 +39,7 @@ global with sharing class IFN_LIF1002_OD003_NOF004 {
         public String rgCd   {get;set;}
         public String istrt1 {get;set;}
         public String istrt2 {get;set;}
-        public Date opDt   {get;set;}
+        public Date   opDt   {get;set;}
         public String stts   {get;set;}
         public String cttId  {get;set;}
         public String csId   {get;set;}
@@ -65,17 +65,36 @@ global with sharing class IFN_LIF1002_OD003_NOF004 {
             logWrap.requestBody = requestBody;   
 
             if(requestBody == '' || requestBody == null) {
-                strCode = IFN_Util.STATUS_PARAMETER_ERROR.split(':')[0];
-                strMessage = IFN_Util.STATUS_PARAMETER_ERROR.split(':')[1];
+                strCode = IFN_Util.STATUS_BODYCTT_EMPTY_ERROR.split(':')[0];
+                strMessage = IFN_Util.STATUS_BODYCTT_EMPTY_ERROR.split(':')[1];
                 logWrap.ErrorCode = strCode;
                 logWrap.ErrorText.add(strMessage);
             }else {
+
+                
+
 
                 Map<String, String> plClassServiceStatus = CommonUtil.getMapPickListLabel('ClassService__c', 'Status__c');
                 Map<String, String> plServiceContentRegion = CommonUtil.getMapPickListLabel('ServiceContent__c', 'Region__c');
 
                 Input input = (Input)JSON.deserialize(requestBody,  Input.class);
-                //System.debug(plClassService.get('H'));
+
+
+                if(String.isBlank(input.stDt) || String.isBlank(input.edDt)
+                    || String.isBlank(input.pgNo)|| String.isBlank(input.dataCnt))
+                {
+                    // 필수 파라메터 누락
+                    strCode = IFN_Util.STATUS_RQMT_PARAM_ERROR.split(':')[0];
+                    strMessage = IFN_Util.STATUS_RQMT_PARAM_ERROR.split(':')[1];
+
+                    strMessage = String.isBlank(input.stDt) ? strMessage + ',[stDt]' : strMessage;
+                    strMessage = String.isBlank(input.edDt) ? strMessage + ',[edDt]' : strMessage;
+                    strMessage = String.isBlank(input.pgNo) ? strMessage + ',[pgNo]' : strMessage;
+                    strMessage = String.isBlank(input.dataCnt) ? strMessage + ',[dataCnt]' : strMessage;
+                    logWrap.ErrorCode = strCode;
+                    logWrap.ErrorText.add(strMessage);
+                } else {
+                // 필수 파라메터가 있는 경우 
                 String titleLike = '%' + input.schttl + '%';
                 Date seatchStDt = IFN_Util.convertDate(input.stDt);
                 Date seatchEdDt = IFN_Util.convertDate(input.edDt);
@@ -89,6 +108,9 @@ global with sharing class IFN_LIF1002_OD003_NOF004 {
                 Integer totalSize = Database.countQuery(query_total);
                 System.debug(totalSize);
 
+                Integer limitSize = Integer.valueOf(input.dataCnt);
+                Integer pageNo = Integer.valueOf(input.pgNo) -1;
+                Integer offsetNum = (limitSize * pageNo) + 1;
 
                 
                 List<ClassService__c> datalist = [select id, Status__c
@@ -104,9 +126,11 @@ global with sharing class IFN_LIF1002_OD003_NOF004 {
                             where ServiceContent__r.Name like  :titleLike
                             and ServiceContent__r.OpenDate__c >= :seatchStDt
                             and ServiceContent__r.OpenDate__c <= :seatchStDt
+                            Limit 3 offset 3
                 ];
 
                 List<DataList> listitem = new List<DataList>();
+                String chkMdmCd = String.isBlank(input.mdmCd) ? 'N' : input.mdmCd; 
                 for (ClassService__c itm : datalist) {
                     System.debug(itm.ServiceContent__r.Name);
                     DataList oitm = new DataList();
@@ -118,7 +142,15 @@ global with sharing class IFN_LIF1002_OD003_NOF004 {
                     oitm.istrt2	= itm.ServiceContent__r.Instructor2__c;
                     oitm.opDt	= itm.ServiceContent__r.OpenDate__c;
                     oitm.cttId	= itm.ServiceContent__r.Id;
-                    oitm.stts	= String.isBlank(itm.Status__c) ? '-' : plClassServiceStatus.get(itm.Status__c);
+                    // 전달된 MDM 코드와 같은 경우만 상태값 전송
+                    if('N'.equals(chkMdmCd)) {
+                        oitm.stts	= '-';
+                    } else {
+                        oitm.stts	= chkMdmCd.equals(itm.MDMCode__c) ?  
+                                    (String.isBlank(itm.Status__c) ? '-' : plClassServiceStatus.get(itm.Status__c)) : '';
+
+                    }
+                    
                     oitm.csId	= itm.Id;
                     listitem.add(oitm);
                 }
@@ -127,7 +159,10 @@ global with sharing class IFN_LIF1002_OD003_NOF004 {
                 objOutput.err_msg_ctt = strMessage;
                 objOutput.totDataCnt = totalSize;
                 objOutput.listitem = listitem;
-                objOutput.pgNo = input.pgNo;
+                objOutput.pgNo = input.pgNo;                    
+
+                }
+
 
             }
         } catch(Exception e) {

@@ -2,12 +2,12 @@
  * @description       : 매출/채권 메뉴탭 마다 다른 , header 정보 list 정보에 뿌려질 데이터를 모아놓은 object 를 조회하는 용도
  * @author            : eunyoung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 08-09-2023
+ * @last modified on  : 08-11-2023
  * @last modified by  : eunyoung.choi@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
  * 1.0   08-07-2023   eunyoung.choi@dkbmc.com   Initial Version
- * 1.1   08-08-2023   eunyoung.choi@dkbmc.com   다이나믹 쿼리 추가 
+ * 1.1   08-08-2023   eunyoung.choi@dkbmc.com   다이나믹 쿼리 추가... 
 **/
 public with sharing class CommSearchDataController {
 

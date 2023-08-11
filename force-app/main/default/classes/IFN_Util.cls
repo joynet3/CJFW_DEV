@@ -17,10 +17,12 @@ public with sharing class IFN_Util {
     public class IFN_UtilException extends Exception{}
     
     public static String STATUS_SUCCESS = '0000:SUCCESS';
+    public static String STATUS_AUTH_ERROR = '9901:인증키 오류';
+    public static String STATUS_RQMT_PARAM_ERROR = '9902:필수 파라메터 누락 오류';
+    public static String STATUS_PARAMETER_ERROR = '9903:파라메터 밸리데이션 오류';
+    public static String STATUS_BODYCTT_EMPTY_ERROR = '9904:Body Data 누락';    
+   
     public static String STATUS_EXCEPT = '9999:SERVER ERROR';
-    public static String STATUS_VALIDATION_ERROR = '9998:PARAMETER VAIDATION ERROR';
-    public static String STATUS_AUTH_ERROR = '9901:AUTH KEY INVALID';
-    public static String STATUS_PARAMETER_ERROR = '9997:SEND PARAMETER INVALD';
 
  
         
