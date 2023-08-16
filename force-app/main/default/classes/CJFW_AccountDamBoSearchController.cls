@@ -3,7 +3,7 @@
  * @author            : doyeon.kim@dkbmc.com
  * @since 2023-08-07  내용 작성
  * @group             : 
- * @last modified on  : 08-09-2023
+ * @last modified on  : 08-11-2023
  * @last modified by  : doyeon.kim@dkbmc.com
 **/
 public with sharing class CJFW_AccountDamBoSearchController {
@@ -50,7 +50,8 @@ public with sharing class CJFW_AccountDamBoSearchController {
                 System.debug('collResultList CHECK >>>>>' + resultList);
 
             }else if(searchCertiCode != null){//증서번호 쿼리문
-                strQuery +=         '   WHERE       CollateralNo__c = :searchCertiCode';
+                // strQuery +=         '   WHERE       CollateralNo__c = :searchCertiCode';
+                strQuery +=         '   WHERE       CertificateNo__c = :searchCertiCode';
                 System.debug('strQuery CHECK >>>>>' + strQuery);
 
                 resultList = Database.query(strQuery);
@@ -65,6 +66,45 @@ public with sharing class CJFW_AccountDamBoSearchController {
         }
         
         return resultList;
+    }
+
+    //증서 조회 메서드
+    @AuraEnabled(cacheable=true)
+    public static List<CJFW_CollateralEnrollment__c> getAccCertiInfo(String searchCertiCode){
+
+        System.debug('Check searchCertiCode : ' +searchCertiCode);//CertificateNo__c
+
+        List<CJFW_CollateralEnrollment__c> certiResultList = new List<CJFW_CollateralEnrollment__c>();
+        
+        //보증보험 쿼리문
+        String strQuery = 'SELECT Id, Name, Customer__c, FM_Customer__c, CollateralType__c, CollateralNo__c, ';//거래처코드, 담보구분, 담보번호
+                                        //담보종류, 종류
+                strQuery +=         ' RecordTypeId, RecordType.Name, Category__c,';
+                                        //증서번호, 발행처, 채무자, 보증(발행)금액, 발행일, 개시일, 지급(만기)일
+                strQuery +=         ' CertificateNo__c, Issuer__c, Debtor__c, GuaranteeAmount__c, IssueDate__c, CommencementDate__c, DueDate__c,';
+                                        //총담보, 실담보, 처리구분, 승인일, 만기여부, 해지여부, 비고
+                strQuery +=         ' TotalCollateralAmount__c, ActualCollateralAmount__c, ProcessStatus__c, ApprovalDate__c, ExpirationStatus__c, CloseStatus__c, Description__c';
+                strQuery += ' FROM       CJFW_CollateralEnrollment__c';
+
+        
+        if(searchCertiCode == null){
+            System.debug('searchCertiCode Null Check (((' + searchCertiCode);
+        }else if(searchCertiCode != null){//증서번호 쿼리문
+            System.debug('strQuery CHECK >>>>>' + strQuery);
+
+            strQuery +=         '   WHERE       CertificateNo__c = :searchCertiCode';
+            System.debug('strQuery += WHERE CertificateNo__c = :  ' + searchCertiCode);
+
+            certiResultList = Database.query(strQuery);
+            System.debug('certiResultList CHECK >>>>>' + certiResultList);
+
+        }
+        
+        if (!certiResultList.isEmpty()) {
+            system.debug('return => ' + certiResultList.size() );
+        }
+        
+        return certiResultList;
     }
 
     //부서별 배부 데이터 조회 메서드

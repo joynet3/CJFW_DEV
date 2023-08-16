@@ -6,6 +6,7 @@
 *@since 2023-07-25  최초작성
 */
 public without sharing class EmailAlert implements NotiAlert{
+    @testVisible private boolean isTestException = false;   //test 코드 Exception 용
     
     final Integer emaliLimitNum = 10;       // System Limit 으로 트랜잭션에서 이메일 전송 메소드 호출 가능 수
     final Integer recipientLimitNum = 150;  // System Limit 으로 한 Email 에 보낼 수 있는 수신자,참조,숨은참조 총 수
@@ -75,7 +76,7 @@ public without sharing class EmailAlert implements NotiAlert{
             String recipientSizeStr = ' toAddresses size: ';
 
             if(template == null) {
-                sendDatum.setErrorMsg('[DeActive Email Template] - Template Developer Name:'+sendDatum.getTemplateId());
+                sendDatum.setErrorMsg('[Dont use Email Template] - Template Developer Name:'+sendDatum.getTemplateId());
                 errorDataList.add(sendDatum);
                 continue;
             }
@@ -147,8 +148,7 @@ public without sharing class EmailAlert implements NotiAlert{
 
             IFLog__c errorobjLog = new IFLog__c();
             errorobjLog.Status__c = 'ERROR';
-            
-            
+
             Messaging.SendEmailResult[] sendResults = Messaging.sendEmail(emailList, false);
             List<NotiEmailTemplate> successList = new List<NotiEmailTemplate>();
             List<NotiEmailTemplate> errorList = new List<NotiEmailTemplate>();
@@ -160,10 +160,10 @@ public without sharing class EmailAlert implements NotiAlert{
                     Set<String> errorMsgSet = new Set<String>();
                     for(Messaging.SendEmailError error : errors) {
                         errorMsgSet.add(' getFields() :: '+ error.getFields() + '\n'+' getMessage() :: '+ error.getMessage()+'\n'+ ' getStatusCode() :: '+ error.getStatusCode()+'\n'+' getTargetObjectId() :: '+ error.getTargetObjectId());
-                        System.debug(' getFields() :: '+ error.getFields());
-                        System.debug(' getMessage() :: '+ error.getMessage());
-                        System.debug(' getStatusCode() :: '+ error.getStatusCode());
-                        System.debug(' getTargetObjectId() :: '+ error.getTargetObjectId());
+                        // System.debug(' getFields() :: '+ error.getFields());
+                        // System.debug(' getMessage() :: '+ error.getMessage());
+                        // System.debug(' getStatusCode() :: '+ error.getStatusCode());
+                        // System.debug(' getTargetObjectId() :: '+ error.getTargetObjectId());
                     }
                     if(!errorMsgSet.isEmpty()) {
                         //TBD 메일 전송 실패 이력 생성

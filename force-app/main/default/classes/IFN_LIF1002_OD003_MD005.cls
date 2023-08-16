@@ -81,9 +81,8 @@ global with sharing class IFN_LIF1002_OD003_MD005 {
             }else {
 
                 Map<String, String> plClassServiceStatus = CommonUtil.getMapPickListLabel('ClassService__c', 'Status__c');
-                Map<String, String> plClassTargetGroup = CommonUtil.getMapPickListLabel('ClassService__c', 'TargetGroup__c');
-                Map<String, String> plCategory = CommonUtil.getMapPickListLabel('ClassService__c', 'Category__c');
-                Map<String, String> plServiceContentRegion = CommonUtil.getMapPickListLabel('ServiceContent__c', 'Region__c'); // 교육지역
+                Map<String, String> plClassTargetGroup = CommonUtil.getMapPickListLabel('ClassService__c', 'TargetGroup__c');                
+                Map<String, String> plServiceContentRegion = CommonUtil.getMapPickListLabel('ServiceContent__c', 'Region__c');
                 
                 Input input = (Input)JSON.deserialize(requestBody,  Input.class);
                 ClassService__c classInfo = new ClassService__c();

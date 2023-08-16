@@ -89,6 +89,9 @@ public with sharing class NotiEmailTemplate extends NotiTemplate{
         cloneTemplate.setTargetId(this.getTargetId());
         cloneTemplate.setTemplateId(this.getTemplateId());
         cloneTemplate.setCategory(this.getCategory());
+        cloneTemplate.setLang(this.getLang());
+        cloneTemplate.setErrorMsg(this.getErrorMsg());
+        cloneTemplate.setFieldsMap(this.getFieldsMap());
         cloneTemplate.setIsCustom(this.getIsCustom());
         cloneTemplate.setIsSystem(this.getIsSystem());
         cloneTemplate.setIsUseOWE(this.getIsUseOWE());

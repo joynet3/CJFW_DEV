@@ -108,6 +108,9 @@ public virtual with sharing class NotiTemplate {
         cloneTemplate.setTargetId(this.getTargetId());
         cloneTemplate.setTemplateId(this.getTemplateId());
         cloneTemplate.setCategory(this.getCategory());
+        cloneTemplate.setLang(this.getLang());
+        cloneTemplate.setErrorMsg(this.getErrorMsg());
+        cloneTemplate.setFieldsMap(this.getFieldsMap());
         
         return cloneTemplate;
     }

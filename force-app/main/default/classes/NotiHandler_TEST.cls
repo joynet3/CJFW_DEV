@@ -7,7 +7,8 @@ public with sharing class NotiHandler_TEST {
     }
 
     @isTest
-    static void testCase() {
+    static void execute_test() {
+        test.startTest();
         //RecordType: App
         List<Notification__c> notiList = [
             select 
@@ -145,7 +146,7 @@ public with sharing class NotiHandler_TEST {
         //수신자 set
         NotificationManager.getInstance().setRecipientListMap(recipientMap);
 
-        //execute_TEST App
+        //execute_TEST Email
         notiHandler.execute(targetIds, null, null);
 
         recipientMap = new Map<String,List<NotiTarget>>();
@@ -189,8 +190,19 @@ public with sharing class NotiHandler_TEST {
             }
         }
 
+        List<User> userList = [ select id from User where IsActive = true];
+        recipientMap = new Map<String,List<NotiTarget>>();
+        recipientId.setToAddresses(new Set<String>{userList[0].id, userList[1].id});
+        for(Account ac : targetAccountList) {
+            targetIds.add(ac.Id);
+            recipientMap.put(ac.Id, new List<NotiTarget>{recipientId});
+        }
 
+        NotificationManager.getInstance().setRecipientListMap(recipientMap);
 
+        //execute_TEST Email
+        notiHandler.execute(targetIds, null, null);
+        test.stopTest();
     }
 
 

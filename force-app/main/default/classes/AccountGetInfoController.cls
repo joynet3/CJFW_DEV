@@ -14,7 +14,7 @@ public with sharing class AccountGetInfoController {
     @AuraEnabled(cacheable=true)
     public static List<Account> getAccInfo(String searchKey , String accountType){
         system.debug('AccountGetInfoController #getAccInfo => ' );
-        
+        if(accountType =='전체') accountType ='';
         List<Account> accList = new List<Account>();
         if(searchKey == null){
             System.debug('searchKey Null');

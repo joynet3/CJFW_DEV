@@ -6,6 +6,8 @@
 *@since 2023-07-24  최초생성
 */
 public without sharing class AppAlert implements NotiAlert {
+    @testVisible private boolean isTestException = false;   //test 코드 Exception 용
+
     public AppAlert() {
 
     }
@@ -39,6 +41,7 @@ public without sharing class AppAlert implements NotiAlert {
             else notification.setTargetId(sendDatum.getTargetId());
     
             try {
+                if(isTestException) throw new NullPointerException();
 
                 notification.send(sendDatum.getToAddresses());    
                 successList.add(sendDatum);

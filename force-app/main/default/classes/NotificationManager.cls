@@ -202,8 +202,8 @@ public with sharing class NotificationManager {
     *@param  logList 
     */
     public static void saveHistory(List<IFLog__c> logList) {
-        if(!logList.isEmpty()) {
-            System.debug('logMasters :: '+JSON.serializePretty(logMasters));
+        if(!logList.isEmpty() && logMasters != null && !logMasters.isEmpty() && logMasters[0]?.Id != null ) {
+            //System.debug('logMasters :: '+JSON.serializePretty(logMasters));
             for(IFLog__c objLog : logList) {
                 objLog.IFMaster__c = logMasters[0]?.Id;
             }

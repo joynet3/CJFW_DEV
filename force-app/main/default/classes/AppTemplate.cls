@@ -30,6 +30,9 @@ public with sharing class AppTemplate extends NotiTemplate{
         cloneTemplate.setTemplateId(this.getTemplateId());
         cloneTemplate.setCategory(this.getCategory());
         cloneTemplate.setPageReference(this.getPageReference());
+        cloneTemplate.setLang(this.getLang());
+        cloneTemplate.setErrorMsg(this.getErrorMsg());
+        cloneTemplate.setFieldsMap(this.getFieldsMap());
         
         return cloneTemplate;
     }

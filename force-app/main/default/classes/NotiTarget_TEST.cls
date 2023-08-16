@@ -19,5 +19,7 @@ public with sharing class NotiTarget_TEST {
         System.assert('test3@test.com'.equals(new List<String>(target.getBccAddresses())[0]));
 
         new NotiTarget('id');
+
+        new NotiTarget();
     }
 }

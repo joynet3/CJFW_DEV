@@ -1,3 +1,10 @@
+/**
+* NotiTriggerHandler
+*
+*@group  Notificatoin
+*@author 진현욱
+*@since 2023-08-14  최초작성
+*/
 public with sharing class NotiTriggerHandler extends TriggerHandler{
     
     @testVisible private List<Notification__c> newList; 

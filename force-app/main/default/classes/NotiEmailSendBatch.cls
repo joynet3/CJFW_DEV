@@ -20,6 +20,7 @@ public with sharing class NotiEmailSendBatch implements Database.Batchable<NotiE
             emailAlert.send(emailTemplateList);
         } catch (Exception e) {
             System.debug(e.getMessage());
+            //TBD 에러 발생시 로그 필요
         }
     }
 
