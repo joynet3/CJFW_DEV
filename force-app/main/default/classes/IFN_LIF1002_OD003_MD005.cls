@@ -81,84 +81,91 @@ global with sharing class IFN_LIF1002_OD003_MD005 {
                 logWrap.ErrorText.add(strMessage);
             }else {
 
-                Map<String, String> plClassServiceStatus = CommonUtil.getMapPickListLabel('ClassService__c', 'Status__c');
-                Map<String, String> plClassTargetGroup = CommonUtil.getMapPickListLabel('ClassService__c', 'TargetGroup__c');                
-                Map<String, String> plServiceContentRegion = CommonUtil.getMapPickListLabel('ServiceContents__c', 'Region__c');
-                
                 Input input = (Input)JSON.deserialize(requestBody,  Input.class);
-                ClassService__c classInfo = new ClassService__c();
-                try{
-                    // 교육 서비스 상세조회
-                    classInfo = [Select Id, ServiceContent__c
-                    , MDMCode__c
-                    ,ServiceContent__r.IsUsage__c
-                    ,ServiceContent__r.Region__c
-                    ,ServiceContent__r.Category__c
-                    ,ServiceContent__r.OpenDate__c
-                    ,ServiceContent__r.Name
-                    ,ServiceContent__r.Instructor__r.Name
-                    ,ServiceContent__r.Instructor2__r.Name
-                    ,ServiceContent__r.Instructor3__r.Name
-                    , Status__c
-                    ,Customer__r.Name
-                    ,Manager__c
-                    ,CustomerPhone__c
-                    ,TargetGroup__c
-                    ,ApplicantsNumber__c
-                    ,CustomerAgeGroup__c
-                    ,Address__c
-                    ,Description__c
-                    from ClassService__c
-                    where ServiceContent__c = :input.cttId
-                    and MDMCode__c = :input.mdmCd];
 
-                    selData resData = new selData();
-
-                    resData.cttId      = classInfo.ServiceContent__c;
-                    resData.mdmCd      = classInfo.MDMCode__c;
-                    resData.cttSttsNm  = classInfo.ServiceContent__r.IsUsage__c  == true ? '진행중' : '미진행';
-                    resData.cttSttsCd  = classInfo.ServiceContent__r.IsUsage__c  == true ? '진행중' : '미진행';
-                    resData.cttRg      = String.isEmpty(classInfo.ServiceContent__r.Region__c) ? '': plServiceContentRegion.get(classInfo.ServiceContent__r.Region__c);
-                    resData.cttTp      = classInfo.ServiceContent__r.Category__c;
-                    resData.cttStDt    = IFN_Util.converDateTimeToStrFormat(classInfo.ServiceContent__r.OpenDate__c);
-                    resData.cttTtl     = classInfo.ServiceContent__r.Name;
-                    resData.istrt      = classInfo.ServiceContent__r.Instructor__r.Name;
-                    resData.istrt2     = classInfo.ServiceContent__r.Instructor2__r.Name;
-                    resData.istrt3     = classInfo.ServiceContent__r.Instructor3__r.Name;
-                    resData.reqStts    = String.isEmpty(classInfo.Status__c) ? '': plClassServiceStatus.get(classInfo.Status__c);
-                    resData.accNm      = classInfo.Customer__r.Name;
-                    resData.mngNm      = classInfo.Manager__c;
-                    resData.accCall    = classInfo.CustomerPhone__c;
-                    resData.svcTgtNm   = classInfo.TargetGroup__c;
-                    resData.svcTgtCd   = classInfo.TargetGroup__c;
-                    resData.reqMemCnt  = classInfo.ApplicantsNumber__c;
-                    resData.avgAge     = classInfo.CustomerAgeGroup__c;
-                    resData.addr       = classInfo.Address__c;
-                    resData.dscrt      = classInfo.Description__c;
-
-                    ExtraService__c exService =  [select id,ServiceStartDateTime__c,ProgressTime__c from ExtraService__c where  ServiceContents__c = :classInfo.ServiceContent__c Limit 1];
-                    resData.reqDt = IFN_Util.converDateTimeToStrFormat(exService.ServiceStartDateTime__c,'yyyy-MM-dd a hh');
-                    resData.reqDt = resData.reqDt.replace('AM', '오전');
-                    resData.reqDt = resData.reqDt.replace('PM', '오후');
-                    resData.reqDt = String.isNotEmpty(resData.reqDt) ? resData.reqDt.replace('PM', '오후') + '시' : '';
-                    resData.svcTm = String.valueOf(exService.ProgressTime__c) + '시간';
-                    objOutput.response = resData;
-                    
-
-                } catch(Exception e) {
-                    // 조회 파라메터에서 
-                    strCode = IFN_Util.STATUS_DATA_NOTGOUND_ERROR.split(':')[0];
-                    strMessage = IFN_Util.STATUS_DATA_NOTGOUND_ERROR.split(':')[1];
+                if(String.isEmpty(input.cttId) || String.isEmpty(input.mdmCd)) {
+                    // 필수 파라메터 누락
+                    strCode = IFN_Util.STATUS_RQMT_PARAM_ERROR.split(':')[0];
+                    strMessage = IFN_Util.STATUS_RQMT_PARAM_ERROR.split(':')[1];
+                    strMessage = strMessage + ' 누락 항목 : [ ';
+                    strMessage = String.isBlank(input.cttId) ? strMessage + 'cttId ,' : strMessage;
+                    strMessage = String.isBlank(input.mdmCd) ? strMessage + 'mdmCd ' : strMessage;
+                    strMessage = strMessage + ' ]';
                     logWrap.ErrorCode = strCode;
                     logWrap.ErrorText.add(strMessage);
+                } else {
+
+                    Map<String, String> plClassServiceStatus = CommonUtil.getMapPickListLabel('ClassService__c', 'Status__c');
+                    Map<String, String> plClassTargetGroup = CommonUtil.getMapPickListLabel('ClassService__c', 'TargetGroup__c');                
+                    Map<String, String> plServiceContentRegion = CommonUtil.getMapPickListLabel('ServiceContents__c', 'Region__c');
+    
+                    ClassService__c classInfo = new ClassService__c();
+                    try{
+                        // 교육 서비스 상세조회
+                        classInfo = [Select Id, ServiceContent__c
+                        , MDMCode__c
+                        ,ServiceContent__r.IsUsage__c
+                        ,ServiceContent__r.Region__c
+                        ,ServiceContent__r.Category__c
+                        ,ServiceContent__r.OpenDate__c
+                        ,ServiceContent__r.Name
+                        ,ServiceContent__r.Instructor__r.Name
+                        ,ServiceContent__r.Instructor2__r.Name
+                        ,ServiceContent__r.Instructor3__r.Name
+                        , Status__c
+                        ,Customer__r.Name
+                        ,Manager__c
+                        ,CustomerPhone__c
+                        ,TargetGroup__c
+                        ,ApplicantsNumber__c
+                        ,CustomerAgeGroup__c
+                        ,Address__c
+                        ,Description__c
+                        from ClassService__c
+                        where ServiceContent__c = :input.cttId
+                        and MDMCode__c = :input.mdmCd];
+    
+                        selData resData = new selData();
+    
+                        resData.cttId      = classInfo.ServiceContent__c;
+                        resData.mdmCd      = classInfo.MDMCode__c;
+                        resData.cttSttsNm  = classInfo.ServiceContent__r.IsUsage__c  == true ? '진행중' : '미진행';
+                        resData.cttSttsCd  = classInfo.ServiceContent__r.IsUsage__c  == true ? '진행중' : '미진행';
+                        resData.cttRg      = String.isEmpty(classInfo.ServiceContent__r.Region__c) ? '': plServiceContentRegion.get(classInfo.ServiceContent__r.Region__c);
+                        resData.cttTp      = classInfo.ServiceContent__r.Category__c;
+                        resData.cttStDt    = IFN_Util.converDateTimeToStrFormat(classInfo.ServiceContent__r.OpenDate__c);
+                        resData.cttTtl     = classInfo.ServiceContent__r.Name;
+                        resData.istrt      = classInfo.ServiceContent__r.Instructor__r.Name;
+                        resData.istrt2     = classInfo.ServiceContent__r.Instructor2__r.Name;
+                        resData.istrt3     = classInfo.ServiceContent__r.Instructor3__r.Name;
+                        resData.reqStts    = String.isEmpty(classInfo.Status__c) ? '': plClassServiceStatus.get(classInfo.Status__c);
+                        resData.accNm      = classInfo.Customer__r.Name;
+                        resData.mngNm      = classInfo.Manager__c;
+                        resData.accCall    = classInfo.CustomerPhone__c;
+                        resData.svcTgtNm   = classInfo.TargetGroup__c;
+                        resData.svcTgtCd   = classInfo.TargetGroup__c;
+                        resData.reqMemCnt  = classInfo.ApplicantsNumber__c;
+                        resData.avgAge     = classInfo.CustomerAgeGroup__c;
+                        resData.addr       = classInfo.Address__c;
+                        resData.dscrt      = classInfo.Description__c;
+    
+                        ExtraService__c exService =  [select id,ServiceStartDateTime__c,ProgressTime__c from ExtraService__c where  ServiceContents__c = :classInfo.ServiceContent__c Limit 1];
+                        resData.reqDt = IFN_Util.converDateTimeToStrFormat(exService.ServiceStartDateTime__c,'yyyy-MM-dd a hh');
+                        resData.reqDt = resData.reqDt.replace('AM', '오전');
+                        resData.reqDt = resData.reqDt.replace('PM', '오후');
+                        resData.reqDt = String.isNotEmpty(resData.reqDt) ? resData.reqDt.replace('PM', '오후') + '시' : '';
+                        resData.svcTm = String.valueOf(exService.ProgressTime__c) + '시간';
+                        objOutput.response = resData;
+                        
+    
+                    } catch(Exception e) {
+                        // 조회 파라메터에서 
+                        strCode = IFN_Util.STATUS_DATA_NOTGOUND_ERROR.split(':')[0];
+                        strMessage = IFN_Util.STATUS_DATA_NOTGOUND_ERROR.split(':')[1];
+                        logWrap.ErrorCode = strCode;
+                        logWrap.ErrorText.add(strMessage);
+                    }
                 }
-                
-                
-                                        
-
-
-
-
 
             }
         } catch(Exception e) {

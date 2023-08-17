@@ -78,14 +78,7 @@ global with sharing class IFN_LIF1002_OD003_MD004 {
                 logWrap.ErrorText.add(strMessage);
             }else {
 
-                
-
-
-                Map<String, String> plClassServiceStatus = CommonUtil.getMapPickListLabel('ClassService__c', 'Status__c');
-                Map<String, String> plServiceContentRegion = CommonUtil.getMapPickListLabel('ServiceContents__c', 'Region__c');
-
                 Input input = (Input)JSON.deserialize(requestBody,  Input.class);
-
 
                 if(String.isBlank(input.stDt) || String.isBlank(input.edDt)
                     || String.isBlank(input.pgNo)|| String.isBlank(input.dataCnt))
@@ -93,14 +86,20 @@ global with sharing class IFN_LIF1002_OD003_MD004 {
                     // 필수 파라메터 누락
                     strCode = IFN_Util.STATUS_RQMT_PARAM_ERROR.split(':')[0];
                     strMessage = IFN_Util.STATUS_RQMT_PARAM_ERROR.split(':')[1];
-
-                    strMessage = String.isBlank(input.stDt) ? strMessage + ',[stDt]' : strMessage;
-                    strMessage = String.isBlank(input.edDt) ? strMessage + ',[edDt]' : strMessage;
-                    strMessage = String.isBlank(input.pgNo) ? strMessage + ',[pgNo]' : strMessage;
-                    strMessage = String.isBlank(input.dataCnt) ? strMessage + ',[dataCnt]' : strMessage;
+                    strMessage = strMessage + ' 누락 항목 : [ ';
+                    strMessage = String.isBlank(input.stDt) ? strMessage + 'stDt ,' : strMessage;
+                    strMessage = String.isBlank(input.edDt) ? strMessage + 'edDt ,' : strMessage;
+                    strMessage = String.isBlank(input.pgNo) ? strMessage + 'pgNo ,' : strMessage;
+                    strMessage = String.isBlank(input.dataCnt) ? strMessage + 'dataCnt' : strMessage;
+                    strMessage = strMessage + ' ]';
                     logWrap.ErrorCode = strCode;
                     logWrap.ErrorText.add(strMessage);
                 } else {
+
+                    Map<String, String> plClassServiceStatus = CommonUtil.getMapPickListLabel('ClassService__c', 'Status__c');
+                    Map<String, String> plServiceContentRegion = CommonUtil.getMapPickListLabel('ServiceContents__c', 'Region__c');
+
+                    
                     // 필수 파라메터가 있는 경우 
                     String titleLike = '%' + input.schttl + '%';
                     Date seatchStDt = IFN_Util.convertDate(input.stDt);
