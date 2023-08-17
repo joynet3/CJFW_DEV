@@ -160,8 +160,8 @@ global with sharing class IFN_LIF1002_OD003_MD005 {
     
                     } catch(Exception e) {
                         // 조회 파라메터에서 
-                        strCode = IFN_Util.STATUS_DATA_NOTGOUND_ERROR.split(':')[0];
-                        strMessage = IFN_Util.STATUS_DATA_NOTGOUND_ERROR.split(':')[1];
+                        strCode = IFN_Util.STATUS_DATA_NOTFOUND_ERROR.split(':')[0];
+                        strMessage = IFN_Util.STATUS_DATA_NOTFOUND_ERROR.split(':')[1];
                         logWrap.ErrorCode = strCode;
                         logWrap.ErrorText.add(strMessage);
                     }
@@ -177,7 +177,7 @@ global with sharing class IFN_LIF1002_OD003_MD005 {
 
         objOutput.err_cd = strCode;
         objOutput.err_msg_ctt = strMessage;
-        logWrap.RequestBody = Json.serialize(objOutput);
+        logWrap.ResponseBody = Json.serialize(objOutput);
         commlog.insertLog(logWrap);
 
         return objOutput;

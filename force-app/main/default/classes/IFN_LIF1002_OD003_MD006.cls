@@ -53,7 +53,8 @@ global with sharing class IFN_LIF1002_OD003_MD006 {
         String requestBody = '';
 
         try {
-          
+
+            
             RestRequest request = RestContext.request;
             requestBody = request.requestBody.toString();
             logWrap.requestBody = requestBody;   
@@ -65,7 +66,7 @@ global with sharing class IFN_LIF1002_OD003_MD006 {
                 logWrap.ErrorText.add(strMessage);
             }else {
 
-                Input input = (Input)JSON.deserialize(requestBody,  Input.class);
+                Input input = (Input)JSON.deserialize(requestBody,  Input.class);          
 
                 if(String.isEmpty(input.cttId) || String.isEmpty(input.mdmCd)) {
                     // 필수 파라메터 누락
@@ -92,10 +93,10 @@ global with sharing class IFN_LIF1002_OD003_MD006 {
 
                     try{
                         AggregateResult ar = [select count(id) cnt from ClassService__c 
-                        where id = :input.cttId
+                        where ServiceContent__c = :input.cttId
                         and MDMCode__c = :input.mdmCd];
                         Integer selCnt = Integer.valueOf(ar.get('cnt'));
-
+                        logWrap.LogText.add(' 교육신청 데이터 selCnt ======> ' + selCnt);
                         if(selCnt > 0) {
                             clsreq = [select id 
                                         ,ServiceContent__c
@@ -103,6 +104,7 @@ global with sharing class IFN_LIF1002_OD003_MD006 {
                                         ,Customer__c
                                         ,Manager__c
                                         ,CustomerPhone__c
+                                        ,Status__c
                                         ,TargetGroup__c
                                         ,ApplicantsNumber__c
                                         ,CustomerAgeGroup__c
@@ -111,6 +113,7 @@ global with sharing class IFN_LIF1002_OD003_MD006 {
                                         from ClassService__c
                                         where ServiceContent__c = :input.cttId
                                         and MDMCode__c = :input.mdmCd];
+                                        logWrap.LogText.add(' 교육신청 데이터 존재 ======> ' + Json.serialize(clsreq));
 
                         }
 
@@ -121,8 +124,8 @@ global with sharing class IFN_LIF1002_OD003_MD006 {
                         if(acclst.size() > 0) {
                             clsreq.Customer__c = acclst[0].id;
                         } else {
-                            acclst = [select id from Account where CustomerID__c = :input.accNm];    
-                            clsreq.Customer__c = acclst[0].id;
+                            acclst = [select id from Account where Name = :input.accNm];
+                            if(acclst.size() > 0) clsreq.Customer__c = acclst[0].id;
                         }                        
                         clsreq.Manager__c          = input.mngNm;
                         clsreq.CustomerPhone__c    = input.accCall;
@@ -134,6 +137,9 @@ global with sharing class IFN_LIF1002_OD003_MD006 {
 
                         clsreq.Address__c          = input.addr;
                         clsreq.Description__c      = input.dscrt;
+                        clsreq.Status__c = String.isBlank(clsreq.Status__c) ? 'H' : clsreq.Status__c;
+
+                        logWrap.LogText.add(' 교육신청 upsert data  ======> ' + Json.serialize(clsreq));
 
                         upsert clsreq;
 

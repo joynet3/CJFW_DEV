@@ -21,8 +21,9 @@ public with sharing class IFN_Util {
     public static String STATUS_RQMT_PARAM_ERROR = '9902:필수 파라메터 누락 오류';
     public static String STATUS_PARAMETER_ERROR = '9903:파라메터 밸리데이션 오류';
     public static String STATUS_BODYCTT_EMPTY_ERROR = '9904:Body Data 누락';    
-    public static String STATUS_DATA_NOTGOUND_ERROR = '9905:조회되는 데이터가 없습니다.';    
-   
+    public static String STATUS_DATA_NOTFOUND_ERROR = '9905:조회되는 데이터가 없습니다.';    
+    public static String STATUS_DUPLICATION_INPUT_ERROR = '9906:중복된 데이터 입력입니다.';    
+
     public static String STATUS_EXCEPT = '9999:SERVER ERROR';
 
  
@@ -775,6 +776,5 @@ public with sharing class IFN_Util {
         if(val != null) result = val.contains('-');
         return result;
     }
-
 
 }

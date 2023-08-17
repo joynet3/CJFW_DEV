@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 08-09-2023
+ * @last modified on  : 08-17-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -107,9 +107,11 @@ public with sharing class TaxIssuanceStatusSearchController {
         // Map<String, List<String>> endcomment = new Map<String, List<String>>();
         // endcomment.put('type', typeList);
 
-        List<String> typeList = new List<String>{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 
-                                                 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 
-                                                 'U', 'V', 'W', 'X', 'Y', 'Z'};
+        List<String> typeList = new List<String>{'A', 'B', 'C', 'D', 'E', 'F', 'G'};
+
+        // List<String> typeList = new List<String>{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 
+        // 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 
+        // 'U', 'V', 'W', 'X', 'Y', 'Z'};
 
 
         List<DummyWrapper> DummyWrapperList = new List<DummyWrapper>();
