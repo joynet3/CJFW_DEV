@@ -23,6 +23,7 @@ global with sharing class IFN_LIF1002_OD003_MD005 {
     }
 
     global class Output {
+        public String interface_id{get;set;}
         public String err_cd{get;set;}
         public String err_msg_ctt{get;set;}
         public selData response{get;set;}
@@ -30,7 +31,7 @@ global with sharing class IFN_LIF1002_OD003_MD005 {
 
     global class selData {
 
-        public String cttId     {get;set;} // 교육컨텐츠아이디
+        public String cttId     {get;set;} // 교육컨텐츠아이디()
         public String mdmCd     {get;set;} // 신청고객MDM코드
         public String cttSttsNm {get;set;} // 선택한 교육서비스 진행상태 명
         public String cttSttsCd {get;set;} // 선택한 교육서비스 진행상태 코드
@@ -65,7 +66,7 @@ global with sharing class IFN_LIF1002_OD003_MD005 {
         IFN_CommonLog commlog = new IFN_CommonLog();
 
         Output objOutput = new Output();
-        
+        objOutput.interface_id = interfaceId;
         String requestBody = '';
 
         try {
@@ -82,7 +83,7 @@ global with sharing class IFN_LIF1002_OD003_MD005 {
 
                 Map<String, String> plClassServiceStatus = CommonUtil.getMapPickListLabel('ClassService__c', 'Status__c');
                 Map<String, String> plClassTargetGroup = CommonUtil.getMapPickListLabel('ClassService__c', 'TargetGroup__c');                
-                Map<String, String> plServiceContentRegion = CommonUtil.getMapPickListLabel('ServiceContent__c', 'Region__c');
+                Map<String, String> plServiceContentRegion = CommonUtil.getMapPickListLabel('ServiceContents__c', 'Region__c');
                 
                 Input input = (Input)JSON.deserialize(requestBody,  Input.class);
                 ClassService__c classInfo = new ClassService__c();
@@ -99,7 +100,7 @@ global with sharing class IFN_LIF1002_OD003_MD005 {
                     ,ServiceContent__r.Instructor2__r.Name
                     ,ServiceContent__r.Instructor3__r.Name
                     , Status__c
-                    ,Customer__c
+                    ,Customer__r.Name
                     ,Manager__c
                     ,CustomerPhone__c
                     ,TargetGroup__c
@@ -108,7 +109,7 @@ global with sharing class IFN_LIF1002_OD003_MD005 {
                     ,Address__c
                     ,Description__c
                     from ClassService__c
-                    where id = :input.cttId
+                    where ServiceContent__c = :input.cttId
                     and MDMCode__c = :input.mdmCd];
 
                     selData resData = new selData();
@@ -124,8 +125,8 @@ global with sharing class IFN_LIF1002_OD003_MD005 {
                     resData.istrt      = classInfo.ServiceContent__r.Instructor__r.Name;
                     resData.istrt2     = classInfo.ServiceContent__r.Instructor2__r.Name;
                     resData.istrt3     = classInfo.ServiceContent__r.Instructor3__r.Name;
-                    resData.reqStts    = classInfo.Status__c;
-                    resData.accNm      = classInfo.Customer__c;
+                    resData.reqStts    = String.isEmpty(classInfo.Status__c) ? '': plClassServiceStatus.get(classInfo.Status__c);
+                    resData.accNm      = classInfo.Customer__r.Name;
                     resData.mngNm      = classInfo.Manager__c;
                     resData.accCall    = classInfo.CustomerPhone__c;
                     resData.svcTgtNm   = classInfo.TargetGroup__c;
@@ -135,6 +136,14 @@ global with sharing class IFN_LIF1002_OD003_MD005 {
                     resData.addr       = classInfo.Address__c;
                     resData.dscrt      = classInfo.Description__c;
 
+                    ExtraService__c exService =  [select id,ServiceStartDateTime__c,ProgressTime__c from ExtraService__c where  ServiceContents__c = :classInfo.ServiceContent__c Limit 1];
+                    resData.reqDt = IFN_Util.converDateTimeToStrFormat(exService.ServiceStartDateTime__c,'yyyy-MM-dd a hh');
+                    resData.reqDt = resData.reqDt.replace('AM', '오전');
+                    resData.reqDt = resData.reqDt.replace('PM', '오후');
+                    resData.reqDt = String.isNotEmpty(resData.reqDt) ? resData.reqDt.replace('PM', '오후') + '시' : '';
+                    resData.svcTm = String.valueOf(exService.ProgressTime__c) + '시간';
+                    objOutput.response = resData;
+                    
 
                 } catch(Exception e) {
                     // 조회 파라메터에서 
@@ -161,6 +170,7 @@ global with sharing class IFN_LIF1002_OD003_MD005 {
 
         objOutput.err_cd = strCode;
         objOutput.err_msg_ctt = strMessage;
+        logWrap.RequestBody = Json.serialize(objOutput);
         commlog.insertLog(logWrap);
 
         return objOutput;

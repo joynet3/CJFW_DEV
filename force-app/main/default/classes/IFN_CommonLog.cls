@@ -225,10 +225,13 @@ global class IFN_CommonLog {
 
     public void insertLog(IFN_CommonLog.LogWrap logWrap)
     {
+
+        progLog = new IFLog__c();
         try
         {            
-
             if(logWrap != null){
+
+                
                 progLog = logWrap.convert();
                 
                 if(String.isNotBlank(progLog.BatchCronId__c)) 

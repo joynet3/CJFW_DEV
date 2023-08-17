@@ -71,5 +71,20 @@ public with sharing class IF_TEST {
         // System.debug(totalSize);
 
 
+        Datetime dt = Datetime.now().addHours(0);
+        String aaaa = IFN_Util.converDateTimeToStrFormat(dt,'yyyy-MM-dd a hh');
+
+        aaaa = aaaa.replace('AM', '오전');
+        aaaa = aaaa.replace('PM', '오후');
+        aaaa = String.isNotEmpty(aaaa) ? aaaa.replace('PM', '오후') + '시' : '';
+        System.debug(aaaa);
+
+        String requestBody = '{"dataCnt":"3","edDt":"20230830","mdmCd":"1","pgNo":"1","schttl":"","stDt":"20220101"}';
+        IFN_LIF1002_OD003_MD004.Input input = (IFN_LIF1002_OD003_MD004.Input)JSON.deserialize(requestBody,  IFN_LIF1002_OD003_MD004.Input.class);
+        System.debug(input.dataCnt);
+        
+
+
+
     }
 }
