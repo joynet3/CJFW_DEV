@@ -31,7 +31,7 @@ global with sharing class IFN_LIF1002_OD003_MD006 {
         public String addr      {get;set;}
         public String dscrt     {get;set;}
     }
-
+    
     global class Output {
         public String interface_id{get;set;}
         public String err_cd{get;set;}
@@ -74,14 +74,14 @@ global with sharing class IFN_LIF1002_OD003_MD006 {
                     strMessage = IFN_Util.STATUS_RQMT_PARAM_ERROR.split(':')[1];
                     strMessage = strMessage + ' 누락 항목 : [ ';
                     strMessage = String.isBlank(input.cttId) ? strMessage + 'cttId ,' : strMessage;
-                    strMessage = String.isBlank(input.mdmCd) ? strMessage + 'mdmCd ' : strMessage;
+                    strMessage = String.isBlank(input.mdmCd) ? strMessage + 'mdmCd ,' : strMessage;
 
-                    strMessage = String.isBlank(input.accNm) ? strMessage + 'accNm ' : strMessage;
-                    strMessage = String.isBlank(input.mngNm) ? strMessage + 'mngNm ' : strMessage;
-                    strMessage = String.isBlank(input.accCall) ? strMessage + 'accCall ' : strMessage;
-                    strMessage = String.isBlank(input.svcTgtNm) ? strMessage + 'svcTgtNm ' : strMessage;
-                    strMessage = String.isBlank(input.svcTgtCd) ? strMessage + 'svcTgtCd ' : strMessage;
-                    strMessage = String.isBlank(input.reqMemCnt) ? strMessage + 'reqMemCnt ' : strMessage;
+                    strMessage = String.isBlank(input.accNm) ? strMessage + 'accNm ,' : strMessage;
+                    strMessage = String.isBlank(input.mngNm) ? strMessage + 'mngNm ,' : strMessage;
+                    strMessage = String.isBlank(input.accCall) ? strMessage + 'accCall ,' : strMessage;
+                    strMessage = String.isBlank(input.svcTgtNm) ? strMessage + 'svcTgtNm ,' : strMessage;
+                    strMessage = String.isBlank(input.svcTgtCd) ? strMessage + 'svcTgtCd ,' : strMessage;
+                    strMessage = String.isBlank(input.reqMemCnt) ? strMessage + 'reqMemCnt ,' : strMessage;
                     strMessage = String.isBlank(input.addr) ? strMessage + 'addr ' : strMessage;
 
                     strMessage = strMessage + ' ]';
@@ -167,7 +167,7 @@ global with sharing class IFN_LIF1002_OD003_MD006 {
 
         objOutput.err_cd = strCode;
         objOutput.err_msg_ctt = strMessage;
-        logWrap.RequestBody = Json.serialize(objOutput);
+        logWrap.ResponseBody = Json.serialize(objOutput);
         commlog.insertLog(logWrap);
 
         return objOutput;

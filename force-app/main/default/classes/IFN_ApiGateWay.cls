@@ -28,18 +28,19 @@ public with sharing class IFN_ApiGateWay {
     
     public IFN_ApiGateWay(String ifId) {
 
-        List<IFMaster__c> objIFMaster = new List<IFMaster__c>();
+        IFMaster__c objIFMasterINF = new IFMaster__c();
         List<API_Authenticationkey__mdt> objIFAuthHeadInfo = new List<API_Authenticationkey__mdt>();
         List<API_Authenticationkey__mdt> objIFAuthgetParamInfo = new List<API_Authenticationkey__mdt>();
 
         this.ifKeyId = ifId;        
 
-        objIFMaster = [
+        objIFMasterINF = [
             SELECT Id, Name,
                     InterfaceId__c, Type__c, WebserviceType__c, Endpoint__c, Method__c, ContentType__c,ifKeyId__c,Header__c,
                     Param1__c,Param2__c,Param3__c,Param4__c
             FROM IFMaster__c
-            WHERE Name =: ifId
+            WHERE Name =:ifId
+            Limit 1
         ];
 
         objIFAuthHeadInfo = [select  MasterLabel,    QualifiedApiName, KeyValue__c, DateRange__c,  
@@ -59,7 +60,7 @@ public with sharing class IFN_ApiGateWay {
         ];
         this.objIFAuthGetParamInfoLst = objIFAuthgetParamInfo;            
 
-        this.objIFMaster = objIFMaster[0];
+        this.objIFMaster = objIFMasterINF;
 
 
     }

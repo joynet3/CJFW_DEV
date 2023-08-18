@@ -181,6 +181,7 @@ global with sharing class IFN_LIF1002_OD003_MD004 {
 
         objOutput.err_cd = strCode;
         objOutput.err_msg_ctt = strMessage;
+        logWrap.ResponseBody = Json.serialize(objOutput);
         commlog.insertLog(logWrap);
 
         return objOutput;
