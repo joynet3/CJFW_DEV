@@ -2,12 +2,13 @@
  * @description       : 매출/채권 메뉴탭 마다 다른 , header 정보 list 정보에 뿌려질 데이터를 모아놓은 object 를 조회하는 용도
  * @author            : eunyoung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 08-16-2023
+ * @last modified on  : 08-18-2023
  * @last modified by  : eunyoung.choi@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
  * 1.0   08-07-2023   eunyoung.choi@dkbmc.com   Initial Version
  * 1.1   08-08-2023   eunyoung.choi@dkbmc.com   다이나믹 쿼리 추가..
+ * 1.1   08-18-2023   eunyoung.choi@dkbmc.com   getWhereQuery 메소드에 type 이 date 로 들어오는것 한국시간에 맞게 조회기능 추가 
 **/
 public with sharing class CommSearchDataController {
 
@@ -40,6 +41,7 @@ public with sharing class CommSearchDataController {
            , HeaderLine__c
            , HeadFilterOrder__c
            , ListOrder__c
+           , DatePoint__c
            , IsActive__c
            FROM CJFW_CommSearchData__c  
            WHERE MenuName__c =: menuSearch AND IsActive__c = true
@@ -55,32 +57,61 @@ public with sharing class CommSearchDataController {
 
     /**
     *@param  filterDataList : [ api name / objName / searchkey ] List
-     @paramExample :  ({apiName=GD_NM__c, objName=SalesLedgerInformation__c, searchKey=3}) 
+        @paramExample :  ({apiName=GD_NM__c, objName=SalesLedgerInformation__c, searchKey=3}) 
     *@return  String : WHERE 절 반환 
-     @description : Header에 입력받은 값으로 WHERE절 생성 
-     CommSearchDataController.getWhereQuery 
-     @author : eunyoung
+        @description : Header에 입력받은 값으로 WHERE절 생성 
+        CommSearchDataController.getWhereQuery 
+        @author : eunyoung
     */
    @AuraEnabled
    public static String getWhereQuery(List<Map<String, String>> filterDataList ){
+
        system.debug('CommSearchDataController #getWhereQuery=> ' + filterDataList);
        Boolean addWhereClause = true;
-       String whereQuery='';
+       String whereQuery=' WHERE ';
     
         for(Map<String,String> filterData : filterDataList){
+
+            //파람으로 넘어오는 값들 
             String apiName = filterData.get('apiName');
+            String objName = filterData.get('objName');
+            String fieldType = filterData.get('fieldType');
+            String datePointData = filterData.get('datePointData');
             String searchKey = filterData.get('searchKey');
+            
+            System.debug('getWhereQuery get param > ' + 'apiName: ' + apiName + ', objName: ' + objName + ', fieldType: ' + fieldType + ', datePointData: ' + datePointData + ', searchKey: ' + searchKey);
+            
+            if(fieldType =='date'){
+                searchKey = searchKey + 'T00:00:00+09:00'; //한국시간 DateTime 
+            }
+
             //WHERE 절
             if(addWhereClause){
-                whereQuery +=' WHERE ';
-                whereQuery +=  apiName + ' LIKE \'%' + searchKey + '%\'';
-                addWhereClause = false;
-            }else {
+                String condition='';
+
+                if (fieldType == 'date') {
+                    if (datePointData == 'start') {
+                        condition = apiName + '>=' + searchKey;
+                    }
+                        whereQuery += condition;
+                    if (datePointData == 'end') {
+                        if(condition !=null) whereQuery  += ' AND ' ;
+                        whereQuery += apiName + '<=' + searchKey;
+                    }
+                    system.debug('DATE -> ' + whereQuery);
+                }else{
+                    if(condition !=null) whereQuery += ' AND ';
+                    whereQuery +=  apiName + ' LIKE \'%' + searchKey + '%\'';
+                    addWhereClause = false;
+                }
+
+            }else{
                 whereQuery += ' AND ' + apiName + ' LIKE \'%' + searchKey + '%\'';
             }
         }
+
         system.debug(' Final whereQuery -> ' + whereQuery );
-       return whereQuery;
+        return whereQuery;
    }
 
     /**
