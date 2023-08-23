@@ -131,7 +131,7 @@ public virtual without sharing class NotiHandler {
     *
     *@return  Set<String> NotiTargetObject 에 저장된 수신자 Id Set
     */
-    @testVisible protected Set<String> getRicipientIdSet() {
+    @testVisible protected Set<String> getRecipientIdSet() {
         Map<String, Schema.RecordTypeInfo> includedRecordTypeMap = Schema.SObjectType.NotificationTarget__c.getRecordTypeInfosByDeveloperName();
 
         Map<String, Set<String>> userTypeMap = new Map<String, Set<String>>{
@@ -226,7 +226,7 @@ public virtual without sharing class NotiHandler {
     */
     public void execute(Set<String> targetIdSet, List<sObject> targetSObjectList, Object targetObject) {
         getTemplate();
-        getRicipientIdSet();
+        getRecipientIdSet();
 
         setExcludeRecipient();
 
@@ -281,7 +281,7 @@ public virtual without sharing class NotiHandler {
     * override 시 Map<String, List<NotiTemplate>> categorySendDataListMap 값 저장 필수
     *@param  targetSObjectList 알림 내용을 만드는 sObject 데이터 리스트
     */
-    @testVisible protected virtual void manuFactureNoti(List<sObject> targetSObjectList) {
+    public virtual void manuFactureNoti(List<sObject> targetSObjectList) {
         makePersonalize(targetSObjectList);
     }
 
@@ -290,7 +290,7 @@ public virtual without sharing class NotiHandler {
     * override 시 Map<String, List<NotiTemplate>> categorySendDataListMap 값 저장 필수
     *@param  targetObject 알림 내용을 만드는 Object 데이터
     */
-    @testVisible protected virtual void manuFactureNoti(Object targetObject) {
+    public virtual void manuFactureNoti(Object targetObject) {
         
     }
 

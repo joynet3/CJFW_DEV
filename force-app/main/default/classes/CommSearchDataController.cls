@@ -90,6 +90,7 @@ public with sharing class CommSearchDataController {
                 String condition='';
 
                 if (fieldType == 'date') {
+                    system.debug('어디타니1 ');
                     if (datePointData == 'start') {
                         condition = apiName + '>=' + searchKey;
                     }
@@ -100,13 +101,21 @@ public with sharing class CommSearchDataController {
                     }
                     system.debug('DATE -> ' + whereQuery);
                 }else{
-                    if(condition !=null) whereQuery += ' AND ';
+                
+                    if(condition !='' && condition !=null && fieldType != 'date'){
+                        system.debug('어디타니1-1 '+ whereQuery );
+                        whereQuery += ' AND ';
+                    }
+                    system.debug('어디타니2 '+ whereQuery );
                     whereQuery +=  apiName + ' LIKE \'%' + searchKey + '%\'';
                     addWhereClause = false;
                 }
 
             }else{
-                whereQuery += ' AND ' + apiName + ' LIKE \'%' + searchKey + '%\'';
+                if(fieldType != 'date'){
+                    system.debug('어디타니3 '+ whereQuery );
+                    whereQuery += ' AND ' + apiName + ' LIKE \'%' + searchKey + '%\'';
+                }
             }
         }
 

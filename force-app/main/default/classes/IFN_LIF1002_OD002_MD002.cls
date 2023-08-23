@@ -93,61 +93,56 @@ global with sharing class IFN_LIF1002_OD002_MD002 {
                     logWrap.ErrorCode = strCode;
                     logWrap.ErrorText.add(strMessage);
                 } else {
-                    try {
-                        // 문의데이터 존재 여부
-                        integer isExist = database.countQuery('select count() from OrderServiceRequest__c Where ReqRecordId__c =: :input.reqId');
-                        if(isExist > 0) {    
-                            strCode = IFN_Util.STATUS_DUPLICATION_INPUT_ERROR.split(':')[0];
-                            strMessage = '이미 등록된 샘플 또는 부가서비스 신청이 존재합니다.';
-                            logWrap.ErrorCode = strCode;
-                            logWrap.ErrorText.add(strMessage);
-                            objOutput.err_cd = strCode;
-                            objOutput.err_msg_ctt = strMessage;
-                            commlog.insertLog(logWrap);
-                            return objOutput;
-                        } 
-                        Date requestDate = IFN_Util.convertDate(input.reqDt);
-
-                        OrderServiceRequest__c orderServiceReq = new OrderServiceRequest__c(
-                              Title__c = input.ttl
-                            , ReqType__c = input.reqTp
-                            // , ReqTypeCode__c = input.reqTpCd // 별도필드 존재하지 않음
-                            , RequestMessage__c = input.reqMsg
-                            , SampleitemText1__c = input.spItmTxt1
-                            , SampleitemText2__c = input.spItmTxt2
-                            , SampleitemText3__c = input.spItmTxt3
-                            , ExtraServiceCategory__c = input.ExtSrvcCtgr
-                            // , ExtraServiceCategoryCode__c = input.ExtSvcCd // 별도필드 존재하지 않음
-                            , CustomerID__c = input.mdmId
-                            , RequestDate__c = requestDate
-                            , Finder__c = input.rcvNm
-                            , ReqRecordId__c = input.reqId
-                        );
-
-                        Database.SaveResult result = Database.insert(orderServiceReq);
-                        
-                        if (result.isSuccess()) {
-                            ResData resData = new ResData(); 
-                        
-                            resData.reqId = input.reqId;
-                            resData.succYn = 'Y';
-                            resData.resId = result.getId();
-                            
-                            objOutput.response = resData;
-                        } else {
-                            for(Database.Error err : result.getErrors()) {
-                                strCode = '-1';
-                                strMessage = err.getStatusCode() + ': ' + err.getMessage();
-                                logWrap.ErrorCode = strCode;
-                                logWrap.ErrorText.add(strMessage);
-                            }
-                        }
-                    } catch (DmlException e) {
-                        strCode = '-1';
-                        strMessage = e.getMessage()+' Line : '+e.getLineNumber();                       
+                    String reqRecordId = input.reqId;
+                    // 문의데이터 존재 여부
+                    String qry = 'select count() from OrderServiceRequest__c Where ReqRecordId__c =:reqRecordId';
+                    integer isExist = database.countQuery(qry);
+                    if(isExist > 0) {    
+                        strCode = IFN_Util.STATUS_DUPLICATION_INPUT_ERROR.split(':')[0];
+                        strMessage = '이미 등록된 샘플 또는 부가서비스 신청이 존재합니다.';
                         logWrap.ErrorCode = strCode;
                         logWrap.ErrorText.add(strMessage);
-                    }   
+                        objOutput.err_cd = strCode;
+                        objOutput.err_msg_ctt = strMessage;
+                        commlog.insertLog(logWrap);
+                        return objOutput;
+                    } 
+                    Date requestDate = IFN_Util.convertDate(input.reqDt);
+
+                    OrderServiceRequest__c orderServiceReq = new OrderServiceRequest__c(
+                            Title__c = input.ttl
+                        , ReqType__c = input.reqTp
+                        // , ReqTypeCode__c = input.reqTpCd // 별도필드 존재하지 않음
+                        , RequestMessage__c = input.reqMsg
+                        , SampleitemText1__c = input.spItmTxt1
+                        , SampleitemText2__c = input.spItmTxt2
+                        , SampleitemText3__c = input.spItmTxt3
+                        , ExtraServiceCategory__c = input.ExtSrvcCtgr
+                        // , ExtraServiceCategoryCode__c = input.ExtSvcCd // 별도필드 존재하지 않음
+                        , CustomerID__c = input.mdmId
+                        , RequestDate__c = requestDate
+                        , Finder__c = input.rcvNm
+                        , ReqRecordId__c = reqRecordId
+                    );
+
+                    Database.SaveResult result = Database.insert(orderServiceReq);
+                    ResData resData = new ResData(); 
+                    if (result.isSuccess()) {
+                        resData.reqId = reqRecordId;
+                        resData.succYn = 'Y';
+                        resData.resId = result.getId();
+                        
+                        objOutput.response = resData;
+                    } else {
+                        resData.reqId = reqRecordId;
+                        resData.succYn = 'N';
+                        for(Database.Error err : result.getErrors()) {
+                            strCode = '-1';
+                            strMessage = err.getStatusCode() + ': ' + err.getMessage();
+                            logWrap.ErrorCode = strCode;
+                            logWrap.ErrorText.add(strMessage);
+                        }
+                    }
                 }
             }
         } catch(Exception e) {
@@ -156,12 +151,11 @@ global with sharing class IFN_LIF1002_OD002_MD002 {
             strMessage +=  '[' + e.getMessage()+' Line : '+e.getLineNumber() + ']';
             logWrap.ErrorCode = strCode;
             logWrap.ErrorText.add(strMessage);
-        }
+        } 
         // objOutput.interface_id = interfaceId;
         objOutput.err_cd = strCode;
         objOutput.err_msg_ctt = strMessage;
         commlog.insertLog(logWrap);
-
         return objOutput;
     }
 }

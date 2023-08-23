@@ -90,8 +90,11 @@ global with sharing class IFN_LIF1002_OD001_MD001 {
                     logWrap.ErrorCode = strCode;
                     logWrap.ErrorText.add(strMessage);
                 } else {
+                    String companyRegNum = IFN_Util.replaceText(input.bsnsNo);
+
                     // 기존 Account 존재 여부
-                    integer isExistAccount = database.countQuery('select count() from account Where CompanyRegisterNumber__c =: input.bsnsNo');
+                    String qry = 'select count() from account Where CompanyRegisterNumber__c = :companyRegNum';
+                    integer isExistAccount = database.countQuery(qry);
                     
                     // 고객유형에 따른 RecordTypeId
                     Id leadRcdTp = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName().get(input.cstTpCd).getRecordTypeId();
@@ -101,7 +104,7 @@ global with sharing class IFN_LIF1002_OD001_MD001 {
                             CustomType__c = input.cstTp
                             , LastName = input.cstNm
                             , Phone = input.callNo
-                            , CompanyRegisterNumber__c = input.bsnsNo
+                            , CompanyRegisterNumber__c = companyRegNum
                             , Company = input.cpnNm
                             , BusinessConditions__c = input.sect
                             , Address__c = input.addr
@@ -112,11 +115,11 @@ global with sharing class IFN_LIF1002_OD001_MD001 {
 
                         Database.SaveResult result = Database.insert(newLead);
                         
-                        //for(Database.SaveResult sr : result) {}
-                        
                         if (result.isSuccess()) {
                             ResData resData = new ResData(); 
                             resData.IdRcdId = result.getId();
+                            resData.RcdTp = leadRcdTp;
+                            resData.RcdTpCd = input.cstTpCd;
                             objOutput.response = resData;
                         } else {
                             for(Database.Error err : result.getErrors()) {

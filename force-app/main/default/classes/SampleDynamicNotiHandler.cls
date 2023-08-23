@@ -1,7 +1,35 @@
 public with sharing class SampleDynamicNotiHandler extends NotiHandler {
-    public SampleDynamicNotiHandler() {
+    
+    public override void manuFactureNoti(Object targetObject) {
 
+        List<Account> targetAccountList = (List<Account>) targetObject;
+        List<AppTemplate> appTemplateList = new List<AppTemplate>();
+
+        List<CustomNotificationType> customNotiTyipeList = [
+            select
+                Id
+                ,DeveloperName    
+            from CustomNotificationType limit 1];
+
+        for(Account targetAccount : targetAccountList) {
+            String targetId = targetAccount.Id;
+            
+            NotiTarget recipientId = new NotiTarget('id');
+            recipientId.setToAddresses(new Set<String>{UserInfo.getUserId()});
+        
+            AppTemplate appTemplate1 = new AppTemplate();
+            appTemplate1.setTitle('Dynamic');
+            appTemplate1.setBody('ClassName__c : SampleDynamicNotiHandler');
+            appTemplate1.setTemplateId(customNotiTyipeList[0].Id);
+            appTemplate1.setToAddresses(new Set<String>{UserInfo.getUserId()});
+            appTemplate1.setTargetId(targetId);
+            appTemplateList.add(appTemplate1);
+        }
+
+
+        categorySendDataListMap.put('App', appTemplateList);
     }
+
 
     public override void manuFactureNoti(Set<String> targetIdSet) {
         System.debug('SampleDynamicNotiHandler.categoryTemplateMapMap :: '+categoryTemplateMapMap);

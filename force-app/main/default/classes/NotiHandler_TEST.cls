@@ -60,8 +60,8 @@ public with sharing class NotiHandler_TEST {
         //getTemplate_TEST
         notiHandler.getTemplate();
 
-        //getRicipientIdSet_TEST
-        notiHandler.getRicipientIdSet();
+        //getRecipientIdSet_TEST
+        notiHandler.getRecipientIdSet();
 
         //setCategorySendDataListMap_TEST 알림 전송시에 필수적인 값: notiHandler.categorySendDataListMap
         Map<String, Map<String,NotiTemplate>> categoryTemplateMapMap = notiHandler.categoryTemplateMapMap;
