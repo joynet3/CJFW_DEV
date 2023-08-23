@@ -53,6 +53,7 @@ public with sharing class NotificationManager {
                 , IsSystemEmail__c
                 , IsUseOWE__c
                 , IsSaveAsActivity__c
+                , IsTargetObjectId__c
                 ,(   select 
                         Title__c
                         , Message__c

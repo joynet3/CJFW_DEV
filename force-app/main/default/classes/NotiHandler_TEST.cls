@@ -26,6 +26,7 @@ public with sharing class NotiHandler_TEST {
                 , IsSystemEmail__c
                 , IsUseOWE__c
                 , IsSaveAsActivity__c
+                , IsTargetObjectId__c
                 ,(   select 
                         Title__c
                         , Message__c
@@ -117,6 +118,7 @@ public with sharing class NotiHandler_TEST {
                 , IsSystemEmail__c
                 , IsUseOWE__c
                 , IsSaveAsActivity__c
+                , IsTargetObjectId__c
                 ,(   select 
                         Title__c
                         , Message__c

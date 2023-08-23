@@ -82,7 +82,7 @@ public without sharing class EmailAlert implements NotiAlert{
             }
             
             Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
-
+            email.setTreatTargetObjectAsRecipient(false);
             if(String.isNotBlank(sendDatum.getTargetId())) {
                 email.setWhatId(sendDatum.getTargetId());
                 email.setSaveAsActivity(sendDatum.getIsSaveAsActivity());
@@ -98,8 +98,18 @@ public without sharing class EmailAlert implements NotiAlert{
                 email.setOrgWideEmailAddressId(orgWideEmailId);
 
             if(sendDatum.getIsSystem()) {
-                email.setTemplateId(template.Id);   
-                email.setTargetObjectId(CJFW_ModuleSetting__c.getInstance().SystemEmailWhatId__c);
+                email.setTemplateId(template.Id);  
+                if(sendDatum.getIsTargetObjectId()) {
+                    String recipientId = new List<String>(sendDatum.getToAddresses())[0];
+                    email.setTargetObjectId(recipientId);
+                    email.setTreatTargetObjectAsRecipient(true);
+                    
+                    //Id 가 User 일 경우 saveAsActivity 사용불가
+                    if(Schema.User.SObjectType == Id.valueOf('0050w000005XKvNAAW').getSObjectType())
+                    email.setSaveAsActivity(false);
+                }else {
+                    email.setTargetObjectId(CJFW_ModuleSetting__c.getInstance().SystemEmailWhatId__c);
+                } 
                 email.setSaveAsActivity(true);
             }else if(sendDatum.getIsCustom()) {
                 email.setSubject(sendDatum.getTitle());
@@ -109,7 +119,18 @@ public without sharing class EmailAlert implements NotiAlert{
                 email.setHTMLBody(sendDatum.setMessage(template.htmlValue));
             }
 
-            email.setToAddresses(new List<String>(sendDatum.getToAddresses()));
+            if(sendDatum.getIsTargetObjectId()) {
+                String recipientId = new List<String>(sendDatum.getToAddresses())[0];
+                email.setTargetObjectId(recipientId);
+                email.setTreatTargetObjectAsRecipient(true);
+                
+                //Id 가 User 일 경우 saveAsActivity 사용불가
+                if(Schema.User.SObjectType == Id.valueOf('0050w000005XKvNAAW').getSObjectType())
+                email.setSaveAsActivity(false);
+            }else {
+                email.setToAddresses(new List<String>(sendDatum.getToAddresses()));
+            }
+
             recipientNum += sendDatum.getToAddresses().size();
             recipientSizeStr += String.valueOf(recipientNum);
             if(sendDatum.getCcAddresses() != null && !sendDatum.getCcAddresses().isEmpty()) {
@@ -123,7 +144,7 @@ public without sharing class EmailAlert implements NotiAlert{
                 recipientSizeStr += ', bccAddresses size : '+String.valueOf(recipientNum);
             }
             email.setBccSender(false);
-            email.setTreatTargetObjectAsRecipient(false);
+            
             //System.debug('html :: '+email.getHtmlBody());
             if(recipientLimitNum >= recipientNum) {
                 emailList.add(email);

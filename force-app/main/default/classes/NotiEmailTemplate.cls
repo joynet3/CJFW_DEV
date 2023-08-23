@@ -16,6 +16,16 @@ public with sharing class NotiEmailTemplate extends NotiTemplate{
     @TestVisible protected Boolean isSystem = false;
     @TestVisible protected Boolean isUseOWE = false;
     @TestVisible protected Boolean isSaveAsActivity = false;
+    @TestVisible protected Boolean isTargetObjectId = false; //수신자 setTargetObjectId로 설정여부 Single Email limit 제외하기 위해서
+    
+    public Boolean getIsTargetObjectId() {
+        return this.isTargetObjectId;
+    }
+
+    public void setIsTargetObjectId(Boolean isTargetObjectId) {
+        this.isTargetObjectId = isTargetObjectId;
+    }
+    
 
     public Set<String> getCcAddresses() {
         return this.ccAddresses;
@@ -96,6 +106,7 @@ public with sharing class NotiEmailTemplate extends NotiTemplate{
         cloneTemplate.setIsSystem(this.getIsSystem());
         cloneTemplate.setIsUseOWE(this.getIsUseOWE());
         cloneTemplate.setIsSaveAsActivity(this.getIsSaveAsActivity());
+        cloneTemplate.setIsTargetObjectId(this.getIsTargetObjectId());
         
         return cloneTemplate;
     }

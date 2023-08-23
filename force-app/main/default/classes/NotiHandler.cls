@@ -306,8 +306,9 @@ public virtual without sharing class NotiHandler {
     *@param  ccAddresses 참조
     *@param  bccAddresses 숨은참조
     *@param  attachmentIds 첨부파일 Id Set
+    *@param  isTargetObjectId 수신자 setTargetObjectId로 설정여부
     */
-    @testVisible protected void setEmailPersonalize(Map<String,NotiEmailTemplate> langTemplateMap, Map<String, String> fieldsMap, String targetId, String lang, Set<String> toAddresses, Set<String> ccAddresses, Set<String> bccAddresses, Set<String> attachmentIds) {
+    @testVisible protected void setEmailPersonalize(Map<String,NotiEmailTemplate> langTemplateMap, Map<String, String> fieldsMap, String targetId, String lang, Set<String> toAddresses, Set<String> ccAddresses, Set<String> bccAddresses, Set<String> attachmentIds, Boolean isTargetObjectId) {
         NotiEmailTemplate template = langTemplateMap.get(lang);
         NotiEmailTemplate cloneTemplateData = template == null ? (NotiEmailTemplate) langTemplateMap.get('ko').cloneTemplate() : (NotiEmailTemplate) langTemplateMap.get(lang).cloneTemplate();
         cloneTemplateData.setFieldsMap(fieldsMap);
@@ -315,7 +316,8 @@ public virtual without sharing class NotiHandler {
         cloneTemplateData.setCcAddresses(ccAddresses);
         cloneTemplateData.setBccAddresses(bccAddresses);
         cloneTemplateData.setTargetId(targetId);
-        cloneTEmplateData.setAttachmentIds(attachmentIds);
+        cloneTemplateData.setAttachmentIds(attachmentIds);
+        cloneTemplateData.setIsTargetObjectId(isTargetObjectId);
         setCategorySendDataListMap(categorySendDataListMap ,cloneTemplateData.getCategory(), cloneTemplateData);
     }
 
@@ -374,70 +376,63 @@ public virtual without sharing class NotiHandler {
                 Map<String,NotiEmailTemplate> langTemplateMap = (Map<String,NotiEmailTemplate>)categoryTemplateMapMap.get('Email');
                 if(langTemplateMap.isEmpty()) continue;
 
-                
                 for(NotiTarget recipient : recipientList) {
-                    if('id'.equals(recipient.getType())) {
-                        if(recipient.getToAddresses().size() > 1) {
-                            setEmailPersonalize(
-                                langTemplateMap
-                                , fieldsMap
-                                , targetId
-                                , recipient.getLang()
-                                , recipient.getToAddresses()
-                                , recipient.getCcAddresses()
-                                , recipient.getBccAddresses()
-                                , recipient.getAttachmentIds()
-                            );
-                            
-                        }else if(recipient.getToAddresses().size() > 0) {
-                            //size가 1이라 List 로 변환해서 첫번째 데이터 꺼내오기
-                            List<String> tmpToAddressList = new List<String>(recipient.getToAddresses());
+                    if(recipient.getToAddresses().size() > 1) {
+                        setEmailPersonalize(
+                            langTemplateMap
+                            , fieldsMap
+                            , targetId
+                            , recipient.getLang()
+                            , recipient.getToAddresses()
+                            , recipient.getCcAddresses()
+                            , recipient.getBccAddresses()
+                            , recipient.getAttachmentIds()
+                            , false
+                        );
                         
-                            User user = allUserMap.get(tmpToAddressList.get(0));
-                            if(user == null) continue;
-                            setEmailPersonalize(
-                                langTemplateMap
-                                , fieldsMap
-                                , targetId
-                                , user.LanguageLocaleKey
-                                , recipient.getToAddresses()
-                                , recipient.getCcAddresses()
-                                , recipient.getBccAddresses()
-                                , recipient.getAttachmentIds()
-                            );
+                    }else {
+                        //수신자 1건 일때 
+                        if('id'.equals(recipient.getType())) {
+                            if(recipient.getToAddresses().size() == 1) {
+                                //size가 1이라 List 로 변환해서 첫번째 데이터 꺼내오기
+                                List<String> tmpToAddressList = new List<String>(recipient.getToAddresses());
                             
-                        }
-
-                    }else if('email'.equals(recipient.getType())) {
-                        if(recipient.getToAddresses().size() > 1) {
-                            setEmailPersonalize(
-                                langTemplateMap
-                                , fieldsMap
-                                , targetId
-                                , recipient.getLang()
-                                , recipient.getToAddresses()
-                                , recipient.getCcAddresses()
-                                , recipient.getBccAddresses()
-                                , recipient.getAttachmentIds()
-                            );
+                                User user = allUserMap.get(tmpToAddressList.get(0));
+                                if(user == null) continue;
+                                setEmailPersonalize(
+                                    langTemplateMap
+                                    , fieldsMap
+                                    , targetId
+                                    , user.LanguageLocaleKey
+                                    , recipient.getToAddresses()
+                                    , recipient.getCcAddresses()
+                                    , recipient.getBccAddresses()
+                                    , recipient.getAttachmentIds()
+                                    , this.noti.IsTargetObjectId__c
+                                );
+                                
+                            }
+    
+                        }else if('email'.equals(recipient.getType())) {
+                            if(recipient.getToAddresses().size() == 1) {
+                                //size가 1이라 List 로 변환해서 첫번째 데이터 꺼내오기
+                                List<String> tmpToAddressList = new List<String>(recipient.getToAddresses());
                             
-                        }else if(recipient.getToAddresses().size() > 0) {
-                            //size가 1이라 List 로 변환해서 첫번째 데이터 꺼내오기
-                            List<String> tmpToAddressList = new List<String>(recipient.getToAddresses());
-                        
-                            User user = allUserMap.get(tmpToAddressList.get(0));
-                            //비회원일 경우 
-                            if(user == null) user = new User(LanguageLocaleKey=recipient.getLang());
-                            setEmailPersonalize(
-                                langTemplateMap
-                                , fieldsMap
-                                , targetId
-                                , user.LanguageLocaleKey
-                                , recipient.getToAddresses()
-                                , recipient.getCcAddresses()
-                                , recipient.getBccAddresses()
-                                , recipient.getAttachmentIds()
-                            );
+                                User user = allUserMap.get(tmpToAddressList.get(0));
+                                //비회원일 경우 
+                                if(user == null) user = new User(LanguageLocaleKey=recipient.getLang());
+                                setEmailPersonalize(
+                                    langTemplateMap
+                                    , fieldsMap
+                                    , targetId
+                                    , user.LanguageLocaleKey
+                                    , recipient.getToAddresses()
+                                    , recipient.getCcAddresses()
+                                    , recipient.getBccAddresses()
+                                    , recipient.getAttachmentIds()
+                                    , false
+                                );
+                            }
                         }
                     }
                 }
@@ -455,6 +450,7 @@ public virtual without sharing class NotiHandler {
                         , null
                         , null
                         , null
+                        , false
                     );
                 }
             }

@@ -77,8 +77,7 @@ public with sharing class CJFW_TriggerSetting_Test {
     static void inActiveUser() {
         Test.startTest();
 
-
-
+        
         CJFW_ModuleSetting__c orgSetting = CJFW_ModuleSetting__c.getOrgDefaults();
         orgSetting.IsTriggerActive__c = true;
         insert orgSetting;
