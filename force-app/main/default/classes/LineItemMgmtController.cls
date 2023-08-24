@@ -52,7 +52,7 @@ public without sharing class LineItemMgmtController {
     **/
     @AuraEnabled
     public static Map<String, Object> getLineItem(id recordId, String sObjectName) {
-        System.debug('# LineItemMgmtController # getLineItem ');
+
         List<QuoteLineItem> listQuoteLineItem = new List<QuoteLineItem>();
         Quote objQuote = new Quote();
 
@@ -175,23 +175,17 @@ public without sharing class LineItemMgmtController {
      *         - selectedCenter : 선택된 물류센터
      *         - selectedCategoryL : 선택된 상품분류(대)
      *         - sortStatus  : 조회 정렬 기준
-     *         - objUser : 검색을 한 유저정보
      * @return Map<String, Object> mapInitData
      *         - listAllEntry : 조회된 상품 리스트
-     * 23.08.03 : mapParam 안에 objUser 정보 추가
     **/
     @AuraEnabled
     public static Map<String, Object> doSearch(Map<String, Object> mapParam) {
-        System.debug('# LineItemMgmtController # doSearch ');
         datetime qryStart = datetime.now();
         Id Pricebook2Id  = (Id) String.valueOf(mapParam.get('Pricebook2Id'));
         String selectedMonth  = String.valueOf(mapParam.get('selectedMonth'));
         String selectedCenter  = String.valueOf(mapParam.get('selectedCenter'));
         String selectedCategoryL  = String.valueOf(mapParam.get('selectedCategoryL'));
         String sortStatus  = String.valueOf(mapParam.get('sortStatus'));
-        String objUser  = String.valueOf(mapParam.get('objUser'));
-
-        System.debug(' objUser ->'+ objUser );
         
         datetime qryEnd = datetime.now(); 
         system.debug(logginglevel.WARN, (qryEnd.getTime() - qryStart.getTime()) /1000);
@@ -226,7 +220,7 @@ public without sharing class LineItemMgmtController {
         }
         query += ' LIMIT    50000 ' ; 
 
-        System.debug('# doSearch 최종검색쿼리 -> ' + query);
+        System.debug('query : ' + query);
 
         List<PriceBookEntry> listPriceBookEntry = new List<PriceBookEntry>();
         List<PriceBookEntry> listCurrentEntry = new List<PriceBookEntry>();
@@ -248,18 +242,21 @@ public without sharing class LineItemMgmtController {
      *         - selectedCenter : 선택된 물류센터
      * @return Map<String, Object> mapInitData
      *         - listAIEntryCode : 조회된 상품 리스트 (AI 인터페이스 결과)
+     * 사업부코드, 물류센터코드 파라미터값 추가 2023-08-23 백영주대리
     **/
     @AuraEnabled
     public static Map<String, Object> doSearchAI (Map<String, Object> mapParam) {
-        System.debug('# LineItemMgmtController # doSearchAI ');
+
         String searchKey  = String.valueOf(mapParam.get('searchKey'));
         String selectedCenter  = String.valueOf(mapParam.get('selectedCenter'));
+        String biz_dept_cd  = String.valueOf(mapParam.get('biz_dept_cd'));
 
         Map<String,Object> objInput = new Map<String,Object>();
         List<String> strlist = new List<String>();
         strlist.add(searchKey);
         objInput.put('total_count',1); 
-        objInput.put('option','cate'); 
+        objInput.put('lgs_ctr_cd',selectedCenter); 
+        objInput.put('biz_dept_cd',biz_dept_cd); 
         objInput.put('input_data', strlist); 
         
         List<String> listAIEntryCode = new List<String>();
@@ -343,14 +340,14 @@ public without sharing class LineItemMgmtController {
     **/
     @AuraEnabled
     public static void doSendLearningData (Map<String, Object> mapParam) {
-        System.debug('# LineItemMgmtController # doSendLearningData ');
+
         String search_term  = String.valueOf(mapParam.get('search_term'));
         String emp_code  = String.valueOf(mapParam.get('emp_code'));
         String product_code  = String.valueOf(mapParam.get('product_code'));
         String product_name  = String.valueOf(mapParam.get('product_name'));
         String cateL_name  = String.valueOf(mapParam.get('cateL_name'));
         String cateM_name  = String.valueOf(mapParam.get('cateM_name'));
-        String lgs_ctr_cd = String.valueOf(mapParam.get('lgs_ctr_cd'));//2023-08-09 dkbmc백영주대리[인터페이스 파라미터 추가 건]
+		String lgs_ctr_cd = String.valueOf(mapParam.get('lgs_ctr_cd'));//2023-08-09 dkbmc백영주대리[인터페이스 파라미터 추가 건]
         String biz_dept_cd = String.valueOf(mapParam.get('biz_dept_cd'));//2023-08-10 dkbmc백영주대리[인터페이스 파라미터 추가 건]
 
         Map<String,Object> objInput = new Map<String,Object>();
@@ -379,14 +376,13 @@ public without sharing class LineItemMgmtController {
     
     /**
      * 대상 상품 코드 리스트로 상품 데이터 리스트 조회
-     * 중단제어 적용할 경우 : i-fresh 상에서 해당 고객에 비활성화 된 상품은 선택할 수 없도록 처리 (customerID = Account.CustomerID__c)
      *  
      * @param  listTargetEntryCode : 대상 상품코드 리스트
      * @param  selectedCenter : 선택된 물류센터
      * @param  selectedMonth : 선택된 월
      * @param  sortStatus : 조회 정렬 기준
      * @param  selectedControl : 중단 제어 활성화 여부
-     * @param  customerID : 중단 제어 활성화 기준 고객 ID (Account.CustomerID__c)
+     * @param  customerID : 중단 제어 활성화 기준 고객 ID
      * @return Map<String, Object> mapInitData
      *         - ControllWrapper objControllWrapper
      *           - listControlEntry : 중단 제어 결과 사용가능 상품코드 리스트 
@@ -396,20 +392,12 @@ public without sharing class LineItemMgmtController {
     **/    
     @AuraEnabled
     public static Map<String, Object> getCurrentEntry(List<String> listTargetEntryCode, String selectedCenter, String selectedMonth, String sortStatus, String selectedControl, String customerID) {
-        System.debug('# LineItemMgmtController # getCurrentEntry ');
-        System.debug('listTargetEntryCode -> ' + listTargetEntryCode);
-        System.debug('listTargetEntryCode size -> ' + listTargetEntryCode.size() );
-        System.debug('selectedCenter -> ' + selectedCenter);
-        System.debug('selectedMonth -> ' + selectedMonth);
-        System.debug('sortStatus -> ' + sortStatus);
-        System.debug('selectedControl -> ' + selectedControl);
-        System.debug('customerID -> ' + customerID);
-
+        
         String ERR_CD = '0000';
         String ERR_MSG_CTT = '';
+        System.debug('sortStatus : ' + sortStatus);
         // PriceBookEntryList 조회
         String query = '';
-        String queryCnt = ''; 
         query += 'SELECT    Id, Name, ProductCode, Product2.gd_no__c, UnitPrice, toLabel(Product2.bas_unit_cd__c), toLabel(Product2.migr_orinat_cd__c), toLabel(Product2.strg_cond_cd__c), Product2.taxt_cl_cd__c, Product2.lgs_ctr_id__c, ';
         query += '          Product2.fm_TaxType__c, Product2.fm_LAR_CLS_NM__c,Product2.fm_MID_CLS_NM__c, Product2.fm_XSM_CLS_CD__c';
         query += '          , ' + selectedMonth + '__c, Old' + selectedMonth + '__c ';
@@ -435,43 +423,18 @@ public without sharing class LineItemMgmtController {
             query += ' ORDER BY ' + selectedMonth + '__c ' + 'ASC ';
         }
 
-        System.debug('# getCurrentEntry 최종검색쿼리 -> ' + query);
+        System.debug('query : ' + query);
 
         List<PriceBookEntry> listCurrentEntry = new List<PriceBookEntry>();
         listCurrentEntry = Database.query(query);
 
-        System.debug('# getCurrentEntry 최종검색쿼리 SIZE -> ' + listCurrentEntry.size() );
-
-        /* 
-        로직추가 -> [Start] 검색을 하는 사용자의 사업부 기준으로 카운팅 가능하도록 
-        */
-/* 
-        queryCnt += ' SELECT id , SearchCNTschoolSolution__c FROM Product2 ';
-        queryCnt += ' WHERE ProductCode IN : listTargetEntryCode ';
-        System.debug(' 검색 카운트용 쿼리 -> ' + queryCnt );
-
-        List<Product2> CntProdList = new List<Product2>();
-        CntProdList = Database.query(queryCnt);
         
-        for(Product2 addCnt : CntProdList){
-            addCnt.SearchCNTschoolSolution__c = addCnt.SearchCNTschoolSolution__c + 1;
-            System.debug('# count 확인 ' + addCnt.SearchCNTschoolSolution__c + 1);
-        }
-        update CntProdList;
-         */
-        /* 
-        로직추가 -> [END] 
-        */
-
-
-
         List<String> listCurrentEntryCode = new List<String>();
         for ( PriceBookEntry objCurrentEntry : listCurrentEntry){
             listCurrentEntryCode.add( objCurrentEntry.Product2.gd_no__c);
         }
         List<String> listControlEntry = new List<String>();
 
-        // 중단제어 적용시 
         if ( selectedControl == 'Y' && !listCurrentEntryCode.isEmpty()){
             
             Input objInput = new Input();
@@ -531,7 +494,6 @@ public without sharing class LineItemMgmtController {
     **/    
     @AuraEnabled
     public static void doChunkQuote(String chunkType, List<QuoteLineItem> listChunk) {
-        System.debug('# LineItemMgmtController # doChunkQuote ');
         try {
             if ( chunkType == 'Delete'){
                 if( !listChunk.isEmpty()){
@@ -560,7 +522,6 @@ public without sharing class LineItemMgmtController {
     **/    
     @AuraEnabled
     public static void doChunkOppty(String chunkType, List<OpportunityLineItem> listChunk) {
-        System.debug('# LineItemMgmtController # doChunkOppty ');
         try {
             if ( chunkType == 'Delete'){
                 if( !listChunk.isEmpty()){
@@ -587,7 +548,6 @@ public without sharing class LineItemMgmtController {
      * @param  selectedMonth : 선택된 월
     **/  
     private static String doGetTargetDate(String selectedMonth) {
-        System.debug('# LineItemMgmtController # doGetTargetDate ');
         selectedMonth = selectedMonth.toLowerCase();
         String strtargetDate = '';
         Datetime dateToday = Datetime.now();

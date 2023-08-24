@@ -112,13 +112,13 @@ global with sharing class IFN_LIF1002_OD002_MD002 {
                     OrderServiceRequest__c orderServiceReq = new OrderServiceRequest__c(
                             Title__c = input.ttl
                         , ReqType__c = input.reqTp
-                        // , ReqTypeCode__c = input.reqTpCd // 별도필드 존재하지 않음
+                        , ReqTypeCode__c = input.reqTpCd // 별도필드 존재하지 않음
                         , RequestMessage__c = input.reqMsg
                         , SampleitemText1__c = input.spItmTxt1
                         , SampleitemText2__c = input.spItmTxt2
                         , SampleitemText3__c = input.spItmTxt3
                         , ExtraServiceCategory__c = input.ExtSrvcCtgr
-                        // , ExtraServiceCategoryCode__c = input.ExtSvcCd // 별도필드 존재하지 않음
+                        , ExtraServiceCategoryCode__c = input.ExtSvcCd // 별도필드 존재하지 않음
                         , CustomerID__c = input.mdmId
                         , RequestDate__c = requestDate
                         , Finder__c = input.rcvNm

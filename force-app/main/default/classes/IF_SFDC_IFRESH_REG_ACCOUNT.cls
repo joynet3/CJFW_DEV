@@ -60,12 +60,9 @@ global without sharing class IF_SFDC_IFRESH_REG_ACCOUNT {
                         mapData.put('sboil_us_brd_nm', obj.sboil_us_brd_nm__c);       //대두유 사용 브랜드 명
                         mapData.put('ecof_fdr_us_rt', obj.ecof_fdr_us_rt__c <> null ? obj.ecof_fdr_us_rt__c : 0);       //친환경 식자재 사용 률
                         mapData.put('odd_txt', obj.odd_txt__c <> null ? obj.odd_txt__c : ' ');       //특이 내용
-                        mapData.put('cust_zip', obj.PostalCode__c);       //고객 우편번호
-                        mapData.put('cust_addr', obj.Address__c);       //고객 주소
-                        mapData.put('cust_dtl_addr', obj.AddressDetails__c);       //고객 상세 주소
-                        // mapData.put('cust_zip', obj.PostalCode__c <> null ? obj.PostalCode__c : ' ');       //고객 우편번호
-                        // mapData.put('cust_addr', obj.Address__c <> null ? obj.Address__c : ' ');       //고객 주소
-                        // mapData.put('cust_dtl_addr', obj.AddressDetails__c <> null ? obj.AddressDetails__c : ' ');       //고객 상세 주소
+                        mapData.put('cust_zip', obj.PostalCode__c <> null ? obj.PostalCode__c : ' ');       //고객 우편번호
+                        mapData.put('cust_addr', obj.Address__c <> null ? obj.Address__c : ' ');       //고객 주소
+                        mapData.put('cust_dtl_addr', obj.AddressDetails__c <> null ? obj.AddressDetails__c : ' ');       //고객 상세 주소
                         mapData.put('pmeal_cst', obj.pmeal_cst__c <> null ? obj.pmeal_cst__c : 0);       //급식 비
                         mapData.put('cust_tel_no', obj.Phone <> null ? obj.Phone : ' ');       //고객 전화 번호
                         if ( CUDCode == 'C'){

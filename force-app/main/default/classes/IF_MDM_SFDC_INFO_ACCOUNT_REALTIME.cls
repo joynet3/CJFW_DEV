@@ -291,15 +291,15 @@ global with sharing class IF_MDM_SFDC_INFO_ACCOUNT_REALTIME {
                         }
                     }
 
-                    // Map<String, Account> mapParentAccount = new Map<String, Account>();
+                    Map<String, Account> mapParentAccount = new Map<String, Account>();
 
-                    // for(Account objAccount : [
-                    //     SELECT  Id, CustomerID__c, Name
-                    //     FROM    Account
-                    //     WHERE   CustomerID__c In:setParentCustomerId
-                    // ]) {
-                    //     mapParentAccount.put(objAccount.CustomerID__c, objAccount);
-                    // }
+                    for(Account objAccount : [
+                        SELECT  Id, CustomerID__c, Name
+                        FROM    Account
+                        WHERE   CustomerID__c In:setParentCustomerId
+                    ]) {
+                        mapParentAccount.put(objAccount.CustomerID__c, objAccount);
+                    }
 
                     Map<String, Account> mapAccount = new Map<String, Account>();
 
@@ -333,6 +333,8 @@ global with sharing class IF_MDM_SFDC_INFO_ACCOUNT_REALTIME {
                         accountObj.BusinessCategory__c = item.PV_J_1KFTIND;
                         accountObj.Phone = item.PV_TELF1;
                         accountObj.Fax = item.PV_TELFX;
+                        // 2022-11-10 Account 연결 확인필요(지급처)
+                        //accountObj.PaymentAccountName__c = item.PV_PAYCUST;
 
                         if(item.PV_KUNNR == item.PV_PAYCUST) {
                             accountObj.PaymentAccountName__c = item.PV_NAME1;
@@ -343,6 +345,8 @@ global with sharing class IF_MDM_SFDC_INFO_ACCOUNT_REALTIME {
                         }
 
                         accountObj.PaymentAccountCode__c = item.PV_PAYCUST;
+                        // 2022-11-10 Account 연결 확인필요(청구처)
+                        //accountObj.ShippingAccountName__c = item.PV_CHARGECUST;
 
                         if(item.PV_KUNNR == item.PV_CHARGECUST) {
                             accountObj.ShippingAccountName__c = item.PV_NAME1;
@@ -375,9 +379,9 @@ global with sharing class IF_MDM_SFDC_INFO_ACCOUNT_REALTIME {
 
                         accountObj.HeadOfficeCode__c = item.PV_HKUNNR;
 
-                        // if((item.PV_HKUNNR <> null && item.PV_HKUNNR <> '') && (item.PV_KUNNR != item.PV_HKUNNR) && (mapParentAccount <> null && mapParentAccount.get(item.PV_HKUNNR) <> null)) {
-                        //     accountObj.ParentId = mapParentAccount.get(item.PV_HKUNNR).Id;
-                        // }
+                        if((item.PV_HKUNNR <> null && item.PV_HKUNNR <> '') && (item.PV_KUNNR != item.PV_HKUNNR) && (mapParentAccount <> null && mapParentAccount.get(item.PV_HKUNNR) <> null)) {
+                            accountObj.ParentId = mapParentAccount.get(item.PV_HKUNNR).Id;
+                        }
                         
                         accountObj.IsAffiliatedcompanyYN__c = item.PV_SUBSIDIARYYN == 'Y' ? true : false;
                         accountObj.AffiliatedCompany__c = item.PV_VBUND;
@@ -517,10 +521,8 @@ global with sharing class IF_MDM_SFDC_INFO_ACCOUNT_REALTIME {
                         if(item.PV_CRMNO <> null && item.PV_CRMNO <> '') {
                             isCRMRegExAccount = true;
                             accountObj.Id = item.PV_CRMNO;
-                            // update 대상 
                             updateAccountList.add(accountObj);
                         }else {
-                            // insert 대상 
                             upsertAccountList.add(accountObj);
                         }
                     }
@@ -529,51 +531,7 @@ global with sharing class IF_MDM_SFDC_INFO_ACCOUNT_REALTIME {
 
                     try {
                         if(upsertAccountList <> null && upsertAccountList.size() > 0) {
-
-                            List<Account> listParent = new List<Account>();
-                            List<Account> listChild  = new List<Account>();
-
-                            // 상위/하위 고객 분리
-                            for ( Account objAccount : upsertAccountList){
-                                if ( objAccount.HeadOfficeCode__c <> null && objAccount.HeadOfficeCode__c <> ''){
-                                    listParent.add(objAccount);
-                                }
-                                else {
-                                    listChild.add(objAccount);
-                                }
-                            }
-
-                            // 상위고객 Upsert 
-                            if ( !listParent.isEmpty()){
-                                upsert listParent CustomerID__c;
-                            }
-                            
-                            Map<String, Account> mapParentAccount = new Map<String, Account>();
-
-                            for(Account objAccount : [
-                                SELECT  Id, CustomerID__c, Name
-                                FROM    Account
-                                WHERE   CustomerID__c In:setParentCustomerId
-                            ]) {
-                                mapParentAccount.put(objAccount.CustomerID__c, objAccount);
-                            }
-                            
-                            if ( !listChild.isEmpty()){
-                                for ( Account objChild : listChild){
-                                    if(mapParentAccount <> null && mapParentAccount.get(objChild.HeadOfficeCode__c) <> null){
-                                        objChild.ParentId = mapParentAccount.get(objChild.HeadOfficeCode__c).Id;
-                                    }
-                                }
-                                upsert listChild CustomerID__c;
-                            }
-
-                            // insert 후 결과 저장                                          
-                            upsertAccountList = new List<Account>();
-                            if ( !listParent.isEmpty()) upsertAccountList.addAll(listParent);
-                            if ( !listChild.isEmpty()) upsertAccountList.addAll(listChild);
-
-
-                            // upsert upsertAccountList CustomerID__c;
+                            upsert upsertAccountList CustomerID__c;
                         }
                         
                         if(updateAccountList <> null && updateAccountList.size() > 0) {

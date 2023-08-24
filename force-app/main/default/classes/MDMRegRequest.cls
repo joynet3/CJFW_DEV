@@ -2,8 +2,8 @@
  * @description       : 
  * @author            : ChangeMeIn@UserSettingsUnder.SFDoc
  * @group             : 
- * @last modified on  : 08-18-2023
- * @last modified by  : joohyeon.jang@dkbmc.com
+ * @last modified on  : 03-07-2023
+ * @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
 **/
 public without sharing class MDMRegRequest {
     /**
@@ -22,7 +22,7 @@ public without sharing class MDMRegRequest {
         String MDMRecordTypeId = '';
         try {
             String strObjectType = String.valueOf(recordId.getSobjectType());
-            system.debug('1)정체가 뭘까 strObjectType : ' + strObjectType);
+
             objWrapper.strObjectType = strObjectType;
 
             User objUser = [
@@ -45,9 +45,6 @@ public without sharing class MDMRegRequest {
                 MDMRecordTypeId = Schema.SObjectType.MDMRegRequestCustomer__c.getRecordTypeInfosByDeveloperName().get(mdmCustomerType).getRecordTypeId();
 
                 objWrapper.listCustomerOrderType = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_ODCLOSEGB__c', true);
-                system.debug('objWrapper.listCustomerOrderType ' + objWrapper.listCustomerOrderType);
-                system.debug('objWrapper.listCustomerOrderType ' + Json.serialize(objWrapper.listCustomerOrderType));
-
             }
             // MDM 고객등록 요청에서 편집버튼 클릭시 
             else {

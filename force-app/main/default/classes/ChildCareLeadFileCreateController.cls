@@ -44,7 +44,7 @@ public without sharing class ChildCareLeadFileCreateController {
         get {
             //listSelectedField  = 'Id, Name, Company,  KindergartenCode__c, AddressDetails__c, Phone, FAx, Website,  AuthorizedCapacity__c, AuthorizationDate__c ';
             //if(listSelectedField == null) {
-                String strlistSelectedField = 'Company,KindergartenCode__c,AddressDetails__c,Phone,Fax,Website,AuthorizedCapacity__c,AuthorizationDate__c';
+                String strlistSelectedField = 'Id,Region__c,State,City,KindergartenType__c,Company,AddressDetails__c,Phone,AuthorizedCapacity__c,NumberofChildren__c,AuthorizationDate__c';
                 system.debug('strlistSelectedField :: ' + strlistSelectedField );
                 listSelectedField = strlistSelectedField.split(',');
                 system.debug('listSelectedField :: ' + listSelectedField );
@@ -78,13 +78,20 @@ public without sharing class ChildCareLeadFileCreateController {
 
             //recordId = ApexPages.currentPage().getParameters().get('Id');
 
-            listTempLead= [SELECT  Company, KindergartenCode__c, AddressDetails__c, Phone, Fax, Website, AuthorizedCapacity__c, AuthorizationDate__c
+            /*listTempLead= [SELECT  Company, KindergartenCode__c, AddressDetails__c, Phone, Fax, Website, AuthorizedCapacity__c, AuthorizationDate__c
                                         FROM     Lead
                                         LIMIT    10
-                                    ];
+                                    ];*/
+            String recordtypeId = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName().get('KindergartenLead').getRecordTypeId();
+            String region =  ApexPages.currentPage().getParameters().get('region');
 
-            system.debug('listTempLead ::::::' + listTempLead );
-            
+            String strQuery = ' SELECT  ';
+            strQuery +=  ' Id,Region__c,State,City,KindergartenType__c,Company,AddressDetails__c,Phone,AuthorizedCapacity__c,NumberofChildren__c,AuthorizationDate__c ';
+            strQuery += ' FROM LEAD ' ;
+            strQuery += ' WHERE recordTypeId =: recordtypeId AND AuthorizationDate__c >= TODAY AND NumberofChildren__c = 0  AND Region__c =: region' ;
+            strQuery += ' ORDER BY AuthorizationDate__c ';
+            system.debug('listTempLead ::::::' + strQuery );
+            listTempLead = Database.query(strQuery);
             integer count = 0;
             integer listcount = 0;
             integer totallistsize = listTempLead.size();

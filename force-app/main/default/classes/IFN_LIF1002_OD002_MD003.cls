@@ -113,9 +113,9 @@ global with sharing class IFN_LIF1002_OD002_MD003 {
                     OrderServiceRequest__c osrObj = Database.query(qry);
                     ResData resData = new ResData(); 
 
-                    // resData.stts = plStatus.get(osrObj.Status__c);
-                    resData.stts = osrObj.Status__c;
-                    resData.sttsCd = osrObj.Status__c;
+                    resData.stts = plStatus.get(osrObj.Status__c); // picklist label
+                    //resData.stts = plStatus.Status__c;    
+                    resData.sttsCd = osrObj.Status__c;  // picklist api name
                     resData.resDt = IFN_Util.converDateToStrFormat(osrObj.ResponseDate__c);
                     resData.resTtl = osrObj.ResponseTitle__c;
                     resData.mngNm = osrObj.Manager__r.Name;

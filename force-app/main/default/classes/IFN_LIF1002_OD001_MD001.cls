@@ -108,7 +108,7 @@ global with sharing class IFN_LIF1002_OD001_MD001 {
                             , Company = input.cpnNm
                             , BusinessConditions__c = input.sect
                             , Address__c = input.addr
-                            , AgreeYN_c__c = (input.agrYn == 'Y') ? true : false
+                            , AgreeYN__c = (input.agrYn == 'Y') ? true : false
                             , RecordTypeId = leadRcdTp
                             , newLeadCheck__c = (isExistAccount > 0) ? true : false
                         );
@@ -118,8 +118,8 @@ global with sharing class IFN_LIF1002_OD001_MD001 {
                         if (result.isSuccess()) {
                             ResData resData = new ResData(); 
                             resData.IdRcdId = result.getId();
-                            resData.RcdTp = leadRcdTp;
-                            resData.RcdTpCd = input.cstTpCd;
+                            resData.RcdTp = input.cstTpCd;  
+                            resData.RcdTpCd = leadRcdTp;    //sfid
                             objOutput.response = resData;
                         } else {
                             for(Database.Error err : result.getErrors()) {

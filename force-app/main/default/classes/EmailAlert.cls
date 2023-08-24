@@ -105,7 +105,7 @@ public without sharing class EmailAlert implements NotiAlert{
                     email.setTreatTargetObjectAsRecipient(true);
                     
                     //Id 가 User 일 경우 saveAsActivity 사용불가
-                    if(Schema.User.SObjectType == Id.valueOf('0050w000005XKvNAAW').getSObjectType())
+                    if(Schema.User.SObjectType == Id.valueOf(recipientId).getSObjectType())
                     email.setSaveAsActivity(false);
                 }else {
                     email.setTargetObjectId(CJFW_ModuleSetting__c.getInstance().SystemEmailWhatId__c);
@@ -125,7 +125,7 @@ public without sharing class EmailAlert implements NotiAlert{
                 email.setTreatTargetObjectAsRecipient(true);
                 
                 //Id 가 User 일 경우 saveAsActivity 사용불가
-                if(Schema.User.SObjectType == Id.valueOf('0050w000005XKvNAAW').getSObjectType())
+                if(Schema.User.SObjectType == Id.valueOf(recipientId).getSObjectType())
                 email.setSaveAsActivity(false);
             }else {
                 email.setToAddresses(new List<String>(sendDatum.getToAddresses()));

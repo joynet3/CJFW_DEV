@@ -13,7 +13,6 @@
 
 public without sharing class Account_tr extends TriggerHandler {
     public Account_tr() {
-        system.debug('Account Trigger Handler START');
         listNew = (List<Account>) Trigger.new;
         listOld = (List<Account>) Trigger.old;
         mapNew = (Map<Id, Account>) Trigger.newMap;
@@ -21,7 +20,6 @@ public without sharing class Account_tr extends TriggerHandler {
         recordIdEx = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('ExistingCustomer').getRecordTypeId();
         strSchoolDepartmentId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('SchoolDepartment').getRecordTypeId();
         strFSDepartmentId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('FSDiscoveryDepartment').getRecordTypeId();
-
     }
 
     /*** TriggerHandler ***/
@@ -58,7 +56,7 @@ public without sharing class Account_tr extends TriggerHandler {
 
     public override void afterUpdate() {
         doFieldTracking();
-        doUpsertSendIFresh();
+        // doUpsertSendIFresh();//AddrBulkUpdate_ba 테스트를 위해 임시 주석처리
         doUpdateParentId();
     }
 
