@@ -37,8 +37,8 @@ public without sharing class CalcNoPriceFuelActivity_ba implements Database.Batc
         mapRequestBody.put('system_type_cd','LIF1007');
         mapRequestBody.put('opcode','EC001');
         mapRequestBody.put('COM_CD','FW00');
-        mapRequestBody.put('BASE_MON', '202301');
-        // mapRequestBody.put('BASE_MON', String.valueof(dateToday.year()) + String.valueof(dateToday.month()).leftPad(2, '0'));
+        // mapRequestBody.put('BASE_MON', '202301');
+        mapRequestBody.put('BASE_MON', String.valueof(dateToday.year()) + String.valueof(dateToday.month()).leftPad(2, '0'));
         mapRequestBody.put('OIL_TYPE_CD', 'A');
 
         String strJsonRequestBody = JSON.serialize(mapRequestBody);

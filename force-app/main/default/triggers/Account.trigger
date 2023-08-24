@@ -1,9 +1,9 @@
 /************************************************************************************
- * File Name        : Account.trigger
- * Author           : Minje.Kim
- * Date             : 2022.08.19
- * Tester           : Account_tr_test.cls
- * Description      : Account Trigger Handler Class
+ * File Name   		: Account.trigger
+ * Author	  		: Minje.Kim
+ * Date				: 2022.08.19
+ * Tester	  		: Account_tr_test.cls
+ * Description 		: Account Trigger Handler Class
  * Modification Log
  * ===================================================================================
  * Ver      Date            Author          Modification

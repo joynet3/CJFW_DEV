@@ -13,6 +13,24 @@ public with sharing class AccountGetInfoController {
     */
     @AuraEnabled(cacheable=true)
     public static List<Account> getAccInfo(String searchKey , String accountType){
+        system.debug('#AccountGetInfoController #getAccInfo' );
+
+        if(accountType =='전체') accountType ='';
+        List<Account> accList = new List<Account>();
+
+        accList = [SELECT id ,CustomerID__c, Name ,searchKey__c, fm_empname__c , fm_empId__c , tolabel(CustomerStatus__c), toLabel(CustomerType__c) , CompanyRegisterNumber__c, PIC__r.Name, PICCode__c 
+        FROM Account 
+        WHERE (searchKey__c  LIKE :'%'+searchKey+'%' AND toLabel(CustomerType__c) LIKE :'%'+accountType+'%') ];   
+        
+        system.debug('#getAccInforeturn size =>' + accList.size() );
+        return accList;
+    }
+
+
+
+/* 
+    @AuraEnabled(cacheable=true)
+    public static List<Account> getAccInfo(String searchKey , String accountType){
         system.debug('AccountGetInfoController #getAccInfo => ' );
         if(accountType =='전체') accountType ='';
         List<Account> accList = new List<Account>();
@@ -31,5 +49,6 @@ public with sharing class AccountGetInfoController {
             system.debug('return => ' + accList.size() );
         }
         return accList;
-    }
+    } 
+*/
 }

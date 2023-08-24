@@ -216,7 +216,7 @@ public with sharing class DN_AddrSearchController {
         String labelAddressDetail = '';
 
         for (String fieldName: fieldMap.keySet()) {
-            system.debug('fieldName :: ' + fieldName );
+            // system.debug('fieldName :: ' + fieldName );
             if(fieldName == zipCodeField ){
                 labelPostalCode = fieldMap.get(fieldName).getDescribe().getLabel();
             }

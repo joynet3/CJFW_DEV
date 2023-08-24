@@ -25,6 +25,7 @@ global with sharing class IF_SFDC_DATA_REQ_EAT_BID_INFO_ba implements Database.B
     Id recordIdEx = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName().get('EATLead').getRecordTypeId();
 
     global IF_SFDC_DATA_REQ_EAT_BID_INFO_ba(List<NaramarketKeyword__mdt> keywordList, String operationName, List<String> failPageList) {
+        
         this.operationName = operationName;
         this.keywordList = keywordList;
         this.failPageList = failPageList;
@@ -45,8 +46,21 @@ global with sharing class IF_SFDC_DATA_REQ_EAT_BID_INFO_ba implements Database.B
           // endDt += (Integer.valueof(authKey.DateRange__c));
           endDt = Datetime.valueOf('2022-12-15 00:00:00');
           getRquest += '/' + operationName;
-          getRquest += '?ancmStsrDt=20221101'; // + today;
-          getRquest += '&ancmEndDt=' + endDt.format('yyyyMMdd');
+          
+          //sancho 0808 - start --------------------------------------------------------------------- //
+          //getRquest += '?ancmStsrDt=20221101'; // + today;
+          //getRquest += '&ancmEndDt=' + endDt.format('yyyyMMdd');
+
+            Datetime todaytime = Datetime.now();
+            Integer dateRange = Integer.valueOf(authKey.DateRange__c) -1;   //전일자 기준이기에 범위에서도 하루 더 빼준다.
+            //String sDt = String.valueOf( todaytime.addDays(-1).format('yyyyMMdd')           );
+            String sDt = String.valueOf( todaytime.addDays(-dateRange).format('yyyyMMdd')   );
+            String eDt = String.valueOf( todaytime.addDays(-1).format('yyyyMMdd')           );
+
+          getRquest += '?ancmStsrDt=' + sDt;
+          getRquest += '&ancmEndDt=' + eDt;
+          //sancho 0808 - end  --------------------------------------------------------------------- //
+
           getRquest += '&pageNo=1';
           getRquest += '&numOfRows=200';
           String encodedString = EncodingUtil.urlEncode('조달청', 'UTF-8');
@@ -77,11 +91,11 @@ global with sharing class IF_SFDC_DATA_REQ_EAT_BID_INFO_ba implements Database.B
                   totalPage = Integer.valueOf(input.response.body.pageNo);
               }
   
-              // System.debug('==============================totalPage:::'+totalPage);
+              System.debug('==============================totalPage:::'+totalPage);
               for (Integer i = 0; i <= totalPage; i++) {
                   totalPageList.add(String.valueOf(i));
               }
-              // System.debug('============================totalPageList:::' + String.valueOf(totalPageList));
+              System.debug('============================totalPageList:::' + String.valueOf(totalPageList));
           }
           return totalPageList;
         }else {

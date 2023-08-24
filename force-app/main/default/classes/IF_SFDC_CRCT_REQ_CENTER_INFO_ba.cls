@@ -108,7 +108,7 @@ global with sharing class IF_SFDC_CRCT_REQ_CENTER_INFO_ba implements Database.Ba
                         for (IF_SFDC_CRCT_REQ_CENTER_INFO_sc.Items obj : input.response.item) {
                             
                             Lead objLead = new Lead();
-                            System.debug('===========> obj : '+obj);
+            
                             // objLead.BidNoticeSource__c = '어린이집 정보 공개 포털';
                             objLead.LastName = obj.CRREPNAME <> null && obj.CRREPNAME <> '' ? obj.CRREPNAME : obj.crname;
                             objLead.Status = 'New';
@@ -131,10 +131,6 @@ global with sharing class IF_SFDC_CRCT_REQ_CENTER_INFO_ba implements Database.Ba
                             objLead.PostalCode__c = obj.zipcode;
                             objLead.AuthorizationDate__c = obj.crcnfmdt <> null && obj.crcnfmdt <> '' ? Date.valueOf(obj.crcnfmdt) : null;
                             objLead.RecordtypeId = recordId;
-                            // 230727 add by JY
-                            objLead.State = obj.sidoname;
-                            objLead.City = obj.sigunname;
-                            objLead.Region__c =  objLead.State.trim() + objLead.City.trim();
                             listData.add(objLead);
                         }
                     }

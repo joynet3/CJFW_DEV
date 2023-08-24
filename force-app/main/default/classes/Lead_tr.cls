@@ -36,6 +36,7 @@ public without sharing class Lead_tr extends TriggerHandler {
     *  내용    : Field Tracking(사용자들이 변경한 데이터만 생성되도록 I/F를 통한 업데이트는 제외)
     ************************************************************************************************************/
     private void doFieldTracking() {
+        system.debug('1> Lead_tr > doFieldTracking');
         List<Lead> listTargetNew = new List<Lead>();
         Map<Id, Lead> mapTargetOld = new Map<Id, Lead>();
 

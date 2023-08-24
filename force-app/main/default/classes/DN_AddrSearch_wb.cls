@@ -85,7 +85,7 @@ public with sharing class DN_AddrSearch_wb {
                       + '&keyword=' + objInput.keyword.replaceAll(' ', '')
                       + '&confmKey=' + objInput.confmKey
                       + '&resultType=' + objInput.resultType;
-        
+        System.debug(apiURL);
         // API 호출                      
         request.setMethod('GET');
         request.setTimeout(110000);

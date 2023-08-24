@@ -3,7 +3,7 @@
  * @author            : doyeon.kim@dkbmc.com
  * @since 2023-08-07  내용 작성
  * @group             : 
- * @last modified on  : 08-11-2023
+ * @last modified on  : 08-24-2023
  * @last modified by  : doyeon.kim@dkbmc.com
 **/
 public with sharing class CJFW_AccountDamBoSearchController {
@@ -119,8 +119,8 @@ public with sharing class CJFW_AccountDamBoSearchController {
             if (searchKey != null) {
 
                 //부서별 배부 쿼리문
-                String departQuery ='SELECT Id, Name, Customer__c, Customer__r.Name, DeptCode__c, DeptName__c, CollateralEnrollment__c, CollateralEnrollment__r.Name, FM_CustomerId__c,';
-                        departQuery += ' FM_TotalCollateralAmount__c, ActualCollateralAmount__c, CloseStatus__c, ExpirationStatus__c, Description__c';
+                String departQuery ='SELECT Id, Name, Customer__c, Customer__r.Name, Customer__r.searchKey__c, DeptCode__c, DeptName__c, CollateralEnrollment__c, CollateralEnrollment__r.Name,';
+                        departQuery += ' FM_CustomerId__c, FM_TotalCollateralAmount__c, ActualCollateralAmount__c, CloseStatus__c, ExpirationStatus__c, Description__c';
                         departQuery += ' FROM CJFW_DepartmentAllocation__c';
                         departQuery += ' WHERE FM_CustomerId__c =: searchKey';
         

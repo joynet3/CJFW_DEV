@@ -13,6 +13,7 @@
 
 public without sharing class Opportunity_tr extends TriggerHandler {
     public Opportunity_tr() {
+        system.debug('Opportunity Trigger Handler START');
         listNew = (List<Opportunity>) trigger.new;
         mapOld = (Map<Id, Opportunity>) trigger.oldMap;
         listOld = (List<Opportunity>) trigger.old;
@@ -90,6 +91,7 @@ public without sharing class Opportunity_tr extends TriggerHandler {
     private void doCheckClone() {
         for(Opportunity obj : listNew) {
             if(obj.isClone() && obj.ContractId <> null) {
+                system.debug('1> clone check');
                 obj.ContractId = null;
             }
         }
