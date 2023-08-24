@@ -118,7 +118,7 @@ global with sharing class IFN_LIF1002_OD003_MD005 {
                         ,CustomerPhone__c
                         ,TargetGroup__c
                         ,ApplicantsNumber__c
-                        ,CustomerAgeGroup__c
+                        ,GroupMealAge__c
                         ,Address__c
                         ,Description__c
                         from ClassService__c
@@ -145,17 +145,23 @@ global with sharing class IFN_LIF1002_OD003_MD005 {
                         resData.svcTgtNm   = classInfo.TargetGroup__c;
                         resData.svcTgtCd   = classInfo.TargetGroup__c;
                         resData.reqMemCnt  = classInfo.ApplicantsNumber__c;
-                        resData.avgAge     = classInfo.CustomerAgeGroup__c;
+                        resData.avgAge     = classInfo.GroupMealAge__c;
                         resData.addr       = classInfo.Address__c;
                         resData.dscrt      = classInfo.Description__c;
     
-                        ExtraService__c exService =  [select id,ServiceStartDateTime__c,ProgressTime__c from ExtraService__c where  ServiceContents__c = :classInfo.ServiceContent__c Limit 1];
-                        resData.reqDt = IFN_Util.converDateTimeToStrFormat(exService.ServiceStartDateTime__c,'yyyy-MM-dd a hh');
-                        resData.reqDt = resData.reqDt.replace('AM', '오전');
-                        resData.reqDt = resData.reqDt.replace('PM', '오후');
-                        resData.reqDt = String.isNotEmpty(resData.reqDt) ? resData.reqDt.replace('PM', '오후') + '시' : '';
-                        resData.svcTm = String.valueOf(exService.ProgressTime__c) + '시간';
-                        objOutput.response = resData;
+                        try {
+                            ExtraService__c exService =  [select id,ServiceStartDateTime__c,ProgressTime__c from ExtraService__c where  ServiceContents__c = :classInfo.ServiceContent__c Limit 1];
+                            resData.reqDt = IFN_Util.converDateTimeToStrFormat(exService.ServiceStartDateTime__c,'yyyy-MM-dd a hh');
+                            resData.reqDt = resData.reqDt.replace('AM', '오전');
+                            resData.reqDt = resData.reqDt.replace('PM', '오후');
+                            resData.reqDt = String.isNotEmpty(resData.reqDt) ? resData.reqDt.replace('PM', '오후') + '시' : '';
+                            resData.svcTm = String.valueOf(exService.ProgressTime__c) + '시간';
+                      
+                        } catch (Exception e) {
+                            
+                        }
+
+                        objOutput.response = resData;   
                         
     
                     } catch(Exception e) {
@@ -163,7 +169,7 @@ global with sharing class IFN_LIF1002_OD003_MD005 {
                         strCode = IFN_Util.STATUS_DATA_NOTFOUND_ERROR.split(':')[0];
                         strMessage = IFN_Util.STATUS_DATA_NOTFOUND_ERROR.split(':')[1];
                         logWrap.ErrorCode = strCode;
-                        logWrap.ErrorText.add(strMessage);
+                        logWrap.ErrorText.add(e.getMessage() + '/' + e.getLineNumber());
                     }
                 }
 

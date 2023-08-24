@@ -1,15 +1,16 @@
-/**										
- * @Class : IFN_CalloutResult				
- * @Description : Callout reesult class					
- * @Author : Sungh-Ho, Jo
- * @Date : 2020-11-09								
- * @Version : 1.0								
- * @Modified : 									
- *  ---------------------------------------------						
- *  NO | Date       | Modifier      | Description				
- *  ---------------------------------------------						
- *  1. | 2020-11-09 | Sungh-Ho, Jo  | 최초작성							
- */
+/**
+ * @Class : IFN_CalloutResult.cls
+ * @group Framework : 
+ * @Author : 조일근
+ * @Date : 2023. 07. 18
+ * @Version : 1.0
+ * @Description : callout 결과 정보 공통  wrap
+ * @Modified : 
+ * ----------------------------------------------
+ *  NO | Date       | Modifier       | Description
+ * ----------------------------------------------
+ *  1. | 2023. 07. 18 | 조일근    | 최초작성
+ * */
 public class IFN_CalloutResult {
     @AuraEnabled public String result{get;set;}
     @AuraEnabled public String message{get;set;}

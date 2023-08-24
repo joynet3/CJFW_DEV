@@ -107,7 +107,7 @@ global with sharing class IFN_LIF1002_OD003_MD006 {
                                         ,Status__c
                                         ,TargetGroup__c
                                         ,ApplicantsNumber__c
-                                        ,CustomerAgeGroup__c
+                                        ,GroupMealAge__c
                                         ,Address__c
                                         ,Description__c
                                         from ClassService__c
@@ -134,7 +134,7 @@ global with sharing class IFN_LIF1002_OD003_MD006 {
                         clsreq.ApplicantsNumber__c = input.reqMemCnt;
                         
                         // 대상연령 (성인교육과 어린이 교육에 따라 다르게 저장되어야 함 - 확인중)
-                       // clsreq.GroupMealAge__c   = input.avgAge; // 평균연령(성인 교육의 경우)
+                        clsreq.GroupMealAge__c   = input.avgAge; // 평균연령(성인 교육의 경우)
 
                         clsreq.Address__c          = input.addr;
                         clsreq.Description__c      = input.dscrt;
