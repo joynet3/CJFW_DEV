@@ -223,10 +223,15 @@ public class IFN_LIF1002_SE001_Callout {
                 result_code = 'F';
                 result_message = 'Interface Error';
                 responsedata = '';
+                this.logWrap.LogText.add(response.getStatus());
+                this.logWrap.ErrorText.add(response.getStatus());
             }
 
         } catch(Exception e) {
             
+            this.logWrap.LogText.add(e.getMessage() + '/' + e.getLineNumber());
+            this.logWrap.ErrorText.add(e.getMessage() + '/' + e.getLineNumber());
+
             result_code = 'F';
             result_message = 'Interface Error';
         }  
@@ -271,6 +276,9 @@ public class IFN_LIF1002_SE001_Callout {
         public String total;
         public List<SearchLst> search;
         public String code;
+        public String err_cd;
+        public String err_msg_ctt;
+        
     }
 
     /** 

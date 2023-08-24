@@ -26,10 +26,10 @@ public  class IFN_LIF1002_SE001_Callout_TEST {
         IFN_LIF1002_SE001_Callout.SE001RequstWrapper params = new IFN_LIF1002_SE001_Callout.SE001RequstWrapper();
         String interfaceId = 'IFN_LIF1002_SE001_MD001';
         IFN_LIF1002_SE001_Callout callout = new IFN_LIF1002_SE001_Callout(interfaceId,'Realtime');
-        params.searchSp = '02';
+        params.searchSp = '05';
         params.keywd = '우유';
-        params.offset = '1';
-        params.limitCnt = '10';
+        params.offset = '';
+        params.limitCnt = '3';
         callout.getResponse(interfaceId, params);
 
         Test.stopTest();
