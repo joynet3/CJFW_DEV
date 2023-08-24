@@ -92,6 +92,15 @@ public with sharing class IFN_ApiGateWay {
             
             this.logWrap.requestTime = Datetime.now();
 
+
+            IF_RELAY_INFO__c objRelayInfo = IF_RELAY_INFO__c.getOrgDefaults();
+            String contentType = this.objIFMaster.ContentType__c;
+
+            request.setHeader('Interface_id', this.ifKeyId);
+            request.setHeader('Interface_auth_key', objRelayInfo.Interface_auth_key__c);
+            request.setHeader('Content-Type', contentType);
+
+
             // if 정보 메타 데이터 정보상의 헤더값 리스트가 있는 경우 헤더 세팅
             if(String.isNotBlank(this.ifKeyId) && this.objIFAuthHeadInfoLst !=null && this.objIFAuthHeadInfoLst.size() >0) {
 
@@ -100,6 +109,8 @@ public with sharing class IFN_ApiGateWay {
                 }
 
             }
+
+            
 
             // if 프로그램에 세팅된 헤더값이 있는경우
             Map<String,String> header = new Map<String,String>();
@@ -131,9 +142,6 @@ public with sharing class IFN_ApiGateWay {
             request.setMethod(this.objIFMaster.Method__c);
             request.setTimeout(110000);         
 
-            String contentType = this.objIFMaster.ContentType__c;
-
-            request.setHeader('Content-Type', contentType);
             
             if(contentType.contains('multipart')) {                
                 request.setBodyAsBlob(EncodingUtil.base64Decode(requestBody));
