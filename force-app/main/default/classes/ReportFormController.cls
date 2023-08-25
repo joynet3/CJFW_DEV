@@ -11,7 +11,7 @@
 
  * @author            : eunyoung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 08-24-2023
+ * @last modified on  : 08-25-2023
  * @last modified by  : eunyoung.choi@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -19,6 +19,13 @@
 **/
 public with sharing class ReportFormController {
     public Account accountInfo {get;set;}
+
+    public String accountName { get; set; }
+    public String savedAccountName { get; set; }
+    
+    public void saveAccount() {
+        savedAccountName = accountName;
+    }
     
     public ReportFormController() {
         // 거래처 현황 테이블 - 고객사정보 (개발테스트용으로 값 1개만 출력되게함, 추후수정예정)
