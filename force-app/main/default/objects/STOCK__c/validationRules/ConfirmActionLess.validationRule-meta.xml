@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ConfirmActionLess</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+   OR(
+      ISPICKVAL(Action__c,&quot;974&quot;),
+      ISPICKVAL(Action__c,&quot;948&quot;),
+      ISPICKVAL(Action__c,&quot;946&quot;)
+   ),
+   PRIORVALUE(MENGE__c) &gt;= MENGE__c,
+   NOT(isSystemJob__c) 
+)</errorConditionFormula>
+    <errorDisplayField>MENGE__c</errorDisplayField>
+    <errorMessage>해당 변경처리는 변경된 재고수량 값이 더 커야 합니다.</errorMessage>
+</ValidationRule>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>견적 상품 디비전</value>
+    </caseValues>
+    <name>quotelineitem_division</name>
+</CustomFieldTranslation>

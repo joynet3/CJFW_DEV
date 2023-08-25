@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ProspectingAccount</fullName>
+    <columns>ACCOUNT.NAME</columns>
+    <columns>ACCOUNT.PHONE1</columns>
+    <columns>Address__c</columns>
+    <columns>ACCOUNT.INDUSTRY</columns>
+    <columns>ACCOUNT.CREATED_DATE</columns>
+    <columns>BusinessPath__c</columns>
+    <columns>ACCOUNT.RECORDTYPE</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>ACCOUNT.RECORDTYPE</field>
+        <operation>notEqual</operation>
+        <value>Account.ExistingCustomer</value>
+    </filters>
+    <filters>
+        <field>CustomerStatus__c</field>
+        <operation>equals</operation>
+        <value>01,02</value>
+    </filters>
+    <label>가망 고객</label>
+</ListView>

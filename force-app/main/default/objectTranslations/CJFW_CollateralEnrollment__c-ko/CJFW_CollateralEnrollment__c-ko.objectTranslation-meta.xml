@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>담보 입보</value>
+    </caseValues>
+    <recordTypes>
+        <label>채권 담보</label>
+        <name>Bond</name>
+    </recordTypes>
+    <recordTypes>
+        <label>현금 담보</label>
+        <name>Cash</name>
+    </recordTypes>
+    <recordTypes>
+        <label>보증보험</label>
+        <name>GuaranteeInsurance</name>
+    </recordTypes>
+    <recordTypes>
+        <label>연대보증</label>
+        <name>JointGuarantee</name>
+    </recordTypes>
+    <recordTypes>
+        <label>부동산 담보</label>
+        <name>RealEstate</name>
+    </recordTypes>
+    <recordTypes>
+        <label>예적금 담보</label>
+        <name>TimeDeposit</name>
+    </recordTypes>
+</CustomObjectTranslation>

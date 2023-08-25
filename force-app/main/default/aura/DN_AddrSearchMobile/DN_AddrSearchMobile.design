@@ -1,0 +1,9 @@
+<design:component >
+    <design:attribute name="iconName" label="아이콘 명" description="ex. standard:case" />
+    <design:attribute name="title" label="섹션 라벨" /> 
+    <design:attribute name="objName" label="오브젝트명" /> 
+	<design:attribute name="zipCodeField" label="우편번호 필드명" /> 
+    <design:attribute name="addressField" label="주소 필드명" /> 
+    <design:attribute name="addressDetailField" label="주소 상세 필드명" />
+    <design:attribute name="bolAddrDetailCheckBox" label="주소 상세 필수 여부" />
+</design:component>

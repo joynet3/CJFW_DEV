@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>FM_MA__c</fullName>
+    <externalId>false</externalId>
+    <formula>&quot;(&quot;+  Account__r.Owner.EmployeeNo__c  + &quot;) &quot; +  HYPERLINK( Account__r.Owner.UserId__c ,  Account__r.Owner.LastName )</formula>
+    <label>MA</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

@@ -1,0 +1,26 @@
+<template>
+    <div class="slds-form-element customSelect">
+        <label class="slds-form-element__label" for="select-custom">
+            <abbr lwc:if={isRequired} class="slds-required" title="required">* </abbr> 
+            {label}
+        </label>
+        <div class="slds-form-element__control">
+            <div class="slds-select_container">
+            <select class="slds-select" id="select-custom" onchange={changeHandler} >
+                <!-- <option value="">Select…</option> -->
+                <template lwc:if={isOptionData}>
+                    <template for:each={options} for:item="option" for:index="idx">
+                        <option data-idx={idx} key={option.value} text={option.label} value={option.value} selected={option.selected} >
+                            {option.label}
+                        </option>
+                    </template>
+                </template>
+            </select>
+            </div>
+        </div>
+        <template lwc:if={isError}>
+            <div class="slds-form-element__help" id="error-msg">{errorMsg}</div>
+        </template>
+    </div>
+    
+</template>

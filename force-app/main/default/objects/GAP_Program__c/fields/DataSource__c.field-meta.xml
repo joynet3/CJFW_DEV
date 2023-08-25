@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DataSource__c</fullName>
+    <externalId>false</externalId>
+    <label>데이터</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Stand Object</fullName>
+                <default>false</default>
+                <label>Stand Object</label>
+            </value>
+            <value>
+                <fullName>Custom Object</fullName>
+                <default>false</default>
+                <label>Custom Object</label>
+            </value>
+            <value>
+                <fullName>External Object</fullName>
+                <default>false</default>
+                <label>External Object</label>
+            </value>
+            <value>
+                <fullName>SAP</fullName>
+                <default>false</default>
+                <label>SAP</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

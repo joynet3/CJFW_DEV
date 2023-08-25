@@ -1,0 +1,74 @@
+/* lihting-card{
+    height: calc(100vh - 171.5px);
+} */
+
+/* List전체 div */
+.listcontainer{
+    display: flex;
+    flex-direction: column;
+    /* height: 100vh; */
+    height: 100%;
+    /* position: relative; */
+    /* height: 391.6px; */
+    /* min-height: 391.6px; */
+    /* border: 2px solid #02fd0f; */
+} 
+
+/* 부서별 배부 */
+.deptablecontainer{
+    max-height: 80px;
+    overflow-y: auto; /* 세로 스크롤을 추가하여 내용이 넘칠 경우 스크롤을 생성합니다. */
+    border: 0.02px solid #c4c4c4;
+}
+
+/* tabset을 감싸는 컨테이너 */
+.tabSetContainer{
+    /* border: 2px solid #07fff3; */
+    height: 100%;
+    /* min-height: 196px;*/
+    /* max-height: 380px;  */
+}
+
+/* tab 안에 table 두개 한번에 */
+.tableWrapper{
+    border: 1px solid #c4c4c4;
+    max-height: calc(100vh - 552px);
+    /* position: relative; */
+    /* max-height: 340px; */
+    /* min-height: 120px; */
+    /* height: 120px ; */
+    /* height: 50% ; */
+    /* border: 2px solid #ecfd02; */
+}
+
+/* 왼쪽 table */
+.ltable-container{
+    /* min-height: 120px;
+    max-height: 300px; */
+    flex: 4;
+    overflow: hidden; /* 세로 스크롤을 추가하여 내용이 넘칠 경우 스크롤을 생성합니다. */
+    border-right: 1px solid #c4c4c4;
+    padding-bottom: 1px;
+    /* border: 3px solid #094900; */
+    /* width: 500px; */
+}
+
+/* 오른쪽 테이블 */
+.rtable-container{
+    /* min-height: 120px;
+    max-height: 300px; */
+    overflow: auto; /* 세로 스크롤을 추가하여 내용이 넘칠 경우 스크롤을 생성합니다. */
+    flex: 6;
+    /* border: 3px solid #6d0064; */
+}
+
+.totalCnt{
+    background-color: #f3f3f3;
+    font-weight: bold;
+    padding-left: 5px;
+}
+
+/* 담보번호 */
+.mouseOver:hover {
+    cursor: pointer;
+}

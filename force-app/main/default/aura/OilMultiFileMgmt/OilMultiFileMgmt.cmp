@@ -1,0 +1,232 @@
+<!--
+  * ===============================================================
+  * File Name   : SingleFileMgmt.cmp
+  * Author      : sy.lee
+  * Date        : 2023.04.28
+  * Description : 파일을 업로드하고, 첨부된 파일 관리
+  * Modification Log
+  * ===============================================================
+  * Ver     Date        Author          Modification
+  * ===============================================================
+  * 1.0     2023.04.28  sy.lee          Create
+  * ===============================================================
+-->
+<aura:component controller="OilChgMultiFileMgmtController" implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName,force:appHostable">
+    <!-- <ltng:require scripts="{!$Resource + '/pdf.js'}" />
+    <ltng:require scripts="{!$Resource + '/pdf.worker.js'}" /> -->
+    <!-- Parameter Attribute -->
+    <aura:attribute name="fileTitle" type="String" default="" description="제목"/>
+
+    <aura:attribute name="fileFieldLabel" type="String" default="" description="A필드 라벨명"/>
+    <aura:attribute name="fileFieldAPIName" type="String" default="" description="A필드 API명"/>
+    <aura:attribute name="isTypeAUploadFileExist" type="Boolean" default="false" description="TypeA 업로드된 파일 존재 여부" />
+
+    <aura:attribute name="typeBfileFieldLabel" type="String" default="" description="B필드 라벨명"/>
+    <aura:attribute name="typeBfileFieldAPIName" type="String" default="" description="B필드 API명"/>
+    <aura:attribute name="isTypeBUploadFileExist" type="Boolean" default="false" description="TypeA 업로드된 파일 존재 여부" />
+
+    <aura:attribute name="typeCfileFieldLabel" type="String" default="" description="C필드 라벨명"/>
+    <aura:attribute name="typeCfileFieldAPIName" type="String" default="" description="C필드 API명"/>
+    <aura:attribute name="isTypeCUploadFileExist" type="Boolean" default="false" description="TypeA 업로드된 파일 존재 여부" />
+
+    <aura:attribute name="filePermissionField" type="String" default="" description="파일 수정 가능 여부를 판단할 수 있는 수식 필드명" />
+    <aura:attribute name="isFileEditable" type="Boolean" description="파일 삭제 가능 여부" />
+
+    <aura:attribute name="listFields" type="List" />
+    <aura:attribute name="listLabel" type="List" />
+
+    
+    <aura:attribute name="isUploadable" type="Boolean" default="false"  description="현재 업로드가 가능한 지 여부"/>
+    <aura:attribute name="isReady" type="Boolean" default="false" description="로직이 전부 진행되었는 지 여부"/>
+
+    <aura:attribute name="showSpinner" type="boolean" default="false" />
+    <aura:attribute name="pdfPages" type="integer" default="5" />
+
+
+    <aura:attribute name="objWrapFile" type="OilChgMultiFileMgmtController.DataWrapper" />
+    <aura:attribute name="CommonConfirm" type="Aura.Component" />
+    
+    <!-- Handler -->
+    <aura:handler name="init" action="{!c.fnInit}" value="{!this}" />
+
+    <!-- Event -->
+    <aura:handler event="force:refreshView" action="{!c.fnInit}" />
+
+
+    <!-- Contents -->
+    <article class="slds-card">
+        <aura:if isTrue="{!v.showSpinner}">
+            <lightning:spinner aura:id="spinner" alternativeText="Loading" variant="brand" />
+        </aura:if>
+
+        <aura:if isTrue="{!v.fileTitle != ''}">
+            <div class="slds-card__header slds-grid">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    <div class="slds-media__figure">
+                        <span class="slds-icon_container slds-icon-standard-contact" title="description of icon when needed">
+                                <lightning:icon iconName="standard:file" size="small" />
+                            </span>
+                    </div>
+                    <div class="slds-media__body">    
+                        <h1 class="slds-page-header__title slds-truncate slds-align-middle" style="font-size: 16px; padding-left: 0px; padding-top: 4px;">
+                            {!v.fileTitle}
+                        </h1>
+                    </div>
+                </header>   
+            </div>          
+        </aura:if>
+        <div class="slds-card__body slds-card__body_inner">
+            <aura:if isTrue="{!v.isReady}">
+                <div class="slds-form-element slds-m-left_xx-large slds-m-top_small" width="100%">
+                    <div class="slds-form-element__control">
+                        <lightning:accordion aura:id="accordion" activeSectionName="A">
+                            <aura:if isTrue="{!v.isTypeAUploadFileExist == false}">
+                                <aura:set attribute="else">
+                                    <lightning:accordionSection name="A" label="{!v.fileFieldLabel+'(첨부됨)'}">
+                                        <aura:set attribute="actions">   
+                                            <aura:if isTrue="{!v.isFileEditable}">                                       
+                                                <lightning:buttonMenu aura:id="menu" alternativeText="Show menu" iconSize="x-small" onselect="{!c.fnDeleteA}">                                              
+                                                    <lightning:menuItem label="다운로드" value="downloadFile" />
+                                                    <lightning:menuItem label="파일삭제" value="deleteFile" />
+                                                    <lightning:menuItem label="google OCR Test" value="ocrtest" />
+                                                    <lightning:menuItem label="naver OCR Test" value="naverOcrtest" />
+                                                </lightning:buttonMenu>           
+                                            </aura:if> 
+                                        </aura:set>                                        
+                                        <aura:set attribute="body">
+                                            <aura:if isTrue="{!v.objWrapFile.typeAForm == 'pdf'}">
+                                                <iframe src="{!'/sfc/servlet.shepherd/version/renditionDownload?rendition=SVGZ&amp;versionId=' + v.objWrapFile.typeAversionId + '&amp;renditionType=ORIGINAL'}" width="100%" height="400" scrolling="yes"></iframe>
+                                                <!-- <iframe src="{!'/sfc/servlet.shepherd/version/renditionDownload?rendition=SVGZ&amp;versionId=' + v.objWrapFile.typeAversionId + '&amp;page=1'}" width="100%" height="400" sandbox="allow-same-origin"></iframe>
+                                                <iframe src="{!'/sfc/servlet.shepherd/version/renditionDownload?rendition=SVGZ&amp;versionId=' + v.objWrapFile.typeAversionId + '&amp;page=2'}" width="100%" height="400" sandbox="allow-same-origin"></iframe>
+                                                <iframe src="{!'/sfc/servlet.shepherd/version/renditionDownload?rendition=SVGZ&amp;versionId=' + v.objWrapFile.typeAversionId + '&amp;page=3'}" width="100%" height="400" sandbox="allow-same-origin"></iframe>
+                                                <iframe src="{!'/sfc/servlet.shepherd/version/renditionDownload?rendition=SVGZ&amp;versionId=' + v.objWrapFile.typeAversionId + '&amp;page=4'}" width="100%" height="400" sandbox="allow-same-origin"></iframe>
+                                                <iframe src="{!'/sfc/servlet.shepherd/version/renditionDownload?rendition=SVGZ&amp;versionId=' + v.objWrapFile.typeAversionId + '&amp;page=5'}" width="100%" height="400" sandbox="allow-same-origin"></iframe>
+                                                <iframe src="{!'/sfc/servlet.shepherd/version/renditionDownload?rendition=SVGZ&amp;versionId=' + v.objWrapFile.typeAversionId + '&amp;page=6'}" width="100%" height="400" sandbox="allow-same-origin"></iframe>
+                                                <iframe src="{!'/sfc/servlet.shepherd/version/renditionDownload?rendition=SVGZ&amp;versionId=' + v.objWrapFile.typeAversionId + '&amp;page=7'}" width="100%" height="400" sandbox="allow-same-origin"></iframe> -->
+                                                <!-- <iframe aura:id="pdfFrame" src="{!'/apex/OilchgPdfPage'}" width="100%" height="800" scrolling="yes" sandbox="allow-scripts allow-same-origin"/> -->
+                                                <!-- <iframe aura:id="pdfFrame" src="{!'/apex/OilchgPdfPage?documentId='+v.objWrapFile.typeAversionId}" width="100%" height="800" scrolling="yes" sandbox="allow-scripts allow-same-origin"/> -->
+                                                <!-- <iframe src="{!'/sfc/servlet.shepherd/version/download/' + v.objWrapFile.typeAversionId}" width="600" height="800"></iframe>
+                                                <iframe src="{!'/sfc/servlet.shepherd/version/download/' + v.objWrapFile.typeAversionId+'?rendition=PDF'}" width="600" height="800" sandbox="allow-scripts"></iframe>
+                                                <iframe src="{!'/sfc/servlet.shepherd/version/download/' + v.objWrapFile.typeAversionId+'?rendition=SVGZ'}" width="600" height="800" sandbox="allow-scripts"></iframe>
+                                                <iframe src="{!'/sfc/servlet.shepherd/version/download/' + v.objWrapFile.typeAversionId+'?rendition=SVG'}" width="600" height="800" sandbox="allow-scripts"></iframe>
+                                                <iframe src="{!'/sfc/servlet.shepherd/version/download/' + v.objWrapFile.typeAversionId+'?rendition=DOCX'}" width="600" height="800" sandbox="allow-scripts"></iframe>
+                                                <iframe src="{!'/sfc/servlet.shepherd/version/download?rendition=SVGZ&amp;versionId='+v.objWrapFile.typeAversionId}" width="100%" height="400" sandbox="allow-same-origin"></iframe>
+                                                <iframe src="{!'/sfc/servlet.shepherd/version/download?rendition=PDF&amp;versionId='+v.objWrapFile.typeAversionId}" width="100%" height="400" sandbox="allow-same-origin"></iframe> -->
+                                                <!-- <iframe src="{!'/sfc/servlet.shepherd/version/renditionDownload?rendition=SVGZ&amp;versionId='+v.objWrapFile.typeAversionId}" width="100%" height="400" sandbox="allow-same-origin"></iframe> -->
+                                                <!-- <iframe src="{!'/sfc/servlet.shepherd/version/renditionDownload?rendition=SVGZ&amp;versionId='+v.objWrapFile.typeAversionId+'&amp;operationContext=CHATTER'}" width="600" height="800" sandbox="allow-same-origin"></iframe> -->
+                                                <!-- <iframe src="{!'/resource/PDFJS/viewer.html?file=/sfc/servlet.shepherd/version/download/'+v.objWrapFile.typeAversionId+'&amp;embedded=true'}" width="600" height="800" frameborder="0" sandbox="allow-scripts"></iframe>  
+                                                <iframe src="{!'https://docs.google.com/gview?url=/sfc/servlet.shepherd/version/download/'+v.objWrapFile.typeAversionId+'&amp;embedded=true'}" width="600" height="800" frameborder="0" sandbox="allow-scripts"></iframe>  
+                                                <iframe src="{!'/servlet/servlet.FileDownload?file='+v.objWrapFile.typeAversionId}" width="100%" height="100%" sandbox="allow-scripts"></iframe>  
+                                                <iframe src="{!'/sfc/servlet.shepherd/version/download/'+v.objWrapFile.typeAversionId}" width="600" height="800" sandbox="allow-scripts"></iframe>  
+                                                <iframe src="{!'/servlet/servlet.FileDownload?file='+v.objWrapFile.typeAversionId}" width="600" height="800" sandbox="allow-scripts"></iframe>   -->
+                                                <!-- <iframe src="{!'/sfc/servlet.shepherd/version/download/'+v.objWrapFile.typeAversionId+'?operationContext=S1'}" width="600" height="800" sandbox="allow-scripts"></iframe>   -->
+                                                <!-- <iframe src="{!'/sfc/servlet.shepherd/version/download/'+v.objWrapFile.typeAversionId+'?rendition=SVGZ'}" width="100%" height="400" sandbox="allow-same-origin"></iframe> -->
+                                                <!-- <iframe src="{!'/sfc/servlet.shepherd/version/download/'+v.objWrapFile.typeAversionId+'?rendition=SVGZ'}" width="100%" height="400"></iframe> -->
+                                                <!-- <iframe src="{!'/sfc/servlet.shepherd/version/renditionDownload?rendition=PDF&amp;versionId='+v.objWrapFile.typeAversionId}" width="100%" height="400" sandbox="allow-same-origin"></iframe>
+                                                <iframe src="{!'/sfc/servlet.shepherd/version/renditionDownload?rendition=SVG&amp;versionId='+v.objWrapFile.typeAversionId}" width="100%" height="400" sandbox="allow-same-origin"></iframe>
+                                                <iframe src="{!'/sfc/servlet.shepherd/version/renditionDownload?rendition=DOCX&amp;versionId='+v.objWrapFile.typeAversionId}" width="100%" height="400" sandbox="allow-same-origin"></iframe> -->
+                                                <!-- <iframe src="{!'/sfc/servlet.shepherd/version/renditionDownload?rendition=SVGZ&amp;versionId='+v.objWrapFile.typeAversionId}" width="100%" height="400" sandbox="allow-same-origin"></iframe>
+                                                <iframe src="{!'/apex/PDFViewer?id=' + v.objWrapFile.typeAversionId}" width="100%" height="800"></iframe>
+                                                <iframe src="{!'/sfc/servlet.shepherd/version/renditionDownload?rendition=PDF&amp;id=' + v.objWrapFile.typeAversionId}" width="100%" height="800"/> -->
+                                                <!-- <iframe src="{!'/sfc/servlet.shepherd/version/renditionDownload?rendition=SVGZ&amp;versionId=' + v.objWrapFile.typeAversionId}" width="100%" height="800" sandbox="allow-same-origin"></iframe>
+                                                <iframe src="{!'/sfc/servlet.shepherd/version/renditionDownload?rendition=SVGZ&amp;versionId=' + v.objWrapFile.typeAversionId + '&amp;page=2'}" width="100%" height="400" sandbox="allow-same-origin"></iframe>
+                                                <iframe src="{!'/sfc/servlet.shepherd/version/renditionDownload?rendition=SVGZ&amp;versionId=' + v.objWrapFile.typeAversionId + '&amp;page=3'}" width="100%" height="400" sandbox="allow-same-origin"></iframe> -->
+                                            </aura:if>
+                                            <aura:if isTrue="{!v.objWrapFile.typeAForm == 'jpeg' || v.objWrapFile.typeAForm == 'jpg' || v.objWrapFile.typeAForm == 'png'}">
+                                                <img src="{!'/sfc/servlet.shepherd/version/download/' + v.objWrapFile.typeAversionId}"/>
+                                            </aura:if>                                            
+                                        </aura:set>
+                                    </lightning:accordionSection>
+                                </aura:set> 
+                                <lightning:accordionSection name="A" label="{!v.fileFieldLabel+'(파일없음)'}">
+                                    <div class="slds-grid slds-gutters">
+                                        <div class="slds-col slds-size_8-of-12" >
+                                            <lightning:fileUpload name="attachFile"
+                                                                    multiple="false"
+                                                                    accept=".pdf,.png,.jpg,.jpeg"
+                                                                    disabled="false"
+                                                                    recordId="{!v.recordId}"
+                                                                    class="custom-label_none"
+                                                                    onuploadfinished="{!c.fnUploadAFinished}" />
+                                        </div>
+                                    </div> 
+                                </lightning:accordionSection>            
+                            </aura:if>
+                            <aura:if isTrue="{!v.isTypeBUploadFileExist == false}">
+                                <aura:set attribute="else">
+                                    <lightning:accordionSection name="B" label="{!v.typeBfileFieldLabel+'(첨부됨)'}">                                        
+                                        <aura:set attribute="actions">   
+                                            <aura:if isTrue="{!v.isFileEditable}">                                         
+                                                <lightning:buttonMenu aura:id="menu1" alternativeText="Show menu" iconSize="x-small" onselect="{!c.fnDeleteB}">                                              
+                                                    <lightning:menuItem label="파일삭제" value="deleteFile" />
+                                                </lightning:buttonMenu>           
+                                            </aura:if> 
+                                        </aura:set>
+                                        <aura:set attribute="body">
+                                            <aura:if isTrue="{!v.objWrapFile.typeBForm == 'pdf'}">
+                                                <iframe src="{!'/sfc/servlet.shepherd/version/download/' + v.objWrapFile.typeBversionId+'#page=1'}" width="600" height="800"></iframe>
+                                            </aura:if>
+                                            <aura:if isTrue="{!v.objWrapFile.typeBForm == 'jpeg' || v.objWrapFile.typeBForm == 'jpg' || v.objWrapFile.typeBForm == 'png'}">
+                                                <img src="{!'/sfc/servlet.shepherd/version/download/' + v.objWrapFile.typeBversionId}"/>
+                                            </aura:if>                                            
+                                        </aura:set>
+                                    </lightning:accordionSection>
+                                </aura:set> 
+                                <lightning:accordionSection name="B" label="{!v.typeBfileFieldLabel+'(파일없음)'}">
+                                    <div class="slds-grid slds-gutters">
+                                        <div class="slds-col slds-size_8-of-12" >
+                                            <lightning:fileUpload   name="attachFile"
+                                                                    multiple="false"
+                                                                    accept=".pdf,.png,.jpg,.jpeg"
+                                                                    disabled="false"
+                                                                    recordId="{!v.recordId}"
+                                                                    class="custom-label_none"
+                                                                    onuploadfinished="{!c.fnUploadBFinished}" />
+                                        </div>
+                                    </div> 
+                                </lightning:accordionSection>            
+                            </aura:if>
+                            <aura:if isTrue="{!v.isTypeCUploadFileExist == false}">
+                                <aura:set attribute="else">
+                                    <lightning:accordionSection name="C" label="{!v.typeCfileFieldLabel+'(첨부됨)'}">
+                                        <aura:set attribute="actions">   
+                                            <aura:if isTrue="{!v.isFileEditable}">                                 
+                                                <lightning:buttonMenu aura:id="menu2" alternativeText="Show menu" iconSize="x-small" onselect="{!c.fnDeleteC}">                                              
+                                                    <lightning:menuItem label="파일삭제" value="deleteFile" />
+                                                </lightning:buttonMenu>           
+                                            </aura:if> 
+                                        </aura:set>
+                                        <aura:set attribute="body">
+                                            <aura:if isTrue="{!v.objWrapFile.typeCForm == 'pdf'}">
+                                                <iframe src="{!'/sfc/servlet.shepherd/version/download/' + v.objWrapFile.typeCversionId+'#page=1'}" width="600" height="800"></iframe>
+                                            </aura:if>
+                                            <aura:if isTrue="{!v.objWrapFile.typeCForm == 'jpeg' || v.objWrapFile.typeCForm == 'jpg' || v.objWrapFile.typeCForm == 'png'}">
+                                                <img src="{!'/sfc/servlet.shepherd/version/download/' + v.objWrapFile.typeCversionId}"/>
+                                            </aura:if>                                            
+                                        </aura:set>
+                                    </lightning:accordionSection>
+                                </aura:set> 
+                                <lightning:accordionSection name="C" label="{!v.typeCfileFieldLabel+'(파일없음)'}">
+                                    <div class="slds-grid slds-gutters">
+                                        <div class="slds-col slds-size_8-of-12" >
+                                            <lightning:fileUpload   name="attachFile"
+                                                                    multiple="false"
+                                                                    accept=".pdf,.png,.jpg,.jpeg"
+                                                                    disabled="false"
+                                                                    recordId="{!v.recordId}"
+                                                                    class="custom-label_none"
+                                                                    onuploadfinished="{!c.fnUploadCFinished}" />
+                                        </div>
+                                    </div> 
+                                </lightning:accordionSection>            
+                            </aura:if>
+                        </lightning:accordion>
+                    </div>
+                </div>
+            </aura:if>
+        </div>
+    </article>
+
+    <!-- Delete confirm modal -->
+    {!v.CommonConfirm}
+</aura:component>

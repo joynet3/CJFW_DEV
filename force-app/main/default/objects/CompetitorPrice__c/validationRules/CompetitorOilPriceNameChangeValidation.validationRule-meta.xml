@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CompetitorOilPriceNameChangeValidation</fullName>
+    <active>true</active>
+    <description>경졍사의 유지 가격구분명 변경 확인</description>
+    <errorConditionFormula>AND(ISCHANGED(  Name ),  $User.LastName &lt;&gt; &apos;CJ Freshwway&apos;)</errorConditionFormula>
+    <errorMessage>가격 구분 이름을 바꿀 수 없습니다</errorMessage>
+</ValidationRule>

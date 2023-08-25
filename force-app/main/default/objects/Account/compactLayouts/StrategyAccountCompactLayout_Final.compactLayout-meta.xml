@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>StrategyAccountCompactLayout_Final</fullName>
+    <fields>Name</fields>
+    <fields>RecordTypeId</fields>
+    <fields>OpeningDate__c</fields>
+    <fields>MonthlySales__c</fields>
+    <fields>AccountStatus__c</fields>
+    <fields>SizePerson__c</fields>
+    <fields>OwnerId</fields>
+    <label>Strategy Account Compact Layout Final</label>
+</CompactLayout>

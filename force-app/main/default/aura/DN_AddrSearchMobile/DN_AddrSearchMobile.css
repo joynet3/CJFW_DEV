@@ -1,0 +1,25 @@
+.THIS .custom_resultTable {
+    margin-top: 10px;
+}
+
+.THIS .custom_resultCnt {
+    margin-top: 20px;
+}
+
+.THIS .custom_search {
+    width: 40%;
+}
+
+.THIS .custom_paging {
+    margin-top: 10px;
+}
+
+/* 모달에서 띄우는 경우 backdrop 계층 효과 */
+.THIS .custom_backdrop {
+	z-index: 9001;
+	width: 100vw;
+	margin-left: calc(-50vw + 50%);
+}
+.THIS .custom_modal {
+	z-index: 9002;
+}

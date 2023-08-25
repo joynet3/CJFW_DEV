@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StandardValueSetTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <valueTranslation>
+        <masterLabel>New</masterLabel>
+        <translation>신규 기회</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>Qualified</masterLabel>
+        <translation>가망고객 전환</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>Unqualified</masterLabel>
+        <translation>보류</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>Working</masterLabel>
+        <translation>접촉 중</translation>
+    </valueTranslation>
+</StandardValueSetTranslation>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DateRange__c</fullName>
+    <description>나라장터 입찰정보 호출 날짜 범위지정</description>
+    <externalId>false</externalId>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <inlineHelpText>나라장터 입찰정보 호출 날짜 범위지정</inlineHelpText>
+    <label>호출 날짜 범위</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>7</fullName>
+                <default>true</default>
+                <label>7</label>
+            </value>
+            <value>
+                <fullName>30</fullName>
+                <default>false</default>
+                <label>30</label>
+            </value>
+            <value>
+                <fullName>60</fullName>
+                <default>false</default>
+                <label>60</label>
+            </value>
+            <value>
+                <fullName>90</fullName>
+                <default>false</default>
+                <label>90</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

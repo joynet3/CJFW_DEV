@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>FM_SetoffPeriod__c</fullName>
+    <externalId>false</externalId>
+    <formula>TEXT ( YEAR( SetoffStartDate__c) ) +&quot;-&quot;+
+IF(MONTH(SetoffStartDate__c) &lt; 10, &quot;0&quot; + TEXT(MONTH(SetoffStartDate__c)), TEXT(MONTH(SetoffStartDate__c)) ) +&quot;-&quot;+
+IF(DAY(SetoffStartDate__c) &lt; 10, &quot;0&quot; + TEXT(DAY(SetoffStartDate__c)), TEXT(DAY(SetoffStartDate__c)) ) +
+&quot; ~ &quot; +
+TEXT ( YEAR( SetoffEndDate__c) )+&quot;-&quot; +
+IF(MONTH(SetoffEndDate__c) &lt; 10, &quot;0&quot; + TEXT(MONTH(SetoffEndDate__c)), TEXT(MONTH(SetoffEndDate__c)) ) +&quot;-&quot;+
+IF(DAY(SetoffEndDate__c) &lt; 10, &quot;0&quot; + TEXT(DAY(SetoffEndDate__c)), TEXT(DAY(SetoffEndDate__c)) )</formula>
+    <label>Setoff Period</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

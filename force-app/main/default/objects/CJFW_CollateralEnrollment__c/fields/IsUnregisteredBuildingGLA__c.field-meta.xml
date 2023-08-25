@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>IsUnregisteredBuildingGLA__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>미등기 건축물있는 경우 추가 - 지상권설정계약서</description>
+    <externalId>false</externalId>
+    <label>미등기 건축물있는 경우 추가 - 지상권설정계약서</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

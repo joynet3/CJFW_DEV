@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>MilitaryLead</fullName>
+    <columns>FULL_NAME</columns>
+    <columns>LEAD.COMPANY</columns>
+    <columns>LEAD.STATUS</columns>
+    <columns>LEAD.LEAD_SOURCE</columns>
+    <columns>BusinessPathLv1__c</columns>
+    <columns>BusinessPathLv2__c</columns>
+    <columns>BusinessPathLv3__c</columns>
+    <columns>MonthlySales__c</columns>
+    <columns>LEAD.EMAIL</columns>
+    <columns>LEAD.MOBILE_PHONE</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>LEAD.RECORDTYPE</field>
+        <operation>notEqual</operation>
+        <value>Lead.EATLead,Lead.MilitaryLead,Lead.NaraMarketLead,Lead.LeadLocalData</value>
+    </filters>
+    <label>2. 리드</label>
+</ListView>

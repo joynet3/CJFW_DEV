@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>IsCommodityTradeAgreement__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>상품거래약정서</description>
+    <externalId>false</externalId>
+    <label>상품거래약정서</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

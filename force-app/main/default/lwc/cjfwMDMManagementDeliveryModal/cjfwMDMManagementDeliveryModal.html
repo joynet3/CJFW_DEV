@@ -1,0 +1,647 @@
+<!--
+  @description       : MDM 고객 등록 요청 Object ListView > 관리처 생성 Btn > "배송" 선택 후 "다음" Btn 화면 
+  @author            : joohyeon.jang@dkbmc.com
+  @group             : 
+  @last modified on  : 08-21-2023
+  @last modified by  : joohyeon.jang@dkbmc.com
+  Modifications Log
+  Ver   Date         Author                    Modification
+  1.0   08-16-2023   joohyeon.jang@dkbmc.com   Initial Version
+-->
+<template>
+    <!-- Loading -->
+    <div>
+        <template if:true={showSpinner}>
+            <lightning-spinner variant="brand" size="medium"></lightning-spinner>
+        </template>
+        <!-- New Modal(관리처-배송 생성) -->
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_medium">
+            <div class="slds-modal__container slds-is-relative modal-container">
+                <!-- #Header-->
+                <lightning-modal-header>
+                    <!-- Close Icon -->
+                        <lightning-button-icon icon-name="utility:close" alternative-text="close" size="large" variant="bare-inverse" class="slds-button slds-button_icon slds-modal__close" onclick={handleClose}></lightning-button-icon>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">MDM 고객 등록 요청(배송)</h2>
+                </lightning-modal-header>
+              
+                <!-- #Body record-id={recordId} -->
+                <lightning-modal-body class="modal-body slds-size_1-of-1 slds-is-relative">
+                    <lightning-record-edit-form
+                        object-api-name="MDMRegRequestCustomer__c"
+                        density="comfy"
+                        >    
+                        <!-- 탭 : 기본, 회계, 영업, 결제 정보 -->
+                        <lightning-tabset class = "tabsets">
+                            <!-- 탭 : 기본정보 -->
+                                <template if:true={basicInfo}>
+                                    <lightning-tab label="기본 정보" id="basic">
+                                        <table style="width: 100%">
+                                            <tr>
+                                                <td class="tdStyle" style="width: 50%;"> 
+                                                    <!-- 고객ID -->
+                                                    <lightning-input-field field-name="Account__c" disabled value={objCustomer.Account__c} ></lightning-input-field>
+                                                </td> 
+                                                <td style="width: 50%;">  
+                                                    <!-- 구코드(As-Is) -->
+                                                    <lightning-input-field field-name="PV_OLDCD__c" ></lightning-input-field>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="tdStyle">
+                                                     <!-- 고객명(영문명 포함) -->
+                                                    <div id="PV_NAME1__c" class="required-block">
+                                                        <p class="required-markName">*</p>
+                                                        <lightning-input-field field-name="PV_NAME1__c"  name="PV_NAME1__c" onchange={requiredFill}></lightning-input-field>
+                                                    </div>
+                                                </td> 
+                                                <td class="tdStyle">
+                                                    <!-- 고객명(G) / 자국명 -->
+                                                    <lightning-input-field field-name="PV_NAME_G__c" value={objCustomer.PV_NAME_G__c}></lightning-input-field>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="tdStyle"> 
+                                                    <!-- 고객약칭명(변경) -->
+                                                    <lightning-input-field field-name="PV_NAME2__c" value={objCustomer.PV_NAME2__c}></lightning-input-field>
+                                                </td> 
+                                                <td class="tdStyle">
+                                                    <div id="PV_KTOKD__c" class="required-block">
+                                                        <p class="required-mark">*</p>
+                                                        <!-- 고객계정그룹 -->
+                                                        <lightning-input-field field-name="PV_KTOKD__c" value={objCustomer.PV_KTOKD__c}></lightning-input-field>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="tdStyle">
+                                                    <!-- 고객유형 -->
+                                                    <div id="PV_CUSTTYPE__c" class="required-block">
+                                                        <p class="required-mark">*</p>
+                                                        <lightning-input-field field-name="PV_CUSTTYPE__c" value={objCustomer.PV_CUSTTYPE__c}></lightning-input-field>
+                                                    </div>
+                                                </td> 
+                                                <td class="tdStyle">
+                                                    <div id="PV_STCD2__c" class="required-block">
+                                                        <p class="required-mark">*</p>
+                                                        <!-- 사업자등록번호 -->
+                                                        <lightning-input-field field-name="PV_STCD2__c" value={objCustomer.PV_STCD2__c}></lightning-input-field>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="tdStyle">
+                                                    <!-- 법인코드 -->
+                                                    <lightning-input-field field-name="PV_STCD3__c" value={objCustomer.PV_STCD3__c}></lightning-input-field>
+                                                </td> 
+                                                <td class="tdStyle">
+                                                    <!-- 종사업자번호 -->
+                                                    <lightning-input-field field-name="PV_STCD4__c" value={objCustomer.PV_STCD4__c}></lightning-input-field>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="tdStyle">
+                                                    <div id="PV_GFORM__c" class="required-block">
+                                                        <p class="required-mark">*</p>
+                                                        <!-- 법적상태 -->
+                                                        <lightning-input-field field-name="PV_GFORM__c" value={objCustomer.PV_GFORM__c}></lightning-input-field>
+                                                    </div>
+                                                </td> 
+                                                <td class="tdStyle">
+                                                    <div id="PV_J_1KFREPRE__c" class="required-block">
+                                                        <p class="required-mark">*</p>
+                                                        <!-- 대표자이름 -->
+                                                        <lightning-input-field field-name="PV_J_1KFREPRE__c" value={objCustomer.PV_J_1KFREPRE__c}></lightning-input-field>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="tdStyle">
+                                                    <div id="PV_STCD1__c" class="required-block">
+                                                        <p class="required-mark">*</p>
+                                                        <!-- 대표자 생년월일 -->
+                                                        <lightning-input-field field-name="PV_STCD1__c" value={objCustomer.PV_STCD1__c}></lightning-input-field>
+                                                    </div>
+                                                </td> 
+                                                <td class="tdStyle">
+                                                    <div id="PV_J_1KFTBUS__c" class="required-block">
+                                                        <p class="required-mark">*</p>
+                                                        <!-- 업태 -->
+                                                        <lightning-input-field field-name="PV_J_1KFTBUS__c" value={objCustomer.PV_J_1KFTBUS__c}></lightning-input-field>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="tdStyle">
+                                                    <div id="PV_J_1KFTIND__c" class="required-block">
+                                                        <p class="required-mark">*</p>
+                                                        <!-- 업종 -->
+                                                        <lightning-input-field field-name="PV_J_1KFTIND__c" value={objCustomer.PV_J_1KFTIND__c}></lightning-input-field>
+                                                    </div>
+                                                </td> 
+                                                <td class="tdStyle">
+                                                    <div id="PV_TELF1__c" class="required-block">
+                                                        <p class="required-mark">*</p>
+                                                        <!-- 전화번호 -->
+                                                        <lightning-input-field field-name="PV_TELF1__c" value={objCustomer.PV_TELF1__c}></lightning-input-field>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="tdStyle">
+                                                    <!-- 팩스번호 -->
+                                                    <lightning-input-field field-name="PV_TELFX__c" value={objCustomer.PV_TELFX__c}></lightning-input-field>
+                                                </td>
+                                                <td>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="tdStyle">
+                                                    <div id="PV_VKGRP__c" class="required-block ">
+                                                        <p class="required-mark">*</p>
+                                                        <!-- 영업그룹 -->
+                                                        <lightning-input-field field-name="PV_VKGRP__c"  class="slds-hide" value={objCustomer.PV_VKGRP__c}></lightning-input-field>
+                                                        <lightning-input label="영업그룹" data-label="영업그룹" name="enter-search" type="search" class="required-search" value={searchKey} onchange={changeHandleSearch} onkeypress={handleEnter} onfocus={handleClick}></lightning-input>
+                                                    </div>
+                                                    <template if:true={IsShow}>
+                                                        <c-cjfw-m-d-m-management-search-modal 
+                                                        onsetsearchacc={handleSearchKey} >
+                                                        </c-cjfw-m-d-m-management-search-modal >
+                                                    </template>
+                                                </td> 
+                                                <td class="tdStyle">
+                                                    <!-- 영업그룹(유효기간 관리) -->
+                                                    <lightning-input label="영업그룹(유효기간 관리)" type ="Date" value={objCustomer.PVRA_VKGRP__c} onchange={grpChanged} style="margin-bottom: 8px; margin-left: 4px;"></lightning-input>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="tdStyle">
+                                                    <!-- 담당MA -->
+                                                    <div id="PV_PERNR_lu__c" class="required-block ">
+                                                        <p class="required-mark">*</p>
+                                                        <lightning-input-field field-name="PV_PERNR__c" disabled  class="slds-hide" value={objCustomer.PV_PERNR__c}></lightning-input-field>
+                                                        <lightning-input-field field-name="PV_PERNR_lu__c" value={objCustomer.PV_PERNR_lu__c} onchange={pvChanged}></lightning-input-field>
+                                                    </div>
+                                                </td>
+                                                <td class="tdStyle">
+                                                     <!-- 담당MA(유효기간 관리) -->
+                                                    <lightning-input label="담당MA(유효기간 관리)" type ="Date" value={objCustomer.PVRA_PERNR__c} onchange={dangrpChanged} style="margin-bottom: 8px; margin-left: 4px;"></lightning-input>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="tdStyle">
+                                                    <!-- 담당AMA -->
+                                                    <lightning-input-field field-name="PV_ADMINMA__c" disabled  class="slds-hide" value={objCustomer.PV_ADMINMA__c}></lightning-input-field>
+                                                    <lightning-input-field field-name="PV_ADMINMA_lu__c" value={objCustomer.PV_ADMINMA_lu__c} onchange={pvadmChanged}></lightning-input-field>
+                                                </td>
+                                                <td>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="tdStyle">
+                                                    <div id="PV_LOGISCENTER__c" class="required-block ">
+                                                        <p class="required-mark">*</p>
+                                                        <!-- FW 출고센터 -->
+                                                        <lightning-input-field field-name="PV_LOGISCENTER__c" class="slds-hide" value={objCustomer.PV_LOGISCENTER__c}></lightning-input-field>
+                                                        <lightning-input label="FW 출고센터" data-label="FW출고센터" name="enter-search" type="search" class="required-search" value={searchKey} onchange={changeHandleSearch} onkeypress={handleEnter} onfocus={handleClick}></lightning-input>
+                                                    </div>
+                                                    <template if:true={IsShow}>
+                                                        <c-cjfw-m-d-m-management-search-modal 
+                                                        onsetsearchacc={handleSearchKey} >
+                                                        </c-cjfw-m-d-m-management-search-modal >
+                                                    </template>
+                                                </td> 
+                                                <td class="tdStyle">
+                                                    <!-- FW 출고센터(유효기간 관리) -->
+                                                    <lightning-input label="FW 출고센터(유효기간 관리)" type ="Date" value={objCustomer.PVRA_LOGISCENTER__c} onchange={logiscenterChanged} style="margin-bottom: 8px; margin-left: 4px;"></lightning-input>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="tdStyle">
+                                                    <div id="PV_STCDT__c" class="required-block ">
+                                                        <p class="required-mark">*</p>
+                                                        <!-- 세금계산서발행유형 (모달호출) -->
+                                                        <lightning-input-field field-name="PV_STCDT__c" class="slds-hide" value={objCustomer.PV_STCDT__c}></lightning-input-field>
+                                                        <lightning-input label="세금계산서발행유형" data-label="세금계산서발행유형" name="enter-search" type="search" class="required-search" value={searchKey} onchange={changeHandleSearch} onkeypress={handleEnter} onfocus={handleClick}></lightning-input>
+                                                    </div>
+                                                    <template if:true={IsShow}>
+                                                        <c-cjfw-m-d-m-management-search-modal 
+                                                        onsetsearchacc={handleSearchKey} >
+                                                        </c-cjfw-m-d-m-management-search-modal >
+                                                    </template>
+                                                </td>
+                                                <td class="tdStyle">
+                                                    <div id="PV_FITYP__c" class="required-block ">
+                                                        <p class="required-mark">*</p>
+                                                        <!-- 과세유형 -->
+                                                        <lightning-input-field field-name="PV_FITYP__c" value={objCustomer.PV_FITYP__c}></lightning-input-field>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="tdStyle">
+                                                    <!-- 본점사용 유무 -->
+                                                    <lightning-input label="본점사용 유무" type="checkbox" checked={objCustomer.PV_HDOFFICEYN__c}></lightning-input>
+                                                </td> 
+                                                <td class="tdStyle">
+                                                    <!-- 본점코드 -->
+                                                    <lightning-input-field field-name="PV_HKUNNR__c" disabled class="slds-hide"   value={objCustomer.PV_HKUNNR__c}></lightning-input-field>
+                                                    <lightning-input-field field-name="PV_HKUNNR_lu__c" value={objCustomer.PV_HKUNNR_lu__c} disabled={isReadOnlyHKUNNR}></lightning-input-field>
+                                                    <lightning-button variant="brand" label="본점 자동생성" onclick={handleClickHKUNNR} style="margin-left: 4px" ></lightning-button>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td class="tdStyle">
+                                                    <!-- 관계사여부 -->
+                                                    <lightning-input label="관계사여부" type="checkbox" checked={objCustomer.PV_SUBSIDIARYYN__c} onchange={subsidiChange}></lightning-input>
+                                                </td> 
+                                                <td class="tdStyle">
+                                                    <!-- 관계사 코드 (모달호출)  -->
+                                                    <lightning-input-field field-name="PV_VBUND__c" disabled class="slds-hide"   value={objCustomer.PV_VBUND__c}></lightning-input-field>
+                                                    <lightning-input label="관계사 코드" data-label="관계사코드" name="enter-search" type="search" value={searchKey} onchange={changeHandleSearch} onkeypress={handleEnter} onfocus={handleClick}></lightning-input>
+                                                    <template if:true={IsShow}>
+                                                        <c-cjfw-m-d-m-management-search-modal 
+                                                        onsetsearchacc={handleSearchKey} >
+                                                        </c-cjfw-m-d-m-management-search-modal >
+                                                    </template>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="tdStyle">
+                                                    <div id="PV_LAND1__c" class="required-block ">
+                                                        <p class="required-mark">*</p>
+                                                        <!-- 국가키 (정해둔값이 있음.)  -->
+                                                        <lightning-input-field field-name="PV_LAND1__c" disabled class="slds-hide" value={objCustomer.PV_LAND1__c}></lightning-input-field>
+                                                        <lightning-input label="국가키" data-label="국가키" name="enter-search" type="search" class="required-search" value={searchKey} onchange={changeHandleSearch} onkeypress={handleEnter} onfocus={handleClick}></lightning-input>
+                                                        <template if:true={IsShow}>
+                                                            <c-cjfw-m-d-m-management-search-modal 
+                                                            onsetsearchacc={handleSearchKey} >
+                                                            </c-cjfw-m-d-m-management-search-modal >
+                                                        </template>
+                                                    </div>
+                                                </td>
+                                                <td class="tdStyle">
+                                                    <div id="PV_KNVKTYPE__c" class="required-block ">
+                                                        <p class="required-mark">*</p>
+                                                        <!-- 주문유형  -->
+                                                        <lightning-input-field field-name="PV_KNVKTYPE__c" value={objCustomer.PV_KNVKTYPE__c}></lightning-input-field>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="tdStyle">
+                                                    <!-- 휴폐업일자  -->
+                                                    <lightning-input-field field-name="PV_CLOSEDT__c" value={objCustomer.PV_CLOSEDT__c}></lightning-input-field>
+                                                </td>
+                                                <td class="tdStyle">
+                                                    <!-- 지역 (모달호출)  -->
+                                                    <lightning-input-field field-name="PV_REGIO__c" class="slds-hide" value={objCustomer.PV_REGIO__c}></lightning-input-field>
+                                                    <lightning-input label="지역" data-label="지역" name="enter-search" type="search" value={searchKey} onchange={changeHandleSearch} onkeypress={handleEnter} onfocus={handleClick}></lightning-input>
+                                                        <template if:true={IsShow}>
+                                                            <c-cjfw-m-d-m-management-search-modal 
+                                                            onsetsearchacc={handleSearchKey} >
+                                                            </c-cjfw-m-d-m-management-search-modal >
+                                                        </template>
+                                                    <!-- <c-mdm-reference-code-search
+                                                            group-id="T880"
+                                                            label="관계사여부"
+                                                            id={objCustomer.PV_VBUND_lu__c}
+                                                            value={objCustomer.PV_VBUND__c}
+                                                            input-text={inputpv_vbund}
+                                                            is-required={isRequired}
+                                                            is-disabled={isDisabled}
+                                                            is-error={isError}>
+                                                        </c-mdm-reference-code-search> -->
+                                                    <!-- </div> -->
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="tdStyle">
+                                                    <!-- 판매처 -->
+                                                    <lightning-input-field field-name="Account__c" value={objCustomer.Account__c}></lightning-input-field>
+                                                </td>
+                                                <td class="tdStyle"> 
+                                                    <!-- OnlyOneFoodNet사업장ID -->
+                                                </td>  
+                                            </tr>
+                                        </table>
+                                        <!-- 주소검색 -->
+                                            <div class="slds-col slds-size_10-of-12">
+                                                <lightning-button  icon-name="utility:search" variant="brand" label="주소검색" onclick={handleClickHKUNNR} style="margin-left: 4px" ></lightning-button>
+                                            </div>
+                                            <div style="width:100%">
+                                                <div class="slds-grid slds-wrap">
+                                                    <div class="slds-grid slds-wrap">
+                                                        <div class="slds-col slds-size_3-of-12">
+                                                            <lightning-input-field field-name="PV_ADRES_ROADADDR1__c"
+                                                                                    value={objCustomer.PV_ADRES_ROADADDR1__c}
+                                                                                    disabled>
+                                                            </lightning-input-field>
+                                                        </div>
+                                                        <div class="slds-col slds-size_3-of-12">
+                                                            <lightning-input-field field-name="PV_ADRES_ROADADDR2__c"
+                                                                                    value={objCustomer.PV_ADRES_ROADADDR2__c}
+                                                                                    disabled>
+                                                            </lightning-input-field>
+                                                        </div>
+                                                        <div class="slds-col slds-size_3-of-12">
+                                                            <lightning-input-field field-name="PV_ADRES_ZIPCODE__c"
+                                                                                    value={objCustomer.PV_ADRES_ZIPCODE__c}
+                                                                                    disabled>
+                                                            </lightning-input-field>
+                                                        </div>
+                                                        <div class="slds-col slds-size_3-of-12">
+                                                        </div>
+                                                        <div class="slds-col slds-size_3-of-12">
+                                                            <lightning-input-field field-name="PV_ADRES_ADDR1__c"
+                                                                                    value={objCustomer.PV_ADRES_ADDR1__c}
+                                                                                    disabled>
+                                                            </lightning-input-field>
+                                                        </div>
+                                                        <div class="slds-col slds-size_3-of-12">
+                                                            <lightning-input-field field-name="PV_ADRES_ADDR2__c"
+                                                                                    value={objCustomer.PV_ADRES_ADDR2__c}
+                                                                                    disabled>
+                                                            </lightning-input-field>
+                                                        </div>
+                                                        <div class="slds-col slds-size_3-of-12">
+                                                            <lightning-input-field field-name="PV_ADRES_ZIPCODE__c"
+                                                                                    value={objCustomer.PV_ADRES_ZIPCODE__c}
+                                                                                    disabled>
+                                                            </lightning-input-field>
+                                                        </div>
+                                                        <div class="slds-col slds-size_3-of-12">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- 주소검색 End-->
+                                            <!-- 담당자 -->
+                                            <div class="slds-col slds-size_10-of-12">
+                                                <lightning-button  icon-name="utility:search" variant="brand" label="담당자" onclick={handleClickHKUNNR} style="margin-left: 4px" ></lightning-button>
+                                                <div class="table-container table-contact-container table-responsive">
+                                                    <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-p-top_large"
+                                                        aria-label="Example table of Opportunities with vertical borders">
+                                                        <thead>
+                                                            <tr class="slds-line-height_reset">
+                                                                <th class="so-table-3" scope="col">
+                                                                    <div class="" title="No">No</div>
+                                                                </th>
+                                                                <th class="so-table-3" scope="col">
+                                                                    <div class="" title="담당자명">담당자 명</div>
+                                                                </th>
+                                                                <th class="so-table-3" scope="col">
+                                                                    <div class="" title="담당자유형">담당자 유형</div>
+                                                                </th>
+                                                                <th class="so-table-3" scope="col">
+                                                                    <div class="" title="담당자연락처">담당자 연락처</div>
+                                                                </th>
+                                                                <th class="so-table-3" scope="col">
+                                                                    <div class="" title="담당자 부서">담당자 부서</div>
+                                                                </th>
+                                                                <th class="so-table-3" scope="col">
+                                                                    <div class="" title="담당자 직책">담당자 직책</div>
+                                                                </th>
+                                                                <th class="so-table-3" scope="col">
+                                                                    <div class="" title="담당자 전자우편">담당자 전자우편</div>
+                                                                </th>
+                                                                <th class="so-table-3" scope="col">
+                                                                    <div class="" title="담당자 통화가능시간">담당자 통화가능시간</div>
+                                                                </th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <template for:each={contactSelected} for:item="contact">
+                                                                <tr class="slds-hint-parent" key={contact.Id}>
+                                                                    <td class="so-table-3" data-label="No">
+                                                                        {contact.PV_NO__c}
+                                                                    </td>
+                                                                    <td class="so-table-3" data-label="담당자 명">
+                                                                        {contact.PV_NAME1_VK__c}
+                                                                    </td>
+                                                                    <td class="so-table-3" data-label="담당자 유형">
+                                                                        {contact.PV_KNVKGB__c}
+                                                                    </td>
+                                                                    <td class="so-table-3" data-label="담당자 연락처">
+                                                                        {contact.PV_TELF1_VK__c}
+                                                                    </td>
+                                                                    <td class="so-table-3" data-label="담당자 부서">
+                                                                        {contact.PV_ABTNR_VK__c}
+                                                                    </td>
+                                                                    <td class="so-table-3" data-label="담당자 직책">
+                                                                        {contact.PV_PAFKT_VK__c}
+                                                                    </td>
+                                                                    <td class="so-table-3" data-label="담당자 전자우편">
+                                                                        {contact.PV_EMAIL_VK__c}
+                                                                    </td>
+                                                                    <td class="so-table-3" data-label="담당자 통화가능시간">
+                                                                        {contact.PV_TALKT_VK__c}
+                                                                    </td>
+                                                                </tr>
+                                                            </template>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        <!-- 담당자 End-->
+                                    </lightning-tab>
+                                </template>
+                            <!-- 탭 : 기본정보 End-->
+                            <!-- 탭 : 회계정보-->
+                            <template if:true={showTabAccounting}>
+                                <lightning-tab label="회계 정보">
+                                    <h3 class="slds-dynamic-menu__header slds-m-bottom_x-small" style="font-weight: bold; text-decoration: underline #EB5F26; color:black" role="presentation">지급정보</h3>
+                                    <table style="width: 100%">
+                                        <tr>
+                                            <td style=" width: 50%;"> 
+                                                <!-- 매출형태 -->
+                                                <lightning-input-field field-name="PV_BUSAB__c" value={objCustomer.PV_BUSAB__c}></lightning-input-field>
+                                            </td> 
+                                            <td style=" width: 50%;">
+                                                <!-- 고객상태 -->
+                                                <lightning-input-field field-name="PV_CESSION_KZ__c" value={objCustomer.PV_CESSION_KZ__c}></lightning-input-field>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td> 
+                                                <!-- 정렬키 -->
+                                                <lightning-input-field field-name="PV_ZUAWA__c" value={objCustomer.PV_ZUAWA__c}></lightning-input-field>
+                                            </td> 
+                                            <td>
+                                                <!-- 조정계정 -->
+                                                <lightning-input-field field-name="PV_AKONT__c" value={objCustomer.PV_AKONT__c}></lightning-input-field>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td> 
+                                                <!-- 현금관리그룹 -->
+                                                <lightning-input-field field-name="PV_FDGRV__c" value={objCustomer.PV_FDGRV__c}></lightning-input-field>
+                                            </td> 
+                                            <td>
+                                                <!-- 입금여부(FS만 사용) -->
+                                                <lightning-input-field field-name="PV_VRSDG__c" value={objCustomer.PV_VRSDG__c}></lightning-input-field>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <h3 class="slds-dynamic-menu__header slds-m-bottom_x-small" style="font-weight: bold; text-decoration: underline #EB5F26; color:black" role="presentation">세금정보</h3>
+                                    <table style="width: 100%">    
+                                        <tr>
+                                            <td> 
+                                                <!-- 세금분류 -->
+                                                <lightning-input-field field-name="PV_TAXKDD__c" value={objCustomer.PV_TAXKDD__c}></lightning-input-field>
+                                            </td> 
+                                            <td>
+                                                <!-- 세금납부방법 -->
+                                                <lightning-input-field field-name="PV_KATR5__c" value={objCustomer.PV_KATR5__c}></lightning-input-field>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <!-- <div class="slds-grid slds-gutters">
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <lightning-input-field field-name="PV_BUSAB__c" value={objCustomer.PV_STCD3__c}></lightning-input-field>
+                                            <lightning-input-field field-name="PV_ZUAWA__c" value={objCustomer.PV_ZUAWA__c}></lightning-input-field>
+                                            <lightning-input-field field-name="PV_FDGRV__c" value={objCustomer.PV_FDGRV__c}></lightning-input-field>
+                                            <lightning-input-field field-name="PV_TAXKDD__c" value={objCustomer.PV_TAXKDD__c}></lightning-input-field>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <lightning-input-field field-name="PV_CESSION_KZ__c" value={objCustomer.PV_CESSION_KZ__c} onchange={handleInputPhone}></lightning-input-field>
+                                            <lightning-input-field field-name="	PV_AKONT__c" readonly value={objCustomer.PV_AKONT__c}></lightning-input-field>
+                                            <lightning-input-field field-name="PV_VRSDG__c" required value={objCustomer.PV_VRSDG__c}></lightning-input-field>
+                                            <lightning-input-field field-name="PV_KATR5__c" required value={objCustomer.PV_KATR5__c}></lightning-input-field>
+                                        </div>
+                                    </div> -->
+                                </lightning-tab>
+                            </template>
+                            <!-- 탭 : 회계정보 End-->
+                            <template if:true={showTabSales}>
+                                <lightning-tab label="영업 정보">
+                                    <h3 class="slds-dynamic-menu__header slds-m-bottom_x-small" style="font-weight: bold; text-decoration: underline #EB5F26; color:black" role="presentation">영업정보</h3>
+                                    <table style="width: 100%">
+                                        <tr>
+                                            <td style=" width: 50%;"> 
+                                                <!-- 고객분류 (모달호출) -->
+                                                <lightning-input-field field-name="PV_CUHR1__c" value={objCustomer.PV_CUHR1__c}></lightning-input-field>
+                                            </td> 
+                                            <td style=" width: 50%;">
+                                                <!-- 고객분류 (유효기간 관리) -->
+                                                <lightning-input label="고객그룹(유효기간 관리)" type ="Date" value={objCustomer.PVRA_CUHR1__c} onchange={cuhrChanged} style="margin-bottom: 8px; margin-left: 4px;"></lightning-input>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td> 
+                                                <!-- 가격그룹 (모달호출) -->
+                                                <lightning-input-field field-name="PV_KONDA__c" value={objCustomer.PV_KONDA__c}></lightning-input-field>
+                                            </td> 
+                                            <td>
+                                                <!-- 가격그룹 (유효기간 관리) -->
+                                                <lightning-input label="가격그룹(유효기간 관리)" type ="Date" value={objCustomer.PVRA_KONDA__c} onchange={kondagrpChanged} style="margin-bottom: 8px; margin-left: 4px;"></lightning-input>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td> 
+                                                <!-- 단가그룹 (모달호출) -->
+                                                <lightning-input-field field-name="PV_KVGR1__c" value={objCustomer.PV_KVGR1__c}></lightning-input-field>
+                                            </td> 
+                                            <td>
+                                                <!-- 단가그룹 (유효기간 관리) -->
+                                                <lightning-input label="단가그룹(유효기간 관리)" type ="Date" value={objCustomer.PVRA_KVGR1__c} onchange={kvgr1Changed} style="margin-bottom: 8px; margin-left: 4px;"></lightning-input>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td> 
+                                                <!-- 통화 -->
+                                                <lightning-input-field field-name="PV_WAERS__c" value={objCustomer.PV_WAERS__c}></lightning-input-field>
+                                            </td> 
+                                            <td>
+                                                <!-- 납품서유형 -->
+                                                <lightning-input-field field-name="PV_KVGR3__c" value={objCustomer.PV_KVGR3__c}></lightning-input-field>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td> 
+                                                <!-- 장려금유형 -->
+                                                <lightning-input-field field-name="PV_KVGR2__c" value={objCustomer.PV_KVGR2__c}></lightning-input-field>
+                                            </td> 
+                                            <td>
+                                                <!-- 납품서 하단유형 -->
+                                                <lightning-input-field field-name="PV_KVGR3_BOT__c" value={objCustomer.PV_KVGR3_BOT__c}></lightning-input-field>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td > 
+                                                <!--  고객 주문마감 유형코드 -->
+                                                <lightning-input-field field-name="PV_ODCLOSEGB__c" value={objCustomer.PV_ODCLOSEGB__c}></lightning-input-field>
+                                            </td> 
+                                            <td>
+                                                <!-- 가상계좌 출력 제외 -->
+                                                <lightning-input-field field-name="PV_VACCPRTEXCYN__c" value={objCustomer.PV_VACCPRTEXCYN__c}></lightning-input-field>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td > 
+                                                <!--  지급조건 (모달호출) -->
+                                                <lightning-input-field field-name="PV_ZTERM_VV__c" value={objCustomer.PV_ZTERM_VV__c}></lightning-input-field>
+                                            </td> 
+                                            <td>
+                                                <!-- 유통이력 신고대상 유형 -->
+                                                <lightning-input-field field-name="PV_DSTRHISTREGYN__c" value={objCustomer.PV_DSTRHISTREGYN__c}></lightning-input-field>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td > 
+                                                <!--  경로(사업부) (모달호출) -->
+                                                <lightning-input-field field-name="PV_OLD_BIZPLACE_NEW__c" value={objCustomer.PV_OLD_BIZPLACE_NEW__c}></lightning-input-field>
+                                            </td> 
+                                            <td>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <h3 class="slds-dynamic-menu__header slds-m-bottom_x-small" style="font-weight: bold; text-decoration: underline #EB5F26; color:black" role="presentation">물류정보</h3>
+                                    <table style="width: 100%">    
+                                        <tr>
+                                            <td> 
+                                                <!-- 세금분류 -->
+                                                <lightning-input-field field-name="PV_TAXKDD__c" value={objCustomer.PV_TAXKDD__c}></lightning-input-field>
+                                            </td> 
+                                            <td>
+                                                <!-- 세금납부방법 -->
+                                                <lightning-input-field field-name="PV_KATR5__c" value={objCustomer.PV_KATR5__c}></lightning-input-field>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </lightning-tab>
+                            </template>
+                            <template if:true={showTabPayment}>
+                                <lightning-tab label="결제 정보">
+                                    <table class="main-table">
+                                        <tr>
+                                            <td>
+                                                <lightning-input-field field-name="WF_DESCRIPTION__c" value={objCustomer.WF_DESCRIPTION__c}></lightning-input-field>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </lightning-tab>
+                            </template>
+                        </lightning-tabset>
+                        <!-- 탭 (기본, 회계, 영업, 결제 정보) End -->
+                    </lightning-record-edit-form>    
+                </lightning-modal-body>
+                <!-- #Body End-->
+
+                <!-- #Footer -->
+                <lightning-modal-footer>
+                    <div class="slds-clearfix">
+                        <div class="slds-float_right">
+                            <lightning-button variant="neutral" label="취소" onclick={handleClose} class="slds-m-left_x-small"></lightning-button>
+                            <lightning-button variant="brand" label="저장" onclick={handleSave} class="slds-m-left_x-small btnBackColor"></lightning-button>
+                        </div>
+                    </div>
+                </lightning-modal-footer>
+                <!-- #Footer End-->
+            </div>
+        </section>
+    </div>
+    <!-- Loading End -->    
+    <!-- New Modal(관리처 생성) End-->
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</template>

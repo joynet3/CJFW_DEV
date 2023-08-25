@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>친환경 식자재 사용 률</label>
+    <name>ecof_fdr_us_rt__c</name>
+</CustomFieldTranslation>

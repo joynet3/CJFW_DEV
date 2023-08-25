@@ -1,0 +1,54 @@
+<!--
+  @description       : 
+  @author            : doyeon.kim@dkbmc.com
+  @group             : 
+  @last modified on  : 08-18-2023
+  @last modified by  : doyeon.kim@dkbmc.com
+-->
+<template>
+    <lightning-card  title="고객 담보현황 조회" icon-name="utility:form" class ="customContact">
+        <lightning-button label="담보입보" slot="actions" onclick={handleOpenModal} ></lightning-button>
+        <template if:true={FilterTemplateHide}>
+            <div class="allContainer">
+                <lightning-layout class="layout"><!-- style ="background-color:#f3f3f3;"-->
+                    <lightning-layout-item class="itemOne" padding="around-small">
+                        <lightning-input label="거래처" name="enter-search" type="search" value={searchKeyName} onclick={openSearchAccModal} onchange={handleSearch} onkeypress={handleEnter} required></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item class="itemOne customSelectBox" padding="around-small">
+                        <c-comm-custom-select
+                            is-required
+                            is-empty-option={emptyOption}
+                            options={options}
+                            label="담보구분"
+                            onselected={handleSelectedDambo}
+                            >
+                        </c-comm-custom-select>
+                    </lightning-layout-item>
+                    <lightning-layout-item class="itemOne" padding="around-small">
+                        <lightning-input label="증서번호" name="enter-search" value={searchCertiCode} onchange={handleCertiCodeSearch} onkeypress={handleCertiEnter} placeholder="100-000-202300803648"></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item class="itemTwo" padding="around-small" style="padding-top:50px; text-align:left; padding-left:0px;">
+                        <p style="text-align:left;">※ 거래처&담보구분 또는 증서번호 전체를 입력하셔야 합니다.</p>
+                    </lightning-layout-item>
+                    <!-- <lightning-layout-item class="itemThree" padding="around-small" style="padding-top:50px; text-align:left; padding-left:0px; padding-right:44px;">
+                    </lightning-layout-item> -->
+                    <lightning-layout-item class="itemThree" padding="around-small" style="padding-top: 38px; text-align:right;">
+                        <lightning-button
+                            type="submit"
+                            name="submit"
+                            label="조회"
+                            variant="brand"
+                            onclick={searchAll}
+                        >
+                        </lightning-button>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </div>
+        </template>
+
+        <!-- SHOW AND HIDE -->
+        <div style ="text-align: center; background-color: #f3f3f3"> 
+            <a onclick={showAndHide}>show and hide</a>
+        </div>
+    </lightning-card>
+</template>

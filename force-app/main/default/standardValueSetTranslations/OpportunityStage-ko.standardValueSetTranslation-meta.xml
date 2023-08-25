@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StandardValueSetTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <valueTranslation>
+        <masterLabel>Closed Lost</masterLabel>
+        <translation>수주 실패</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>Closed Won</masterLabel>
+        <translation>수주 성공</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>Needs Analysis</masterLabel>
+        <translation>영업기회 분석</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>Negotiation</masterLabel>
+        <translation>협상</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>Proposal</masterLabel>
+        <translation>제안</translation>
+    </valueTranslation>
+</StandardValueSetTranslation>

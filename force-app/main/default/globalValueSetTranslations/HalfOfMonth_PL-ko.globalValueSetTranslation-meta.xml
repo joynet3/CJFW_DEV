@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSetTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <valueTranslation>
+        <masterLabel>Early Apr</masterLabel>
+        <translation>4월 상순</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>Early Aug</masterLabel>
+        <translation>8월 상순</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>Early Dec</masterLabel>
+        <translation>12월 상순</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>Early Feb</masterLabel>
+        <translation>2월 상순</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>Early Jan</masterLabel>
+        <translation>1월 상순</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>Early Jul</masterLabel>
+        <translation>7월 상순</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>Early Jun</masterLabel>
+        <translation>6월 상순</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>Early Mar</masterLabel>
+        <translation>3월 상순</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>Early May</masterLabel>
+        <translation>5월 상순</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>Early Nov</masterLabel>
+        <translation>11월 상순</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>Early Oct</masterLabel>
+        <translation>10월 상순</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>Early Sep</masterLabel>
+        <translation>9월 상순</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>Late Apr</masterLabel>
+        <translation>4월 하순</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>Late Aug</masterLabel>
+        <translation>8월 하순</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>Late Dec</masterLabel>
+        <translation>12월 하순</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>Late Feb</masterLabel>
+        <translation>2월 하순</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>Late Jan</masterLabel>
+        <translation>1월 하순</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>Late Jul</masterLabel>
+        <translation>7월 하순</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>Late Jun</masterLabel>
+        <translation>6월 하순</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>Late Mar</masterLabel>
+        <translation>3월 하순</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>Late May</masterLabel>
+        <translation>5월 하순</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>Late Nov</masterLabel>
+        <translation>11월 하순</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>Late Oct</masterLabel>
+        <translation>10월 하순</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>Late Sep</masterLabel>
+        <translation>9월 하순</translation>
+    </valueTranslation>
+</GlobalValueSetTranslation>

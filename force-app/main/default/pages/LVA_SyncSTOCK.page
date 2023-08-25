@@ -1,0 +1,22 @@
+<apex:page standardController="STOCK__c" recordSetVar="STOCKs">
+
+    <apex:includeLightning />
+    <div id="lightning" />
+
+    <script>    
+        if(SfdcApp.projectOneNavigator) {
+            SfdcApp.projectOneNavigator.fireContainerEvent(
+                "force:navigateToComponent",
+                {
+                    componentDef: 'c:CK_ManualSyncData',
+                    componentAttributes: {
+                        "sObjName" : "STOCK__c" ,
+                        "pSyncType" : "RECEIVE" 
+                    },
+                    resetHistory: false
+                }
+            );
+        }
+    </script>
+
+</apex:page>

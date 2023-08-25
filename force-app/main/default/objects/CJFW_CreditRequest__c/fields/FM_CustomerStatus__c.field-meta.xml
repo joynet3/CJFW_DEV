@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>FM_CustomerStatus__c</fullName>
+    <externalId>false</externalId>
+    <formula>CASE( TEXT( Account__r.CustomerStatus__c ), 
+&quot;01&quot;, &quot;신규점(Open)&quot;, 
+&quot;02&quot;, &quot;기존점(정상처)&quot;, 
+&quot;03&quot;, &quot;기존점(무회입처)&quot;, 
+&quot;04&quot;, &quot;기존점(무매출처)&quot;, 
+&quot;05&quot;, &quot;기존점(출고정지)&quot;, 
+&quot;06&quot;, &quot;중단점&quot;, 
+&quot;07&quot;, &quot;기존점(무매출/무회입)&quot;, 
+&quot;08&quot;, &quot;기존점(심사관리)&quot;, 
+&quot;09&quot;, &quot;중단점(회입관리)&quot;, 
+TEXT( Account__r.CustomerStatus__c ))</formula>
+    <label>Customer Status</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

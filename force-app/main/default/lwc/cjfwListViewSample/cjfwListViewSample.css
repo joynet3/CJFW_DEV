@@ -1,0 +1,18 @@
+/* 컴포넌트의 CSS 파일 (picklistInput.css) */
+.date-separator-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .date-separator {
+    padding: 0 5px;
+    font-weight: bold;
+  }
+  .list_view_container{
+    background-color: #f3f3f3;
+  }
+
+  .search-button-item {
+    margin-right: 2rem; 
+}

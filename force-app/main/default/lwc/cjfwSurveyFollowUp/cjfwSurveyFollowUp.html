@@ -1,0 +1,102 @@
+<template>
+
+    <template for:each={questions} for:item="question" for:index="qIdx">
+        <!-- 연계질문 자식 -->
+        <template lwc:if={question.isChild}>
+              <li class="slds-accordion__list-item" key={question.id}>
+                <section class="slds-accordion__section slds-is-open">
+                  <!--  -->
+                  <div class="slds-accordion__summary">
+                    <h2 class="slds-accordion__summary-heading">
+                      <button data-qidx={qIdx} class="slds-button slds-button_reset slds-accordion__summary-action" aria-controls={question.id} aria-expanded="true" title="" onclick={handleAccordionClick}>
+                        <svg class="slds-accordion__summary-action-icon slds-button__icon slds-button__icon_left" aria-hidden="true">
+                          <template lwc:if={question.isShowDetail}>
+                            <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#down"></use>                              
+                          </template>
+                          <template lwc:else>
+                            <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#switch"></use>
+                          </template>
+                        </svg>
+                        <span class="slds-accordion__summary-content">{question.content}</span>
+                      </button>
+                    </h2>
+                  </div>
+                  <div class="slds-accordion__content" id={question.id}>
+                    <template lwc:if={question.isShowDetail}>
+                      <div class="slds-text-longform wirteContainer">
+                          <div class="slds-text-body_regular">    
+                            <!-- 질문 형식이 객관식 -->
+                            <template lwc:if={question.isMultiple}>
+                              <!-- 객관식 - 복수선택 -->
+                              <template lwc:if={question.isMultipleChoice}>
+                                  <div class="gridContainer">
+                                      <template for:each={question.optionList} for:item="option">
+                                          <div class="mtb_3" key={option.id}>
+                                              <lightning-input data-qidx={qIdx}  type="checkbox" value={option.id} label={option.label} name="inputCheck" onchange={handleMultipleChange}></lightning-input>      
+                                          </div>
+                                      </template>
+                                  </div>
+                              </template>
+                              <!-- 객관식 - 단수선택 -->
+                              <template lwc:else>
+                                  <div class="radioContainer">
+                                      <lightning-radio-group 
+                                          data-qidx={qIdx}
+                                          label="Radio Group"
+                                          options={question.optionList}                                                                
+                                          type="radio"
+                                          name={question.id}
+                                          variant="label-hidden"
+                                          onchange={handleSingleChange}
+                                      ></lightning-radio-group>
+                                  </div>
+                              </template>
+                            </template>
+                            <!-- 질문 형식이 주관식, 날짜, 시간 -->
+                            <template lwc:else>    
+                                  <div>
+                                      <template lwc:if={question.isDate}>
+                                          
+                                          <template lwc:if={question.isFromTo}>
+                                              <lightning-input data-qidx={qIdx} type="date" name="dateInputFrom" label="From" onchange={handleDateChange} ></lightning-input>
+                                              <lightning-input data-qidx={qIdx} type="date" name="dateInputTo" label="To"     onchange={handleDateChange} ></lightning-input>
+                                          </template>
+                                          <template lwc:else>
+                                              <lightning-input data-qidx={qIdx} type="date" name="dateInput" label="Enter a date" variant="label-hidden" onchange={handleDateChange} ></lightning-input>
+                                          </template>
+                                      </template>
+                                      <template lwc:elseif={question.isTime}>
+                                        <lightning-input data-qidx={qIdx} type="time" name="timeInputFrom" label="From" onchange={handleTimeChange} ></lightning-input>
+                                        <lightning-input data-qidx={qIdx} type="time" name="timeInputTo" label="To"     onchange={handleTimeChange} ></lightning-input>
+                                      </template>
+                                      <template lwc:else>
+                                              <lightning-textarea data-qidx={qIdx} name="textArea" label="" variant="label-hidden" onchange={handleTextChange} ></lightning-textarea>
+                                      </template>
+                                  </div>
+                            </template>
+                        </div>
+                      </div>
+                    </template>
+                    <template lwc:else>
+                    </template>
+                  </div>
+                </section>
+              </li>
+              <!-- 객관식 - 복수선택 -->
+              <template lwc:if={question.isMultipleChoice}>
+              </template>
+              
+              <template lwc:else>
+                  <!-- Option 값 선택 후 Sub Question 데이터가 존재 [s] -->
+                    <template lwc:if={question.isSelected}>
+                        <template lwc:if={question.selectedValue.isFollowUp}>
+                            <c-cjfw-survey-follow-up parent-option-id={question.selectedValue.id} key={question.selectedValue.id} questions={question.selectedValue.subQuestionList} onchangeddata={handleDataChangeFrom}></c-cjfw-survey-follow-up>
+                        </template>
+                  </template>
+                  <!-- Option 값 선택 후 선택 된 데이터가 존재 [e] -->
+              </template>
+        </template>
+
+      </template>
+
+</template>

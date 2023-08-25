@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>fm_ApprovalStatusInfo__c</fullName>
+    <externalId>false</externalId>
+    <formula>CASE(
+   DocStatus__c, 
+   &quot;임시저장&quot;, DocStatus__c, 
+   &quot;진행&quot;, DocStatus__c &amp;&quot;[&quot;&amp;   TEXT(approvedCount__c ) &amp;&quot;/&quot;&amp; TEXT(totalLineCount__c )&amp;&quot;]&quot;,
+   &quot;완료&quot;, DocStatus__c &amp;&quot;[&quot;&amp;   TEXT(approvedCount__c ) &amp;&quot;/&quot;&amp; TEXT(totalLineCount__c )&amp;&quot;]&quot;,
+   DocStatus__c
+)</formula>
+    <label>결재상태</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>IsMobile__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>모바일 노출여부 (true-노출 / false-노출안함)</description>
+    <externalId>false</externalId>
+    <label>IsMobile</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

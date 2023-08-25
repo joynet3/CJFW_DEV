@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>IsSystemEmail__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Classic Email Template 에서 Verify Merge Field 를 이용하여 System 개인화 여부</description>
+    <externalId>false</externalId>
+    <inlineHelpText>IsSystem 이 True 일 경우 IsSaveAsActivity 의 값에 상관없이 활동 저장</inlineHelpText>
+    <label>IsSystemEmail</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

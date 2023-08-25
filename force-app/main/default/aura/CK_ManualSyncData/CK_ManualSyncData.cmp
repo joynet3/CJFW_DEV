@@ -1,0 +1,137 @@
+<!--
+* ==================================================================================
+*   File Name   : CK_ManualSyncData.cmp
+*   Author      : Minje.kim
+*   Date        : 2022.06.16
+*   Description : SAP to SFDC Data Sync
+*   Modification Log
+* ==================================================================================
+*   Ver     Date          Author          Modification
+* ==================================================================================
+*   1.0     2022.06.16    Minje.kim       Create
+* ==================================================================================
+-->
+
+<aura:component implements="lightning:availableForFlowActions,flexipage:availableForAllPageTypes,force:appHostable,force:hasRecordId,force:lightningQuickActionWithoutHeader,force:hasSObjectName" controller="CK_ManualSyncDataController" access="global">
+
+    <!-- Attribute -->
+    <aura:attribute name="isMobile" type="Boolean" default="false" description="Mobile, DeskTop 구분자"/>
+    <aura:attribute name="showSpinner" type="Boolean" default="false" />
+    <aura:attribute name="sObjName" type="String" description="호출한 개체 API명"/>
+    <aura:attribute name="sObjLabel" type="String" description="호출한 개체 라벨명"/>
+    <aura:attribute name="pSyncType" type="String" description="작업 유형 RECEIVE, RECONFIRM"/>
+    <aura:attribute name="listTarget" type="List" default="[]"/>
+    
+    <aura:attribute name="mapCondition" type="Map" />
+
+    <!-- Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.fnInit}" />
+
+    <aura:attribute name="CommonConfirm" type="Aura.Component" />
+
+    <aura:html tag="style">
+        .cuf-content {
+        padding: 0 0rem !important;
+        }
+
+        .slds-p-aroundmedium {
+        padding: 0rem !important;
+        }
+
+        .slds-modal__content {
+        overflow-y: hidden !important;
+        height: unset !important;
+        max-height: unset !important;
+        width: 100%; 
+        }
+    </aura:html>
+
+
+    <div aura:id="modalContainer">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="{!v.isMobile ? 'padding:0px; margin:0px; max-width:100vw; min-width: 100vw; width: 100vw;' : 'max-width:20vw; min-width: 20vw; width: 20vw;'}">
+
+                <aura:if isTrue="{!v.showSpinner}">
+                    <lightning:spinner alternativeText="Loading" size="large" variant="brand" />
+                </aura:if>
+
+                <aura:if isTrue="{!v.pSyncType == 'RECEIVE'}">
+                    <!-- Header -->
+                    <div class="modal-header slds-modal__header">
+                        <h2 class="title slds-text-heading--medium">수동 데이터 동기화</h2>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="slds-modal__content slds-p-horizontal_medium" id="modal-content-id-1">                    
+                        <lightning:layout>
+                            <lightning:layoutItem flexibility="auto" size="12" padding="around-small">
+
+                                <div class="slds-grid slds-gutters" style="padding-bottom:15px">
+                                    <div class="slds-col slds-size_5-of-12" style="text-align:right">
+                                        <lightning:input type="checkbox" label="주문" checked="{!v.mapCondition.pIsOrderChecked}"/>
+                                    </div> 
+                                    <div class="slds-col slds-size_7-of-12" style="text-align:left">
+                                        <lightning:input style="max-width:80%" variant="label-hidden" disabled="{!!v.mapCondition.pIsOrderChecked}" type="text" label="기준일" value="{!v.mapCondition.pOrderDate}"/>
+                                    </div> 
+                                </div>
+                                
+                                <div class="slds-grid slds-gutters" style="padding-bottom:15px">
+                                    <div class="slds-col slds-size_5-of-12" style="text-align:right">
+                                        <lightning:input type="checkbox" label="출고" checked="{!v.mapCondition.pIsReleaseChecked}"/>
+                                    </div> 
+                                    <div class="slds-col slds-size_7-of-12" style="text-align:left">
+                                        <lightning:input style="max-width:80%" variant="label-hidden" disabled="{!!v.mapCondition.pIsReleaseChecked}" type="text" label="기준일" value="{!v.mapCondition.pReleaseDate}"/>
+                                    </div> 
+                                </div>
+
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-col slds-size_5-of-12" style="text-align:right">
+                                        <lightning:input type="checkbox" label="재고" checked="{!v.mapCondition.pIsStockChecked}"/>
+                                    </div> 
+                                    <div class="slds-col slds-size_7-of-12" style="text-align:left">
+                                    </div> 
+                                </div>
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                    </div>
+
+                    <!-- Footer -->
+                    <footer class="modal-footer slds-modal__footer">
+                        <lightning:button label="취소" onclick="{!c.fnClose}" />
+                        <lightning:button variant="brand" label="동기화" onclick="{!c.fnReceiveConfirm}"/>
+                    </footer>
+                </aura:if>
+                
+                <aura:if isTrue="{!v.pSyncType == 'RECONFIRM'}">
+                    <!-- Header -->
+                    <div class="modal-header slds-modal__header">
+                        <h2 class="title slds-text-heading--medium">재확정</h2>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="slds-modal__content slds-p-horizontal_medium" id="modal-content-id-1">                    
+                        <lightning:layout>
+                            <lightning:layoutItem flexibility="auto" size="12" padding="around-small">
+                                <div style="text-align:center">                                  
+                                    <br/>
+                                    {!v.sObjName == 'ORDER_H__c' ? '입고' : '출고' }
+                                    재확정을 진행하시겠습니까?     
+                                </div>                 
+                                <br/>
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                    </div>
+
+                    <!-- Footer -->
+                    <footer class="modal-footer slds-modal__footer">
+                        <lightning:button label="취소" onclick="{!c.fnClose}" />
+                        <lightning:button variant="brand" label="재확정" onclick="{!c.fnReConfirm}"/>
+                    </footer>
+                </aura:if>
+
+            </div>
+                {!v.CommonConfirm}
+            </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+</div>
+</aura:component>

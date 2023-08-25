@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ContractPeriodValidationCheck</fullName>
+    <active>true</active>
+    <description>계약시작일이 마감일자 이전일 경우 에러 발동</description>
+    <errorConditionFormula>CloseDate &gt;  ContractStartDate__c</errorConditionFormula>
+    <errorMessage>계약시작일을 마감 일자 이후로 설정해주세요.</errorMessage>
+</ValidationRule>

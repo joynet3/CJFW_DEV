@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label></label>
+    <name>SubjectLocation__c</name>
+    <picklistValues>
+        <masterLabel>과밀억제권역,용인,세종,화성</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>광역시,안산,김포,광주,파주</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>그 밖의 지역</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>서울시</masterLabel>
+        <translation></translation>
+    </picklistValues>
+</CustomFieldTranslation>

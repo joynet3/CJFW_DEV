@@ -1,0 +1,50 @@
+<template>
+    <lightning-card label="Unit Adjustment Request" icon-name="standard:custom" title="단수조정 신청" type="media" href="#" class="list_view_container unitAdjustmentRequest related-card">
+        <div slot="actions">
+            <lightning-button class="mr10" variant="brand" label="조회" ></lightning-button>
+            <lightning-button label="저장"></lightning-button>
+        </div>
+        
+        <div class="detailContainer">
+            <div class="inlineBlock">
+                <table class="cjfwtable fixlayout">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>매출등록액(당사시스템)</th>
+                            <th>고객사요청액</th>
+                            <th>차이(조정 요청액)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>공급가액</td>
+                            <td class="textRight">1,844,638</td>
+                            <td class="textRight">1,844,638</td>
+                            <td class="textRight">
+                                <input type="number" class="slds-input textRight" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>부가세</td>
+                            <td class="textRight">184,463</td>
+                            <td class="textRight">184,463</td>
+                            <td class="textRight">
+                                <input type="number" class="slds-input textRight" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>총계</td>
+                            <td class="textRight">2,029,101</td>
+                            <td class="textRight">2,029,101</td>
+                            <td class="textRight">
+                                <input type="number" class="slds-input textRight" disabled />
+                            </td>
+                        </tr>
+                      
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </lightning-card>
+</template>

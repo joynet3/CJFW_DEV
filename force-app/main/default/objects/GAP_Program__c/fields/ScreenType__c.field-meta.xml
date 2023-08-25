@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ScreenType__c</fullName>
+    <externalId>false</externalId>
+    <label>화면타입</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>전자결재</fullName>
+                <default>false</default>
+                <label>전자결재</label>
+            </value>
+            <value>
+                <fullName>검색</fullName>
+                <default>false</default>
+                <label>검색</label>
+            </value>
+            <value>
+                <fullName>리포트</fullName>
+                <default>false</default>
+                <label>리포트</label>
+            </value>
+            <value>
+                <fullName>상세조회</fullName>
+                <default>false</default>
+                <label>상세조회</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

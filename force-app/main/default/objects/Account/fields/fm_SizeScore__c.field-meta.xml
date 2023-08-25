@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>fm_SizeScore__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF( NumberOfEmployees &gt;= 1300 , 4 , IF(NumberOfEmployees &gt;= 900, 3, IF(NumberOfEmployees &gt;=500, 2, 1)))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>[ 4 Point = Company Size &gt;= 1300 ] [ 3 Point = Company Size &gt;= 900 ] [ 2 Point = Company Size &gt;= 500 ] [ 1 Point = Company Size &lt; 500 ]</inlineHelpText>
+    <label>Size Score</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

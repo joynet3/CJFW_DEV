@@ -1,0 +1,107 @@
+.btnContainer {
+    margin-top:22px;
+}
+
+/* .cjfwtable thead th {
+    position: sticky;
+    top: 0px;
+    z-index: 1;
+} */
+.textLeft {
+    text-align: left;
+}
+.textCenter {
+    text-align: center;
+}
+.textRight {
+    text-align: right;
+}
+
+.cjfwtable th {
+    text-align: center;
+}
+.cjfwtable th, .cjfwtable td {
+    height: 30px;
+}
+
+table.cjfwtable > thead > tr > th:first-child {
+    width: 60px;
+}
+
+.inlineBlock {
+    display: inline-block;
+}
+
+.tableleftContainer {
+    width: 1000px;
+    height: 250px;
+    overflow: hidden;
+    /* 17px 스크롤 크기 */
+    /* height: calc(100% - 17px);  */
+}
+
+.tableRightContainer {
+    width: calc(100% - 1000px);
+    overflow: auto;
+    /* 17px 스크롤 크기 */
+    height: 250px;
+}
+
+.gridContainer {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.btnFooter .gridContainer > div {
+    padding: 5px;
+}
+
+.grid_flow_column {
+    grid-auto-flow: column;
+    grid-template-rows: repeat(3, 1fr);
+    grid-template-columns: 1fr;
+}
+
+.w40 {
+    width: 40%;
+}
+
+.w59 {
+    width: 59%;
+}
+
+.tableRightContainer table.cjfwtable tr > th:first-child,
+.tableRightContainer table.cjfwtable tr > td:first-child  {
+    padding: 4px 8px;
+}
+
+table.cjfwtable.fixlayout {
+    table-layout: fixed;
+}
+
+td input {
+    height: 18px;
+}
+
+.red {
+    color:red;
+}
+
+.blue {
+    color:blue;
+}
+
+.tableleftContainer table.cjfwtable tr > th:last-child,
+.tableleftContainer table.cjfwtable tr > td:last-child  {
+    width: 50px;
+}
+
+.focusNotVisible {
+    outline: initial;
+}
+
+.focusNotVisible input {
+    width: 100%;
+    border: 0;
+    outline: initial;
+}

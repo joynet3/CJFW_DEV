@@ -1,0 +1,58 @@
+/* datatableExample.css */
+.table-container {
+    height: 250px; /* 테이블 기본 높이 지정 */
+    overflow-x: auto; /* 가로 스크롤 넘치면 자동스크롤 */
+    overflow-y: auto; /* 세로 스크롤 넘치면 자동스크롤 */
+    max-width: 100%;
+    border: 0.02px solid #c4c4c4;
+}
+
+.totalCnt{
+    background-color: #f3f3f3;
+    font-weight: bold;
+    padding-left: 5px!important;
+}
+
+.cjfwMDMReferenceCreateModal th:nth-child(-n+5),
+.cjfwMDMReferenceCreateModal td:nth-child(-n+5) {
+    position: sticky;
+    left: 0;
+    background-color: gray; /* Optional: To make the sticky columns visually distinct */
+    z-index: 1; /* Optional: To prevent sticky columns from overlapping with other elements */
+}
+
+.searchHeader{
+    /* border: solid 2px red; */
+}
+
+
+
+
+.custom-button-container {
+    /* pc일경우만 스타일적용 */
+    @media screen and (min-width: 1000px) {
+        padding-top: 2rem; /* 원하는 스타일(PC) */
+    }
+}
+
+
+
+/* 모바일 스타일 */
+@media screen and (max-width: 768px) {
+    .searchHeader {
+        flex: none; /* 너비 제한 해제 */
+        /* border: solid 2px blue; */
+        /* padding: 10px;  *//* 패딩 값 조정 */
+        flex-direction: column; /* 버튼을 위아래로 배치 */
+        align-items: center; /* 가운데 정렬 */
+    }
+
+    .slds-button {
+        width: 260px; /* 버튼 가로 너비 설정 */
+        height: 35px; /* 버튼 높이 설정 */
+        font-size: 14px; /* 글자 크기 설정 */
+        border-radius: 4px; /* 둥근 모서리 설정 */
+        margin-left: 5px; /* 왼쪽 마진 5px 설정 */
+    }
+
+}

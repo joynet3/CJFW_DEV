@@ -1,0 +1,23 @@
+.selectboxContainer{
+    /* border: 2px solid rgb(46, 233, 193); */
+    width: 30%;
+    margin : auto;
+}
+
+.excelContainer{
+    border: 1px solid #ccc;
+    width: 97%;
+    margin : auto; 
+    margin-top: 1rem;
+}
+
+.tablecontent th,
+.tablecontent td {
+    padding: 5px;
+    border: 1px solid #ccc;
+}
+
+.tablecontent tr {
+    background-color: #C9E6EE;
+    border: 1px solid #ccc;
+}

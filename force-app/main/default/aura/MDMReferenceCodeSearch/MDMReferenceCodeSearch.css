@@ -1,0 +1,51 @@
+.THIS .customRequired{	
+	/*
+	font-weight: 400;
+	*/
+	font-weight: bold;
+ }
+.THIS .customRequired:before {
+	content: "*";
+	margin: 0 0.125rem 0 0.125rem;
+	color: rgb(194, 57, 52);
+	float: left;
+}
+
+.THIS .isRequiredField {
+	border-color: rgb(234, 0, 30) !important;
+	border-width: 2px !important;
+}
+
+.THIS .slds-form-element__label {
+	display:inline-block !important;
+}
+.THIS .field{
+    width: 200px !important;
+}
+
+.THIS .isDisabled {
+	background-color: rgb(236, 235, 234) !important;
+	border-color: rgb(201, 199, 197) !important;
+	cursor: not-allowed !important;
+	-webkit-user-select: none !important;
+	-moz-user-select: none !important;
+	-ms-user-select: none !important;
+	user-select: none !important;
+}
+
+.THIS .width_100 {
+	width:100% !important;
+}
+
+.THIS .inlineBlock {
+	display:inline-block !important;
+}
+
+.THIS .boxLarge {
+	min-width: 100% !important;
+}
+
+.THIS .mb_05 {
+	margin-bottom: 0.5rem;
+	margin-top: 0.5rem;
+}

@@ -1,0 +1,21 @@
+<!--
+* ==================================================================================
+*   File Name   : DN_AddrSearch_evt.evt
+*   Author      : Soyoung.Jung
+*   Date        : 2019.04.02
+*   Description : 도로명 주소 검색 모달 창에서 데이터 전달
+*   Modification Log
+* ==================================================================================
+*   Ver     Date            Author          Modification
+* ==================================================================================
+*   1.0     2019.04.02      Soyoung.Jung    Create
+* ==================================================================================
+-->
+
+<aura:event type="APPLICATION">
+
+    <aura:attribute name="actionType" type="String" default="SELECT" description="액션 유형" />
+    <aura:attribute name="objAddress" type="DN_AddrSearchController.WrapperAddress"
+                    description="도로명 주소 검색 모달 창에서 선택 된 도로명 주소 오브젝트" />
+
+</aura:event>

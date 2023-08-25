@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Type__c</fullName>
+    <description>질문유형</description>
+    <externalId>false</externalId>
+    <label>Type</label>
+    <required>true</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>openended</fullName>
+                <default>false</default>
+                <label>주관식</label>
+            </value>
+            <value>
+                <fullName>multiple</fullName>
+                <default>false</default>
+                <label>객관식</label>
+            </value>
+            <value>
+                <fullName>date</fullName>
+                <default>false</default>
+                <label>날짜</label>
+            </value>
+            <value>
+                <fullName>time</fullName>
+                <default>false</default>
+                <label>시간</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

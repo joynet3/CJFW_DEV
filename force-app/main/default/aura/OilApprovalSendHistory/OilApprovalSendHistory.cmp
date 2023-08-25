@@ -1,0 +1,150 @@
+<!--
+* ==================================================================================
+*   File Name   : OilApprovalSendHistory.cmp
+*   Author      : Minje.Kim
+*   Date        : 2023.01.10
+*   Description : 주유비 전표처리 전송 이력 관리
+*   Modification Log
+* ==================================================================================
+*   Ver     Date          Author          Modification
+* ==================================================================================
+*   1.0     2023.01.10    Minje.Kim    Create
+* ==================================================================================
+-->
+<aura:component implements="force:appHostable" controller="OilApprovalSendHistory">
+
+    <!-- 사용자 유형 Attribute -->
+    <aura:attribute name="userType" type="String" description="사용자 유형 - BM(사업부장), TM(팀장), IT, AS(어시스턴스)"/>  
+
+    <!-- 선택목록 리스트 및 선택 Attribute (검색조건) --> 
+    <aura:attribute name="listYear" type="List" default="[]" description="년도 선택목록 리스트"/>
+    <aura:attribute name="listMonth" type="List" default="[]" description="월 선택목록 리스트"/>
+    <aura:attribute name="selectedYear" type="String"  description="선택된 년도"/>
+    <aura:attribute name="selectedMonth" type="String"  description="선택된 월"/>
+    <aura:attribute name="listSelectStatus" type="List" description="제출상태 선택목록 리스트"/>   
+    <aura:attribute name="selectedStatus" type="String" default="Request" description="선택된 제출상태"/> 
+    <aura:attribute name="listSelectHeadOffice" type="List" description="SU 선택목록 리스트"/>    
+    <aura:attribute name="listSelectSU" type="List" description="사업부 선택목록 리스트"/>   
+    <aura:attribute name="mapSelectSU" type="Map" description="사업부 선택목록 Map (key : SU Code / Value : 해당 SU 하위 사업부 리스트)"/>
+    <aura:attribute name="listSelectTeam" type="List" description="팀 선택목록 리스트"/>
+    <aura:attribute name="mapSelectTeam" type="Map" description="팀 선택목록 Map (key : 사업부 Code / Value : 해당 SU 하위 팀 리스트)"/>
+    <aura:attribute name="selectedHeadOffice" type="String" default="none" description="선택된 SU"/>   
+    <aura:attribute name="selectedSU" type="String" default="none" description="선택된 사업부"/>           
+    <aura:attribute name="selectedTeam" type="String" default="none" description="선택된 팀"/>    
+    <aura:attribute name="isDisableSU" type="Boolean" default="true" description="SU 선택 비활성화 여부"/> 
+    <aura:attribute name="isDisableHeadOffice" type="Boolean" default="true" description="사업부 선택 비활성화 여부"/>
+    <aura:attribute name="isDisableTeam" type="Boolean" default="true" description="팀 선택 비활성화 여부"/>
+    <aura:attribute name="strSearchMA" type="String" default="" description="입력된 MA명"/>
+
+    <!-- 데이터 테이블 Attribute -->
+    <aura:attribute name="listTargetId" type="List" description="전송이력 상태 업데이트 대상 데이터 리스트"/>
+    <aura:attribute name="listColumn" type="List" description="전송이력 데이터리스트 헤더"/>
+    <aura:attribute name="listSearchWrapper" type="List" description="전송이력 데이터 리스트"/>
+    <aura:attribute name="mapActivityReportId" type="Map" description="사원번호 별 활동보고 데이터 셋"/>   
+    <aura:attribute name="sortedBy" type="String" default="Name" description="테이블 정렬 기준"/>
+    <aura:attribute name="sortedDirection" type="String" default="asc" description="테이블 정렬 방향"/>
+    <aura:attribute name="keyField" type="String" default="Id" description="데이터 테이블 Key"/>
+
+    <!-- ETC Attribute -->
+    <aura:attribute name="showSpinner" type="Boolean" default="false"/>
+    
+    <!-- Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.fnInit}"/>
+
+    <aura:if isTrue="{!v.showSpinner}">
+        <lightning:spinner aura:id="spinner" alternativeText="Loading" variant="brand" size="medium" />
+    </aura:if>
+
+    <div class="slds-col modal-body scrollable slds-p-around--medium divContent" style="padding:0">
+        <!-- 검색 조건 설정 화면 -->
+        <div>
+            <div class="slds-page-header">
+                <div class="slds-page-header__row">
+                    <div class="slds-page-header__col-title">
+                        <div class="slds-media">
+                            <div class="slds-media__body">
+                                <lightning:layout multipleRows="true">
+                                    <lightning:layoutItem size="3">
+                                        <lightning:layout multipleRows="true">
+                                            <lightning:layoutItem size="6" padding="horizontal-small">
+                                                <lightning:select class="custom-form-element" label="기준년도" onchange="{!c.fnChangeDate}" value="{!v.selectedYear}">
+                                                    <aura:iteration items="{!v.listYear}" var="option">
+                                                        <option text="{!option.label}" value="{!option.value}" selected="{!option.selected}"/>
+                                                    </aura:iteration>
+                                                </lightning:select>
+                                            </lightning:layoutItem>
+                                            <lightning:layoutItem size="6" padding="horizontal-small">
+                                                <lightning:select class="custom-form-element" label="기준월" onchange="{!c.fnChangeDate}" value="{!v.selectedMonth}">
+                                                    <aura:iteration items="{!v.listMonth}" var="option">
+                                                        <option text="{!option.label}" value="{!option.value}" selected="{!option.selected}"/>
+                                                    </aura:iteration>
+                                                </lightning:select>
+                                            </lightning:layoutItem>
+                                        </lightning:layout>
+                                    </lightning:layoutItem>
+
+                                    <lightning:layoutItem size="3">
+                                        <lightning:layout multipleRows="true">
+                                            <lightning:layoutItem size="6" padding="horizontal-small">
+                                                <lightning:select name="colorId" label="SU" value="{!v.selectedHeadOffice}" onchange="{!c.fnChangeHeadOffice}" disabled="{!v.isDisableHeadOffice}" variant="label-inline" required="true">
+                                                    <aura:iteration items="{!v.listSelectHeadOffice}" var="option">
+                                                        <option text="{!option.label}" value="{!option.value}" selected="{!option.selected}"/>
+                                                    </aura:iteration>
+                                                </lightning:select>
+                                            </lightning:layoutItem>
+                                            <lightning:layoutItem size="6" padding="horizontal-small">
+                                                <lightning:select name="colorId" label="사업부" value="{!v.selectedSU}" onchange="{!c.fnChangeSU}" variant="label-inline" required="true">
+                                                    <option value="none"> 전체 </option>  
+                                                    <aura:iteration items="{!v.listSelectSU}" var="option">
+                                                        <option text="{!option.label}" value="{!option.value}" selected="{!option.selected}"/>
+                                                    </aura:iteration>
+                                                </lightning:select>
+                                            </lightning:layoutItem>
+                                        </lightning:layout>
+                                    </lightning:layoutItem>
+
+                                    <lightning:layoutItem size="3">  
+                                        <lightning:layout multipleRows="true">
+                                            <lightning:layoutItem size="6" padding="horizontal-small">
+                                            </lightning:layoutItem>
+                                            <lightning:layoutItem size="6" padding="horizontal-small">
+                                            </lightning:layoutItem>
+                                        </lightning:layout>                                
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="3">                            
+                                    </lightning:layoutItem>
+
+                                    <lightning:layoutItem size="12" class="slds-text-align_right">
+                                        <lightning:button variant="Neutral" label="조회" onclick="{!c.fnSearch}" />
+                                    </lightning:layoutItem>
+                                </lightning:layout>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 조회 결과 목록 화면 -->
+        <div class="divContentDetail" style="position:relative">
+            <div>
+                <lightning:layout multipleRows="true">
+                    <lightning:layoutItem size="12" >
+                        <div class="custom-picture_box slds-box" style="height: 28.5rem; padding:0">
+                            <lightning:datatable
+                                    aura:id = "targetListRows"
+                                    keyField="{!v.keyField}"
+                                    columns="{!v.listColumn}"
+                                    data="{!v.listSearchWrapper}"
+                                    hideCheckboxColumn="true"
+                                    showRowNumberColumn="true"
+                                    sortedBy="{!v.sortedBy}"
+                                    sortedDirection="{!v.sortedDirection}"
+                                    onsort="{!c.fnColumnSorting}"
+                            />
+                        </div>
+                    </lightning:layoutItem>
+                </lightning:layout>
+            </div>
+        </div>
+    </div>
+</aura:component>

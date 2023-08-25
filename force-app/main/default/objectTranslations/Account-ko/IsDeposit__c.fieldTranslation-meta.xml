@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>입금여부(FS만 사용)</label>
+    <name>IsDeposit__c</name>
+    <picklistValues>
+        <masterLabel>개별 입금</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>합산 입금</masterLabel>
+        <translation></translation>
+    </picklistValues>
+</CustomFieldTranslation>

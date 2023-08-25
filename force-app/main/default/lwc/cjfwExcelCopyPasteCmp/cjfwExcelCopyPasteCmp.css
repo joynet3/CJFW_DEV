@@ -1,0 +1,105 @@
+/* 전체 컨테이너 */
+.allContainer{
+    /* border: 2px solid palevioletred; */
+    height: 100%;
+    width: 100%;
+}
+
+/* 엑셀결과 Wrap , 엑셀삽입 컨테이너 */
+.excelResult, .buildContainer {
+    border: 0.02px solid rgb(185, 185, 185);
+    /* border: 2px solid rgb(46, 105, 233); */
+    display: inline-block; /* inline-block으로 요소를 나란히 배치 */
+    vertical-align: top; /* 상단 정렬 */
+    /* width: 50%;  */ /* 두 요소가 50%씩 차지하도록 설정 */
+    
+    /* height: 80%; */ /* PC용 */
+    height: 300px; /* 컴포넌트용 */
+
+}
+
+.excelResult {
+    width: 70%;
+}
+
+.buildContainer {
+    width: 30%;
+}
+
+/* 엑셀 결과 테이블 */
+.slds-scrollable{
+    border: 1px solid rgb(185, 185, 185);
+    margin:auto;
+    /* margin-top:20px; */ /* PC */
+    margin-top:15px; /* 컴포넌트용 */
+    background-color: white;
+    width:98% ;
+}
+
+/* 엑셀 업로드 컨테이너 */
+.uploadContainer{
+    /* border: 2px solid rgb(90, 233, 46); */
+    width: 90%;
+    height: 40%;
+    /* padding: 1rem; */ 
+    margin: 0 auto; /* 가운데 수평으로 정렬 */
+    margin-top: 10%;
+}
+
+.selectboxContainer{
+    /* border: 2px solid rgb(46, 233, 193); */
+    width: 100%;
+    /* margin : auto; */
+}
+
+
+
+.tablecontent th,
+.tablecontent td {
+    padding: 5px;
+    border: 1px solid #ccc;
+}
+
+.tablecontent tr {
+    background-color: #C9E6EE;
+    border: 1px solid #ccc;
+}
+
+.buttonTop{
+    /* border: 2px solid rgb(46, 233, 193); */
+   display: flex;
+   justify-content: flex-end;
+   /* margin-right: 5%; */ /* .buttonTop 자체에 오른쪽 여백 추가 */
+}
+
+.buttonButtom{
+    /* border: 2px solid rgb(46, 233, 193); */
+    /* display: flex; */
+
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 1rem;
+
+    /* justify-content: flex-start; */
+    /* margin-left: 5%;  *//* 왼쪽으로 5% 이동 */
+}
+
+.customButton {
+    /* margin-left: auto;  *//* 오른쪽으로 이동 */
+}
+
+hr{
+    margin-top: 1rem;
+    border-top: 1px solid rgb(182, 182, 182);
+}
+
+.customTitle{
+    font-size: 1rem; /* 원하는 크기로 설정 */
+    font-weight: bold; /* 볼드체로 설정 */
+    color: #333; /* 원하는 색상으로 설정 */
+}
+
+th{
+    text-align:center;
+    /* padding-left:0px; */
+}

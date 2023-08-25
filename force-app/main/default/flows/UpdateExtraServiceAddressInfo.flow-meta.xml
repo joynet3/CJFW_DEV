@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>57.0</apiVersion>
+    <description>부가서비스 생성 시 부가서비스의 주소를 연동된 고객의 주소 정보로 업데이트</description>
+    <interviewLabel>부가서비스 주소 정보 업데이트 {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>부가서비스 주소 정보 업데이트</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>FREE_FORM_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>UpdateAddressInfo</name>
+        <label>UpdateAddressInfo</label>
+        <locationX>565</locationX>
+        <locationY>358</locationY>
+        <inputAssignments>
+            <field>AddressDetail__c</field>
+            <value>
+                <elementReference>$Record.Customer__r.AddressDetails__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Address__c</field>
+            <value>
+                <elementReference>$Record.Customer__r.Address__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>PostalCode__c</field>
+            <value>
+                <elementReference>$Record.Customer__r.PostalCode__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>458</locationX>
+        <locationY>48</locationY>
+        <connector>
+            <targetReference>UpdateAddressInfo</targetReference>
+        </connector>
+        <object>ExtraService__c</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Obsolete</status>
+</Flow>

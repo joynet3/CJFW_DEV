@@ -1,0 +1,356 @@
+<!--
+  @description       : CJFW_NewOpenReportInuri
+  @author            : eunyoung.choi@dkbmc.com
+  @group             : 
+  @last modified on  : 08-24-2023
+  @last modified by  : eunyoung.choi@dkbmc.com
+  Modifications Log
+  Ver   Date         Author                    Modification
+  1.0   08-24-2023   eunyoung.choi@dkbmc.com   Initial Version
+-->
+<apex:page showheader="false"
+            contentType="text/html;charset=UTF-8"
+            renderAS="PDF"
+            sidebar="false"  
+
+            standardStylesheets="false" 
+            applyHtmlTag="false" 
+            applyBodyTag="false" 
+            readonly="true"
+            cache="true"
+            controller="ReportFormController"
+            >    
+<!-- Begin Default Content REMOVE THIS -->
+
+<!-- START -->
+<html> 
+    <head>
+        <style>
+            /* {position: absolute;
+            top: 0;} */
+
+            @page {
+            size: A4;
+            margin:0mm 0mm;
+            }
+
+            /* CJ폰트 볼드타입 */
+/*             @font-face {
+                font-family: "CJFW_Title_Bold_Font";
+                src: url('{!URLFOR($Resource.CJFW_Title_Bold_Font, 'CJFW_Title_Bold_Font.ttf')}');
+                src: local(custom_font), url('{!URLFOR($Resource.CJFW_Title_Bold_Font)}') format('truetype');
+            } */
+
+            /* CJ폰트 일반타입 */
+/*             @font-face {
+                font-family: "CJFW_Light_Font";
+                src: url('{!URLFOR($Resource.CJFW_Light_Font, 'CJFW_Light_Font.ttf')}');
+                src: local(custom_font), url('{!URLFOR($Resource.CJFW_Light_Font)}') format('truetype');
+            } */
+            
+/*             @media print {
+                .page {
+                margin: 0mm;
+                border: initial;	
+                border-radius: initial;
+                width: initial;
+                min-height: initial;
+                box-shadow: initial;
+                background: initial;
+                page-break-before: auto;
+                }
+            } */
+            
+            body {
+            border: solid 2px red;
+            font-family: Arial Unicode MS;
+            }
+
+
+            table, th{
+                border-collapse: collapse;
+                font-size : 9px;
+            }
+
+            tr {
+                border-collapse: collapse;
+                font-size : 9px;
+                page-break-inside:avoid;
+            }
+
+            td{
+            /* border:1px solid rgb(204, 204, 204); */
+            border:0.5px solid rgb(70, 70, 70);
+            word-wrap: break-word;
+            white-space: normal; 
+            font-size: 10px;
+            box-shadow: none;
+            text-align: center;
+            }
+
+            .columnLabel{
+                    font-weight: bold;
+                    font-size: 11px;
+                    background-color: #d9e7fc;
+                    text-align: center;
+                    white-space: normal; 
+                    /* border:0.5px solid rgb(204, 204, 204); */
+                    border:0.5px solid rgb(70, 70, 70);
+            }
+
+            .bg_color_gray{
+            background-color: #f1f1f1; !important;
+            -webkit-print-color-adjust: exact;
+            color-adjust: exact;
+            font-size:10px;
+            font-weight: bold;
+            }
+
+            .content {
+                    width: 98%;
+                    margin: auto;
+                    border: solid 2px rgb(0, 47, 255);
+            }
+            
+            .full-width-table{
+                    width: 100%;
+                    white-space: normal;
+                    table-layout: fixed; /* 테이블 레이아웃을 고정으로 설정 */
+            }
+            .custom-table{
+                    width: 60%;
+                    white-space: normal;
+                    /* table-layout: fixed; */ /* 테이블 레이아웃을 고정으로 설정 */
+            }
+            .columnData{
+                font-size: 11px;
+                white-space: normal;
+            }
+
+            /* 목차목록 */
+            .list-title{
+                font-weight: bold;
+                font-size: 13.5px;
+                /* font-family:'CJFW_Light_Font'; */
+            }
+
+            /* 셀 칼라채우기용 */
+            .yellow-line{
+                    background-color: #fffed5;
+            } 
+            .grey-line{
+                    background-color: #e6e6e6;
+            } 
+            .red-label{
+                    border-right: 2px solid #db2929;
+                    border-left: 2px solid #db2929;
+                    border-top: 2px solid #db2929;
+            }
+            .red-left-right{
+                    border-right: 2px solid #db2929;
+                    border-left: 2px solid #db2929;
+            } 
+
+            .bold-text{
+                font-weight: bold;
+                font-size: 11px;
+            }
+
+        </style>
+        <meta http-equiv="Content-Type" content="text/html" charset="UTF-8"/>
+    </head> 
+    <body>
+        <table border="1px" width="720px" align="center" style="margin-top:0; padding-top:0; margin-bottom:0; padding-bottom:0; border-style:none; ">
+            <tr >
+                <td width="25%" rowspan="3" style="border-style:none; text-align:center">
+                    <apex:image value="{!URLFOR($Resource.CJFW_BrandLogo_EN)}" width="150" height="50"/>
+                    <!-- <apex:stylesheet value="{!URLFOR($Resource.CJFW_Title_Bold)}" width="150" height="50"/> -->
+                </td> 
+                <td width="50%" style="border-style:none; text-align:right;">
+                    <span style="font-size:17px;">[신규개설] 0000 신규개설 사전 품의件</span>
+                    <!-- <span style="font-size:17px; font-family:'CJFW_Title_Bold_Font'">[신규-급식] 0000 개설 품의 - 0 월</span> -->
+                </td> 
+                <td width="35%" style="border-style:none; text-align:left">
+
+                </td> 
+            </tr>
+        </table>
+    
+        <div class="content">
+            <!-- 고객정보 -->
+            <p class="list-title">2. 고객정보</p>
+            <table class="custom-table">
+                <tbody>
+                    <tr>
+                        <td class="columnLabel">고객명</td>
+                        <td class="columnLabel">사업자번호</td>
+                        <td class="columnLabel">전체외형</td>
+                        <td class="columnLabel">당사규모</td>
+                    </tr>
+                    <tr>
+                        <td class="columnData">{!accountInfo.searchKey__c}</td>
+                        <td class="columnData">{!accountInfo.RepresentativeName__c}</td>
+                        <td class="columnData">{!accountInfo.BusinessPath__c}</td>
+                        <td class="columnData">{!accountInfo.PV_CSHAPE__c}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- 지원조건 -->
+            <p class="list-title">2. 지원조건</p>
+            <table class="full-width-table" style="padding-top:10px">
+                <tbody>
+                    <tr>
+                        <td class="columnLabel">계약기간</td>
+                        <td class="columnLabel">지원조건1</td>
+                        <td class="columnLabel">지원조건2</td>
+                        <td class="columnLabel">지원조건3</td>
+                        <td class="columnLabel">지원조건4</td>
+                    </tr>
+                    <tr>
+                        <td class="columnData">{!accountInfo.searchKey__c}</td>
+                        <td class="columnData">{!accountInfo.RepresentativeName__c}</td>
+                        <td class="columnData">{!accountInfo.BusinessPath__c}</td>
+                        <td class="columnData">{!accountInfo.PV_CSHAPE__c}</td>
+                        <td class="columnData">{!accountInfo.PV_CSHAPE__c}</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <!-- 거래처 상세 내용 Tabel  -->
+            <p class="list-title">3. 손익 Simulation (개설 後 3개월)</p>
+            <span style="font-size:6px;">(단위:백만)</span>
+
+            <table style="width:60%">
+                <tbody>
+                    <tr>
+                        <td class="columnLabel">구분</td>
+                        <td class="columnLabel">00월</td>
+                        <td class="columnLabel">00월</td>
+                        <td class="columnLabel">00월</td>
+                        <td class="columnLabel">비고</td>
+                    </tr>
+                    <tr>
+                        <td class="columnData">매출액</td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                    </tr>
+                    <tr>
+                        <td class="columnData">매출이익</td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                    </tr>
+                    <tr>
+                        <td class="columnData">%</td>
+                        <td class="columnData">0.0%</td>
+                        <td class="columnData">0.0%</td>
+                        <td class="columnData">0.0%</td>
+                        <td class="columnData">0.0%</td>
+                    </tr>
+                    <tr>
+                        <td class="columnData">판관비</td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                    </tr>
+                    <tr>
+                        <td class="columnData">%</td>
+                        <td class="columnData">0.0%</td>
+                        <td class="columnData">0.0%</td>
+                        <td class="columnData">0.0%</td>
+                        <td class="columnData">0.0%</td>
+                    </tr>
+                    <tr>
+                        <td class="columnData">인건비</td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                    </tr>
+                    <tr>
+                        <td class="columnData">%</td>
+                        <td class="columnData">0.0%</td>
+                        <td class="columnData">0.0%</td>
+                        <td class="columnData">0.0%</td>
+                        <td class="columnData">0.0%</td>
+                    </tr>
+                    <tr>
+                        <td class="columnData">물류비</td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                    </tr>
+                    <tr>
+                        <td class="columnData">%</td>
+                        <td class="columnData">0.0%</td>
+                        <td class="columnData">0.0%</td>
+                        <td class="columnData">0.0%</td>
+                        <td class="columnData">0.0%</td>
+                    </tr>
+                    <tr>
+                        <td class="columnData">용액수수료</td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                    </tr>
+                    <tr>
+                        <td class="columnData">%</td>
+                        <td class="columnData">0.0%</td>
+                        <td class="columnData">0.0%</td>
+                        <td class="columnData">0.0%</td>
+                        <td class="columnData">0.0%</td>
+                    </tr>
+                    <tr>
+                        <td class="columnData">기타</td>
+                        <td class="columnData">0.0</td>
+                        <td class="columnData">0.0</td>
+                        <td class="columnData">0.0</td>
+                        <td class="columnData"></td>
+                    </tr>
+                    <tr>
+                        <td class="columnData">판촉비</td>
+                        <td class="columnData yellow-line"></td>
+                        <td class="columnData yellow-line"></td>
+                        <td class="columnData yellow-line"></td>
+                        <td class="columnData yellow-line"></td>
+                    </tr>
+                    <tr>
+                        <td class="columnData">공헌이익</td>
+                        <td class="columnData">0.0</td>
+                        <td class="columnData">0.0</td>
+                        <td class="columnData">0.0</td>
+                        <td class="columnData"></td>
+                    </tr>
+                    <tr>
+                        <td class="columnData">%</td>
+                        <td class="columnData">0.0%</td>
+                        <td class="columnData">0.0%</td>
+                        <td class="columnData">0.0%</td>
+                        <td class="columnData">0.0%</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- 신규개설 예상 손익  -->
+            <p class="list-title">4. 첨부서류</p>
+<!--             <span style="font-size:8px">- 사업자등록증(고유번호증) 사본 <br></br></span>
+            <span style="font-size:8px">- 상품공급계약서 사본<br></br></span>
+            <span style="font-size:8px">- 기부금 약정서 사본<br></br></span>
+            <span style="font-size:8px">- 문서 첨부 신규개설 품의<br></br></span> -->
+
+            <span style="font-size:10px">- 사업자등록증(고유번호증) 사본 <br></br>
+            - 상품공급계약서 사본<br></br>
+            - 기부금 약정서 사본<br></br>
+            - 문서 첨부 신규개설 품의<br></br></span>
+
+        </div>
+    </body>
+</html>
+</apex:page>

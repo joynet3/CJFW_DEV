@@ -1,0 +1,77 @@
+table.cjfwtable {
+    border-collapse: separate;
+    border-top: var(--lwc-borderWidthThin,1px) solid var(--slds-g-color-border-base-1, var(--lwc-colorBorder,rgb(229, 229, 229)));
+    border-bottom: var(--lwc-borderWidthThin,1px) solid var(--slds-g-color-border-base-1, var(--lwc-colorBorder,rgb(229, 229, 229)));
+    background-color: var(--slds-g-color-neutral-base-100, var(--lwc-colorBackgroundAlt,rgb(255, 255, 255)));
+    font-size: inherit;
+}
+
+table.cjfwtable > thead > tr > th,
+table.cjfwtable > tbody > tr > td {
+    text-align: center;
+}
+
+table.cjfwtable > thead > tr > th,
+table.cjfwtable > tbody > tr > th,
+table.cjfwtable > tbody > tr > td {
+    padding: var(--lwc-tableCellSpacing,0.25rem 0.5rem);
+    white-space: nowrap;
+    position: relative;
+}
+
+table.cjfwtable > thead > tr > th {
+    position: sticky;
+    top: 0px;
+    z-index: 1;
+}
+
+table.cjfwtable > tr {
+    line-height: var(--lwc-lineHeightReset,1);
+}
+
+table.cjfwtable > tbody > tr > td,
+table.cjfwtable > tbody > tr > th {
+    border-top: var(--lwc-borderWidthThin,1px) solid var(--slds-g-color-border-base-1, var(--lwc-colorBorder,rgb(229, 229, 229)));
+}
+
+
+table.cjfwtable > thead > tr > th,
+table.cjfwtable > tbody > tr > th {
+    font-size: var(--lwc-fontSize2,0.75rem);
+    line-height: var(--lwc-lineHeightHeading,1.25);
+    color: var(--slds-g-color-neutral-base-30, var(--lwc-colorTextWeak,rgb(68, 68, 68)));
+    font-weight: var(--lwc-fontWeightRegular,400);
+    text-transform: uppercase;
+    letter-spacing: .0625rem;
+}
+
+
+
+table.cjfwtable > thead > tr > th,
+table.cjfwtable > tbody > tr > th {
+    background-color: var(--slds-g-color-neutral-base-95, var(--lwc-tableColorBackgroundHeader,rgb(243, 243, 243)));
+    color: var(--slds-g-color-neutral-base-30, var(--lwc-tableColorTextHeader,rgb(68, 68, 68)));
+    padding: var(--lwc-tableCellSpacing,0.25rem 0.5rem);
+    font-weight: var(--lwc-fontWeightBold,700);
+    line-height: normal;
+}
+
+table.cjfwtable > tbody > tr > td+td,
+table.cjfwtable > thead > tr > td+td,
+table.cjfwtable > tbody > tr > td+th,
+table.cjfwtable > thead > tr > td+th
+table.cjfwtable > tbody > tr > th+td,
+table.cjfwtable > thead > tr > th+td,
+table.cjfwtable > thead > tr > th+th,
+table.cjfwtable > tbody > tr > th+th {
+    border-left: var(--lwc-borderWidthThin,1px) solid var(--slds-g-color-border-base-1, var(--lwc-colorBorder,rgb(229, 229, 229)));
+}
+
+table.cjfwtable > tbody > tr {
+    counter-increment: row-number;
+}
+
+.tableleftContainer > table.cjfwtable {
+    border-right: var(--lwc-borderWidthThin,1px) solid var(--slds-g-color-border-base-1, var(--lwc-colorBorder,rgb(229, 229, 229)))
+}
+

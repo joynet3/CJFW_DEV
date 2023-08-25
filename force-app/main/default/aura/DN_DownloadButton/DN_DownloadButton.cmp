@@ -1,0 +1,32 @@
+<!--
+* ==================================================================================
+*   File Name   : LineItemExcelPaste.cmp
+*   Author      : Minje.Kim
+*   Date        : 2022.09.16
+*   Description : Excel Grid Paste funtion
+*   Modification Log
+* ==================================================================================
+*   Ver     Date          Author          Modification
+* ==================================================================================
+*   1.0     2022.09.16    Minje.Kim    Create
+* ==================================================================================
+-->
+
+<aura:component implements="force:appHostable,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes">
+
+    <!-- Attribute -->
+    <aura:attribute name="recordId" type="String" description="Record Id"/>
+    <aura:attribute name="ButtonLabel" type="String" description="버튼 Label"/>
+    <aura:attribute name="FileId" type="String" description="File Id"/>
+    <!-- <aura:attribute name="FileLink" type="String"/> -->
+    
+    <div>
+        <lightning:layout multipleRows="true">
+            <lightning:layoutItem size="12">
+                <lightning:button label="{!v.ButtonLabel}" onclick="{!c.fnFileDownload_Link}" />
+            </lightning:layoutItem>
+        </lightning:layout>
+    </div>
+    <!-- <lightning:button label="메뉴얼 다운로드" onclick="{!c.fnFileDownload_Static}" /> -->
+    
+</aura:component>

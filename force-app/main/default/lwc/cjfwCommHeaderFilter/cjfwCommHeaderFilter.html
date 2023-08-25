@@ -1,0 +1,198 @@
+<!--
+  @description       : <c-cjfw-comm-header-filter>
+                        cjfwCommHeaderFilter class
+  @author            : eunyoung.choi@dkbmc.com
+  @group             : 
+  @last modified on  : 08-22-2023
+  @last modified by  : eunyoung.choi@dkbmc.com
+  Modifications Log
+  Ver   Date         Author                    Modification
+  1.0   08-04-2023   eunyoung.choi@dkbmc.com   Initial Version
+  1.1   08-19-2023   eunyoung.choi@dkbmc.com   <template if:true={FilterHide}> 제거, show and hide / css 로 컨트롤 
+  1.2   08-21-2023   eunyoung.choi@dkbmc.com   class="allContainer" 에서  keypress시 검색될 수 있도록 추가
+-->
+<template>
+    <lightning-card label="List of Case" icon-name="utility:form"  title={Title} type="media" href="#" class="list_view_container">
+        <!-- <template if:true={FilterHide}>  -->
+            <div class="allContainer"  tabindex="0" onkeydown={containerPress}>
+                <div class="filterContainer">
+                    <!-- 1 LINE : 헤더 [S] -->
+                    <lightning-layout multiple-rows="true" class="LineOne" style ="margin-bottom: 20px;">
+                        <template if:true={AccModalShow}>
+                            <c-cjfw-account-search-modal onsetsearchacc={handleSearchKey} ></c-cjfw-account-search-modal>
+                        </template>
+                        <template for:each={oneLinefilteredList} for:item="searchData"> 
+                                <lightning-layout-item key={searchData.Id} size="12" medium-device-size="2"  class="lineOne">
+                                    <lightning-input label={searchData.Label__c} 
+                                    type={searchData.FieldType__c} 
+                                    required={searchData.Required__c}
+                                    value={searchData.value} 
+                                    onkeypress={handleEnter}
+                                    onchange={onDataChange} 
+                                    onclick={onclickData} 
+                                    data-object-name={searchData.Object__c}
+                                    disabled={searchData.Disabled__c}
+                                    data-field-name={searchData.ApiName__c}
+                                    data-date-point={searchData.DatePoint__c}
+                                    data-field-type={searchData.FieldType__c}
+                                    field-level-help={searchData.Description__c}>
+                                    </lightning-input>
+                                </lightning-layout-item>
+                        </template>
+
+                        <!-- 본부 select box -->
+                            <template if:true={oneshowOrgOption}>
+                                <c-comm-custom-select is-empty-option options={orgOptionList} label="본부" onselected={handleSelected} onchange={ComboBoxChange} class="customSelectBox"></c-comm-custom-select>
+                            </template>
+                            <!-- SU select box -->
+                            <template if:true={oneshowSuOption}>
+                                <c-comm-custom-select is-empty-option options={suOptionList} label="SU" onselected={handleSelected} onchange={ComboBoxChange}  class="customSelectBox"></c-comm-custom-select>
+                            </template>
+                            <!-- TEAM select box -->
+                            <template if:true={oneshowTeamOption}>
+                                <c-comm-custom-select is-empty-option options={teamOptionList} label="TEAM" onselected={handleSelected}  onchange={ComboBoxChange}  class="customSelectBox"></c-comm-custom-select>
+                            </template>     
+                            <!-- 고객 대경로 select box -->
+                            <template if:true={oneshowLargeOption}>
+                                <c-comm-custom-select is-empty-option options={largeOptionList} label="고객대경로" onselected={handleSelected}  onchange={ComboBoxChange}  class="customSelectBox"></c-comm-custom-select>
+                            </template>    
+                    </lightning-layout>
+                    <!-- 1 LINE : 헤더 [E] -->
+
+                    <!-- 2 LINE : 헤더 [S] -->
+                    <lightning-layout  multiple-rows="true" class="LineOne" style ="margin-bottom: 20px;">
+                        <!-- <template if:true={selectBoxShow}> -->
+                            <!-- <c-comm-custom-select size="2" options={orgOptionList} label="본부" onselected={handleSelected}></c-comm-custom-select> -->
+                            <!-- </template> -->
+                        <template for:each={twoLinefilteredList} for:item="searchData"> 
+                            <lightning-layout-item key={searchData.Id} size="12" medium-device-size="2" class="lineOne">
+                                <lightning-input label={searchData.Label__c} 
+                                type={searchData.FieldType__c} 
+                                required={searchData.Required__c}
+                                value={searchData.value} 
+                                onkeypress={handleEnter}
+                                onchange={onDataChange} 
+                                onclick={onclickData} 
+                                data-object-name={searchData.Object__c}
+                                disabled={searchData.Disabled__c}
+                                data-field-name={searchData.ApiName__c}
+                                data-date-point={searchData.DatePoint__c}
+                                data-field-type={searchData.FieldType__c}
+                                field-level-help={searchData.Description__c}>
+                                </lightning-input>
+                            </lightning-layout-item>   
+                        </template>
+
+                        <!-- 본부 select box -->
+                        <template if:true={twoshowOrgOption}>
+                            <c-comm-custom-select is-empty-option options={orgOptionList} label="본부" onselected={handleSelected} onchange={ComboBoxChange} class="customSelectBox"></c-comm-custom-select>
+                        </template>
+                        <!-- SU select box -->
+                        <template if:true={twoshowSuOption}>
+                            <c-comm-custom-select is-empty-option options={suOptionList} label="SU" onselected={handleSelected} onchange={ComboBoxChange}  class="customSelectBox"></c-comm-custom-select>
+                        </template>
+                        <!-- TEAM select box -->
+                        <template if:true={twoshowTeamOption}>
+                            <c-comm-custom-select is-empty-option options={teamOptionList} label="TEAM" onselected={handleSelected}  onchange={ComboBoxChange}  class="customSelectBox"></c-comm-custom-select>
+                        </template>     
+                        <!-- 고객 대경로 select box -->
+                        <template if:true={twoshowLargeOption}>
+                            <c-comm-custom-select is-empty-option options={largeOptionList} label="고객대경로" onselected={handleSelected}  onchange={ComboBoxChange}  class="customSelectBox"></c-comm-custom-select>
+                        </template>    
+                    
+                    
+                    </lightning-layout>
+                    <!-- 2 LINE : 헤더 [E] -->
+
+                    <!-- 3 LINE : 헤더 [S] -->
+                    <lightning-layout  multiple-rows="true"  class="Linethree" style ="margin-bottom: 20px;">
+                        <template for:each={threeLinefilteredList} for:item="searchData"> 
+                            <lightning-layout-item key={searchData.Id} size="12" medium-device-size="2" class="lineOne">
+                                <lightning-input label={searchData.Label__c} 
+                                type={searchData.FieldType__c} 
+                                required={searchData.Required__c}
+                                value={searchData.value} 
+                                onkeypress={handleEnter}
+                                onchange={onDataChange} 
+                                onclick={onclickData} 
+                                data-object-name={searchData.Object__c}
+                                disabled={searchData.Disabled__c}
+                                data-field-name={searchData.ApiName__c}
+                                data-date-point={searchData.DatePoint__c}
+                                data-field-type={searchData.FieldType__c}
+                                field-level-help={searchData.Description__c}>
+                                </lightning-input>
+                            </lightning-layout-item>   
+                        </template>
+
+                        <!-- 본부 select box -->
+                        <template if:true={threeshowOrgOption}>
+                            <c-comm-custom-select is-empty-option options={orgOptionList} label="본부" onselected={handleSelected} onchange={ComboBoxChange} class="customSelectBox"></c-comm-custom-select>
+                        </template>
+                        <!-- SU select box -->
+                        <template if:true={threeshowSuOption}>
+                            <c-comm-custom-select is-empty-option options={suOptionList} label="SU" onselected={handleSelected} class="customSelectBox"></c-comm-custom-select>
+                        </template>
+                        <!-- TEAM select box -->
+                        <template if:true={threeshowTeamOption}>
+                            <c-comm-custom-select is-empty-option options={teamOptionList} label="TEAM" onselected={handleSelected} class="customSelectBox"></c-comm-custom-select>
+                        </template>     
+
+                    </lightning-layout>
+                    <!-- 3 LINE : 헤더 [E] -->
+
+                    <!-- 4 LINE : 헤더 [S] -->
+                    <lightning-layout multiple-rows="true" class="Linefour" style ="margin-bottom: 20px;">
+                        <template for:each={fourLinefilteredList} for:item="searchData"> 
+                            <lightning-layout-item key={searchData.Id} size="12" medium-device-size="2"  class="lineOne">
+                                <lightning-input label={searchData.Label__c} 
+                                type={searchData.FieldType__c} 
+                                required={searchData.Required__c}
+                                value={searchData.value} 
+                                onkeypress={handleEnter}
+                                onchange={onDataChange} 
+                                onclick={onclickData} 
+                                data-object-name={searchData.Object__c}
+                                disabled={searchData.Disabled__c}
+                                data-field-name={searchData.ApiName__c}
+                                data-date-point={searchData.DatePoint__c}
+                                data-field-type={searchData.FieldType__c}
+                                field-level-help={searchData.Description__c}>
+                                </lightning-input >
+                            </lightning-layout-item>   
+                        </template>
+
+                        <!-- 본부 select box -->
+                        <template if:true={fourshowOrgOption}>
+                            <c-comm-custom-select is-empty-option options={orgOptionList} label="본부" onselected={handleSelected} onchange={ComboBoxChange} class="customSelectBox"></c-comm-custom-select>
+                        </template>
+                        <!-- SU select box -->
+                        <template if:true={fourshowSuOption}>
+                            <c-comm-custom-select is-empty-option options={suOptionList} label="SU" onselected={handleSelected} class="customSelectBox"></c-comm-custom-select>
+                        </template>
+                        <!-- TEAM select box -->
+                        <template if:true={fourshowTeamOption}>
+                            <c-comm-custom-select is-empty-option options={teamOptionList} label="TEAM" onselected={handleSelected} class="customSelectBox"></c-comm-custom-select>
+                        </template>     
+                        
+                    </lightning-layout>
+                    <!-- 4 LINE : 헤더 [E] -->
+                </div>
+
+                <!-- BUTTON 영역 -->
+                <div class="buttoncontainer"> 
+                    <lightning-button label="조회" variant="brand" onclick={requiredCheck}></lightning-button>
+                    <lightning-button label="reset" variant="natual" onclick={resetbutton} style="margin-top: 10px;"></lightning-button>
+                </div>
+            
+            </div>
+        <!-- </template> -->
+        
+        <!-- SHOW AND HIDE -->
+        <div style ="text-align: center; background-color: #f3f3f3"> 
+            <a onclick={showAndHide}>show and hide</a>
+        </div>
+        
+    </lightning-card>
+
+</template>

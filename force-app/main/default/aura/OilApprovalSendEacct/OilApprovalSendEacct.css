@@ -1,0 +1,39 @@
+/* PickList */
+.THIS .slds-form-element_horizontal{
+    margin-bottom : 0px !important;
+}
+
+.THIS.divContent {
+    height : 40rem;
+    max-height : 40rem;
+    overflow-y: auto !important
+}
+
+.THIS.divContent > div{
+    padding : 10px;
+}
+
+
+.THIS .divContentDetail {
+    margin: 0rem 0.8rem 0;
+    box-shadow: 0 2px 4px 4px rgba(0,0,0,.16);
+    border-radius: var(--lwc-borderRadiusMedium);
+    padding: 1rem 1rem;
+    height: 30rem;
+}
+
+
+.THIS .cuCheckModalCSS{
+    width: 52rem;
+    box-shadow: 0 2px 4px 4px rgba(0,0,0,.16);
+    border-radius: var(--lwc-borderRadiusMedium);
+}
+
+.THIS .mt_7 {
+    margin-top :7px !important
+}
+
+
+.THIS .custom-datatable button {
+    height:1rem
+}

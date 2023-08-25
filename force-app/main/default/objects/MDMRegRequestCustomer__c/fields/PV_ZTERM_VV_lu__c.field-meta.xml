@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>PV_ZTERM_VV_lu__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>지급조건
+GroupId : T052_D</description>
+    <externalId>false</externalId>
+    <label>PV_ZTERM_VV_lu</label>
+    <lookupFilter>
+        <active>true</active>
+        <filterItems>
+            <field>MDMReferenceCode__c.GROUPID__c</field>
+            <operation>equals</operation>
+            <value>T052_D</value>
+        </filterItems>
+        <isOptional>true</isOptional>
+    </lookupFilter>
+    <referenceTo>MDMReferenceCode__c</referenceTo>
+    <relationshipName>MDMRegRequestCustomer_PV_ZTERM_VV</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

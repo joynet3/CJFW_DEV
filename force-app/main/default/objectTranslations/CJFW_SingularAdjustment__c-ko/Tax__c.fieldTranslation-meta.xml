@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>과면세 구분</label>
+    <name>Tax__c</name>
+    <picklistValues>
+        <masterLabel>All</masterLabel>
+        <translation>전체</translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Free</masterLabel>
+        <translation>면세</translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Tax</masterLabel>
+        <translation>과세</translation>
+    </picklistValues>
+</CustomFieldTranslation>

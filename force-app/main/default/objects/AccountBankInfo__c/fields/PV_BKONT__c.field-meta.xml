@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>PV_BKONT__c</fullName>
+    <externalId>false</externalId>
+    <label>PV_BKONT</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>01-D</fullName>
+                <default>false</default>
+                <label>가상계좌</label>
+            </value>
+            <value>
+                <fullName>02-D</fullName>
+                <default>false</default>
+                <label>점포 실물계좌</label>
+            </value>
+            <value>
+                <fullName>03-D</fullName>
+                <default>false</default>
+                <label>자금 지급계좌</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

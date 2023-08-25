@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>배송그룹</label>
+    <name>DeliveryGroup__c</name>
+    <picklistValues>
+        <masterLabel>FC배송그룹</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>FV배송그룹</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>TC배송그룹</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>통합배송그룹</masterLabel>
+        <translation></translation>
+    </picklistValues>
+</CustomFieldTranslation>

@@ -1,0 +1,24 @@
+<template>
+    <lightning-modal-header label={label}></lightning-modal-header>
+    <lightning-modal-body> 
+
+        <c-cjfw-survey  is-category-selected={isSelected} 
+                        record-id={recordId} 
+                        object-api-name={objectApiName}
+                        oncustomclose={handleClose}
+                        ></c-cjfw-survey>
+        
+    </lightning-modal-body>
+    <lightning-modal-footer>
+        <div class="btnContainer">
+            <lightning-button label="취소" onclick={handleClose}></lightning-button>
+            <template lwc:if={isSelected}>
+                <lightning-button label="이전" onclick={handlePrevious}></lightning-button>
+                <lightning-button label="저장" onclick={handleSave}></lightning-button>
+            </template>
+            <template lwc:else>
+                <lightning-button label="다음" onclick={handleNext}></lightning-button>
+            </template>
+        </div>
+    </lightning-modal-footer>
+</template>

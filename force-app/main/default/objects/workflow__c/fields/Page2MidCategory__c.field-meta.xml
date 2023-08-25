@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Page2MidCategory__c</fullName>
+    <externalId>false</externalId>
+    <label>Page2MidCategory</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>고객(관리처-배송) 생성 프로세스</fullName>
+                <default>false</default>
+                <label>고객(관리처-배송) 생성 프로세스</label>
+            </value>
+            <value>
+                <fullName>고객(관리처-분할) 생성 프로세스</fullName>
+                <default>false</default>
+                <label>고객(관리처-분할) 생성 프로세스</label>
+            </value>
+            <value>
+                <fullName>고객(관리처-2차) 생성 프로세스</fullName>
+                <default>false</default>
+                <label>고객(관리처-2차) 생성 프로세스</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>FriendshipScore__c</fullName>
+    <externalId>false</externalId>
+    <inlineHelpText>[ High = 3 Point ]
+[ Medium = 2 Point ]
+[ Low = 1 Point ]</inlineHelpText>
+    <label>Friendship Score</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetName>FriendshipScore</valueSetName>
+    </valueSet>
+</CustomField>

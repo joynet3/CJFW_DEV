@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>VOCLineItemCompactLayout</fullName>
+    <fields>OccurrenceDate__c</fields>
+    <fields>VOCQuantity__c</fields>
+    <fields>VOCUnit__c</fields>
+    <fields>VOCReasonCode__c</fields>
+    <fields>Process__c</fields>
+    <fields>IsNormal__c</fields>
+    <label>VOC Line Item Compact Layout</label>
+</CompactLayout>

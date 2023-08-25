@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ContractStartEndDateValidationCheck</fullName>
+    <active>true</active>
+    <description>계약종료일자가 계약시작일자보다 빠를 경우</description>
+    <errorConditionFormula>FieldBriefing_ContractStartDate__c &gt;  FieldBriefing_ContractEndDate__c</errorConditionFormula>
+    <errorMessage>계약종료일자를 계약시작일자 이후로 설정해주세요</errorMessage>
+</ValidationRule>

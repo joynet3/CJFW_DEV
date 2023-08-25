@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>FM_CollateralLoanPeriod__c</fullName>
+    <externalId>false</externalId>
+    <formula>TEXT ( YEAR( CollateralLoanStartDate__c) ) +&quot;-&quot;+
+IF(MONTH(CollateralLoanStartDate__c) &lt; 10, &quot;0&quot; + TEXT(MONTH(CollateralLoanStartDate__c)), TEXT(MONTH(CollateralLoanStartDate__c)) ) +&quot;-&quot;+
+IF(DAY(CollateralLoanStartDate__c) &lt; 10, &quot;0&quot; + TEXT(DAY(CollateralLoanStartDate__c)), TEXT(DAY(CollateralLoanStartDate__c)) ) +
+&quot; ~ &quot; +
+TEXT ( YEAR( CollateralLoanEndDate__c) )+&quot;-&quot; +
+IF(MONTH(CollateralLoanEndDate__c) &lt; 10, &quot;0&quot; + TEXT(MONTH(CollateralLoanEndDate__c)), TEXT(MONTH(CollateralLoanEndDate__c)) ) +&quot;-&quot;+
+IF(DAY(CollateralLoanEndDate__c) &lt; 10, &quot;0&quot; + TEXT(DAY(CollateralLoanEndDate__c)), TEXT(DAY(CollateralLoanEndDate__c)) )</formula>
+    <label>Collateral Loan Period</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

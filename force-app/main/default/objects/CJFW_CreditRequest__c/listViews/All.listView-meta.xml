@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>All</fullName>
+    <columns>NAME</columns>
+    <columns>FM_CodeAccount__c</columns>
+    <columns>FM_MA__c</columns>
+    <columns>CollateralLoan__c</columns>
+    <columns>FM_CollateralLoanPeriod__c</columns>
+    <columns>CreditLoad__c</columns>
+    <columns>FM_CreditStartPeriod__c</columns>
+    <columns>Setoff__c</columns>
+    <columns>FM_SetoffPeriod__c</columns>
+    <columns>Approval_Status__c</columns>
+    <filterScope>Everything</filterScope>
+    <label>모두</label>
+</ListView>

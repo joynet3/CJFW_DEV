@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>PB 상품 유형 코드</label>
+    <name>pb_gd_cl_cd__c</name>
+    <picklistValues>
+        <masterLabel>CJ</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>CJPB</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>NB</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>PB</masterLabel>
+        <translation></translation>
+    </picklistValues>
+</CustomFieldTranslation>

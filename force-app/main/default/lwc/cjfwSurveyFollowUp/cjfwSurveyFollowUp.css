@@ -1,0 +1,21 @@
+.gridContainer {
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.wirteContainer {
+    padding: 10px 0;
+    border-top: 4px solid rgb(44,122,194);
+}
+/**
+* 모바일용 CSS
+*/
+@media (max-width: 767px){
+    .gridContainer {
+        display:block;
+     
+    }
+    .mtb_3 {
+        margin: 3px 0;
+    }
+}

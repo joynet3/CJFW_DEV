@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ClaimType__c</fullName>
+    <externalId>false</externalId>
+    <label>클레임 유형</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>OTD미준수</fullName>
+                <default>false</default>
+                <label>OTD미준수</label>
+            </value>
+            <value>
+                <fullName>배송지연</fullName>
+                <default>false</default>
+                <label>배송지연</label>
+            </value>
+            <value>
+                <fullName>미배송</fullName>
+                <default>false</default>
+                <label>미배송</label>
+            </value>
+            <value>
+                <fullName>재배송미이행</fullName>
+                <default>false</default>
+                <label>재배송미이행</label>
+            </value>
+            <value>
+                <fullName>오더임의삭제</fullName>
+                <default>false</default>
+                <label>오더임의삭제</label>
+            </value>
+            <value>
+                <fullName>중복클레임 / 기타</fullName>
+                <default>false</default>
+                <label>중복클레임 / 기타</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

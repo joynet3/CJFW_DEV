@@ -1,0 +1,10 @@
+<design:component >
+    <design:attribute name="fileTitle" label="Title" description="공백일 경우 Header 미생성" />
+    <design:attribute name="fileFieldLabel" label="파일1 Label명" />
+    <design:attribute name="fileFieldAPIName" label="파일1 필드명" required="true" />
+    <design:attribute name="typeBfileFieldLabel" label="파일2 Label명" />
+    <design:attribute name="typeBfileFieldAPIName" label="파일2 필드명" required="true" />
+    <design:attribute name="typeCfileFieldLabel" label="파일3 Label명" />
+    <design:attribute name="typeCfileFieldAPIName" label="파일3 필드명" required="true" />
+    <design:attribute name="filePermissionField" label="파일 수정권한 필드명(Boolean)" description="TRUE, FALSE 입력으로도 제어가능"/>
+</design:component>

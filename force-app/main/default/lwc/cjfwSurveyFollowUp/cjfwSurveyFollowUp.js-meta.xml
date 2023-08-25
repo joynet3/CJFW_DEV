@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>57.0</apiVersion>
+    <isExposed>false</isExposed>
+    <description>설문 답변에 따른 연계 질문 구성하는 화면</description>
+</LightningComponentBundle>

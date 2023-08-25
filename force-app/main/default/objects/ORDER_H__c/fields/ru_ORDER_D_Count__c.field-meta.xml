@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ru_ORDER_D_Count__c</fullName>
+    <externalId>false</externalId>
+    <label>품목 수</label>
+    <summaryFilterItems>
+        <field>ORDER_D__c.LOEKZ__c</field>
+        <operation>notEqual</operation>
+        <value>X</value>
+    </summaryFilterItems>
+    <summaryForeignKey>ORDER_D__c.ORDER_H__c</summaryForeignKey>
+    <summaryOperation>count</summaryOperation>
+    <trackTrending>false</trackTrending>
+    <type>Summary</type>
+</CustomField>

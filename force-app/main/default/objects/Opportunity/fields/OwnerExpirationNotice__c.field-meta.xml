@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>OwnerExpirationNotice__c</fullName>
+    <externalId>false</externalId>
+    <label>Owner Expiration Notice</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>15</fullName>
+                <default>false</default>
+                <label>15일</label>
+            </value>
+            <value>
+                <fullName>30</fullName>
+                <default>false</default>
+                <label>30일</label>
+            </value>
+            <value>
+                <fullName>45</fullName>
+                <default>false</default>
+                <label>45일</label>
+            </value>
+            <value>
+                <fullName>60</fullName>
+                <default>false</default>
+                <label>60일</label>
+            </value>
+            <value>
+                <fullName>90</fullName>
+                <default>false</default>
+                <label>90일</label>
+            </value>
+            <value>
+                <fullName>120</fullName>
+                <default>false</default>
+                <label>120일</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

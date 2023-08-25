@@ -1,0 +1,11 @@
+.iframe-container {
+    width: 210mm; /* A4 width */
+    height: 297mm; /* A4 height */
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+.iframe-container iframe {
+    width: 100%;
+    height: 100%;
+}

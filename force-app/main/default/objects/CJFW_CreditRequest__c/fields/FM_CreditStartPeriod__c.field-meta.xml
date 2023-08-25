@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>FM_CreditStartPeriod__c</fullName>
+    <externalId>false</externalId>
+    <formula>TEXT ( YEAR( CreditStartDate__c) ) +&quot;-&quot;+
+IF(MONTH(CreditStartDate__c) &lt; 10, &quot;0&quot; + TEXT(MONTH(CreditStartDate__c)), TEXT(MONTH(CreditStartDate__c)) ) +&quot;-&quot;+
+IF(DAY(CreditStartDate__c) &lt; 10, &quot;0&quot; + TEXT(DAY(CreditStartDate__c)), TEXT(DAY(CreditStartDate__c)) ) +
+&quot; ~ &quot; +
+TEXT ( YEAR( CreditEndDate__c) )+&quot;-&quot; +
+IF(MONTH(CreditEndDate__c) &lt; 10, &quot;0&quot; + TEXT(MONTH(CreditEndDate__c)), TEXT(MONTH(CreditEndDate__c)) ) +&quot;-&quot;+
+IF(DAY(CreditEndDate__c) &lt; 10, &quot;0&quot; + TEXT(DAY(CreditEndDate__c)), TEXT(DAY(CreditEndDate__c)) )</formula>
+    <label>Credit Start Period</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

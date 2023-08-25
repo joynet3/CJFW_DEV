@@ -1,0 +1,254 @@
+<template>
+    <template lwc:if={isLoading}>
+      <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+    </template>  
+
+    <div class="survey">
+        <article class="slds-card" >
+            <!-- 헤더 제거
+              <div class="slds-card__header slds-grid">
+              <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="slds-media__figure">
+                  <span class="slds-icon_container slds-icon-standard-task" title="설문">
+                    <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                      <use xlink:href="/_slds/icons/standard-sprite/svg/symbols.svg#task"></use>
+                    </svg>
+                    <span class="slds-assistive-text">설문</span>
+                  </span>
+                </div>
+                <div class="slds-media__body">
+                  <h2 class="slds-card__header-title">
+                    <a href="#" class="slds-card__header-link slds-truncate" title="설문" onclick={handleTitleClick}>
+                      <span>{survey.category} 설문</span>
+                    </a>
+                  </h2>
+                </div>
+              </header>
+            </div> -->
+            <div class="slds-card__body slds-card__body_inner" lwc:if={isData}>
+              <div>
+                  <template lwc:if={isShowParentInfo}>
+                    <!-- 고객 정보(Lead, Account) -->
+                    <div class="parentInfo">
+                      <lightning-record-view-form
+                          record-id={recordId}
+                          object-api-name={objectApiName}
+                      >
+                        <lightning-layout vertical-align="stretch" multiple-rows="true" class="">
+                          <lightning-layout-item  size="12" medium-device-size="6" padding="around-small" class="">
+                              <lightning-output-field field-name="Name"> </lightning-output-field>
+                          </lightning-layout-item>
+                          <lightning-layout-item  size="12" medium-device-size="6" padding="around-small" class="">
+                              
+                          </lightning-layout-item>
+
+                        <lightning-layout-item  size="12" medium-device-size="6" padding="around-small" class="">
+                            <lightning-output-field field-name="Address__c"> </lightning-output-field>
+                        </lightning-layout-item>
+                        <lightning-layout-item  size="12" medium-device-size="6" padding="around-small" class="">
+                          <lightning-output-field field-name="AddressDetails__c"> </lightning-output-field>
+                        </lightning-layout-item>
+                        <lightning-layout-item  size="12" medium-device-size="6" padding="around-small" class="">
+                          <lightning-output-field field-name="BusinessConditions__c"> </lightning-output-field>
+                      </lightning-layout-item>
+                      <lightning-layout-item  size="12" medium-device-size="6" padding="around-small" class="">
+                        <lightning-output-field field-name="BusinessPathLv1__c"> </lightning-output-field>
+                      </lightning-layout-item>
+                      <lightning-layout-item  size="12" medium-device-size="6" padding="around-small" class="">
+                        <lightning-output-field field-name="BusinessPathLv2__c"> </lightning-output-field>
+                    </lightning-layout-item>
+                    <lightning-layout-item  size="12" medium-device-size="6" padding="around-small" class="">
+                      <lightning-output-field field-name="BusinessPathLv3__c"> </lightning-output-field>
+                    </lightning-layout-item>
+                          
+                        </lightning-layout>
+                          
+                      </lightning-record-view-form>
+                    </div>
+                  </template>
+              </div>
+              <div class="">
+                <ul class="slds-accordion">
+                  <template for:each={survey.questionList} for:item="question" for:index="qIdx">
+                    <!-- 연계질문(자식)은 안 보임 -->
+                    <template lwc:if={question.isChild}>
+                    </template>
+                    <!-- 최상위 질문일 경우 -->
+                    <template lwc:else>
+                        <li class="slds-accordion__list-item" key={question.id}>
+                          <section class="slds-accordion__section slds-is-open">
+                            <!--  -->
+                            <div class="slds-accordion__summary">
+                              <h2 class="slds-accordion__summary-heading">
+                                <button data-qidx={qIdx} class="slds-button slds-button_reset slds-accordion__summary-action" aria-controls={question.id} aria-expanded="true" title="" onclick={handleAccordionClick}>
+                                  <svg class="slds-accordion__summary-action-icon slds-button__icon slds-button__icon_left" aria-hidden="true">
+                                    <template lwc:if={question.isShowDetail}>
+                                      <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#down"></use>                              
+                                    </template>
+                                    <template lwc:else>
+                                      <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#switch"></use>
+                                    </template>
+                                  </svg>
+                                  <span class="slds-accordion__summary-content">{question.content}</span>
+                                </button>
+                              </h2>
+                            </div>
+                            <div class="slds-accordion__content" id={question.id}>
+                              <template lwc:if={question.isShowDetail}>
+                                <div class="slds-text-longform wirteContainer">
+                                    <div class="slds-text-body_regular">    
+                                      <!-- 질문 형식이 객관식 -->
+                                      <template lwc:if={question.isMultiple}>
+                                        <!-- 객관식 - 복수선택 -->
+                                        <template lwc:if={question.isMultipleChoice}>
+                                            <div class="gridContainer">
+                                                <template for:each={question.optionList} for:item="option">
+                                                    <div class="mtb_3" key={option.id}>
+                                                        <lightning-input data-qidx={qIdx}  type="checkbox" value={option.id} label={option.label} name="inputCheck" onchange={handleMultipleChange}></lightning-input>      
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </template>
+                                        <!-- 객관식 - 단수선택 -->
+                                        <template lwc:else>
+                                            <div class="radioContainer">
+                                                <lightning-radio-group 
+                                                    data-qidx={qIdx}
+                                                    label="Radio Group"
+                                                    options={question.optionList}                                                                
+                                                    type="radio"
+                                                    name={question.id}
+                                                    variant="label-hidden"
+                                                    onchange={handleSingleChange}
+                                                ></lightning-radio-group>
+                                            </div>
+                                        </template>
+                                      </template>
+                                      <!-- 질문 형식이 주관식, 날짜, 시간 -->
+                                      <template lwc:else>    
+                                            <div>
+                                                <template lwc:if={question.isDate}>
+                                                    
+                                                  <template lwc:if={question.isFromTo}>
+                                                        <lightning-input data-qidx={qIdx} type="date" name="dateInputFrom" label="From" onchange={handleDateChange} ></lightning-input>
+                                                        <lightning-input data-qidx={qIdx} type="date" name="dateInputTo" label="To"     onchange={handleDateChange} ></lightning-input>
+                                                  </template>
+                                                  <template lwc:else>
+                                                      <lightning-input data-qidx={qIdx} type="date" name="dateInput" label="Enter a date" variant="label-hidden" onchange={handleDateChange} ></lightning-input>
+                                                  </template>
+                                                </template>
+                                                <template lwc:elseif={question.isTime}>
+                                                  <lightning-input data-qidx={qIdx} type="time" name="timeInputFrom" label="From" onchange={handleTimeChange}></lightning-input>
+                                                  <lightning-input data-qidx={qIdx} type="time" name="timeInputTo"   label="To"   onchange={handleTimeChange}></lightning-input>
+                                                </template>
+                                                <template lwc:else>
+                                                        <lightning-textarea data-qidx={qIdx} name="textArea" label="" variant="label-hidden" onchange={handleTextChange} ></lightning-textarea>
+                                                </template>
+                                            </div>
+                                      </template>
+                                  </div>
+                                </div>
+                              </template>
+                              <template lwc:else>
+                              </template>
+                            </div>
+                          </section>
+                        </li>
+                        <!-- Option 값 선택 후 Sub Question 데이터가 존재 [s] -->
+                        <template lwc:if={question.isSelected}>
+                          <template lwc:if={question.selectedValue.isFollowUp}>
+                            
+                              <c-cjfw-survey-follow-up parent-option-id={question.selectedValue.id} key={question.selectedValue.id} questions={question.selectedValue.subQuestionList} onchangeddata={handleChangeSelectedData} ></c-cjfw-survey-follow-up>
+                              <!--
+                              <li class="slds-accordion__list-item" key={subQuestion.Id}>
+                                <section class="slds-accordion__section slds-is-open">
+                                  <div class="slds-accordion__summary">
+                                    <h2 class="slds-accordion__summary-heading">
+                                      <button data-qidx={qIdx} data-option={question.selectedValue} data-subqidx={subqIdx} class="slds-button slds-button_reset slds-accordion__summary-action" aria-controls="referenceId2" aria-expanded="true" title="" onclick={handleAccordionClick}>
+                                        <svg class="slds-accordion__summary-action-icon slds-button__icon slds-button__icon_left" aria-hidden="true">
+                                          
+                                          <template lwc:if={subQuestion.isShowDetail}>
+                                            <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#down"></use>                              
+                                          </template>
+                                          <template lwc:else>
+                                            <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#switch"></use>
+                                          </template>
+                                        </svg>
+                                        <span class="slds-accordion__summary-content">{subQuestion.content}</span>
+                                      </button>
+                                    </h2>
+                                  </div>
+                                  <template lwc:if={subQuestion.isShowDetail}>
+                                    <div class="slds-accordion__content" id="referenceId2">
+                                      <div class="slds-text-longform wirteContainer">
+                                          <div class="slds-text-body_regular">    
+                                              <!- - 질문 형식이 객관식 - ->
+                                              <template lwc:if={subQuestion.isMultiple}>
+                                                    <!- - 객관식 - 복수선택 - ->
+                                                  <template lwc:if={subQuestion.isMultipleChoice}>
+                                                      <div class="gridContainer">
+                                                          <template for:each={subQuestion.optionList} for:item="option">
+                                                              <div class="mtb_3" key={option.id}>
+                                                                  <lightning-input data-qidx={qIdx}  type="checkbox" value={option.id} label={option.label} name="inputCheck" ></lightning-input>      
+                                                              </div>
+                                                          </template>
+                                                      </div>
+                                                  </template>
+                                                  
+                                                  <!- - 객관식 - 단수선택  - ->
+                                                  <template lwc:else>
+                                                      <div class="radioContainer">
+                                                          <lightning-radio-group 
+                                                              label="Radio Group"
+                                                              options={subQuestion.optionList}                                                                
+                                                              type="radio"
+                                                              name=""
+                                                              variant="label-hidden"
+                                                          ></lightning-radio-group>
+                                                      </div>
+                                                  </template>
+                                              </template>
+                                              <!- - 질문 형식이 주관식, 날짜 - ->
+                                              <template lwc:else>
+                                                <div  key={subQuestion.Id}>
+                                                    <div class="slds-text-longform wirteContainer">
+                                                      <div>
+                                                          <div class="slds-text-body_regular">    
+                                                            <template lwc:if={subQuestion.isDate}>
+                                                                
+                                                                <template lwc:if={subQuestion.isFromTo}>
+                                                                    <lightning-input type="date" name="dateInputFrom" label="From" ></lightning-input>
+                                                                    <lightning-input type="date" name="dateInputTo" label="To" ></lightning-input>
+                                                                </template>
+                                                                <template lwc:else>
+                                                                    <lightning-input type="date" name="dateInput" label="Enter a date" variant="label-hidden" ></lightning-input>
+                                                                </template>
+                                                            </template>
+                                                            <template lwc:else>
+                                                                    <lightning-textarea name="textArea" label="" variant="label-hidden" ></lightning-textarea>
+                                                            </template>
+                                                            </div>
+                                                      </div>
+                                                    </div>
+                                                </div>
+                                              </template>
+                                          </div>
+                                      </div>
+                                    </div>
+                                  </template>
+                                </section>
+                              </li>
+                              -->
+                          </template>
+                        </template>
+                        <!-- Option 값 선택 후 선택 된 데이터가 존재 [e] -->
+                    </template>
+                  </template>
+                </ul>
+              </div>
+            </div>
+          </article>
+    </div>
+
+
+</template>

@@ -1,0 +1,33 @@
+<!--
+  @description       : 주소 검색 
+  @author            : joohyeon.jang@dkbmc.com
+  @group             : 
+  @last modified on  : 08-21-2023
+  @last modified by  : joohyeon.jang@dkbmc.com
+  Modifications Log
+  Ver   Date         Author                    Modification
+  1.0   08-18-2023   joohyeon.jang@dkbmc.com   Initial Version
+-->
+<template>
+    <template lwc:if={showModal}>
+        <!-- Header -->
+        <lightning-modal-header label="도로명 주소 찾기">
+            
+        </lightning-modal-header>
+        
+        <!-- Body -->
+        <lightning-modal-body>
+            <lightning-input data-label="주소명" placeholder="도로명주소, 건물명 또는 지번 입력" name="enter-search" type="search" class="required-search" value={searchKey} onchange={changeHandleSearch} onkeypress={handleEnter} onfocus={handleClick}></lightning-input>
+        </lightning-modal-body>
+        <!-- Body End-->
+
+        <!-- Footer -->
+        <lightning-modal-footer>
+            <div class="slds-clearfix">
+                <div class="slds-float_right">
+                    <lightning-button variant="neutral" label="취소" onclick={handleClose} class="slds-m-left_x-small"></lightning-button>
+                </div>
+              </div>
+        </lightning-modal-footer>
+    </template>
+</template>

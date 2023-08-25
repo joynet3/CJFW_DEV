@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CommonSupplierRegionLimitYN__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>나라장터 공고의 공동 수급 업체 지역 제한 여부</description>
+    <externalId>false</externalId>
+    <label>Common Supplier Region Limit Y/N</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>Checkbox</type>
+</CustomField>

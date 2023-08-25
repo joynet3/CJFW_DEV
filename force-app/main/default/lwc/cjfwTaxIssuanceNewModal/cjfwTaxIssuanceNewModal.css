@@ -1,0 +1,16 @@
+.btnFix{
+    padding-right: 5px;
+}
+.invoiceTye{
+    font-weight: bold; /* 폰트 굵게 설정 */
+    font-size: 30px; /* 원하는 크기로 조정 */
+    width: 150px; 
+}
+.container{
+    display: flex;
+    justify-content: center; /* 가운데 정렬 */
+    padding-right: 100px; 
+}
+.slds-radio.slds-form-element__label {
+    font-size: 40px;
+}

@@ -1,0 +1,8 @@
+<!--
+ - Created by 천유정 on 2023-01-04.
+ -->
+
+<aura:event type="COMPONENT" description="QuoteSendEmail_SelectContact_evt" access="global">
+    <aura:attribute name="index" type="Integer" description="index" />
+    <aura:attribute name="targetObject" type="Object" description="targetObject" /> 
+</aura:event>

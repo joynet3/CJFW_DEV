@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSetTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <valueTranslation>
+        <masterLabel>상</masterLabel>
+        <translation>상</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>중</masterLabel>
+        <translation>하</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>하</masterLabel>
+        <translation>중</translation>
+    </valueTranslation>
+</GlobalValueSetTranslation>

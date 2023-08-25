@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>영업단계</label>
+    <name>SalesStage__c</name>
+    <picklistValues>
+        <masterLabel>경쟁사 동향 파악</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>시식 시행</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>시식점 사전 준비</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>시식점 선정 유도</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>해당없음</masterLabel>
+        <translation></translation>
+    </picklistValues>
+</CustomFieldTranslation>

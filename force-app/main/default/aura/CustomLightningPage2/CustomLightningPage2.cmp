@@ -1,0 +1,56 @@
+<!--
+* ==================================================================================
+*   File Name   : CustomLightningPage2.cmp
+*   Author      : Minje.Kim
+*   Date        : 2023.01.05
+*   Description : Custom Lightning Page
+*   Modification Log
+* ==================================================================================
+*   Ver     Date          Author          Modification
+* ==================================================================================
+*   1.0     2023.01.05    Minje.Kim    Create
+* ==================================================================================
+-->
+
+    <aura:component implements="lightning:recordHomeTemplate" 
+            description="3 columns flexible with header and footer." >
+    <aura:attribute name="header" type="Aura.Component[]" description="Header"/>
+    <aura:attribute name="column1" type="Aura.Component[]" description="Column1"/>
+    <aura:attribute name="column2" type="Aura.Component[]" description="Column2"/>
+    <aura:attribute name="column3" type="Aura.Component[]" description="Column3"/>
+    <aura:attribute name="left" type="Aura.Component[]" description="left"/>
+    <aura:attribute name="right" type="Aura.Component[]" description="right"/>
+    <aura:attribute name="footer" type="Aura.Component[]" description="Footer"/>
+    
+    <div>
+        <lightning:layout  pullToBoundary="small">
+            <lightning:layoutItem size="12" padding="around-small">
+                {!v.header}
+            </lightning:layoutItem>
+        </lightning:layout>
+        <lightning:layout  pullToBoundary="small">
+            <lightning:layoutItem size="4" padding="around-small">
+                {!v.column1}
+            </lightning:layoutItem>
+            <lightning:layoutItem size="4" padding="around-small">         
+                {!v.column2}
+            </lightning:layoutItem>
+            <lightning:layoutItem size="4" padding="around-small">
+                {!v.column3}
+            </lightning:layoutItem>
+        </lightning:layout>
+        <lightning:layout  pullToBoundary="small">
+            <lightning:layoutItem size="6" padding="around-small">
+                {!v.left}
+            </lightning:layoutItem>
+            <lightning:layoutItem size="6" padding="around-small">         
+                {!v.right}
+            </lightning:layoutItem>
+        </lightning:layout>
+        <lightning:layout  pullToBoundary="small">
+            <lightning:layoutItem size="12" padding="around-small">
+                {!v.footer}
+            </lightning:layoutItem>
+        </lightning:layout>
+    </div> 
+</aura:component>

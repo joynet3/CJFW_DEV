@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>IfResponseDataSaveYn__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>인터페이스데이터저장여부</description>
+    <externalId>false</externalId>
+    <label>IfResponseDataSaveYn</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

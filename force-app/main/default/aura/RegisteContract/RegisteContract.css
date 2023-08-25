@@ -1,0 +1,10 @@
+/**
+ * Created by kw on 2022-12-29.
+ */
+    .THIS .dateInput .slds-form-element{
+/*        width: 49%;*/
+    }
+    .THIS .dateInput .slds-input{
+        width: 94%;
+        min-width: 94%;
+    }

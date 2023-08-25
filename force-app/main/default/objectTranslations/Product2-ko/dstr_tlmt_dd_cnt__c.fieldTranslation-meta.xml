@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>유통 기한 일 수</label>
+    <name>dstr_tlmt_dd_cnt__c</name>
+</CustomFieldTranslation>

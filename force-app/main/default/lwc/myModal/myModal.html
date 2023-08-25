@@ -1,0 +1,11 @@
+<template>
+    <lightning-modal-header label="Create Account"></lightning-modal-header>
+    <lightning-modal-body>
+      <lightning-record-edit-form object-api-name="Account" onsuccess={handleSuccess}>
+        <lightning-input-field field-name="Name"></lightning-input-field>
+      </lightning-record-edit-form>
+    </lightning-modal-body>
+    <lightning-modal-footer>
+      <lightning-button label="Submit" onclick={createAccount}></lightning-button>
+    </lightning-modal-footer>
+</template>

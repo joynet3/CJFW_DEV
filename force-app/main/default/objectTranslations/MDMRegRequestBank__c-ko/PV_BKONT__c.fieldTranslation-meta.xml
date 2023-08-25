@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>은행관리키</label>
+    <name>PV_BKONT__c</name>
+    <picklistValues>
+        <masterLabel>가상계좌</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>자금 지급계좌</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>점포 실물계좌</masterLabel>
+        <translation></translation>
+    </picklistValues>
+</CustomFieldTranslation>

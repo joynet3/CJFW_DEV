@@ -1,0 +1,147 @@
+<!--
+  @description       : Account Object Detail > Tab > 고객 현황(Customer Status) > "고객 입금/여신/채권 현황" 화면
+  @author            : joohyeon.jang@dkbmc.com
+  @group             : 
+  @last modified on  : 08-24-2023
+  @last modified by  : joohyeon.jang@dkbmc.com
+  Modifications Log
+  Ver   Date         Author                    Modification
+  1.0   08-04-2023   joohyeon.jang@dkbmc.com   Initial Version
+-->
+<template>
+    <div class="cjfw-sales-status-report">
+        <!-- 채권 -->
+        <lightning-card variant="Narrow" icon-name="custom:custom40" title="고객 입금/여신/채권 현황" class="related-card">
+            <div slot="actions" class="slds-grid slds-grid_align-end" > <!-- class="slds-grid slds-grid_align-end"-->
+                <div class="slds-col colMiddle">
+                    <lightning-input class ="myDate" label="기준일자" type="date" value={toCreatedDate} onchange={changeToCreatedData} style="margin-left: 6px;" required></lightning-input>
+                </div>
+                <div class="slds-col colRight">
+                    <lightning-button class = "myBtn" label="조회" variant="neutral" onclick={handleManagement}></lightning-button>
+                </div>
+            </div>
+            <div class="slds-scrollable_x">
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_col-bordered">
+                    <!-- Colums &Data List Start -->
+                    <tbody>
+                        <!--<tr class="slds-hint-parent" key={item.id} data-index={index} onclick={handleClick} ondblclick={handleDoubleClick}>-->
+                        <tr>
+                            <th class="slds-line-height_reset">
+                                <div class="slds-text-title_caps">기초잔고</div>
+                            </th>
+                            <td for:each={data} for:item="item" for:index="index" key={item.id} class="cell-disable slds-text-align_left">
+                                <div class="slds-truncate textRight">{item.openingBalance}</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="slds-line-height_reset">
+                                <div class="slds-text-title_caps">총매출</div>
+                            </th>
+                            <td for:each={data} for:item="item" for:index="index" key={item.id} class="cell-disable slds-text-align_left">
+                                <div class="slds-truncate textRight">{item.grossSales}</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="slds-line-height_reset">
+                                <div class="slds-text-title_caps">당월세무조정금액</div>
+                            </th>
+                            <td for:each={data} for:item="item" for:index="index" key={item.id} class="cell-disable slds-text-align_left">
+                                <div class="slds-truncate textRight">{item.taxAdjustmentAmount}</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="slds-line-height_reset">
+                                <div class="slds-text-title_caps">기말잔고</div>
+                            </th>
+                            <td for:each={data} for:item="item" for:index="index" key={item.id} class="cell-disable slds-text-align_left">
+                                <div class="slds-truncate textRight">{item.endBalance}</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="slds-line-height_reset">
+                                <div class="slds-text-title_caps">연체채권</div>
+                            </th>
+                            <td for:each={data} for:item="item" for:index="index" key={item.id} class="cell-disable slds-text-align_left">
+                                <div class="slds-truncate textRight">{item.overdueDebt}</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="slds-line-height_reset">
+                                <div class="slds-text-title_caps">실담보액</div>
+                            </th>
+                            <td for:each={data} for:item="item" for:index="index" key={item.id} class="cell-disable slds-text-align_left">
+                                <div class="slds-truncate textRight">{item.actualSecurityAmount}</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="slds-line-height_reset">
+                                <div class="slds-text-title_caps">대손채권</div>
+                            </th>
+                            <td for:each={data} for:item="item" for:index="index" key={item.id} class="cell-disable slds-text-align_left">
+                                <div class="slds-truncate textRight">{item.badDebtReceivables}</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="slds-line-height_reset">
+                                <div class="slds-text-title_caps">담보여신</div>
+                            </th>
+                            <td for:each={data} for:item="item" for:index="index" key={item.id} class="cell-disable slds-text-align_left">
+                                <div class="slds-truncate textRight">{item.securedLoan}</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="slds-line-height_reset">
+                                <div class="slds-text-title_caps">연대보증금액</div>
+                            </th>
+                            <td for:each={data} for:item="item" for:index="index" key={item.id} class="cell-disable slds-text-align_left">
+                                <div class="slds-truncate textRight">{item.jointGuaranteeAmount}</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="slds-line-height_reset">
+                                <div class="slds-text-title_caps">보증만기일</div>
+                            </th>
+                            <td for:each={data} for:item="item" for:index="index" key={item.id} class="cell-disable slds-text-align_left">
+                                <div class="slds-truncate textCenter">{item.warrantyExpiryDate}</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="slds-line-height_reset">
+                                <div class="slds-text-title_caps">신용여신한도</div>
+                            </th>
+                            <td for:each={data} for:item="item" for:index="index" key={item.id} class="cell-disable slds-text-align_left">
+                                <div class="slds-truncate textRight">{item.creditLimit}</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="slds-line-height_reset">
+                                <div class="slds-text-title_caps">신용여신 만기일</div>
+                            </th>
+                            <td for:each={data} for:item="item" for:index="index" key={item.id} class="cell-disable slds-text-align_left">
+                                <div class="slds-truncate textCenter">{item.creditMaturityDate}</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="slds-line-height_reset">
+                                <div class="slds-text-title_caps">최종 입금일</div>
+                            </th>
+                            <td for:each={data} for:item="item" for:index="index" key={item.id} class="cell-disable slds-text-align_left">
+                                <div class="slds-truncate textCenter">{item.creditMaturityDate}</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- <lightning-datatable
+                key-field="Id"
+                class="datatable-full-size"
+                data={debentureList}
+                columns={debentureColumns}
+                column-widths-mode="auto"
+                hide-checkbox-column="true"
+                is-loading={debentureLoading}
+                resize-column-disabled="true">
+            </lightning-datatable> -->
+        </lightning-card>
+    </div>
+</template>

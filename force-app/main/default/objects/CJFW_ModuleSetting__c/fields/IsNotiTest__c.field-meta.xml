@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>IsNotiTest__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>알림 모듈 테스트용 활성화 여부(true: 히스토리 데이터 적재, false: 실제알림 발송 및 히스토리 적재)</description>
+    <externalId>false</externalId>
+    <label>IsNotiTest</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

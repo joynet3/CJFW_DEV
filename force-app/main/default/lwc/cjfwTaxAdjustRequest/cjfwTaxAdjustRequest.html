@@ -1,0 +1,58 @@
+<!--
+  @description       : 
+  @author            : doyeon.kim@dkbmc.com
+  @group             : 
+  @last modified on  : 08-21-2023
+  @last modified by  : doyeon.kim@dkbmc.com
+-->
+<template>
+    <lightning-card class="taxAdjusttRequest related-card" title="세무조정 신청" icon-name="standard:custom" style="border: 1px solid #F3F3F3;">
+        <div slot="actions">
+            <lightning-button class="mr10" variant="brand" label="조회" ></lightning-button>
+            <lightning-button label="저장"></lightning-button>
+        </div>
+    
+        <table class="cjfwtable">
+            <thead>
+                <tr class="">
+                    <!-- slds-line-height_reset -->
+                    <th class=""></th>
+                    <th class="">조회금액</th>
+                    <th class="">조정금액</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="">
+                    <!-- slds-line-height_reset -->
+                    <td class="">과세금액(VAT별도)</td>
+                    <td class="textRight" >
+                        <div class="">583,390</div>
+                    </td>
+                    <td class="textRight" >
+                        <div class="">100,350</div>
+                    </td>
+                </tr>
+                <tr class="">
+                    <!-- slds-line-height_reset -->
+                    <td class="">비과세금액</td>
+                    <td class="textRight" >
+                        <div class="">3,189,580</div>
+                    </td>
+                    <td class="textRight" >
+                        <div class="">4,040</div>
+                    </td>
+                </tr>
+                <tr class="">
+                    <!-- slds-line-height_reset -->
+                    <td class="">총 대상금액</td>
+                    <td class="textRight" >
+                        <div class="">3,772,970</div>
+                    </td>
+                    <td class="textRight" >
+                        <div class="">104,390</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </lightning-card>
+</template>

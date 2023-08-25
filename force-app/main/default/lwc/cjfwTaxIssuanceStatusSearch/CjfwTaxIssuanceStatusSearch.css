@@ -1,0 +1,29 @@
+.date-separator-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.date-separator {
+  padding: 0 5px;
+  font-weight: bold;
+}
+.list_view_container{
+  background-color: #f3f3f3;
+}
+.btnGroup{
+  text-align: end;
+}
+.search-button {
+  padding-top: 40px !important;
+}
+.small-checkbox {
+  --sds-c-checkbox-width: 1rem; /* 원하는 크기로 조정합니다. */
+  --sds-c-checkbox-height: 1rem; /* 원하는 크기로 조정합니다. */
+}
+.slds-table_col-bordered th.slds-text-title_caps{
+    width: 100px; 
+}
+.slds-scrollable_x {
+  overflow-x: auto;
+  height: 250px;
+}

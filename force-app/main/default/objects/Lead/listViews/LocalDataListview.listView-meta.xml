@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>LocalDataListview</fullName>
+    <columns>FULL_NAME</columns>
+    <columns>LEAD.COMPANY</columns>
+    <columns>LEAD.PHONE</columns>
+    <columns>trdStateNm__c</columns>
+    <columns>LEAD.STATUS</columns>
+    <columns>totEpNum__c</columns>
+    <columns>siteArea__c</columns>
+    <columns>apvPermYmd__c</columns>
+    <columns>CORE.USERS.LAST_NAME</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>LEAD.RECORDTYPE</field>
+        <operation>equals</operation>
+        <value>Lead.LeadLocalData</value>
+    </filters>
+    <label>3. 인허가정보</label>
+</ListView>

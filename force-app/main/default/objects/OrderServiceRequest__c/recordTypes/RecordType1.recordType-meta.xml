@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RecordType1</fullName>
+    <active>true</active>
+    <description>샘플요청</description>
+    <label>샘플요청</label>
+    <picklistValues>
+        <picklist>ReqType__c</picklist>
+        <values>
+            <fullName>부가서비스 요청</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>샘플요청</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Status__c</picklist>
+        <values>
+            <fullName>A</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>D</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>R</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+</RecordType>

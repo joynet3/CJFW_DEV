@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <help>[ 초등집중교 = 총점 6점 이상 + 초등학교 ] [ VIP = 총점 8점 이상 ] [ 육성 = 총점 6점 ] [ 기타 = 6점 미만 ]</help>
+    <label>등급</label>
+    <name>fm_Rating__c</name>
+</CustomFieldTranslation>

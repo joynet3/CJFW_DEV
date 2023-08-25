@@ -1,0 +1,239 @@
+<!--
+  @description       : "세금계산서 발행 Tab Main" 화면
+  @author            : joohyeon.jang@dkbmc.com
+  @group             : 
+  @last modified on  : 08-17-2023
+  @last modified by  : joohyeon.jang@dkbmc.com
+  Modifications Log
+  Ver   Date         Author                    Modification
+  1.0   08-01-2023   joohyeon.jang@dkbmc.com  Initial Version
+-->
+<template>
+    <!-- 상단 영역 -->
+    <lightning-card label="Tax Issuance Status Search" icon-name="utility:form"  title="세금계산서 발행" type="media" href="#" class="list_view_container" style="background-color: #F3F3F3 ;">
+        <lightning-button label="신규발행" slot="actions"  variant="neutral" onclick={handleNew} style="padding-right: 5px;"></lightning-button>
+        <lightning-button label="선택취소" slot="actions"  variant="neutral" onclick={handleCancel} style="padding-right: 5px;"></lightning-button>
+        <lightning-button label="수령자관리" slot="actions"  variant="neutral" onclick={handleManagement}></lightning-button>
+        <!-- <c-cjfw-m-d-m-management-info-modal></c-cjfw-m-d-m-management-info-modal> -->
+    <!-- 상단 영역 End -->
+        <!-- 필터 영역 -->
+        <template if:true={FilterHide}>
+            <lightning-layout style="padding-bottom: 1rem; background-color: white;">
+                <lightning-layout multiple-rows="true">
+                    <!--첫번째 줄 : 본부-->
+                    <lightning-layout-item size="2" padding="around-small" >
+                        <c-comm-custom-select
+                            is-required
+                            is-empty-option
+                            options={headOfficeOptions}
+                            label="본부"
+                            onselected={handleSelectedHead}
+                            >
+                        </c-comm-custom-select>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="2" padding="around-small" >
+                        <c-comm-custom-select 
+                            is-empty-option
+                            options={suOptions}
+                            label="SU"
+                            onselected={handleSelectedSu}
+                            >
+                        </c-comm-custom-select>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="2" padding="around-small" >
+                        <c-comm-custom-select 
+                            is-empty-option
+                            options={teamOptions}
+                            label="팀"
+                            onselected={handleSelectedTeam}
+                            >
+                        </c-comm-custom-select>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6" padding="around-small" >
+                    </lightning-layout-item>
+                    <!--두번째 줄 : 고객사-->
+                    <lightning-layout-item size="2" padding="around-small" >
+                        <lightning-input label="고객사" name="enter-search" type="search" value={searchKey} onchange={changeHandleSearch} onkeypress={handleEnter} onfocus={handleClick}></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="2" padding="around-small" >
+                        <lightning-input label="사번" name="enter-search" type="search" value={searchEmpNum} onchange={changeHandleSearch} onkeypress={handleEnter}  ></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="8" padding="around-small" >
+                    </lightning-layout-item>
+                    <lightning-layout-item size="2" padding="around-small" >
+                        <lightning-input label ="발행일자" type ="date"  value ={firstDayOfMonthDate} onchange={changeFromIssueData} field-level-help={helpText} required></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="2" padding="around-small" >
+                        <lightning-input label ="　" type ="date"  value ={todayDate} onchange={changeToIssueData} field-level-help={helpText}></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="2" padding="around-small" >
+                        <lightning-input label ="작성일자" type ="date"  value ={fromCreatdDate} onchange={changeFromCreatedData} field-level-help={helpText}></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="2" padding="around-small" >
+                        <lightning-input label ="　" type ="date"  value ={toCreatedDate} onchange={changeToCreatedData} field-level-help={helpText}></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="4" padding="around-small" >
+                    </lightning-layout-item>
+                    <!--세번째 줄 : 구분-->
+                    <lightning-layout-item size="2" padding="around-small" >
+                        <c-comm-custom-select 
+                            is-empty-option
+                            options={typeOptions}
+                            label="계산서 구분"
+                            onselected={handleSelectedType}
+                            >
+                        </c-comm-custom-select>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="2" padding="around-small" >
+                        <c-comm-custom-select 
+                            is-empty-option
+                            options={statusOptions}
+                            label="세금계산서 상태"
+                            onselected={handleSelectedStatus}
+                            >
+                        </c-comm-custom-select>
+                    </lightning-layout-item>
+                    <lightning-layout-item flexibility="grow" padding="around-small" ></lightning-layout-item>
+                    <lightning-layout-item size="auto" padding="around-small" class="search-button-item"  >
+                        <lightning-button label="조회" variant="brand" onclick={handleTaxbtn} class="search-button"></lightning-button>
+                    </lightning-layout-item>
+                    <template if:true={IsShow}>
+                        <c-cjfw-account-search-modal 
+                            onsetsearchacc={handleSearchKey} >
+                        </c-cjfw-account-search-modal>
+                    </template>
+                </lightning-layout>
+            </lightning-layout>
+            <!-- SHOW AND HIDE -->
+            <div style ="text-align: center; background-color: #f3f3f3"> 
+                <a onclick={showAndHide}>show and hide</a>
+            </div>
+        </template>
+    </lightning-card>
+    <!-- 필터 영역 End -->
+    <!-- Data Table :tr/td사용 -->
+    <lightning-card>
+        <div class="slds-scrollable_x">
+            <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_col-bordered">
+                <!-- Column Start-->
+                <thead>
+                    <tr class="slds-line-height_reset">
+                        <th class="row-number fiexedHeader">
+                            <lightning-input type="checkbox" checked={isAllSelected} onchange={handleSelectAll}></lightning-input>
+                        </th>
+                        <th class="slds-text-title_caps">No</th>
+                        <th class="slds-text-title_caps">세금계산서 상태</th>
+                        <th class="slds-text-title_caps">에러메세지 </th>
+                        <th class="slds-text-title_caps">국세청 신고상태</th>
+                        <th class="slds-text-title_caps">이전 전자문서번호</th>
+                        <th class="slds-text-title_caps">전자문서번호 </th>
+                        <th class="slds-text-title_caps">고객코드 </th>
+                        <th class="slds-text-title_caps">고객사명 </th>
+                        <th class="slds-text-title_caps">팀명 </th>
+                        <th class="slds-text-title_caps">담당MA </th>
+                        <th class="slds-text-title_caps">발행일 </th>
+                        <th class="slds-text-title_caps">작성일 </th>
+                        <th class="slds-text-title_caps">공급가액 </th>
+                        <th class="slds-text-title_caps">세액 </th>
+                        <th class="slds-text-title_caps">총액</th>
+                        <th class="slds-text-title_caps">ASP 업체</th>
+                        <th class="slds-text-title_caps">계산서 구분</th>
+                        <th class="slds-text-title_caps">취소 여부</th>
+                    </tr>
+                </thead>
+                <!-- Column End-->
+                <!-- Data List -->
+                <tbody>
+                    <template for:each={data} for:item="item" for:index="index">
+                        <tr class="slds-hint-parent" key={item.id} data-index={index} onclick={handleClick} ondblclick={handleDoubleClick}>
+                            <td>
+                                <lightning-input type="checkbox" checked={item.isSelected} data-id={item.id} onchange={handleRowSelect}></lightning-input>
+                            </td>
+                            <td class="cell-disable slds-text-align_left">
+                                <div class="slds-truncate slds-truncate slds-truncate_container_66">{item.index}</div>
+                            </td>
+                            <td class="cell-disable slds-text-align_left" >
+                                <div class="slds-truncate slds-truncate slds-truncate_container_66">{item.taxStatus}</div>
+                            </td>
+                            <td class="cell-disable slds-text-align_left" >
+                                <div class="slds-truncate slds-truncate slds-truncate_container_66">{item.errMessage}</div>
+                            </td>
+                            <td class="cell-disable slds-text-align_left" >
+                                <div class="slds-truncate slds-truncate slds-truncate_container_66">{item.taxReportStatus}</div>
+                            </td>
+                            <td class="cell-disable slds-text-align_left" >
+                                <div class="slds-truncate slds-truncate slds-truncate_container_66">{item.privousDocNum}</div>
+                            </td>
+                            <td class="cell-disable slds-text-align_left" >
+                                <div class="slds-truncate slds-truncate slds-truncate_container_66">{item.electronicDocNum}</div>
+                            </td>
+                            <td class="cell-disable slds-text-align_left" >
+                                <div class="slds-truncate slds-truncate slds-truncate_container_66">{item.customerCode}</div>
+                            </td>
+                            <td class="cell-disable slds-text-align_left" >
+                                <div class="slds-truncate slds-truncate slds-truncate_container_66">{item.customerName}</div>
+                            </td>
+                            <td class="cell-disable slds-text-align_left" >
+                                <div class="slds-truncate slds-truncate slds-truncate_container_66">{item.teamName}</div>
+                            </td>
+                            <td class="cell-disable slds-text-align_left" >
+                                <div class="slds-truncate slds-truncate slds-truncate_container_66">{item.managerMA}</div>
+                            </td>
+                            <td class="cell-disable slds-text-align_left" >
+                                <div class="slds-truncate slds-truncate slds-truncate_container_66">{item.publishDate}</div>
+                            </td>
+                            <td class="cell-disable slds-text-align_left" >
+                                <div class="slds-truncate slds-truncate slds-truncate_container_66">{item.createdDate}</div>
+                            </td>
+                            <td class="cell-disable slds-text-align_left" >
+                                <div class="slds-truncate slds-truncate slds-truncate_container_66">{item.supplyValue}</div>
+                            </td>
+                            <td class="cell-disable slds-text-align_left" >
+                                <div class="slds-truncate slds-truncate slds-truncate_container_66">{item.taxAmount}</div>
+                            </td>
+                            <td class="cell-disable slds-text-align_left" >
+                                <div class="slds-truncate slds-truncate slds-truncate_container_66">{item.totalMount}</div>
+                            </td>
+                            <td class="cell-disable slds-text-align_left" >
+                                <div class="slds-truncate slds-truncate slds-truncate_container_66">{item.aspVendor}</div>
+                            </td>
+                            <td class="cell-disable slds-text-align_left" >
+                                <div class="slds-truncate slds-truncate slds-truncate_container_66">{item.billType}</div>
+                            </td>
+                            <td class="cell-disable slds-text-align_left" >
+                                <div class="slds-truncate slds-truncate slds-truncate_container_66">{item.isCancel}</div>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+    </lightning-card>
+    
+    <!-- Data Table start :tr/td사용 End -->
+
+    <!-- lwc component 호출하는 방식 start (안씀,삭제예정) -->
+        <!-- <lightning-card>
+            <template if:true = {data}> 
+            <lightning-datatable key-field="id" 
+                                data={data} 
+                                columns={columns} 
+                                draft-values={saveDraftValues} 
+                                show-row-number-column >
+            </lightning-datatable>
+            </template>
+        </lightning-card> -->
+        <!--column-->
+        <!--dataList-->
+        <!--신규발행 Modal-->
+        <!-- <template if:true={showModal}>
+            <div class="modal-container">
+                <div class="modal-content">
+                        <c-cjfw-tax-issuance-new-modal
+                        oncloseeditmodal={closeEditModal}>
+                        </c-cjfw-tax-issuance-new-modal>
+                </div>
+            </div>
+        </template> -->
+    <!-- lwc component 호출하는 방식 End (안씀) -->    
+</template>

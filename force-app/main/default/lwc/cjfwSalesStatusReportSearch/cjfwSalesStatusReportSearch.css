@@ -1,0 +1,85 @@
+.colRight {
+    margin-left: 20px;
+    margin-top: 21px;
+    
+ }
+ .myDate {
+     width: 100%;
+ }
+.mine{
+    margin-left: 30px;
+}
+ .slds-form-element__control .slds-input-has-icon .slds-input-has-icon_right{
+     margin-left: 6px;
+ 
+ }
+ 
+ .slds-input-has-icon_right{
+     margin-right: 100px;
+ }
+ .slds-card__header-title{
+     width: 10%;
+ }
+ 
+ .slds-text-align_left{
+     padding-top: 5px;
+     padding-left: 7px;
+ 
+ }
+ .required-marker::before {
+     content: "*";
+     color: red; /* 빨간색 별표 예시 */
+     margin-right: 1px; /* 별표와 텍스트 사이 여백 조정 */
+ }
+ .slds-line-height_reset{
+     width: 30%;
+ }
+
+
+ .slds-line-height_reset{
+     background-color: rgb(243, 243, 243);
+ }
+ 
+ .slds-text-title_caps{
+     font-weight: bold;
+ }
+ .textRight {
+    text-align: right;
+}
+.textCenter {
+    text-align: center;
+} 
+ 
+ /* .cjfwsalesstatusreportsearch.thead { float:left; }
+ .cjfwsalesstatusreportsearch.thead.tr, 
+ .cjfwsalesstatusreportsearch.thead.tr.th { display:block; }
+ 
+ .cjfwsalesstatusreportsearch.tablez.tbody { display:block; oveflow-x:hidden; white-space:nowrap; }
+ .cjfwsalesstatusreportsearch.tablez.tbody.tr { display:inline-block; }
+ .cjfwsalesstatusreportsearch.tablez.tbody.tr.td { display:block;} */
+ 
+ 
+ 
+ @media (max-width: 1024px) {
+    
+    .related-card.slds-icon {
+        display: none;
+    }
+
+     .myBtn {
+       font-size: 10px;
+      
+       
+     }
+     .cjfw-sales-status-report .colMiddle{
+        width : 65%;
+    }
+
+     .colRight {
+        margin-left: 10px;
+        padding-top: 12px;
+        
+     }
+   
+ 
+ }

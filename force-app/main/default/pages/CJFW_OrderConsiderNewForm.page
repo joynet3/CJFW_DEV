@@ -1,0 +1,1072 @@
+<!--
+  @description       : (외식)수주양식_신규
+                       CJFW_OrderConsiderNewForm 
+  @author            : eunyoung.choi@dkbmc.com
+  @group             : 
+  @last modified on  : 08-25-2023
+  @last modified by  : eunyoung.choi@dkbmc.com
+  Modifications Log
+  Ver   Date         Author                    Modification
+  1.0   08-25-2023   eunyoung.choi@dkbmc.com   Initial Version
+-->
+<apex:page controller="ReportFormController" >
+<!-- Begin Default Content REMOVE THIS -->
+<html>
+    <head>
+        <style>
+            /* {position: absolute;
+            top: 0;} */
+
+            @page {
+            size: A4;
+            margin:5mm 5mm;
+            }
+            
+/*             @media print {
+            .page {
+            margin: 0mm;
+            border: initial;	
+            border-radius: initial;
+            width: initial;
+            min-height: initial;
+            box-shadow: initial;
+            background: initial;
+            page-break-before: auto;
+            }
+            } */
+            
+            body {
+            font-family: Arial Unicode MS;
+            border: solid 2px red;
+            }
+
+            body {
+                    margin: 0px;
+                    /* background-color: rgb(241, 241, 241); */
+                    /* border: solid 2px red; */
+                    font-family: Arial Unicode MS;
+                }
+
+                table, th{
+                    border-collapse: collapse;
+                    font-size : 10px;
+                }
+
+                tr {
+                    border-collapse: collapse;
+                    font-size : 10px;
+                    page-break-inside:avoid;
+                }
+                td{
+                /* border:0.5px solid rgb(204, 204, 204); */
+                border:0.5px solid rgb(70, 70, 70);
+                word-wrap: break-word;
+                font-size: 10px;
+                box-shadow: none;
+                text-align: center;
+                padding:5px;
+                }
+
+                .bold-text{
+                    font-weight: bold;
+                    font-size: 11px;
+                }
+
+                /* 컬럼헤더 */
+                .columnLabel{
+                    font-weight: bold;
+                    font-size: 9px;
+                    background-color: #d9e7fc;
+                    text-align: center;
+                    /* border:1px solid rgb(204, 204, 204); */
+                    border:0.5px solid rgb(70, 70, 70);
+                }
+
+                .columnData{
+                    font-size: 9px;
+                }
+
+                .columnDataAcc{
+                    /* max-width: 50px; */
+                    font-size: 10px;
+                    /* box-shadow: none; */
+                    /* max-height: 5em;  */
+                    /* white-space: normal; *//* 긴 텍스트 중바꿈 허용 */
+                    word-wrap: break-word; /* 긴 단어를 줄바꿈하여 표시 */
+                }
+
+                .full-width-table{
+                    width: 100%;
+                    table-layout: fixed; /* 테이블 레이아웃을 고정으로 설정 */
+                }
+
+                .content {
+                    width: 100%;
+                    margin: auto;
+                    /* border: solid 2px rgb(0, 47, 255); */
+                }
+                /* 목차목록 */
+                .list-title{
+                    font-weight: bold;
+                    font-size: 13.5px;
+                    /* font-family:'CJFW_Light_Font'; */
+                }
+
+                /* 셀 칼라채우기용 */
+                .yellow-line{
+                    background-color: #fffed5;
+                } 
+                .grey-line{
+                    background-color: #e6e6e6;
+                } 
+                .red-label{
+                    border-right: 2px solid #db2929;
+                    border-left: 2px solid #db2929;
+                    border-top: 2px solid #db2929;
+                 }
+                .red-left-right{
+                    border-right: 2px solid #db2929;
+                    border-left: 2px solid #db2929;
+                } 
+
+                /* 텍스트 관련 스타일 */
+                .modify-text{
+                    cursor: pointer;
+                    color:#2034f0;
+                    font-weight: bold;
+                }
+                .red-font{
+                    color:#db2929;
+                    font-weight: bold;
+                }
+                .balck-bold{
+                    font-weight: bold;
+                }
+                .italic{
+                    font-style: italic;
+                }
+                .alignleft{
+                    text-align: left;
+                    padding-left: 5px;
+                }
+                
+                .firstContainer{
+                    display: flex;
+                    justify-content: space-between;
+                    border: 1px solid #ccc;
+                }
+                .firstTable{
+                    /* display: inline-block; */
+                    width: 45%; /* 두 테이블이 총 90%의 너비를 차지하도록 설정 */
+                    border: 1px solid #ccc;
+                }
+
+        </style>
+        <meta http-equiv="Content-Type" content="text/html" charset="UTF-8"/>
+    </head> 
+    <body>
+        <!-- 브랜드상단 [S]-->
+        <table border="1px" width="720px" align="center" style="margin-top:0; padding-top:0; margin-bottom:0; padding-bottom:0; border-style:none; ">
+            <tr >
+                <td width="25%" rowspan="3" style="border-style:none; text-align:center">
+                    <apex:image value="{!URLFOR($Resource.CJFW_BrandLogo_EN)}" width="150" height="50"/>
+                    <!-- <apex:stylesheet value="{!URLFOR($Resource.CJFW_Title_Bold)}" width="150" height="50"/> -->
+                </td> 
+                <td width="40%" style="border-style:none; text-align:right;">
+                    <span style="font-size:17px;">[신규] 0000 개설 품의 件</span>
+                    <!-- <span style="font-size:17px; font-family:'CJFW_Title_Bold_Font'">[신규-급식] 0000 개설 품의 - 0 월</span> -->
+                </td> 
+                <td width="35%" style="border-style:none; text-align:left">
+
+                </td> 
+            </tr>
+        </table>
+        <!-- 브랜드상단 [E]-->
+
+        <!-- 컨텐츠 [S] -->
+        <div class="content">
+<!--             <apex:form>
+                <apex:inputText value="{!accountName}" />
+                <apex:commandButton value="Submit" action="{!saveAccount}" rerender="outputPanel" />
+                 <apex:outputPanel id="outputPanel">
+                    <apex:outputText value="Entered Account Name: {!savedAccountName}" />
+                </apex:outputPanel>
+            </apex:form> -->
+            <p class="list-title">1. 개요</p>
+            <!-- <div="firstTable" style="border: 2px solid yellow;"> -->
+                <div class="firstContainer">
+                    <table class="firstTable">
+                        <tbody>
+                            <tr>
+                                <td class="columnLabel"></td>
+                                <td class="columnLabel">key-man</td>
+                                <td class="columnLabel">접촉방법</td>
+                                <td class="columnLabel">최초 접촉 시기</td>
+                            </tr>
+                            <tr>
+                                <td class="columnData">구분</td>
+                                <td class="columnData">최은영</td>
+                                <td class="columnData">영업사원 홍보</td>
+                                <td class="columnData">2023-08-25</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table style="width:20%">
+                        <tbody>
+                            <tr>
+                                <td class="columnLabel">수주됨</td>
+                                <td class="columnLabel">담당MA</td>
+                            </tr>
+                            <tr>
+                                <td class="columnData">수주성공</td>
+                                <td class="columnData">최은영</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+           <!--  </div> -->
+
+            <!-- 거래처 현황 -->
+            <p class="list-title">2. 거래처 현황</p>
+            <table style="width:100%">
+                <tbody>
+                    <tr>
+                        <td class="columnLabel" rowspan="2">거래처명</td>
+                        <td class="columnLabel" rowspan="2">대표자명</td>
+                        <td class="columnLabel" colspan="4">브랜드</td>
+                        <td class="columnLabel" colspan="3">외형</td>
+                        <td class="columnLabel" rowspan="2">초도일자</td>
+                        <td class="columnLabel" rowspan="2">주소</td>
+                        <td class="columnLabel" rowspan="2">기존납품처</td>
+                    </tr>
+                    <tr>
+                        <td class="columnLabel">브랜드 런칭</td>
+                        <td class="columnLabel">운영 브랜드</td>
+                        <td class="columnLabel">경로</td>
+                        <td class="columnLabel">업태</td>
+                        <td class="columnLabel">전체</td>
+                        <td class="columnLabel">당사규모</td>
+                        <td class="columnLabel">차이</td>
+                    </tr>
+                    <tr>
+                        <td class="columnData"> 올리고당 제일기획</td>
+                        <td class="columnData"> 최은영 </td>
+                        <td class="columnData"> 런칭시작 </td>
+                        <td class="columnData"> 올리브은영 </td>
+                        <td class="columnData"> SNS</td>
+                        <td class="columnData"> </td>
+                        <td class="columnData"> 전체규모 </td>
+                        <td class="columnData"> 당사규모 </td>
+                        <td class="columnData"> 많이남 </td>
+                        <td class="columnData"> 2023-08-25 </td>
+                        <td class="columnData"> 뚝섬로 58길 101 </td>
+                        <td class="columnData"> 은영네트워크 </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- 거래 상세 내용 -->
+            <p class="list-title">3. 거래 상세내용</p>
+            <table style="width:100%">
+                <tbody>
+                    <tr>
+                        <td class="columnLabel" rowspan="3">계약기간</td>
+                        <td class="columnLabel" rowspan="2" colspan="3">담보제공</td>
+                        <td class="columnLabel" rowspan="2">신용여신</td>
+                        <td class="columnLabel" colspan="6">판매수수료</td>
+
+                        <td class="columnLabel" rowspan="2" colspan="3">채권 조건</td>
+
+                    </tr>
+                    <tr>
+                        <td class="columnLabel" colspan="3">AS-IS(경쟁사)</td>
+                        <td class="columnLabel" colspan="3">TO-BE</td>
+                    </tr>
+                    <tr>
+                        <td class="columnLabel">종류</td>
+                        <td class="columnLabel">금액</td>
+                        <td class="columnLabel">기간</td>
+                        <td class="columnLabel">금액</td>
+                        <td class="columnLabel">일반(지급)</td>
+                        <td class="columnLabel">전용(수취)</td>
+                        <td class="columnLabel">지방 外(제주도)</td>
+                        <td class="columnLabel">일반(지급)</td>
+                        <td class="columnLabel">전용(수취)</td>
+                        <td class="columnLabel">지방 外(제주도)</td>
+                        <td class="columnLabel">여신관리</td>
+                        <td class="columnLabel">결제수단</td>
+                        <td class="columnLabel">약정결제일</td>
+                    </tr>
+                    <!-- 데이터 -->
+                    <tr>
+                        <td class="columnData"> 2023-01-01 ~ 2023-12-31</td>
+                        <td class="columnData"> 최은영 </td>
+                        <td class="columnData"> 런칭시작 </td>
+                        <td class="columnData"> </td>
+                        <td class="columnData"> 100,000 </td>
+                        <td class="columnData"> 일반 </td>
+                        <td class="columnData"> 전용 </td>
+                        <td class="columnData"> 지방 </td>
+                        <td class="columnData"> 일반 </td>
+                        <td class="columnData"> 전용 </td>
+                        <td class="columnData"> 지방 </td>
+                        <td class="columnData"> 여신 </td>
+                        <td class="columnData"> 결제 </td>
+                        <td class="columnData"> 약정 </td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="bold-text">※ 계약서 종류 : 표준 공급 계약서 ( <input type="checkbox" name="contractType" value="표준 공급 계약서"></input> ) / 법무 겁토 완료 계약서 ( <input type="checkbox" name="contractType" value="표준 공급 계약서"></input>  )</p>
+            
+            <!-- 수주가이드 충족 여부 -->
+            <p class="list-title">4. 수주가이드 충족 여부</p>
+            <table style="width:100%">
+                <tbody>
+                    <tr>
+                        <td class="columnLabel" rowspan="2">항목</td>
+                        <td class="columnLabel" rowspan="2">매출</td>
+                        <td class="columnLabel" rowspan="2">전용 저장 <br></br>SKU 매출</td>
+                        <td class="columnLabel" rowspan="2">회당 <br></br>Drop Size</td>
+                        <td class="columnLabel" rowspan="2">점당 <br></br>평균매출</td>
+                        <td class="columnLabel" rowspan="2">배송횟수</td>
+                        <td class="columnLabel" rowspan="2">공헌이익%</td>
+                        <td class="columnLabel" colspan="3">KG단가</td>
+                        <td class="columnLabel" colspan="2">전용상품 SKU</td>
+                        <td class="columnLabel" rowspan="2">일반상품<br></br>매칭률</td>
+                    </tr>
+                    <tr>
+                        <td class="columnLabel"> 전용상품 </td>
+                        <td class="columnLabel"> 일반상품 </td>
+                        <td class="columnLabel"> 계 </td>
+                        <td class="columnLabel"> 저장기준 </td>
+                        <td class="columnLabel"> 출고단위 </td>
+                    </tr>
+                    <tr>
+                        <td class="columnData">기준</td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                    </tr>
+                    <tr>
+                        <td class="columnData">예상</td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                    </tr>
+                    <tr>
+                        <td class="columnData">충족여부</td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- 신규개설 예상 손익  -->
+            <p class="list-title">5. 신규 개설 예상 손익</p>
+            <span style="font-size:6px;float: right;">(단위:백만)</span>
+            <table class="full-width-table">
+                    <thead>
+                        <tr>
+                            <th class="columnLabel" rowspan="2">예상 손익 산출 <br></br> (단위:백만)</th>
+                            <th class="columnLabel" rowspan="2">지원전 월月 예상</th>
+                            <th class="columnLabel" colspan="5">지원내역</th>
+                            <th class="columnLabel" rowspan="2">지원후 월月 예상</th>
+                            <th class="columnLabel red-label" rowspan="2">연간예상실적</th>
+                            <th class="columnLabel" rowspan="2">비고</th>
+                        </tr>
+                        <tr>
+                            <th class="columnLabel">약정감가</th>
+                            <th class="columnLabel">장려금</th>
+                            <th class="columnLabel">판매수수료</th>
+                            <th class="columnLabel">후원금</th>
+                            <th class="columnLabel">기타지원</th>
+                        </tr>
+                    </thead>
+                    <!-- 매출라인 10행 * 6열 -->
+                    <tbody>
+                        <tr>
+                            <td class="columnData yellow-line balck-bold alignleft" colspan="2">매출</td>
+                            <!-- <td class="columnData yellow-line"></td> -->
+                            <td class="columnData yellow-line balck-bold">5.0</td>
+                            <td class="columnData yellow-line">0.1</td>
+                            <td class="columnData yellow-line">0.1</td>
+                            <td class="columnData yellow-line">0.1</td>
+                            <td class="columnData yellow-line">0.1</td>
+                            <td class="columnData yellow-line red-font">0.1</td>
+                            <td class="columnData yellow-line red-left-right red-font">4.9</td>
+                            <td class="columnData yellow-line">데이터1</td>
+                        </tr>
+                        <!-- 매출라인 / 농산물 -->
+                        <tr>
+                            <td class="columnData"></td>
+                            <td class="columnData italic">농산물</td>
+                            <td onclick="editCell(this)" class="columnData modify-text">수정가능</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData red-left-right">4.9</td>
+                            <td class="columnData">농산물비고</td>
+                        </tr>
+                        <!-- 매출라인 / 수산물 -->
+                        <tr>
+                            <td class="columnData"></td>
+                            <td class="columnData italic">수산물</td>
+                            <td onclick="editCell(this)" class="columnData modify-text">수정가능</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData red-left-right">4.9</td>
+                            <td class="columnData">농산물비고</td>
+                        </tr>
+                        <!-- 매출라인 / 축산물 -->
+                        <tr>
+                            <td class="columnData"></td>
+                            <td class="columnData italic">축산물</td>
+                            <td onclick="editCell(this)" class="columnData modify-text">수정가능</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData red-left-right">4.9</td>
+                            <td class="columnData">축산물비고</td>
+                        </tr>
+                        <!-- 매출라인 / 가공식품 -->
+                        <tr>
+                            <td class="columnData"></td>
+                            <td class="columnData italic">가공식품</td>
+                            <td onclick="editCell(this)" class="columnData modify-text">수정가능</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData red-left-right">4.9</td>
+                            <td class="columnData">가공식품 비고</td>
+                        </tr>
+                        <!-- 매출라인 / 축산물 -->
+                        <tr>
+                            <td class="columnData"></td>
+                            <td class="columnData italic">비식품</td>
+                            <td onclick="editCell(this)" class="columnData modify-text">수정가능</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData red-left-right">4.9</td>
+                            <td class="columnData">비식품 비고</td>
+                        </tr>
+                    </tbody>
+                    <!-- 매출이익-->
+                    <tbody>
+                        <tr>
+                            <td class="columnData yellow-line balck-bold alignleft" colspan="2">매출이익</td>
+                            <td class="columnData yellow-line balck-bold">1.2</td>
+                            <td class="columnData yellow-line">0.1</td>
+                            <td class="columnData yellow-line">0.1</td>
+                            <td class="columnData yellow-line">0.1</td>
+                            <td class="columnData yellow-line">0.1</td>
+                            <td class="columnData yellow-line red-font">0.1</td>
+                            <td class="columnData red-left-right yellow-line red-font">4.9</td>
+                            <td class="columnData yellow-line">매출이익비고</td>
+                        </tr>
+                        <!-- 매출이익 / 데이터 -->
+                        <tr>
+                            <td class="columnData"></td>
+                            <td class="columnData italic"></td>
+                            <td onclick="editCell(this)" class="columnData modify-text">수정가능</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData red-font">0.1</td>
+                            <td class="columnData red-left-right red-font">4.9</td>
+                            <td class="columnData">농산물비고</td>
+                        </tr>
+                    </tbody>
+                    <!-- 판관비 계-->
+                    <tbody>
+                        <tr>
+                            <td class="columnData yellow-line balck-bold alignleft" colspan="2">판관비 계</td>
+                            <td class="columnData yellow-line balck-bold">0.8</td>
+                            <td class="columnData yellow-line">0.1</td>
+                            <td class="columnData yellow-line">0.1</td>
+                            <td class="columnData yellow-line">0.1</td>
+                            <td class="columnData yellow-line">0.1</td>
+                            <td class="columnData yellow-line">0.1</td>
+                            <td class="columnData red-left-right yellow-line">4.9</td>
+                            <td class="columnData yellow-line">매출이익비고</td>
+                        </tr>
+                        <!-- 판관비 / 데이터 -->
+                        <tr>
+                            <td class="columnData">(%)</td>
+                            <td class="columnData italic"></td>
+                            <td class="columnData">1.0</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData red-font">0.1</td>
+                            <td class="columnData red-left-right red-font">4.9</td>
+                            <td class="columnData"></td>
+                        </tr>
+                        <tr>
+                            <td class="columnData">물류비</td>
+                            <td class="columnData"></td>
+                            <td class="columnData">5.0</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData red-left-right">4.9</td>
+                            <td class="columnData">물류비계획</td>
+                        </tr>
+                        <tr>
+                            <td class="columnData">인건비</td>
+                            <td class="columnData"></td>
+                            <td class="columnData">5.0</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData red-left-right">4.9</td>
+                            <td class="columnData">인건비계획</td>
+                        </tr>
+                        <tr>
+                            <td class="columnData">그룹공통비</td>
+                            <td class="columnData"></td>
+                            <td class="columnData">5.0</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData red-left-right">4.9</td>
+                            <td class="columnData">인건비계획</td>
+                        </tr>
+                        <tr>
+                            <td class="columnData">기타판관비</td>
+                            <td class="columnData"></td>
+                            <td class="columnData">5.0</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData red-left-right">4.9</td>
+                            <td class="columnData">인건비계획</td>
+                        </tr>
+                        <tr>
+                            <td class="columnData"></td>
+                            <td class="columnData italic grey-line">카드수수료</td>
+                            <td class="columnData grey-line ">5.0</td>
+                            <td class="columnData grey-line italic">0.1</td>
+                            <td class="columnData grey-line italic">0.1</td>
+                            <td class="columnData grey-line italic">0.1</td>
+                            <td class="columnData grey-line italic">0.1</td>
+                            <td class="columnData grey-line italic">0.1</td>
+                            <td class="columnData grey-line italic red-left-right">4.9</td>
+                            <td class="columnData grey-line">인건비계획</td>
+                        </tr>
+                        <tr>
+                            <td class="columnData"></td>
+                            <td class="columnData italic grey-line">보증보험수수료</td>
+                            <td class="columnData grey-line">5.0</td>
+                            <td class="columnData grey-line">0.1</td>
+                            <td class="columnData grey-line">0.1</td>
+                            <td class="columnData grey-line">0.1</td>
+                            <td class="columnData grey-line">0.1</td>
+                            <td class="columnData grey-line">0.1</td>
+                            <td class="columnData grey-line red-left-right">4.9</td>
+                            <td class="columnData grey-line">인건비계획</td>
+                        </tr>
+                        <tr>
+                            <td class="columnData"></td>
+                            <td class="columnData italic">판촉비</td>
+                            <td class="columnData">5.0</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData red-left-right">4.9</td>
+                            <td class="columnData">인건비계획</td>
+                        </tr>
+                        <tr>
+                            <td class="columnData"></td>
+                            <td class="columnData italic">기부금(후원)</td>
+                            <td class="columnData">5.0</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData red-left-right">4.9</td>
+                            <td class="columnData">인건비계획</td>
+                        </tr>
+                        <tr>
+                            <td class="columnData"></td>
+                            <td class="columnData italic">쉐프지원</td>
+                            <td class="columnData">5.0</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData red-left-right">4.9</td>
+                            <td class="columnData">인건비계획</td>
+                        </tr>
+                        <tr>
+                            <td class="columnData"></td>
+                            <td class="columnData italic">기타</td>
+                            <td class="columnData">5.0</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData red-left-right">4.9</td>
+                            <td class="columnData">인건비계획</td>
+                        </tr>
+                    </tbody>
+                    <!-- 공헌이익 계-->
+                    <tbody>
+                        <tr>
+                            <td class="columnData yellow-line balck-bold alignleft" colspan="2">공헌이익</td>
+                            <td class="columnData yellow-line balck-bold">0.8</td>
+                            <td class="columnData yellow-line">0.1</td>
+                            <td class="columnData yellow-line">0.1</td>
+                            <td class="columnData yellow-line">0.1</td>
+                            <td class="columnData yellow-line">0.1</td>
+                            <td class="columnData yellow-line red-font">0.1</td>
+                            <td class="columnData red-left-right yellow-line red-font">4.9</td>
+                            <td class="columnData yellow-line">매출이익비고</td>
+                        </tr>
+                        <!-- 공헌이익 / 데이터 -->
+                        <tr>
+                            <td class="columnData">(%)</td>
+                            <td class="columnData italic"></td>
+                            <td class="columnData">1.0</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData red-font">0.1</td>
+                            <td class="columnData red-left-right red-font">4.9</td>
+                            <td class="columnData"></td>
+                        </tr>
+                        <tr>
+                            <td class="columnData">지원수수료</td>
+                            <td class="columnData"></td>
+                            <td class="columnData">5.0</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData red-left-right">4.9</td>
+                            <td class="columnData">물류비계획</td>
+                        </tr>
+                    </tbody>
+                    <!--영업이익-->
+                    <tbody>
+                        <tr>
+                            <td class="columnData yellow-line balck-bold alignleft" colspan="2">영업이익</td>
+                            <td class="columnData yellow-line balck-bold">0.8</td>
+                            <td class="columnData yellow-line">0.1</td>
+                            <td class="columnData yellow-line">0.1</td>
+                            <td class="columnData yellow-line">0.1</td>
+                            <td class="columnData yellow-line">0.1</td>
+                            <td class="columnData yellow-line red-font">0.1</td>
+                            <td class="columnData red-left-right yellow-line">4.9</td>
+                            <td class="columnData yellow-line">매출이익비고</td>
+                        </tr>
+                        <!-- 영업이익 데이터 -->
+                        <tr>
+                            <td class="columnData">(%)</td>
+                            <td class="columnData italic"></td>
+                            <td class="columnData">1.0</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData">0.1</td>
+                            <td class="columnData red-font">0.1</td>
+                            <td class="columnData red-left-right red-font">4.9</td>
+                            <td class="columnData"></td>
+                        </tr>
+                    </tbody>
+            </table>
+
+            <!-- 정당 매출액 -->
+            <p class="list-title">6. 정당 매출액</p>
+            <table style="width:50%">
+                <tbody>
+                    <tr>
+                        <td class="columnLabel">구분</td>
+                        <td class="columnLabel">1천이상</td>
+                        <td class="columnLabel">5백이상</td>
+                        <td class="columnLabel">5백미만</td>
+                        <td class="columnLabel">3백미만</td>
+                        <td class="columnLabel">합계</td>
+                        <td class="columnLabel">정당매출</td>
+                    </tr>
+                    <tr>
+                        <td class="columnData">매출액</td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData" rowspan="3"></td>
+                    </tr>
+                    <tr>
+                        <td class="columnData">점포수</td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                    </tr>
+                    <tr>
+                        <td class="columnData">포지션</td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                    </tr>
+
+                </tbody>
+            </table>
+
+            <!-- 전용 SKU 세부사항 -->
+            <p class="list-title">7. 전용 SKU 세부사항</p>
+            <div class="firstContainer">
+                <div style="border: solid 2px rgb(152, 243, 6);width:45%;">
+                    <p>* 전용 SKU 운영 예상 현황</p>
+                    <table style="border: solid 2px rgb(103, 158, 14);width:100%;">
+                        <tbody>
+                            <tr>
+                                <td class="columnLabel" rowspan="2">구분</td>
+                                <td class="columnLabel" colspan="5">전용상품 출고량(40BOX: 1PLT기준임)</td>
+                            </tr>
+                            <tr>
+                                <td class="columnLabel">계</td>
+                                <td class="columnLabel">상온</td>
+                                <td class="columnLabel">냉장</td>
+                                <td class="columnLabel">냉동</td>
+                                <td class="columnLabel">sku/PLT 매출</td>
+                            </tr>
+                            <!-- 데이터 -->
+                            <tr>
+                                <td class="columnData" rowspan="2">전용 합계</td>
+                                <td class="columnData">SKU 수</td>
+                                <td class="columnData">-</td>
+                                <td class="columnData">-</td>
+                                <td class="columnData">-</td>
+                                <td class="columnData">-</td>
+                            </tr>
+                            <tr>
+                                <td class="columnData">PLT수</td>
+                                <td class="columnData">-</td>
+                                <td class="columnData">-</td>
+                                <td class="columnData">-</td>
+                                <td class="columnData">-</td>
+                            </tr>
+                            <tr>
+                                <td class="columnData" rowspan="2">전용(일배)</td>
+                                <td class="columnData">SKU 수</td>
+                                <td class="columnData">-</td>
+                                <td class="columnData">-</td>
+                                <td class="columnData">-</td>
+                                <td class="columnData">-</td>
+                            </tr>
+                            <tr>
+                                <td class="columnData">PLT수</td>
+                                <td class="columnData">-</td>
+                                <td class="columnData">-</td>
+                                <td class="columnData">-</td>
+                                <td class="columnData">-</td>
+                            </tr>
+                            <tr>
+                                <td class="columnData" rowspan="2">전용(저장)</td>
+                                <td class="columnData">SKU 수</td>
+                                <td class="columnData">-</td>
+                                <td class="columnData">-</td>
+                                <td class="columnData">-</td>
+                                <td class="columnData">-</td>
+                            </tr>
+                            <tr>
+                                <td class="columnData">PLT수</td>
+                                <td class="columnData">-</td>
+                                <td class="columnData">-</td>
+                                <td class="columnData">-</td>
+                                <td class="columnData">-</td>
+                            </tr>
+                            <tr>
+                                <td class="columnData" rowspan="2">개선</td>
+                                <td class="columnData">SKU 수</td>
+                                <td class="columnData">-</td>
+                                <td class="columnData">-</td>
+                                <td class="columnData">-</td>
+                                <td class="columnData">-</td>
+                            </tr>
+                            <tr>
+                                <td class="columnData">PLT수</td>
+                                <td class="columnData">-</td>
+                                <td class="columnData">-</td>
+                                <td class="columnData">-</td>
+                                <td class="columnData">-</td>
+                            </tr>
+                            <tr>
+                                <td class="columnData" rowspan="2">比</td>
+                                <td class="columnData">SKU 수</td>
+                                <td class="columnData">-</td>
+                                <td class="columnData">-</td>
+                                <td class="columnData">-</td>
+                                <td class="columnData">-</td>
+                            </tr>
+                            <tr>
+                                <td class="columnData">PLT수</td>
+                                <td class="columnData">-</td>
+                                <td class="columnData">-</td>
+                                <td class="columnData">-</td>
+                                <td class="columnData">-</td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 전용 SKU 세부사항 / 테이블 2개 나란히 있는것 -->
+                <div style="border: solid 2px rgb(152, 243, 6);width:45%;">
+                    <p>* 운영상품(전용+범용) TOP10 상품 물류비 특이사항</p>
+                    <table style="border: solid 2px rgb(103, 158, 14);width:100%;">
+                        <tbody>
+                            <tr>
+                                <td class="columnLabel" >No.</td>
+                                <td class="columnLabel" >상품명</td>
+                                <td class="columnLabel" >중분류</td>
+                                <td class="columnLabel" >매출<br></br>규모(月)</td>
+                                <td class="columnLabel" >매출<br></br>비중(%)</td>
+                                <td class="columnLabel" >물류<br></br>비율(%)</td>
+                            </tr>
+                            <tr>
+                                <td class="columnData">1</td>
+                                <td class="columnData">냉동감자</td>
+                                <td class="columnData">냉동감자</td>
+                                <td class="columnData">100,000</td>
+                                <td class="columnData">계산식</td>
+                                <td class="columnData">3.5%</td>
+                            </tr>
+                            <tr>
+                                <td class="columnData">2</td>
+                                <td class="columnData">냉동감자</td>
+                                <td class="columnData">냉동감자</td>
+                                <td class="columnData">100,000</td>
+                                <td class="columnData">계산식</td>
+                                <td class="columnData">3.5%</td>
+                            </tr>
+                            <tr>
+                                <td class="columnData">3</td>
+                                <td class="columnData">냉동감자</td>
+                                <td class="columnData">냉동감자</td>
+                                <td class="columnData">100,000</td>
+                                <td class="columnData">계산식</td>
+                                <td class="columnData">3.5%</td>
+                            </tr>
+                            <tr>
+                                <td class="columnData">4</td>
+                                <td class="columnData">냉동감자</td>
+                                <td class="columnData">냉동감자</td>
+                                <td class="columnData">100,000</td>
+                                <td class="columnData">계산식</td>
+                                <td class="columnData">3.5%</td>
+                            </tr>
+                            <tr>
+                                <td class="columnData">5</td>
+                                <td class="columnData">냉동감자</td>
+                                <td class="columnData">냉동감자</td>
+                                <td class="columnData">100,000</td>
+                                <td class="columnData">계산식</td>
+                                <td class="columnData">3.5%</td>
+                            </tr>
+                            <tr>
+                                <td class="columnData">6</td>
+                                <td class="columnData">냉동감자</td>
+                                <td class="columnData">냉동감자</td>
+                                <td class="columnData">100,000</td>
+                                <td class="columnData">계산식</td>
+                                <td class="columnData">3.5%</td>
+                            </tr>
+                            <tr>
+                                <td class="columnData">7</td>
+                                <td class="columnData">냉동감자</td>
+                                <td class="columnData">냉동감자</td>
+                                <td class="columnData">100,000</td>
+                                <td class="columnData">계산식</td>
+                                <td class="columnData">3.5%</td>
+                            </tr>
+                            <tr>
+                                <td class="columnData">8</td>
+                                <td class="columnData">냉동감자</td>
+                                <td class="columnData">냉동감자</td>
+                                <td class="columnData">100,000</td>
+                                <td class="columnData">계산식</td>
+                                <td class="columnData">3.5%</td>
+                            </tr>
+                            <tr>
+                                <td class="columnData">9</td>
+                                <td class="columnData">냉동감자</td>
+                                <td class="columnData">냉동감자</td>
+                                <td class="columnData">100,000</td>
+                                <td class="columnData">계산식</td>
+                                <td class="columnData">3.5%</td>
+                            </tr>
+                            <tr>
+                                <td class="columnData">10</td>
+                                <td class="columnData">냉동감자</td>
+                                <td class="columnData">냉동감자</td>
+                                <td class="columnData">100,000</td>
+                                <td class="columnData">계산식</td>
+                                <td class="columnData">3.5%</td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 재고 운영 개선사항(체인 전용) -->
+            <p class="list-title">8. 재고 운영 개선사항(체인 전용</p>
+            <table style="width:100%">
+                <tbody>
+                    <tr>
+                        <td class="columnLabel" rowspan="2">No</td>
+                        <td class="columnLabel" rowspan="2">상품명</td>
+                        <td class="columnLabel" rowspan="2">저장조건</td>
+                        <td class="columnLabel" rowspan="2">출고단위</td>
+                        <td class="columnLabel" rowspan="2">시행월</td>
+                        <td class="columnLabel" colspan="3">PLT 운영</td>
+                        <td class="columnLabel" colspan="3">재고금액(단위:백만)</td>
+                        <td class="columnLabel" colspan="3">상품운영 현황</td>
+                    </tr>
+                    <tr>
+                        <td class="columnLabel">기존</td>
+                        <td class="columnLabel">계획</td>
+                        <td class="columnLabel">比</td>
+                        <td class="columnLabel">기존</td>
+                        <td class="columnLabel">계획</td>
+                        <td class="columnLabel">比</td>
+                        <td class="columnLabel">매출</td>
+                        <td class="columnLabel">매출이익</td>
+                        <td class="columnLabel">매익률</td>
+                    </tr>
+                    <tr>
+                        <td class="columnData">1</td>
+                        <td class="columnData">올리브감자</td>
+                        <td class="columnData">냉동</td>
+                        <td class="columnData">BOX</td>
+                        <td class="columnData">2월</td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                    </tr>
+                    <tr>
+                        <td class="columnData">1</td>
+                        <td class="columnData">올리브감자</td>
+                        <td class="columnData">냉동</td>
+                        <td class="columnData">BOX</td>
+                        <td class="columnData">2월</td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                    </tr>
+                    <tr>
+                        <td class="columnData">1</td>
+                        <td class="columnData">올리브감자</td>
+                        <td class="columnData">냉동</td>
+                        <td class="columnData">BOX</td>
+                        <td class="columnData">2월</td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                        <td class="columnData"></td>
+                    </tr>
+                    <tr>
+                        <td class="columnLabel" colspan="5">합계</td>
+                        <td class="columnLabel"></td>
+                        <td class="columnLabel">0</td>
+                        <td class="columnLabel">0</td>
+                        <td class="columnLabel">0</td>
+                        <td class="columnLabel">0</td>
+                        <td class="columnLabel">0</td>
+                        <td class="columnLabel">0</td>
+                        <td class="columnLabel">0</td>
+                        <td class="columnLabel">0.0%</td>
+                    </tr>
+
+                </tbody>
+            </table>
+            
+
+
+        </div>
+        <!-- 컨텐츠 [E] -->
+
+
+    </body>
+</html>
+</apex:page>

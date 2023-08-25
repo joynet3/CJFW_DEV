@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gd_us_stts_cd__c</fullName>
+    <description>도메인 Product
+속성 STATUS</description>
+    <externalId>false</externalId>
+    <label>Product usage</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>BLCK</fullName>
+                <default>false</default>
+                <label>[BLCK]사용중지</label>
+            </value>
+            <value>
+                <fullName>NRML</fullName>
+                <default>false</default>
+                <label>[NRML]사용중</label>
+            </value>
+            <value>
+                <fullName>TEMP</fullName>
+                <default>false</default>
+                <label>[TEMP]현지구매</label>
+            </value>
+            <value>
+                <fullName>WAIT</fullName>
+                <default>false</default>
+                <label>[WAIT]보류</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

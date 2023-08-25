@@ -1,0 +1,272 @@
+<!--
+  @description       : 
+  @author            : eunyoung.choi@dkbmc.com
+  @group             : 
+  @last modified on  : 08-23-2023
+  @last modified by  : eunyoung.choi@dkbmc.com
+  Modifications Log
+  Ver   Date         Author                    Modification
+  1.0   08-21-2023   eunyoung.choi@dkbmc.com   Initial Version
+-->
+<template>
+    <h2 class="customTitle">{Title}</h2>
+     <lightning-button label="품의서개발TEST" variant="brand" class="customButton" onclick ={chooseMenual}></lightning-button>
+    <template if:true={chooseExcelShow}>
+        <c-cjfw-menual-choose-modal></c-cjfw-menual-choose-modal>
+    </template>
+    
+    <div class="allContainer">
+
+        <div class="excelResult">
+            <div class="slds-scrollable"  style="height:90% ;width:90% ;border:solid 1px greend;">
+                <!-- Table 영역 [S] -->
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_col-bordered" width="100%">
+                    <!-- Sample - A manual [S] 14 -->
+                    <template if:true={showA}>
+                    <thead>
+                        <tr>
+                            <th rowspan="2">구분</th>
+                            <th rowspan="2">매출액</th>
+                            <th rowspan="2">매입원가</th>
+                            <th colspan="8">제조경비</th>
+                            <th rowspan="2">매출이익</th>
+                            <th rowspan="2">영업외비용</th>
+                            <th rowspan="2">관리이익</th>
+                        </tr>
+                        <tr>
+                            <th>인건비</th>
+                            <th>서비스전문</th>
+                            <th>물류비</th>
+                            <th>상각비</th>
+                            <th>임차료</th>
+                            <th>유틸리티</th>
+                            <th>소모품비</th>
+                            <th>경비</th>
+                        </tr>
+                    </thead>   
+                    </template>
+                    <!-- Sample - A manual [E]-->
+
+                    <!-- Sample - B manual [S]-->
+                    <template if:true={showB}>
+                        <thead>
+                            <tr>
+                                <th>구분 항목</th>
+                                <th>Y0</th>
+                                <th>Y1</th>
+                                <th>Y2</th>
+                                <th>Y3</th>
+                                <th>Y4</th>
+                                <th>Y5</th>
+                                <th>Y6</th>
+                                <th>비 고</th>
+                            </tr>
+                        </thead>
+                    </template> 
+                    <!-- Sample - B manual [E]-->
+
+                    <!-- Sample - C manual [S]-->
+                    <template if:true={showC}>
+                        <thead>
+                            <tr>
+                                <th>구분</th>
+                                <th>년간</th>
+                                <th>상반기</th>
+                                <th>하반기</th>
+                            </tr>
+                        </thead>
+                    </template> 
+                    <!-- Sample - C manual [E]-->
+
+                    <!-- Sample - D manual [S]-->
+                    <template if:true={showD}>
+                        <thead>
+                            <tr>
+                                <th>샘플1</th>
+                                <th>샘플2</th>
+                                <th>샘플3</th>
+                                <th>샘플4</th>
+                                <th>샘플5</th>
+                                <th>샘플6</th>
+                                <th>샘플7</th>
+                            </tr>
+                        </thead>
+                    </template> 
+                    <!-- Sample - D manual [E]-->
+                
+                <!-- Data 노출구간 [S]-->
+                    <tbody>
+                        <template for:each={excelData} for:item="item" for:index="index">
+                            <tr class="slds-hint-parent" key={item.id} data-index={index} onclick={handleClick} ondblclick={handleDoubleClick}>
+                                <template if:true={openOne}>
+                                    <td class="cell-disable slds-text-align_center">
+                                        <div class="slds-truncate">{item.column1}</div>
+                                    </td>
+                                </template>
+
+                                <template if:true={openTwo}>
+                                    <td class="cell-disable slds-text-align_center">
+                                        <div class="slds-truncate">{item.column2}</div>
+                                    </td>
+                                </template>
+
+                                <template if:true={openThree}>
+                                    <td class="cell-disable slds-text-align_center">
+                                        <div class="slds-truncate">{item.column3}</div>
+                                    </td>
+                                </template>
+
+                                <template if:true={openFour}>
+                                    <td class="cell-disable slds-text-align_center">
+                                        <div class="slds-truncate">{item.column4}</div>
+                                    </td>
+                                </template>
+
+                                <template if:true={openFive}>
+                                    <td class="cell-disable slds-text-align_center">
+                                        <div class="slds-truncate">{item.column5}</div>
+                                    </td>
+                                </template>
+
+                                <template if:true={openSix}>
+                                    <td class="cell-disable slds-text-align_center">
+                                        <div class="slds-truncate">{item.column6}</div>
+                                    </td>
+                                </template>
+
+                                <template if:true={openSeven}>
+                                    <td class="cell-disable slds-text-align_center">
+                                        <div class="slds-truncate">{item.column7}</div>
+                                    </td>
+                                </template>
+
+                                <template if:true={openEight}>
+                                    <td class="cell-disable slds-text-align_center">
+                                        <div class="slds-truncate">{item.column8}</div>
+                                    </td>
+                                </template>
+
+                                <template if:true={openNine}>
+                                    <td class="cell-disable slds-text-align_center">
+                                        <div class="slds-truncate">{item.column9}</div>
+                                    </td>
+                                </template>
+
+                                <template if:true={openTen}>
+                                    <td class="cell-disable slds-text-align_center">
+                                        <div class="slds-truncate">{item.column10}</div>
+                                    </td>
+                                </template>
+
+                                <template if:true={openEleven}>
+                                    <td class="cell-disable slds-text-align_center">
+                                        <div class="slds-truncate">{item.column11}</div>
+                                    </td>
+                                </template>
+
+                                <template if:true={openTwelve}>
+                                    <td class="cell-disable slds-text-align_center">
+                                        <div class="slds-truncate">{item.column12}</div>
+                                    </td>
+                                </template>
+
+                                <template if:true={openThirteen}>
+                                    <td class="cell-disable slds-text-align_center">
+                                        <div class="slds-truncate">{item.column13}</div>
+                                    </td>
+                                </template>
+
+                                <template if:true={openFourteen}>
+                                    <td class="cell-disable slds-text-align_center">
+                                        <div class="slds-truncate">{item.column14}</div>
+                                    </td>
+                                </template>
+
+                                <template if:true={openFifteen}>
+                                    <td class="cell-disable slds-text-align_center">
+                                        <div class="slds-truncate">{item.column15}</div>
+                                    </td>
+                                </template>
+
+                                <template if:true={openSixteen}>
+                                    <td class="cell-disable slds-text-align_center">
+                                        <div class="slds-truncate">{item.column16}</div>
+                                    </td>
+                                </template>
+
+                                <template if:true={openSeventeen}>
+                                    <td class="cell-disable slds-text-align_center">
+                                        <div class="slds-truncate">{item.column17}</div>
+                                    </td>
+                                </template>
+
+                                <template if:true={openEighteen}>
+                                    <td class="cell-disable slds-text-align_center">
+                                        <div class="slds-truncate">{item.column18}</div>
+                                    </td>
+                                </template>
+
+                                <template if:true={openNineteen}>
+                                    <td class="cell-disable slds-text-align_center">
+                                        <div class="slds-truncate">{item.column19}</div>
+                                    </td>
+                                </template>
+
+                                <template if:true={openTwenty}>
+                                    <td class="cell-disable slds-text-align_center">
+                                        <div class="slds-truncate">{item.column20}</div>
+                                    </td>
+                                </template>
+                            </tr>
+                        </template>
+                    </tbody>
+                    <!-- Data 노출구간 [E]-->
+
+                </table>
+                <!-- Table 영역 [E] -->
+            </div>
+        </div>
+        
+        
+        <!-- 오른쪽 엑셀 업로드 영역 [S] -->
+        <div class="buildContainer">
+            <div class="uploadContainer">
+                <div class="buttonTop" >
+                    <div class ="selectboxContainer">
+                        <c-comm-custom-select 
+                            is-empty-option 
+                            options={orgOptionList} 
+                            label="메뉴얼 선택" 
+                            onselected={handleSelected} 
+                            onchange={comboBoxChange} 
+                            class="customSelectBox">
+                        </c-comm-custom-select>
+                    </div>
+                </div>
+                <hr>
+                <div style="color:#ff2525">
+                    <small>※ 메뉴얼 선택을 먼저 진행해주세요 <br/> 
+                    </small>
+                </div>
+                <div class="dataUpload" >
+                    <lightning-textarea
+                    value={textValue}
+                    rows="4"
+                    placeholder="양식 데이터를 복사해서 붙여넣으세요"
+                    disabled={isTextareaDisabled}
+                    onchange={handleInputChange}>
+                    </lightning-textarea>
+                </div>
+                
+                <div class="buttonButtom">
+                <lightning-button label="reset" variant="natual" onclick={resetbutton} style="margin-right:0.5rem;"></lightning-button>
+                <lightning-button label="적용" variant="brand" class="customButton" onclick={validationCheck}></lightning-button>
+                </div>
+            </div>
+        </div>
+        <!-- 오른쪽 엑셀 업로드 영역 [E] -->
+
+
+    </div>
+
+</template>

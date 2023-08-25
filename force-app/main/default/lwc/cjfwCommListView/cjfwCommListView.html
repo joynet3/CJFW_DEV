@@ -1,0 +1,130 @@
+<!--
+  @description       : <c-cjfw-comm-list-view>
+  @author            : eunyoung.choi@dkbmc.com
+  @group             : 
+  @last modified on  : 08-18-2023
+  @last modified by  : eunyoung.choi@dkbmc.com
+  Modifications Log
+  Ver   Date         Author                    Modification
+  1.0   08-04-2023   eunyoung.choi@dkbmc.com   Initial Version
+-->
+<template>
+    <!-- Data Table Start slds-table--header-fixed -->
+    <div class="table_cover scrollContainer" >
+
+            <!-- 전체로딩 [S]-->
+            <div if:false={isAllLoaded} class="roading">
+                <lightning-spinner
+                alternative-text="Loading..." variant="brand">
+            </lightning-spinner>
+            </div>
+            <!-- 전체로딩 [E]-->
+
+            <!-- <div class="totalCnt" >  TOTAL : {totalCnt}</div> -->
+            <!-- <div class="wrapper" style="border: solid 2px red;" > -->
+                <!-- <div class="totalCnt" >  TOTAL : {totalCnt}</div> -->
+                <div class="scrollArea">
+                    <!-- <div class="tableLine" style="border: 0.02px solid #c4c4c4; overflow-y: auto;"> -->
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-m-right_medium">
+                    <!-- <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_col-bordered">     -->
+                        <!-- DT Column [S]-->
+                            <thead>
+                                <tr class="slds-line-height_reset first-row">
+                                    <th class="row-number fiexedHeader">No</th>
+                                    <template for:each={itemList} for:item="label"  for:index="index">
+                                        <th class="slds-text-title_caps center-align" key={itemList.index} title={label.Label__c}>{label.Label__c}</th>
+                                    </template>
+                                </tr>
+                            </thead>
+                        
+                        <!-- DT Column [E]-->
+
+                        <!-- DT Data [S] -->
+                        <tbody>
+                            <template for:each={dataList} for:item="item" for:index="index">
+                                <tr class="slds-hint-parent" key={item.id} data-index={index} onclick={handleClick} ondblclick={handleDoubleClick}>
+                                    <!-- index 영역 -->
+                                    <td class="disable_td row-number custom-width">
+                                        <div class="slds-truncate">{index}</div>
+                                    </td>
+
+                                    <!-- 나머지 컬럼영역 [S] / 현재 최대 10개까지 노출 -->
+                                    
+                                    <template if:true={openColumnOne}>
+                                        <td class="cell-disable slds-text-align_left">
+                                            <div class="slds-truncate">{item.column1}</div>
+                                        </td>
+                                    </template>
+
+                                    <template if:true={openColumnTwo}>
+                                        <td class="cell-disable slds-text-align_left">
+                                            <div class="slds-truncate">{item.column2}</div>
+                                        </td>
+                                    </template>
+
+                                    <template if:true={openColumnThree}>
+                                        <td class="cell-disable slds-text-align_left">
+                                            <div class="slds-truncate">{item.column3}</div>
+                                        </td>
+                                    </template>
+
+                                    <template if:true={openColumnFour}>
+                                        <td class="cell-disable slds-text-align_left">
+                                            <div class="slds-truncate">{item.column4}</div>
+                                        </td>
+                                    </template>
+                                    
+                                    <template if:true={openColumnFive}>
+                                        <td class="cell-disable slds-text-align_left">
+                                            <div class="slds-truncate">{item.column5}</div>
+                                        </td>
+                                    </template>
+
+                                    <template if:true={openColumnSix}>
+                                        <td class="cell-disable slds-text-align_left">
+                                            <div class="slds-truncate">{item.column6}</div>
+                                        </td>
+                                    </template>
+
+                                    <template if:true={openColumnSeven}>
+                                        <td class="cell-disable slds-text-align_left">
+                                            <div class="slds-truncate">{item.column7}</div>
+                                        </td>
+                                    </template>
+
+                                    <template if:true={openColumnEight}>
+                                        <td class="cell-disable slds-text-align_left">
+                                            <div class="slds-truncate">{item.column8}</div>
+                                        </td>
+                                    </template>
+
+                                    <template if:true={openColumnNine}>
+                                        <td class="cell-disable slds-text-align_left">
+                                            <div class="slds-truncate">{item.column9}</div>
+                                        </td>
+                                    </template>
+
+                                    <template if:true={openColumnTen}>
+                                        <td class="cell-disable slds-text-align_left">
+                                            <div class="slds-truncate">{item.column10}</div>
+                                        </td>
+                                    </template>
+
+                                    <!-- 나머지 컬럼영역 [E]-->
+                                </tr>
+                            </template>
+                        </tbody>
+                        <!-- DT Data [E] -->
+
+                    </table>
+                    <!-- </div> -->
+                    <!-- 테이블로딩 [S]-->
+                    <div if:false={isLoaded} class="slds-is-relative" style="margin-top: 70px;">
+                        <lightning-spinner alternative-text="Loading...">
+                        </lightning-spinner>
+                    </div>
+                    <!-- 테이블로딩 [E]-->
+                </div>
+            <!-- </div> -->
+        </div>
+</template>

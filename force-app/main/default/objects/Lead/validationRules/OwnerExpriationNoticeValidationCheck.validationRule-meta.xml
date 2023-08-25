@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>OwnerExpriationNoticeValidationCheck</fullName>
+    <active>true</active>
+    <description>입찰마감일시가 입찰개시일시 이전일 경우 ValidationCheck</description>
+    <errorConditionFormula>BidBeginDateTime__c  &gt; BidCloseDateTime__c</errorConditionFormula>
+    <errorMessage>입찰 마감 일시를 입찰 개시 일시 이후로 설정해주세요.</errorMessage>
+</ValidationRule>

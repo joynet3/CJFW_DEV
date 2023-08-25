@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>현금관리그룹</label>
+    <name>CashManagementGroup__c</name>
+    <picklistValues>
+        <masterLabel>거래처코드공통</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>협력사공통</masterLabel>
+        <translation></translation>
+    </picklistValues>
+</CustomFieldTranslation>

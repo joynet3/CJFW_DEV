@@ -1,0 +1,132 @@
+<!--
+  @description       : 
+  @author            : joohyeon.jang@dkbmc.com
+  @group             : 
+  @last modified on  : 08-24-2023
+  @last modified by  : joohyeon.jang@dkbmc.com
+  Modifications Log
+  Ver   Date         Author                    Modification
+  1.0   08-23-2023   joohyeon.jang@dkbmc.com   Initial Version
+-->
+<template>
+    <Template lwc:if={showModal}>
+        <!-- #Header -->
+        <lightning-modal-header label="참조 생성">
+        </lightning-modal-header>
+        
+        <!-- #Body -->
+        <lightning-modal-body>
+            <!-- 상단 영역 -->
+            <lightning-card  type="media" class="list_view_container" style="background-color: #F3F3F3 ;">
+                <!-- 필터 영역 -->
+                    <lightning-layout multiple-rows="true">
+                        <lightning-layout-item size="3" padding="around-small" >
+                            <lightning-input label="고객ID" name="enter-search" type="text" data-id="customerId" value ={searchKey} onchange={codeDataChange} onkeypress={handleEnter} onfocus={handleClick}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="3" padding="around-small" >
+                            <lightning-input label="고객명(영문명 포함)" name="enter-search" data-id="customerName" type="text" value={singleSearchEmpNum} onchange={changeHandleSearch}  onkeypress={handleEnter} onfocus={handleClick}></lightning-input>
+                        </lightning-layout-item>
+                       <lightning-layout-item size="3" padding="around-small" >
+                        <lightning-input label="담당MA" name="enter-search" type="search" data-id="managerMA" value={singleSearchEmpNum} onchange={changeHandleSearch}  onkeypress={handleEnter} onfocus={handleClick}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item flexibility="grow" padding="around-small" ></lightning-layout-item>
+                        <lightning-layout-item size="auto" padding="around-small" class="search-button-item" style="margin-top:17px">
+                            <lightning-button label="검색" variant="brand" onclick={handleSearch} class="search-button"></lightning-button>
+                        </lightning-layout-item>
+                        <template if:true={IsShow}>
+                            <c-cjfw-account-search-modal 
+                                onsetsearchacc={handleSearchKey} >
+                            </c-cjfw-account-search-modal>
+                        </template>
+                    </lightning-layout>
+            </lightning-card>
+            <!-- 필터 영역 End -->
+            <!-- Data Table -->
+            <lightning-card>
+                <div class="slds-scrollable_x">
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_col-bordered">
+                        <!-- Column -->
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="row-number fiexedHeader">
+                                    <lightning-input type="checkbox" checked={isAllSelected} onchange={handleSelectAll}></lightning-input>
+                                </th>
+                                <th class="slds-text-title_caps">고객ID</th>
+                                <th class="slds-text-title_caps">고객명(영문명 포함)</th>
+                                <th class="slds-text-title_caps">사업자등록번호</th>
+                                <!-- <th class="slds-text-title_caps">분류</th> -->
+                                <th class="slds-text-title_caps">영업그룹</th>
+                                <th class="slds-text-title_caps">고객분류</th>
+                                <th class="slds-text-title_caps">담당MA</th>
+                                <th class="slds-text-title_caps">고객상태</th>
+                                <th class="slds-text-title_caps">구코드(AS-IS)</th>
+                                <th class="slds-text-title_caps">등록일시</th>
+                                <th class="slds-text-title_caps">FW 출고센터</th>
+                                <th class="slds-text-title_caps">유통이력 신고대상 유형</th>
+                                <!-- <th class="slds-text-title_caps">활성</th> -->
+                            </tr>
+                        </thead>
+                        <!-- Column End -->
+                        <!-- Data List -->
+                        <tbody>
+                            <template for:each={data} for:item="item" for:index="index">
+                                <tr class="slds-hint-parent" key={item.id} data-index={index} onclick={handleClick} ondblclick={handleDoubleClick}>
+                                    <td>
+                                        <lightning-input type="checkbox" checked={item.isSelected} data-id={item.id} onchange={handleRowSelect}></lightning-input>
+                                    </td>
+                                    <td class="cell-disable slds-text-align_left">
+                                        <div class="slds-truncate slds-truncate">{item.customerID}</div>
+                                    </td>
+                                    <td class="cell-disable slds-text-align_left" >
+                                        <div class="slds-truncate slds-truncate">{item.name}</div>
+                                    </td>
+                                    <td class="cell-disable slds-text-align_left" >
+                                        <div class="slds-truncate slds-truncate">{item.companyRegisterNumber}</div>
+                                    </td>
+                                    <td class="cell-disable slds-text-align_left" >
+                                        <div class="slds-truncate slds-truncate">{item.fm_SalesGroup}</div>
+                                    </td>
+                                    <td class="cell-disable slds-text-align_left" >
+                                        <div class="slds-truncate slds-truncate">{item.customerRoute}</div>
+                                    </td>
+                                    <td class="cell-disable slds-text-align_left" >
+                                        <div class="slds-truncate slds-truncate">{item.ownerName}</div>
+                                    </td>
+                                    <td class="cell-disable slds-text-align_left" >
+                                        <div class="slds-truncate slds-truncate">{item.accountStatus}</div>
+                                    </td>
+                                    <td class="cell-disable slds-text-align_left" >
+                                            <div class="slds-truncate slds-truncate">{item.customerIDASIS}</div>
+                                    </td>
+                                    <td class="cell-disable slds-text-align_left" >
+                                        <div class="slds-truncate slds-truncate">{item.createdDate}</div>
+                                    </td>
+                                    <td class="cell-disable slds-text-align_left" >
+                                        <div class="slds-truncate slds-truncate">{item.fWReleaseCenter}</div>
+                                    </td>
+                                    <td class="cell-disable slds-text-align_left" >
+                                        <div class="slds-truncate slds-truncate">{item.disHisRegType}</div>
+                                    </td>
+
+                                </tr>
+                            </template>
+                        </tbody>
+                        <!-- Data List End-->
+                    </table>
+                </div>
+            </lightning-card>
+            <!--Data Table End-->
+        </lightning-modal-body>
+        <!-- #Body End-->
+        <!-- #Footer -->
+        <lightning-modal-footer>
+            <div class="slds-clearfix">
+                <div class="slds-float_right">
+                    <lightning-button variant="neutral" label="취소" onclick={handleClose} class="slds-m-left_x-small"></lightning-button>
+                    <lightning-button variant="brand" label="선택" onclick={handleSelected} class="slds-m-left_x-small"></lightning-button>
+               </div>
+              </div>
+        </lightning-modal-footer>
+        <!-- #Footer End-->
+    </Template>
+</template>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>구매처</label>
+    <name>Vendor__c</name>
+    <relationshipLabel>매입현황</relationshipLabel>
+</CustomFieldTranslation>

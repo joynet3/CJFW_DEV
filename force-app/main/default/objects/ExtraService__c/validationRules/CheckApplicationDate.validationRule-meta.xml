@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CheckApplicationDate</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND( ADDMONTHS(DATEVALUE(ServiceStartDateTime__c),2)  &lt; ServiceContents__r.OpenDate__c, Text(Category__c) = &quot;영양교육&quot;)</errorConditionFormula>
+    <errorMessage>영양교육 컨텐츠는 오픈 2개월전부터 신청 가능합니다.</errorMessage>
+</ValidationRule>

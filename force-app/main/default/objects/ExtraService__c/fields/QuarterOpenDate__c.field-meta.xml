@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>QuarterOpenDate__c</fullName>
+    <externalId>false</externalId>
+    <formula>CASE(
+     MONTH(ServiceContents__r.OpenDate__c), 
+     1, Date(Year(ServiceContents__r.OpenDate__c),01,01),
+     2, Date(Year(ServiceContents__r.OpenDate__c),01,01),
+     3, Date(Year(ServiceContents__r.OpenDate__c),01,01),
+     4, Date(Year(ServiceContents__r.OpenDate__c),04,01),
+     5, Date(Year(ServiceContents__r.OpenDate__c),04,01),
+     6, Date(Year(ServiceContents__r.OpenDate__c),04,01),
+     7, Date(Year(ServiceContents__r.OpenDate__c),07,01),
+     8, Date(Year(ServiceContents__r.OpenDate__c),07,01),
+     9, Date(Year(ServiceContents__r.OpenDate__c),07,01),
+     10, Date(Year(ServiceContents__r.OpenDate__c),10,01),
+     11, Date(Year(ServiceContents__r.OpenDate__c),10,01),
+     12, Date(Year(ServiceContents__r.OpenDate__c),10,01), 
+     null
+)</formula>
+    <label>Quarter Open Date</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Date</type>
+</CustomField>

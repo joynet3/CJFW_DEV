@@ -1,0 +1,68 @@
+<!--
+  @description       : cjfwExcelCopyPasteCmp (엑셀Copy And Paste 화면에서 메뉴얼 선택 클릭시 뜨는 모달화면)
+                       <c-cjfw-excel-copy-paste-cmp>
+  @author            : eunyoung.choi@dkbmc.com
+  @group             : 
+  @last modified on  : 08-23-2023
+  @last modified by  : eunyoung.choi@dkbmc.com
+  Modifications Log
+  Ver   Date         Author                    Modification
+  1.0   08-21-2023   eunyoung.choi@dkbmc.com   Initial Version
+-->
+<template>
+    <!-- Header -->
+    <lightning-modal-header label ={Title}>
+    </lightning-modal-header>
+
+     <!-- Body -->
+    <lightning-modal-body>
+        <div class ="selectboxContainer">
+            <c-comm-custom-select 
+                is-empty-option options={orgOptionList} 
+                label="품의유형" onselected={handleSelected} 
+                onchange={comboBoxChange} 
+                class="customSelectBox">
+            </c-comm-custom-select>
+        </div>
+    <!-- </lightning-modal-body> -->
+        <!-- 엑셀영역 [S] -->
+<!--         <div class ="excelContainer">
+            <table class="tablecontent tablecontent_grid datatable" id="datatable3" >
+                <thead>
+                    <tr>
+                        <th rowspan="2" style="text-align:center; padding-left:0px">구분</th>
+                        <th rowspan="2" style="text-align:center; padding-left:0px">매출액</th>
+                        <th rowspan="2" style="text-align:center; padding-left:0px">매입원가</th>
+                        <th colspan="8" style="text-align:center; padding-left:0px">제조경비</th>
+                        <th rowspan="2" style="text-align:center; padding-left:0px">매출이익</th>
+                        <th rowspan="2" style="text-align:center; padding-left:0px">영업외비용</th>
+                        <th rowspan="2" style="text-align:center; padding-left:0px">관리이익</th>
+                    </tr>
+                    <tr>
+                        <th style="text-align:center; padding-left:0px">인건비</th>
+                        <th style="text-align:center; padding-left:0px">서비스전문</th>
+                        <th style="text-align:center; padding-left:0px">물류비</th>
+                        <th style="text-align:center; padding-left:0px">상각비</th>
+                        <th style="text-align:center; padding-left:0px">임차료</th>
+                        <th style="text-align:center; padding-left:0px">유틸리티</th>
+                        <th style="text-align:center; padding-left:0px">소모품비</th>
+                        <th style="text-align:center; padding-left:0px">경비</th>
+                    </tr>
+                </thead>   
+            </table>
+        </div> -->
+        <!-- 엑셀영역 [S] -->
+
+
+    </lightning-modal-body>
+
+
+
+    
+    <!-- Footer -->
+    <lightning-modal-footer>
+        <div class="slds-align_absolute-center">  
+            <lightning-button variant="neutral" label="다음" onclick={nextbutton} class="slds-m-left_x-small"></lightning-button>
+        </div>
+    </lightning-modal-footer>
+</template>

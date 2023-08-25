@@ -1,0 +1,118 @@
+<!--
+  @description       : Account 검색할 수 있는 모달 
+  @author            : eunyoung.choi@dkbmc.com
+  @class             : cjfwAccountSearchModal.cmp
+  @group             : 
+  @last modified on  : 08-16-2023
+  @last modified by  : eunyoung.choi@dkbmc.com
+  Modifications Log
+  Ver   Date         Author                    Modification
+  1.0   07-31-2023   eunyoung.choi@dkbmc.com   Initial Version
+-->
+
+<template>
+    <Template lwc:if={showModal}>
+        <!-- Header -->
+        <lightning-modal-header label ={Title}>
+        </lightning-modal-header>
+        
+        <!-- Body -->
+        <lightning-modal-body>
+
+            <div class="searchHeader">
+                <lightning-layout multiple-rows="true"  style="padding-bottom: 1rem; background-color: #F3F3F3;">
+                    <lightning-layout-item size="12" medium-device-size="2" padding="around-small" >
+                        <lightning-input label ="고객코드/명" type ="text" value ={searchKey} onchange={codeDataChange} field-level-help={helpText} onkeypress={handleEnter} ></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" medium-device-size="2" padding="around-small" >
+                        <lightning-combobox
+                        name="progress"
+                        type ="type"
+                        label="고객유형"
+                        value={accountType}
+                        placeholder="유형을 선택하세요"
+                        options={customerType}
+                        onchange={onDataChange}
+                        onkeypress={handleEnter} 
+                        ></lightning-combobox>
+                    </lightning-layout-item>
+                    
+                    <lightning-layout-item flexibility="grow" padding="around-small">
+                        <!-- 빈 레이아웃 아이템을 추가하여 버튼을 오른쪽 끝으로 밀어냄 -->
+                    </lightning-layout-item>
+                    
+                    <lightning-layout-item size="auto" padding="around-small" class="custom-button-container">
+                        <button class="slds-button slds-button_brand" onclick={handleSearch}>조회</button>
+                    </lightning-layout-item>
+
+                </lightning-layout>
+            </div>
+
+            <div class="totalCnt">  TOTAL : {totalCnt}</div>
+            <!-- Data Table Start -->
+            <div class="table-container">
+
+                <!-- <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_col-bordered"> -->
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_col-bordered">    
+                    <!-- DT Column -->
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th class="row-number fiexedHeader">No</th>
+                            <th class="slds-text-title_caps">고객사 코드</th>
+                            <th class="slds-text-title_caps">고객사 명</th>
+                            <th class="slds-text-title_caps">고객사 유형</th>
+                            <th class="slds-text-title_caps">사업자 번호</th>
+                            <th class="slds-text-title_caps">고객사 상태</th>
+                            <th class="slds-text-title_caps">고객사 담당MA</th>
+                            <th class="slds-text-title_caps">고객사 담당자 사번</th>
+                        </tr>
+                    </thead>
+
+                    <!-- DT Data Start -->
+                        <tbody>
+                            <template for:each={itemList} for:item="item" for:index="index">
+                                <tr class="slds-hint-parent" key={item.id} data-index={index} onclick={handleClick} ondblclick={handleDoubleClick}>
+                                    <td class="disable_td row-number">
+                                        <div class="slds-truncate">{index}</div>
+                                    </td>
+                                    <td class="cell-disable slds-text-align_left" >
+                                        <div class="slds-truncate">{item.CustomerID__c}</div>
+                                    </td>
+                                    <td class="cell-disable slds-text-align_left" >
+                                        <div class="slds-truncate">{item.searchKey__c}</div>
+                                    </td>
+                                    <td class="cell-disable slds-text-align_left" >
+                                        <div class="slds-truncate">{item.CustomerType__c}</div>
+                                    </td>
+                                    <td class="cell-disable slds-text-align_left" >
+                                        <div class="slds-truncate">{item.CompanyRegisterNumber__c}</div>
+                                    </td>
+                                    <td class="cell-disable slds-text-align_left" >
+                                        <div class="slds-truncate">{item.CustomerStatus__c}</div>
+                                    </td>
+                                    <td class="cell-disable slds-text-align_left" >
+                                        <div class="slds-truncate">{item.fm_empname__c}</div>
+                                    </td>
+                                    <td class="cell-disable slds-text-align_left" >
+                                        <div class="slds-truncate">{item.fm_empId__c}</div>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    <!-- DT Data End -->
+                
+                </table>
+            </div>
+            <!-- Data Table End -->
+
+        </lightning-modal-body>
+
+        <!-- Footer -->
+        <lightning-modal-footer>
+            <div class="slds-align_absolute-center">  
+                <!-- <lightning-button variant="brand" label="Save" onclick={handleSave} class="slds-m-left_x-small"></lightning-button> -->
+                <lightning-button variant="neutral" label="Close" onclick={handleClose} class="slds-m-left_x-small"></lightning-button>
+            </div>
+        </lightning-modal-footer>
+    </Template>
+</template>

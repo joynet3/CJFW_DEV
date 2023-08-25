@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>영업기회</value>
+    </caseValues>
+    <fieldSets>
+        <label></label>
+        <name>OpportunityTracking</name>
+    </fieldSets>
+    <recordTypes>
+        <description></description>
+        <label>수주 계약</label>
+        <name>BiddingContract</name>
+    </recordTypes>
+    <recordTypes>
+        <description></description>
+        <label>FS 본부</label>
+        <name>FSHeadquarter</name>
+    </recordTypes>
+    <recordTypes>
+        <description></description>
+        <label>수의 계약</label>
+        <name>FreeContract</name>
+    </recordTypes>
+    <recordTypes>
+        <description></description>
+        <label>군납 사이트 기회</label>
+        <name>MilitaryOpportunity</name>
+    </recordTypes>
+    <recordTypes>
+        <description></description>
+        <label>나라장터 기회</label>
+        <name>NaraMarketOpportunity</name>
+    </recordTypes>
+    <recordTypes>
+        <description></description>
+        <label>외식 영업기회</label>
+        <name>RestaurantOpportunity</name>
+    </recordTypes>
+    <recordTypes>
+        <description></description>
+        <label>SOW 상품 개발</label>
+        <name>SOWOpportunity</name>
+    </recordTypes>
+    <validationRules>
+        <errorMessage></errorMessage>
+        <name>BidBeginCloseDateTimeValidationCheck</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage></errorMessage>
+        <name>BidOpenDTValidationCheck</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage></errorMessage>
+        <name>BidStartEndDateCheck</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage></errorMessage>
+        <name>ClosedReasonValidationRule</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage></errorMessage>
+        <name>ContractPeriodValidationCheck</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage></errorMessage>
+        <name>ContractStartDateValidationCheck</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage></errorMessage>
+        <name>ContractStartEndDateValidationCheck</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage></errorMessage>
+        <name>ContractTermValidationCheck</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage></errorMessage>
+        <name>OpptyStartEndDateValidationCheck</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage></errorMessage>
+        <name>OwnerExpriationNoticeValidationCheck</name>
+    </validationRules>
+</CustomObjectTranslation>

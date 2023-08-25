@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ContractStartDateValidationCheck</fullName>
+    <active>true</active>
+    <description>계약시작시기가 입찰개시일보다 빠르면 Valid Check</description>
+    <errorConditionFormula>ContractStartDate__c &lt;  DATEVALUE( BidBeginDateTime__c )</errorConditionFormula>
+    <errorMessage>계약시작일을 입찰개시일 이후로 설정해주세요.</errorMessage>
+</ValidationRule>

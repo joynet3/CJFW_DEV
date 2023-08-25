@@ -1,0 +1,34 @@
+<!--
+* ==================================================================================
+*   File Name   : OpptyLineItemMgmtContainer.vfp
+*   Author      : Minje.Kim
+*   Date        : 2022.07.20
+*   Description : OpptyLineItemMgmtContainer
+*   Modification Log
+* ==================================================================================
+*   Ver     Date          Author          Modification
+* ==================================================================================
+*   1.0     2022.07.20    Minje.Kim    Create
+* ==================================================================================
+-->
+<apex:page standardController="Opportunity" >
+
+    <apex:includeLightning />
+    <div id="lightning" />
+    <script>    
+        if(SfdcApp.projectOneNavigator) {
+            SfdcApp.projectOneNavigator.fireContainerEvent(
+                "force:navigateToComponent",
+                {
+                    componentDef: 'c:LineItemMgmt',
+                    componentAttributes: {
+                        "sObjectName" : "Opportunity",
+                        recordId : '{!$CurrentPage.parameters.id}'
+                    },
+                    resetHistory: false
+                }
+            );
+        }
+    </script>
+
+</apex:page>

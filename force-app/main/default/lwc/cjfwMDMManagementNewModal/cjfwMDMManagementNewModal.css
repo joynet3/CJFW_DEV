@@ -1,0 +1,58 @@
+.slds-text-title_caps.miniHeader{
+    background-color:#f5f3f2;
+    font-weight: bold;
+    font-size: 13px;
+    color: black;
+    text-align: center;
+    padding: 8px;
+    margin-bottom: 10px;
+}
+
+.slds-modal__content {
+    background-color: #FFA500; /* 주황색 배경 */
+}
+
+/* .categoryLevel1OptionsTable{
+    height:250px; 
+    overflow:auto;
+    padding: 8px;
+} */
+.table-level-1{
+    transition: all .1s ease-in-out;
+    background-color: white;
+    
+}
+
+.table-level-2 tr, .THIS .table-level-3 tr{
+    cursor: pointer;
+    padding: 8px;
+}
+.slds-text-title_caps.miniBodyMain{ /*관리처 value*/
+    padding: 8px;
+    text-align: left;
+    color: black;
+    font-size: 13px;
+    background-color: #EB5F26;
+}
+.slds-text-title_caps.miniBody{ /*워크플로우명 value*/
+    padding: 8px;
+    text-align: left;
+    color: black;
+    font-size: 13px;
+    cursor: pointer;
+   
+}
+
+.selected {
+    background-color: #EB5F26;
+}
+.slds-button.slds-button_brand{
+    background-color: #9D3E17;
+}
+
+.slds-button .slds-button_brand{
+    background-color: #9D3E17;
+}
+.slds-button.slds-button_icon.slds-modal__close{ /*오른쪽 버튼*/
+    display: none;
+}

@@ -1,0 +1,174 @@
+<!--
+  @description       : 매출/채권관리 OverView Container
+  @author            : eunyoung.choi@dkbmc.com
+  @group             : 
+  @last modified on  : 08-22-2023
+  @last modified by  : eunyoung.choi@dkbmc.com
+  Modifications Log
+  Ver   Date         Author                    Modification
+  1.0   08-04-2023   eunyoung.choi@dkbmc.com   Initial Version
+  1.1   08-11-2023   eunyoung.choi@dkbmc.com   아코디언 제거 
+  1.2   08-11-2023   eunyoung.choi@dkbmc.com   menubar show and hide 기능추가
+  1.2   08-11-2023   eunyoung.choi@dkbmc.com   name="Receivables" > TBD 페이지 호출 , 추후 변경
+-->
+<template>
+
+    <div class="container"> 
+
+        <!-- 메뉴바 [S] -->
+        <template if:true={showMenubar}>
+        <div class="menubarcontainer">
+            <div class="navicontainer">
+                <lightning-accordion allow-multiple-sections-open active-section-name={activeSections}> 
+                    <!-- 큰폴더 덩어리 1 세금계산서 발행 Tab Main  CjfwTaxIssuanceStatusSearch cjfw-tax-issuance-status-search -->
+                    <template if:true={developer}>
+        <!--                <lightning-accordion-section label="매출 실적 관리(개발중인화면들)" name="development" open-icon-name="utility:chevronup" open> 
+                                <div class="accordion-content"> -->
+                                    <lightning-vertical-navigation-item label="매출원장" name="salesLedger" onclick={menuTab}></lightning-vertical-navigation-item>
+                                    <lightning-vertical-navigation-item label="기타매출관리" name="OtherSales" onclick={menuTab}></lightning-vertical-navigation-item>
+                                    <lightning-vertical-navigation-item label="매출채권현황 리포트" name="Receivables" onclick={menuTab} ></lightning-vertical-navigation-item>
+                                    <lightning-vertical-navigation-item label="세금계산서 발행" name ="IssuanceSearch" onclick={menuTab} ></lightning-vertical-navigation-item>
+                                    <lightning-vertical-navigation-item label="고객 담보현황 조회" name ="AccountDamboSearch" onclick={menuTab} ></lightning-vertical-navigation-item>
+                                    <lightning-vertical-navigation-item label="매출조정" name="RevenuAdjustment" onclick={menuTab} ></lightning-vertical-navigation-item>
+    <!--                             </div>
+                        </lightning-accordion-section> -->
+                    </template>
+
+                    <!-- 담보여신 -->
+                    <template if:true={CollateralLoan}>
+    <!--                     <lightning-accordion-section label="담보/여신" name="collateral" open-icon-name="utility:chevronup" open>
+                                <div class="accordion-content"> -->
+                                    <lightning-vertical-navigation-item label="거래처별 담보현황" name="AccountDamboSearch" onclick={menuTab} ></lightning-vertical-navigation-item>
+                                    <lightning-vertical-navigation-item label="담보현황 분석" name="TBDPage" onclick={menuTab} ></lightning-vertical-navigation-item>
+                                    <lightning-vertical-navigation-item label="보증보험 담보현황" name="TBDPage" onclick={menuTab} ></lightning-vertical-navigation-item>
+                                    <lightning-vertical-navigation-item label="연대보증 입보현황" name="TBDPage" onclick={menuTab} ></lightning-vertical-navigation-item>
+                                    <lightning-vertical-navigation-item label="보증보험 감액/해지 모니터링" name="TBDPage" onclick={menuTab}></lightning-vertical-navigation-item>
+        <!--                         </div>
+                        </lightning-accordion-section> -->
+                    </template>
+
+                    <!-- 매출실적/마감관리 -->
+                    <template if:true={SalesPerformanceClosingManage}>
+    <!--                     <lightning-accordion-section label="매출실적/마감관리" name="reports"  open-icon-name="utility:chevronup" open>
+                                <div class="accordion-content"> -->
+                                    <lightning-vertical-navigation-item label="매출채권 현황 리포트" name="Receivables" onclick={menuTab}></lightning-vertical-navigation-item>
+                                    <lightning-vertical-navigation-item label="일자별 매출채권 리포트" name="ReceivablesDaily" onclick={menuTab}></lightning-vertical-navigation-item>
+                                    <lightning-vertical-navigation-item label="임대 매출 관리(임대계약정보관리)" name="salesLedger" onclick={menuTab}></lightning-vertical-navigation-item>
+                                    <lightning-vertical-navigation-item label="조정 매출 현황" name="TBDPage" onclick={menuTab}></lightning-vertical-navigation-item>
+    <!--                             </div>
+                        </lightning-accordion-section> -->
+                    </template>
+
+                    <!-- 매출 마감관리 (실적/마감 합침 )-->
+
+<!--                     <template if:true={SalesClosingManage}>
+                         <lightning-accordion-section label="채권/잔고 관리" name="reports" onclick={toggleAccordion} open-icon-name="utility:chevronup"  >
+                                <div class="accordion-content"> 
+                                    <lightning-vertical-navigation-item label="조정 매출 현황" name="recent"></lightning-vertical-navigation-item>
+                                 </div>
+                        </lightning-accordion-section> 
+                    </template>
+ -->
+
+                    <!-- 장려금 -->
+                    <template if:true={Incentive}>
+    <!--                    <lightning-accordion-section label="장려금" name="reports" onclick={toggleAccordion} open-icon-name="utility:chevronup"  >
+                                <div class="accordion-content"> -->
+                                    <lightning-vertical-navigation-item label="TBD1" name="TBDPage" onclick={menuTab}></lightning-vertical-navigation-item>
+                                    <lightning-vertical-navigation-item label="TBD2" name="TBDPage" onclick={menuTab}></lightning-vertical-navigation-item>
+                                    <lightning-vertical-navigation-item label="TBD3" name="TBDPage" onclick={menuTab}></lightning-vertical-navigation-item>
+                                    <lightning-vertical-navigation-item label="TBD4" name="TBDPage" onclick={menuTab}></lightning-vertical-navigation-item>
+    <!--                           </div>
+                        </lightning-accordion-section> -->
+                    </template>
+
+                    <!-- 세금계산서 -->
+                    <template if:true={TaxIssuance}>
+    <!--                     <lightning-accordion-section label="세금계산서" name="reports" onclick={toggleAccordion} open-icon-name="utility:chevronup"  >
+                                <div class="accordion-content"> -->
+                                    <lightning-vertical-navigation-item label="세금계산서 조회" name="IssuanceSearch" onclick={menuTab}></lightning-vertical-navigation-item>
+                                    <lightning-vertical-navigation-item label="역발행 세금계산서 매핑" name="TBDPage" onclick={menuTab}></lightning-vertical-navigation-item>
+                                    <lightning-vertical-navigation-item label="발행여부 관리" name="TBDPage" onclick={menuTab}></lightning-vertical-navigation-item>
+    <!--                             </div>
+                        </lightning-accordion-section> -->
+                    </template>
+
+                    <!-- 채권/여신/잔고관리 -->
+                    <template if:true={DebentureBalanceManage}>
+    <!--                     <lightning-accordion-section label="세금계산서" name="reports" onclick={toggleAccordion} open-icon-name="utility:chevronup"  >
+                                <div class="accordion-content"> -->
+                                    <lightning-vertical-navigation-item label="잔고확인서 출력" name="TBDPage" onclick={menuTab}></lightning-vertical-navigation-item>
+                                    <lightning-vertical-navigation-item label="가상계좌 입금 내역 조회" name="TBDPage" onclick={menuTab}></lightning-vertical-navigation-item>
+                                    <lightning-vertical-navigation-item label="단말기 별 부서 정보 조회" name="TBDPage" onclick={menuTab}></lightning-vertical-navigation-item>
+                                    <lightning-vertical-navigation-item label="신용카드 채권 상계 처리" name="TBDPage" onclick={menuTab}></lightning-vertical-navigation-item>
+    <!--                             </div>
+                        </lightning-accordion-section> -->
+                    </template>
+
+                    <!-- 체인 판매수수료 관리 -->
+                    <template if:true={ChainSalesFeeManage}>
+    <!--                     <lightning-accordion-section label="장려금 관리" name="reports" onclick={toggleAccordion} open-icon-name="utility:chevronup"  >
+                                <div class="accordion-content"> -->
+                                    <lightning-vertical-navigation-item label="월별 체인 판매 수수료 정산내역" name="TBDPage" onclick={menuTab}></lightning-vertical-navigation-item>
+                                    <lightning-vertical-navigation-item label="체인 판매수수료 정산 현황 조회" name="TBDPage" onclick={menuTab}></lightning-vertical-navigation-item>
+                                    <lightning-vertical-navigation-item label="체인 판매수수료 신청" name="TBDPage" onclick={menuTab}></lightning-vertical-navigation-item>
+    <!--                             </div>
+                        </lightning-accordion-section> -->
+                    </template>
+
+                </lightning-accordion>
+            </div>
+        </div>
+        </template>
+        <!-- Menubar Show And Hide [S]-->
+        <div class="showMenubar" onclick={showMenu}>
+            <template if:true={showMenubar}>
+                <lightning-icon icon-name='utility:arrow_left' size='x-small' title='hide menubar'></lightning-icon>
+            </template>
+            <template if:false={showMenubar}>
+                <lightning-icon icon-name='utility:arrow_right' size='x-small' title='show menubar'></lightning-icon>
+            </template>
+        </div>
+        <!--Menubar Show And Hide [E]-->
+        <!-- 메뉴바 [E] -->
+
+        <!-- View Container [S] -->
+        <div class="viewcontainer" > 
+             <!-- 매출실적관리> 매출원장 클릭시 호출 -->
+             <template if:true={showSalesLedger}>
+                 <c-cjfw-sales-ledger-info-page></c-cjfw-sales-ledger-info-page>
+             </template>
+             <!-- 매출실적관리> 기타매출관리 클릭시 호출 -->
+             <template if:true={showOtherSales}>
+                 <c-cjfw-other-sales-management-page></c-cjfw-other-sales-management-page>
+                </template>
+            <!-- 매출실적관리> 매출채권현황 리포트 클릭시 호출 -->
+             <template if:true={showReceivables}>
+                <c-cjfw-sales-receivables-report-page></c-cjfw-sales-receivables-report-page>
+             </template> 
+             <!-- 매출실적관리> 일자별 매출채권 리포트 클릭시 호출 -->
+             <template if:true={showReceivablesDaily}>
+                <c-cjfw-sales-receivables-daily-report-page></c-cjfw-sales-receivables-daily-report-page>
+             </template>
+             <!-- 매출실적관리> 세금계산서 발행 클릭시 호출 -->
+             <template if:true={showIssuanceSearch}>
+                <c-cjfw-tax-issuance-status-search></c-cjfw-tax-issuance-status-search>
+             </template>
+             <!-- 매출실적관리> 고객담보현황 조회 클릭시 호출 -->
+             <template if:true={showAccountDamboSearch}>
+                <c-cjfw-account-dam-bo-search></c-cjfw-account-dam-bo-search>
+             </template>
+             <!-- 매출실적관리> 매출조정 클릭시 호출 -->
+             <template if:true={showRevenuAdjustment}>
+                <c-cjfw-revenue-adjustment></c-cjfw-revenue-adjustment>
+             </template>
+             <!-- 매출실적관리> TBD 화면 호출 -->
+             <template if:true={showTBDPage}>
+                <c-sample-l-w-c></c-sample-l-w-c>
+             </template>
+        </div>
+        <!-- View Container [E] -->
+
+    </div> 
+
+</template>

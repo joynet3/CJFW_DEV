@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>56.0</apiVersion>
+    <interviewLabel>UpdateContractStatusFlow {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>UpdateContractStatusFlow</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>FREE_FORM_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>UpdateContractStatus</name>
+        <label>Update Contract Status</label>
+        <locationX>753</locationX>
+        <locationY>376</locationY>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Activated</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>722</locationX>
+        <locationY>48</locationY>
+        <connector>
+            <targetReference>UpdateContractStatus</targetReference>
+        </connector>
+        <object>Contract</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>newLeadCheck__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>식자재상담신청에서 입력받은 사업자번호가 Account에 동일한 데이터가 있을시 체크(기존고객으로 관리)</description>
+    <externalId>false</externalId>
+    <label>신규리드체크</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>Checkbox</type>
+</CustomField>

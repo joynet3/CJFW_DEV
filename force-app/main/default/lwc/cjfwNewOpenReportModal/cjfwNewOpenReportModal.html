@@ -1,0 +1,33 @@
+<!--
+  @description       : 
+  @author            : eunyoung.choi@dkbmc.com
+  @group             : 
+  @last modified on  : 08-25-2023
+  @last modified by  : eunyoung.choi@dkbmc.com
+  Modifications Log
+  Ver   Date         Author                    Modification
+  1.0   08-23-2023   eunyoung.choi@dkbmc.com   Initial Version
+-->
+<template>
+    
+    <!-- Header -->
+<!--     <lightning-modal-header label ={Title}>
+    </lightning-modal-header> -->
+
+        <!-- Body -->
+    <lightning-modal-body>
+        <div class="iframe-container">
+            <iframe src={vfPageUrl} frameborder="2"></iframe>
+        </div>
+    </lightning-modal-body>
+
+    <!-- Footer -->
+    <lightning-modal-footer>
+        <div class="slds-align_absolute-center">  
+            <lightning-button variant="neutral" label="취소" onclick={handleClose} class="slds-m-left_x-small"></lightning-button>
+            <!-- <lightning-button variant="brand" label="Excel로 저장" onclick={handlePDF} class="slds-m-left_x-small"></lightning-button> -->
+            <lightning-button variant="brand" label="저장" onclick={handleSave} class="slds-m-left_x-small"></lightning-button>
+        </div>
+    </lightning-modal-footer>
+
+</template>

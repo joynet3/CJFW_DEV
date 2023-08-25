@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>운영경비 유형</label>
+    <name>OperatingExpenseType__c</name>
+    <picklistValues>
+        <masterLabel>기타경비</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>소모품</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>인건비</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>투자비</masterLabel>
+        <translation></translation>
+    </picklistValues>
+</CustomFieldTranslation>

@@ -1,0 +1,867 @@
+<!--
+  @description       : 
+  @author            : (서원) won.seo@daeunextier.com
+  @group             : 
+  @last modified on  : 08-29-2022
+  @last modified by  : (서원) won.seo@daeunextier.com
+-->
+<apex:page controller="PageMapController" showHeader="false" standardStylesheets="false" sidebar="false" cache="true" docType="html-5.0" applyBodyTag="False" applyHtmlTag="False" lightningStyleSheets="true">
+    <html id="html" style="position: relative; max-height: 100%;">
+        <head id="header">
+            <style>
+                body{
+                    height: 100vh;
+                    min-height: 100vh;
+                    max-height: 100vh;
+                    margin: 0px;
+                }
+
+                #map_wrap {
+                    overflow-y: hidden;
+                    display: flex;
+                    position: relative;
+                    max-height: 100%;
+                    /* border: solid 1px #555; */
+                }
+
+                #modal_child_listDiv{
+                    flex: 1;
+                    border-right: solid 1px #555;
+                    display: flex;
+                    flex-direction: column;
+                    position: relative;
+                    width: 33%;
+                }
+
+                #resultContainer{
+                    display: grid;
+                    border-bottom: solid 1px #555;
+                    color: rgba(157, 62, 23, 1);
+                    font: inherit;
+                }
+
+                #listContainer{
+                    overflow-y: scroll;
+                    text-align-last: start;
+                }
+
+                #startEndList{
+                    overflow-y: scroll;
+                    text-align-last: start;
+                }
+
+                #img{
+                    vertical-align:middle; 
+                    float: left; 
+                    padding-top: 1rem; 
+                    padding-right: 0.5rem; 
+                    padding-bottom: 1rem;
+                }
+
+                #listButton{
+                    width: 100%;
+                    line-height: normal;
+                }
+
+                #startEndButton{
+                    width: 100%;
+                    line-height: normal;
+                }
+
+                /* .slds-scope::selection {
+                    background-color: rgba(157, 62, 23, 0.1);
+                    box-shadow: 0 5px 15px rgba(157, 62, 23, .8);
+                } */
+
+                #addr_name{
+                    font-size: larger;
+                    font-weight: 600;
+                    color: black;
+                }
+
+                #description{
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+
+                #description_start{
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+
+                #description_end{
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+
+                #map_div{
+                    cursor: -webkit-grab; 
+                    cursor: grab;
+                    flex: 2;
+                    /* border: solid 1px #555; */
+                    position: relative;
+                    /* max-height: 97vh;
+                    min-height: 97vh; */
+                }
+
+                #distContainer{
+                    margin: 5px;
+                }
+
+                .pointer * {
+                    cursor: pointer;
+                }
+
+                .listBtnClick {
+                    background-color: rgba(157, 62, 23, 0.1);
+                    box-shadow: 0 5px 15px rgba(157, 62, 23, .8);
+                }
+
+                .listBtnClickTitle * {
+                    color: rgba(157, 62, 23, 1);
+                }
+
+                #map_div:active{
+                    cursor: -webkit-grabbing; 
+                    cursor: grabbing;
+                }
+            </style>
+        </head>
+
+        <body id="body" onload="fnInit()">
+            <apex:slds /> 
+            <script src="https://apis.openapi.sk.com/tmap/jsv2?version=1&appKey=l7xxb2d0abb4b1ed4ac4abcd7f15c240c18a"></script>
+            <apex:includeScript value="{! $Resource.jquery }"/>
+
+            <div id="map_wrap" class="slds-scope map_wrap ">
+                <div id="modal_child_listDiv">
+                    <div class="slds-scope">
+                        <div class="slds-form-element">
+                            <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left-right">
+                                <svg class="slds-icon slds-input__icon slds-input__icon_left slds-icon-text-default" aria-hidden="true">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#search')}" />
+                                </svg>
+                                <input type="text" id="start_input" placeholder="출발지 검색" class="slds-input"/>
+                                <button class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" title="Clear" onclick="fnClearStartInput()">
+                                <svg class="slds-button__icon slds-icon-text-light" aria-hidden="true">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#clear')}" />
+                                </svg>
+                                <span class="slds-assistive-text">Clear</span>
+                                </button>
+                                <apex:form >
+                                    <apex:actionFunction name="fnSearchPlace" action="{!searchTmapPlace}" rerender="itemsContainer">
+                                        <apex:param name="req" value="" assignTo="{!req}"/>                
+                                    </apex:actionFunction>
+                                </apex:form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-scope">
+                        <div class="slds-form-element">
+                            <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left-right">
+                                <svg class="slds-icon slds-input__icon slds-input__icon_left slds-icon-text-default" aria-hidden="true">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#search')}" />
+                                </svg>
+                                <input type="text" id="end_input" placeholder="도착지 검색" class="slds-input"/>
+                                <button class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" title="Clear" onclick="fnClearEndInput()">
+                                <svg class="slds-button__icon slds-icon-text-light" aria-hidden="true">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#clear')}" />
+                                </svg>
+                                <span class="slds-assistive-text">Clear</span>
+                                </button>
+                                <apex:form >
+                                    <apex:actionFunction name="fnSearchPlace" action="{!searchTmapPlace}" rerender="itemsContainer">
+                                        <apex:param name="req" value="" assignTo="{!req}"/>               
+                                    </apex:actionFunction>
+                                </apex:form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-scope" id="resultContainer">
+                        <button id="getDistanceBtn" class="slds-button slds-button_neutral">거리 계산</button>
+                        <apex:form >
+                            <apex:actionFunction name="fnGetDistance" action="{!getDistance}" reRender="distanceContainer">
+                                <apex:param name="distanceReq" value="" assignTo="{!distanceReq}"/>
+                            </apex:actionFunction>
+                        </apex:form>
+                        <div id="distContainer">
+                            <apex:outputPanel id="distanceContainer">
+                                <span id="distSpan" >운행거리(km): </span> 
+                                <script type="text/javascript">
+                                    var geomTempList = '';
+                                    if ('{!geomDataJsonString}' != '') {
+                                        geomTempList = jQuery.parseJSON('{!JSENCODE(geomDataJsonString)}');
+    
+                                        // 라인 그리기
+                                        fnGetLineString(geomTempList);
+                                    }
+    
+                                </script>
+                            </apex:outputPanel>
+                        </div>
+                    </div>
+                    <div id="listContainer">
+                        <ul style="list-style-type:none; padding: 0.5rem; margin:0rem;"> 
+                            <apex:outputPanel id="itemsContainer">
+                                <apex:repeat value="{!tmapItemResults}" var="a" id="resultList">
+                                    <li>
+                                        <span class="slds-assistive-text" aria-live="polite"></span>
+                                        <button id="listButton" class="slds-button slds-button_neutral list_button" onclick="">
+                                            <span>
+                                                <img id="img" src='http://tmapapi.sktelecom.com/upload/tmap/marker/pin_g_m_{!a.chr}.png'/>
+                                            </span>
+                                            <span class="slds-media__body" id="description">
+                                                <span id="addr_name">
+                                                    {!a.name}
+                                                </span> <br/>
+                                                <span style="color:rgb(49, 46, 46);">{!a.roadAddr}</span> <br/>
+                                                <span style="color:rgb(49, 46, 46);">{!a.addr} <span style="color: gray;">(우) {!a.zipCode}</span></span> <br/>
+                                                <span style="color:rgb(49, 46, 46);">{!a.telNo}</span> <br/>
+                                            </span>
+                                        </button>
+                                    </li>
+                                </apex:repeat>
+                                <script type="text/javascript">
+                                    var tempList = '';
+                                    if ('{!jsonResultList}' != '') {
+                                        tempList = jQuery.parseJSON('{!JSENCODE(jsonResultList)}');
+                                    }
+                                    let listButton = document.querySelectorAll('#listButton');
+                                    let type;
+                                    let name_se;
+                                    let src_se;
+                                    let char_se;
+                                    let num_se;
+                                    let roadAddr_se;
+                                    let noorLat_se;
+                                    let noorLon_se;
+                                    let type_se;
+
+
+                                    if ('{!tmapItemResults.size}' == 0) {
+                                        $('div#listContainer').hide();
+                                    } else {
+                                        $('div#listContainer').show();
+
+                                        // 마커 생성
+                                        // fnCreateMarkers(tempList);
+
+                                        // 리스트 버튼 이벤트(hoverIn)
+                                        listButton.forEach(item => {
+                                            item.addEventListener('mouseenter', handleListHoverInEvent);
+                                            // item.addEventListener('mouseenter', event => {
+                                            //     // 아이콘 변경
+                                            //     item.querySelector('#img').src = item.querySelector('#img').src.replace(/_g_/, '_w_');
+
+                                            //     // title 색상 변경
+                                            //     item.querySelector('#addr_name').style.color = 'rgba(157, 62, 23, 1)';
+                                                
+                                            //     fnHoverInMarker(item.querySelector('#img').src);
+                                            // })
+                                        });
+
+                                        // 리스트 버튼 이벤트(hoverIn)
+                                        function handleListHoverInEvent(event) {
+                                            // console.log('src:::::::::::::::::' + event.target.querySelector('#img').src);
+                                            if (!event.target.querySelector('#img').src.includes('_b_') && !event.target.querySelector('#img').src.includes('_r_')) {
+                                                event.target.querySelector('#img').src = event.target.querySelector('#img').src.replace(/_g_/, '_w_');
+                                                event.target.querySelector('#addr_name').style.color = 'rgba(157, 62, 23, 1)';
+                                                
+                                                // fnHoverInMarker(event.target.querySelector('#img').src);
+                                            }
+                                        }
+
+                                        // 리스트 버튼 이벤트(hoverOut)
+                                        listButton.forEach(item => {
+                                            item.addEventListener('mouseleave', handleListHoverOutEvent);
+
+                                            // item.addEventListener('mouseleave', event => {
+                                            //     // 아이콘 원복
+                                            //     item.querySelector('#img').src = item.querySelector('#img').src.replace(/_w_/, '_g_');
+
+                                            //     // title 색상 원복
+                                            //     item.querySelector('#addr_name').style.color = 'black';
+
+                                            //     fnHoverOutMarker(item.querySelector('#img').src);
+                                            // })
+                                        });
+
+                                        // 리스트 버튼 이벤트(hoverOut)
+                                        function handleListHoverOutEvent(event) {
+                                            // console.log('src:::::::::::::::::' + event.target.querySelector('#img').src);
+                                            if (!event.target.querySelector('#img').src.includes('_b_') && !event.target.querySelector('#img').src.includes('_r_')){
+                                                event.target.querySelector('#img').src = event.target.querySelector('#img').src.replace(/_w_/, '_g_');
+                                                event.target.querySelector('#addr_name').style.color = 'black';
+
+                                                // fnHoverOutMarker(event.target.querySelector('#img').src);
+                                            }
+                                        }
+                                    }
+
+                                    // 마커 호버 시 리스트 호버링
+                                    // function fnHoverInList(iconUrl) {
+                                    //     let char = iconUrl.substring(iconUrl.length - 4, iconUrl.length - 5)
+                                    //     let num = char.charCodeAt(0) - 97;
+
+                                    //     listButton[num].querySelector('#img').src = listButton[num].querySelector('#img').src.replace(/_g_/, '_w_');
+                                    //     listButton[num].querySelector('#addr_name').style.color = 'rgba(157, 62, 23, 1)';
+                                    // }
+
+                                    // 마커 호버 시 리스트 호버링(원상복구)
+                                    // function fnHoverOutList(iconUrl) {
+                                    //     let char = iconUrl.substring(iconUrl.length - 4, iconUrl.length - 5)
+                                    //     let num = char.charCodeAt(0) - 97;
+                                        
+                                    //     listButton[num].querySelector('#img').src = listButton[num].querySelector('#img').src.replace(/_w_/, '_g_');
+                                    //     listButton[num].querySelector('#addr_name').style.color = 'black';
+                                    // }
+                                    
+                                    // listBtn 클릭 이벤트
+                                    listButton.forEach(item => {
+                                        item.addEventListener("click", function handleListClickEvent(event) {
+
+                                            for(var i=0; i<listButton.length; i++) {
+                                                let switchChar = tempList[i].chr;
+                                                if(type === 'start' && listButton[i].querySelector('#img').src.includes('_b_')) {
+                                                    listButton[i].querySelector('#img').src = listButton[i].querySelector('#img').src.replace(/_b_m_s/, '_g_m_' + switchChar);
+
+                                                } else if (type === 'end' && listButton[i].querySelector('#img').src.includes('_r_')) {
+                                                    listButton[i].querySelector('#img').src = listButton[i].querySelector('#img').src.replace(/_r_m_e/, '_g_m_' + switchChar);
+
+                                                }
+                                                listButton[i].querySelector('#addr_name').style.color = 'black';
+                                                listButton[i].addEventListener('mouseleave', handleListHoverOutEvent);
+                                            }
+
+                                            if (!item.querySelector('#img').src.includes('_b_') && !item.querySelector('#img').src.includes('_r_')) {
+                                                let src = item.querySelector('#img').src;
+                                                let char = src.substring(src.length - 4, src.length - 5);
+                                                let num = char.charCodeAt(0) - 97;
+                                                let roadAddr = tempList[num].roadAddr;
+                                                let noorLat = tempList[num].noorLat;
+                                                let noorLon = tempList[num].noorLon;
+                                                let name = tempList[num].name;
+
+                                                if (tempList[num].type === 'start') {
+                                                    type = tempList[num].type;
+                                                    $('#start_input').val(tempList[num].roadAddr);
+
+                                                    if(item.querySelector('#img').src.includes('_g_')) {
+                                                        item.querySelector('#img').src = src.replace(/_g_m_./, '_b_m_s');
+                                                        // console.log('new src:::::::::::::::' + item.querySelector('#img').src);
+                                                    } else {
+                                                        item.querySelector('#img').src = src.replace(/_w_m_./, '_b_m_s');
+                                                        // console.log('new src:::::::::::::::' + item.querySelector('#img').src);
+                                                    }
+                                                } else {
+                                                    type = tempList[num].type;
+                                                    $('#end_input').val(tempList[num].roadAddr);
+
+                                                    if(item.querySelector('#img').src.includes('_g_')) {
+                                                        item.querySelector('#img').src = src.replace(/_g_m_./, '_r_m_e');
+                                                        // console.log('new src:::::::::::::::' + item.querySelector('#img').src);
+                                                    } else {
+                                                        item.querySelector('#img').src = src.replace(/_w_m_./, '_r_m_e');
+                                                        // console.log('new src:::::::::::::::' + item.querySelector('#img').src);
+                                                    }
+                                                }
+
+                                                console.log('type::::::::::::::::' + type);
+
+                                                src_se = item.querySelector('#img').src;
+                                                name_se = name;
+                                                char_se = tempList[num].chr;
+                                                num_se = char_se.charCodeAt(0) - 97;
+                                                roadAddr_se = roadAddr;
+                                                noorLat_se = noorLat;
+                                                noorLon_se = noorLon;
+                                                type_se = type;
+
+                                                console.log('src_se: ' + src_se +
+                                                            '\nname_se: ' + name_se +
+                                                            '\nchar_se: ' + char_se + 
+                                                            '\nnum_se: ' + num_se + 
+                                                            '\nroadAddr_se: ' + roadAddr_se + 
+                                                            '\nnoorLat_se: ' + noorLat_se + 
+                                                            '\nnoorLon_se: ' + noorLon_se + 
+                                                            '\ntype_se: ' + type_se)
+
+                                                item.querySelector('#addr_name').style.color = 'rgba(157, 62, 23, 1)';
+                                                item.removeEventListener('mouseleave', handleListHoverOutEvent);
+
+                                                fnClickToChngIcon(src_se, name_se, char_se, num_se, roadAddr_se, tempList[num].addr, tempList[num].zipCode, tempList[num].telNo, noorLat_se, noorLon_se, type_se);
+                                            }
+                                        })
+                                    });
+                                </script>
+                            </apex:outputPanel>
+                        </ul>
+                    </div>
+                    <div id="startEndList">
+                        <ul style="list-style-type:none; padding: 0.5rem; margin:0rem;">
+                            <li>
+                                <span class="slds-assistive-text" aria-live="polite"></span>
+                                <button id="startEndButton" class="slds-button slds-button_neutral list_button" onclick="">
+                                    <span>
+                                        <img id="img" src='http://tmapapi.sktelecom.com/upload/tmap/marker/pin_b_m_s.png'/>
+                                    </span>
+                                    <span class="slds-media__body" id="description_start">
+                                        <!-- <span id="addr_name">
+                                            
+                                        </span> <br/>
+                                        <span style="color:rgb(49, 46, 46);"></span> <br/>
+                                        <span style="color:rgb(49, 46, 46);"><span style="color: gray;">(우) </span></span> <br/>
+                                        <span style="color:rgb(49, 46, 46);"></span> <br/> -->
+                                    </span>
+                                </button>
+                            </li>
+                            <li>
+                                <span class="slds-assistive-text" aria-live="polite"></span>
+                                <button id="startEndButton" class="slds-button slds-button_neutral list_button" onclick="">
+                                    <span>
+                                        <img id="img" src='http://tmapapi.sktelecom.com/upload/tmap/marker/pin_r_m_e.png'/>
+                                    </span>
+                                    <span class="slds-media__body" id="description_end">
+                                        <!-- <span id="addr_name">
+                                            
+                                        </span> <br/>
+                                        <span style="color:rgb(49, 46, 46);"></span> <br/>
+                                        <span style="color:rgb(49, 46, 46);"> <span style="color: gray;">(우) </span></span> <br/>
+                                        <span style="color:rgb(49, 46, 46);"></span> <br/> -->
+                                    </span>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div id="map_div"></div>
+                
+            </div>
+            <script type="text/javascript">
+
+                let undefinedVar;
+                let map, marker, marker_s, marker_e;
+                let latlng_s, latlng_e;
+                let startLat, startLng, endLat, endLng;
+                let startName, endName;
+                let startRoadAddr, endRoadAddr;
+                let totalDistance;
+                var marker_index = '';
+                let markerArr = [];
+                var drawInfoArr = [];
+                var resultdrawArr = [];
+                let startEndList = document.querySelectorAll('#startEndButton');
+
+                $('div#startEndList').hide();
+
+                // Init
+                function fnInit() {
+
+                    // 마우스 드래그 이벤트
+                    let drag = false;
+                    document.getElementById("map_div").addEventListener(
+                        'mousedown', () => drag = false);
+                
+                    document.getElementById("map_div").addEventListener(
+                        'mousemove', () => drag = true);
+
+                    // 지도 띄우기
+                    map = new Tmapv2.Map("map_div", {
+                        center : new Tmapv2.LatLng(37.49241689559544, 127.03171389453507),
+                        width : "70%",
+                        height : "100vh",
+                        zoom : 11,
+                        zoomControl : true,
+                        scrollwheel : true,
+                        border : 'none'
+                    });
+
+                    // 출발지 키워드 검색
+                    $('#start_input').on('keydown', function(e) {
+                        var keyCode = e.which;
+
+                        if (keyCode === 13) { // Enter Key
+                            let keyword = $('#start_input').val();
+                            console.log('keyword:::::::::::::::' + keyword);
+                            let req = {type: 'start', search: $('#start_input').val()};
+                            console.log('request-string:::::::::::::::' + JSON.stringify(req));
+                            
+                            if (typeof marker_s != 'undefined') {
+                                marker_s.setMap(null);
+                                marker_s = undefinedVar;
+                                // console.log('marker_s:::::::::::::::' + marker_s);
+                            }
+
+                            //기존 맵에 있던 정보들 초기화
+                            resettingMap();
+                            $('div#startEndList').hide();
+
+                            fnSearchPlace(JSON.stringify(req));
+                        }
+                    });
+
+                    // 도착지 키워드 검색
+                    $('#end_input').on('keydown', function(e) {
+                        var keyCode = e.which;
+
+                        if (keyCode === 13) { // Enter Key
+                            let keyword = $('#end_input').val();
+                            console.log('keyword:::::::::::::::' + keyword);
+                            let req = {type: 'end', search: $('#end_input').val()};
+                            console.log('request-string:::::::::::::::' + JSON.stringify(req));
+
+                            if (typeof marker_e != 'undefined') {
+                                marker_e.setMap(null);
+                                marker_e = undefinedVar;
+                                // console.log('marker_e:::::::::::::::' + marker_e);
+                            }
+
+                            //기존 맵에 있던 정보들 초기화
+                            resettingMap();
+                            $('div#startEndList').hide();
+
+                            // apex 메소드 호출
+                            fnSearchPlace(JSON.stringify(req));
+                        }
+                    });
+
+                    $('div#listContainer').hide();
+
+                    $('#getDistanceBtn').on('click', function(e) {
+
+                        if (typeof marker_s === 'undefined') {
+                            alert('출발지를 선택해 주세요.');
+                        } else if (typeof marker_e === 'undefined') {
+                            alert('도착지를 선택해 주세요.');
+                        } else {
+                            let distanceReq = {
+                                startY: startLat,
+                                startX: startLng,
+                                endY: endLat,
+                                endX: endLng
+                            };
+
+                            $('#start_input').val(startRoadAddr);
+                            $('#end_input').val(endRoadAddr);
+
+                            var msgObj = new Map([
+                                ["type", "IN PROCESS"],
+                                ["msgStart", ''],
+                                ["msgEnd", ''],
+                                ["msgDist", '']
+                            ]);
+
+                            sendMsgToParent(msgObj);
+
+                            fnGetDistance(JSON.stringify(distanceReq));
+                        }
+                    })
+                }
+
+                // 출발지 input 필드 초기화
+                function fnClearStartInput() {
+                    document.getElementById("start_input").value = "";
+                }
+
+                // 도착지 input 필드 초기화
+                function fnClearEndInput() {
+                    document.getElementById("end_input").value = "";
+                }
+
+                // 마커 생성
+                function fnCreateMarkers(list) {
+
+                    if(list.length > 0) {
+                        for(var i in markerArr) {
+                            markerArr[i].setMap(null);
+                        }
+                        markerArr = [];
+                    } 
+
+                    var positionBounds = new Tmapv2.LatLngBounds();
+
+                    for(var i=0; i<list.length; i++) {
+                        var noorLat = Number(list[i].noorLat);
+                        var noorLon = Number(list[i].noorLon);
+
+                        var markerPosition = new Tmapv2.LatLng(noorLat, noorLon);
+
+                        var chr = list[i].chr;
+
+                        marker = new Tmapv2.Marker({
+                            position: new Tmapv2.LatLng(list[i].noorLat, list[i].noorLon),
+                            map: map,
+                            title: list[i].name,
+                            iconSize : new Tmapv2.Size(24, 38),
+                            icon: 'http://tmapapi.sktelecom.com/upload/tmap/marker/pin_g_m_' + chr + '.png'
+                        });
+
+                        markerArr.push(marker);
+                        positionBounds.extend(markerPosition);
+                    }
+
+                    map.panToBounds(positionBounds);
+                    map.zoomOut();
+
+                    // 마커 호버링인 이벤트
+                    markerArr.forEach(m => {
+                        // m.addListener('mouseenter', function handleMarkerHoverInEvent(evt) {
+                        //     console.log('event IN:::::::::::::::::');
+                        //     console.log('map_div:::::::::::::::::' + document.getElementById("map_div").classList);
+                        //     document.getElementById("map_div").classList.add("pointer");
+                        //     var iconUrl = m.getIcon();
+                        //     m.setIcon(iconUrl.replace(/_g_/, '_w_'));
+
+                        //     fnHoverInList(iconUrl);
+                        // })
+                        // m.addListener('mouseenter', handleMarkerHoverInEvent);
+                        m.addListener('mouseenter', event => {
+                            document.getElementById("map_div").classList.add("pointer");
+                            var iconUrl = m.getIcon();
+                            m.setIcon(iconUrl.replace(/_g_/, '_w_'));
+
+                            fnHoverInList(iconUrl);
+                        })
+                    });
+
+                    // 마커 호버링인 이벤트
+                    // function handleMarkerHoverInEvent(event) {
+                    //     document.getElementById("map_div").classList.add("pointer");
+                    //     console.log('event:::::::::::::::::' + event);
+                    //     console.log('target:::::::::::::::::' + event.currentTarget);
+
+                    // }
+
+                    // 마커 호버링아웃 이벤트
+                    markerArr.forEach(m => {
+                        // m.addListener('mouseenter', function handleMarkerHoverOutEvent(evt) {
+                        //     console.log('event OUT:::::::::::::::::');
+                        //     console.log('map_div:::::::::::::::::' + document.getElementById("map_div").classList);
+                        //     document.getElementById("map_div").classList.remove("pointer");
+                        //     var iconUrl = m.getIcon();
+                        //     m.setIcon(iconUrl.replace(/_w_/, '_g_'));
+
+                        //     fnHoverOutList(iconUrl);
+                        // })
+                        // m.addListener('mouseleave', handleMarkerHoverOutEvent);
+                        m.addListener('mouseleave', event => {
+                            document.getElementById("map_div").classList.remove("pointer");
+                            var iconUrl = m.getIcon();
+                            m.setIcon(iconUrl.replace(/_w_/, '_g_'));
+
+                            fnHoverOutList(iconUrl);
+                        })
+                    });
+
+                    // 마커 호버링아웃 이벤트
+                    // function handleMarkerHoverOutEvent(event) {
+                    //     document.getElementById("map_div").classList.remove("pointer");
+                    //     console.log('event:::::::::::::::::' + event);
+                    //     console.log('target:::::::::::::::::' + event.currentTarget);
+
+                    // }
+                }
+                
+                // 리스트 호버 시 마커 호버링
+                function fnHoverInMarker(iconUrl) {
+                    let char = iconUrl.substring(iconUrl.length - 4, iconUrl.length - 5);
+                    let num = char.charCodeAt(0) - 97;
+
+                    markerArr[num].setIcon(iconUrl.replace(/_g_/, '_w_'));
+                }
+
+                // 리스트 호버 시 마커 호버링(원상복구)
+                function fnHoverOutMarker(iconUrl) {
+                    let char = iconUrl.substring(iconUrl.length - 4, iconUrl.length - 5);
+                    let num = char.charCodeAt(0) - 97;
+
+                    markerArr[num].setIcon(iconUrl.replace(/_w_/, '_g_'));
+                }
+
+                // 리스트 클릭 시 마커 시작점/도착점 생성
+                function fnClickToChngIcon(src_se, name_se, char_se, num_se, roadAddr_se, addr, zipCode, telNo, noorLat_se, noorLon_se, type_se) {
+                    let markerPosition = new Tmapv2.LatLng(noorLat_se, noorLon_se);
+
+                    if (type_se === 'start') {
+                        if(typeof marker_s != 'undefined') {
+                            marker_s.setMap(null);
+                        }
+                        marker_s = new Tmapv2.Marker({
+                            position: markerPosition,
+                            map: map,
+                            title: name_se,
+                            iconSize : new Tmapv2.Size(24, 38),
+                            icon: 'http://tmapapi.sktelecom.com/upload/tmap/marker/pin_b_m_s.png'
+                        });
+
+                        latlng_s = markerPosition;
+                        startLat = noorLat_se;
+                        startLng = noorLon_se;
+                        startName = name_se;
+                        startRoadAddr = roadAddr_se;
+
+                        var s_descrption = document.getElementById('description_start');
+                        s_descrption.innerHTML = '';
+                        s_descrption.innerHTML += "<span id='addr_name'>" + startName + "</span> <br/>"
+                                                + "<span style='color:rgb(49, 46, 46);'>" + startRoadAddr + "</span> <br/>"
+                                                + "<span style='color:rgb(49, 46, 46);'>" + addr + "<span style='color: gray;'>(우)" + zipCode + "</span></span> <br/>"
+                                                + "<span style='color:rgb(49, 46, 46);'>" + telNo + "</span> <br/>";
+
+                    } else {
+                        if (typeof marker_e != 'undefined') {
+                            marker_e.setMap(null);
+                        }
+                        marker_e = new Tmapv2.Marker({
+                            position: markerPosition,
+                            map: map,
+                            title: name_se,
+                            iconSize : new Tmapv2.Size(24, 38),
+                            icon: 'http://tmapapi.sktelecom.com/upload/tmap/marker/pin_r_m_e.png'
+                        });
+
+                        latlng_e = markerPosition;
+                        endLat = noorLat_se;
+                        endLng = noorLon_se;
+                        endName = name_se;
+                        endRoadAddr = roadAddr_se;
+
+                        var s_descrption = document.getElementById('description_end');
+                        s_descrption.innerHTML = '';
+                        s_descrption.innerHTML += "<span id='addr_name'>" + endName + "</span> <br/>"
+                                                + "<span style='color:rgb(49, 46, 46);'>" + endRoadAddr + "</span> <br/>"
+                                                + "<span style='color:rgb(49, 46, 46);'>" + addr + "<span style='color: gray;'>(우)" + zipCode + "</span></span> <br/>"
+                                                + "<span style='color:rgb(49, 46, 46);'>" + telNo + "</span> <br/>";
+                    }
+
+                    map.setCenter(markerPosition);
+                    map.setZoom(16);
+
+                }
+                
+                startEndList.forEach(item => {
+                    item.addEventListener("click", function handleStartEndListEvent(event) {
+                        if (item.querySelector('#img').src.includes('_b_m_s')) {
+                            map.setCenter(latlng_s);
+                        } else {
+                            map.setCenter(latlng_e);
+                        }
+                    })
+                })
+
+                function fnGetLineString(geomTempList) {
+                    //기존 맵에 있던 정보들 초기화
+                    resettingMap();
+
+                    totalDistance = geomTempList.totalDistance;
+                    var span =  document.createElement('span');
+                    span.innerHTML = ' ' + geomTempList.totalDistance;
+                    var parentSpan = document.getElementById('distSpan');
+                    parentSpan.appendChild(span);
+
+                    var lineList = geomTempList.lineStringList;
+                    var positionBounds = new Tmapv2.LatLngBounds();
+
+                    for ( var i in lineList) {
+                        for ( var j in lineList[i]) {
+                            // 경로들의 결과값들을 포인트 객체로 변환 
+                            var latlng = new Tmapv2.LatLng(
+                                lineList[i][j][1],
+                                lineList[i][j][0]
+                            )
+                            positionBounds.extend(latlng);
+
+                            // 배열에 담기
+                            drawInfoArr.push(latlng);
+                        }
+                        drawLine(drawInfoArr);
+                    }
+                    map.panToBounds(positionBounds);
+
+                    var msgObj = new Map([
+                                ["type", "SUCCESS"],
+                                ["msgStart", ''],
+                                ["msgEnd", ''],
+                                ["msgDist", '']
+                            ]);
+
+                    sendMsgToParent(msgObj);
+
+                    $('div#startEndList').show();
+                    $('div#listContainer').hide();
+                }
+
+                //라인그리기
+                function drawLine(arrPoint) {
+                    var polyline_;
+
+                    polyline_ = new Tmapv2.Polyline({
+						path : arrPoint,
+						strokeColor : "#61AB25",
+						strokeWeight : 6,
+						map : map
+					});
+					resultdrawArr.push(polyline_);
+                }
+
+                //초기화 기능
+                function resettingMap() {
+            
+                    if (resultdrawArr.length > 0) {
+                        for (var i = 0; i < resultdrawArr.length; i++) {
+                            resultdrawArr[i].setMap(null);
+                        }
+                    }
+                    
+                    jQuery('#distSpan').find('span').remove();
+                    drawInfoArr = [];
+                    resultdrawArr = [];
+                }
+
+                window.addEventListener('message', receiveMsgFromParent);
+
+                function receiveMsgFromParent( e ) {
+                    var msgStart = '';
+                    var msgEnd = '';
+                    var msgDist = '';
+                    var msgObj = new Map([
+                        ["type", "SAVE"],
+                        ["msgStart", msgStart],
+                        ["msgEnd", msgEnd],
+                        ["msgDist", msgDist]
+                    ]);
+                    
+                    if (typeof startRoadAddr != 'undefined' && typeof marker_s != 'undefined') {
+                        // console.log('startRoadAddr::::::::::::::::' + startRoadAddr);
+                        msgStart = startRoadAddr;
+                    }
+                    if (typeof endRoadAddr != 'undefined' && typeof marker_e != 'undefined') {
+                        // console.log('endRoadAddr::::::::::::::::' + endRoadAddr);
+                        msgEnd = endRoadAddr;
+                    }
+                    if (typeof totalDistance != 'undefined') {
+                        // console.log('totalDistance::::::::::::::::' + totalDistance);
+                        msgDist = totalDistance;
+                    }
+
+                    msgObj.set("msgStart", msgStart);
+                    msgObj.set("msgEnd", msgEnd);
+                    msgObj.set("msgDist", msgDist);
+                    // console.log('msgObj::::::::::::::::' + msgObj);
+
+                    sendMsgToParent(msgObj);
+
+                }
+
+                // 부모에게 메시지 전달
+                function sendMsgToParent( msg ) {
+                    window.parent.postMessage( msg, '*' );
+                }
+
+            </script>
+        </body>
+    </html>
+</apex:page>

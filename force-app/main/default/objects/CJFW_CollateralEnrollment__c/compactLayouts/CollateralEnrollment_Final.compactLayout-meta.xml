@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CollateralEnrollment_Final</fullName>
+    <fields>Customer__c</fields>
+    <fields>RecordTypeId</fields>
+    <fields>OwnerId</fields>
+    <label>CollateralEnrollment_Final</label>
+</CompactLayout>

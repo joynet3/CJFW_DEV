@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>컨텐츠</label>
+    <name>ServiceContents__c</name>
+    <relationshipLabel>부가 서비스 신청</relationshipLabel>
+</CustomFieldTranslation>

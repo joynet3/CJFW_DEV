@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SurveyOption__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>질문 선택지</description>
+    <externalId>false</externalId>
+    <label>Survey Option</label>
+    <referenceTo>CJFW_SurveyOption__c</referenceTo>
+    <relationshipLabel>Survey Result</relationshipLabel>
+    <relationshipName>Survey_Result</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

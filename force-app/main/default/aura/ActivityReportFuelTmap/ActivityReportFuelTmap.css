@@ -1,0 +1,78 @@
+/* .THIS .slds-modal__container{ 
+    height : auto; width: 80%; max-width: 70vh; 
+}
+
+.THIS .modal-body{ 
+    height : 40vh !important; 
+    max-height: 40vh !important; 
+} 
+
+.THIS  .slds-modal__footer{ 
+    display: inline !important; 
+} */
+
+.THIS #iframeMap {
+    width: 100%;
+    height: 68.9vh;
+}
+
+.THIS #tmapIframeMap {
+    width: 100%;
+    height: 68.9vh;
+}
+
+.THIS #modal-content-id-1{
+    overflow-y: hidden;
+    display: flex;
+}
+
+.THIS #modal_child_listDiv{
+    flex: 1;
+    border: solid 1px #555;
+    margin-right: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.THIS #modal_child_mapDiv{
+    flex: 3;
+    /* border: solid 1px #555; */
+}
+
+.THIS #searchContainer{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+/* .THIS #addContainer{
+    display: grid;
+} */
+
+.THIS #resultContainer{
+    display: grid;
+    border-bottom: solid 1px #555;
+}
+
+.THIS .findKeyword, .THIS .start_findKeyword, .THIS .end_findKeyword {
+    max-height: 31px;
+    white-space: nowrap;
+    /* margin-top: 1.1rem; */
+}
+
+.THIS .keyword, .THIS .start_keyword, .THIS .end_keyword{
+    width: 100%;
+    margin-top: -1.1rem;
+}
+
+.THIS #listContainer{
+    overflow: overlay;
+}
+
+.THIS #listButton{
+    text-align: left;
+}
+
+.THIS .custom-textarea textarea{
+    height: 10rem;
+}

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>고객사</label>
+    <name>SoldTo__c</name>
+    <relationshipLabel>단수조정</relationshipLabel>
+</CustomFieldTranslation>

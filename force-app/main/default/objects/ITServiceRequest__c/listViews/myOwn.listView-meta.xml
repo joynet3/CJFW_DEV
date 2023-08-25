@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>myOwn</fullName>
+    <columns>NAME</columns>
+    <columns>Stage__c</columns>
+    <columns>Title__c</columns>
+    <columns>Description__c</columns>
+    <filterScope>Mine</filterScope>
+    <label>내 요청사항</label>
+</ListView>

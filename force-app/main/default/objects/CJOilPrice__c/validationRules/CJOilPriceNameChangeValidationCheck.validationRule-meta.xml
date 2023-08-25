@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CJOilPriceNameChangeValidationCheck</fullName>
+    <active>true</active>
+    <description>대두유 가격구분명 변경 불가 확인</description>
+    <errorConditionFormula>AND(ISCHANGED( Name ), $User.LastName &lt;&gt; &apos;CJ Freshwway&apos;)</errorConditionFormula>
+    <errorMessage>가격구분 이름을 바꿀 수 없습니다</errorMessage>
+</ValidationRule>

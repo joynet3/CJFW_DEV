@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>운영점</fullName>
+        <default>false</default>
+        <label>운영점</label>
+    </customValue>
+    <customValue>
+        <fullName>신축점</fullName>
+        <default>false</default>
+        <label>신축점</label>
+    </customValue>
+    <customValue>
+        <fullName>홀</fullName>
+        <default>false</default>
+        <label>홀</label>
+    </customValue>
+    <customValue>
+        <fullName>배달</fullName>
+        <default>false</default>
+        <label>배달</label>
+    </customValue>
+    <customValue>
+        <fullName>홀&amp;배달</fullName>
+        <default>false</default>
+        <label>홀&amp;배달</label>
+    </customValue>
+    <customValue>
+        <fullName>캐터링</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>캐터링</label>
+    </customValue>
+    <customValue>
+        <fullName>위탁운영</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>위탁운영</label>
+    </customValue>
+    <customValue>
+        <fullName>식당 미운영</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>식당 미운영</label>
+    </customValue>
+    <customValue>
+        <fullName>직영</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>직영</label>
+    </customValue>
+    <masterLabel>Type of operation</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

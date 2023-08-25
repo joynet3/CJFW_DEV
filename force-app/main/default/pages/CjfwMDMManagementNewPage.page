@@ -1,0 +1,62 @@
+<!--
+  @description       : 
+  @author            : joohyeon.jang@dkbmc.com
+  @group             : 
+  @last modified on  : 08-17-2023
+  @last modified by  : joohyeon.jang@dkbmc.com
+  Modifications Log
+  Ver   Date         Author                    Modification
+  1.0   08-09-2023   joohyeon.jang@dkbmc.com   Initial Version
+-->
+<apex:page tabStyle="MDMRegRequestCustomer__c" lightningStyleSheets="true" standardController="MDMRegRequestCustomer__c" extensions="CjfwMDMManagementNewModalController" recordSetVar="CjfwMDMManagementNewModal">
+    <html>
+        <head>
+            <apex:slds />
+            <apex:includeLightning />
+            <!-- #스타일 추가 -->
+            <style type="text/css">
+                .vfWrapper {
+                    max-height: 100%;
+                }
+                /* 버튼 호버 시 스타일 조정 */
+                .slds-modal__footer .slds-button_brand:hover {
+                    background-color: #753C15 !important; /* 호버 배경색 변경 */
+                    border: 1px solid #753C15 !important; /* 호버 테두리 스타일 변경 */
+                }
+                /* 버튼 스타일 조정 */
+                .slds-modal__footer .slds-button_neutral {
+                    color: #9D3E17 !important;
+                    border: 1px solid #772D0F !important; /* 테두리 스타일 추가 */
+                }
+                /* 버튼 호버 시 스타일 조정 */
+                .slds-modal__footer .slds-button_neutral:hover {
+                    color: #753C15 !important; /* 호버 배경색 변경 */
+                    border: 1px solid #772D0F !important; /* 호버 테두리 스타일 변경 */
+                }
+                .slds-scope .slds-tabs_default__item:hover:after, .slds-scope .slds-tabs--default__item:hover:after{
+                    background-color : #F06B35 !important;
+                }
+            </style>
+        </head>
+        <body class="slds-scope">
+            <div class="slds-scope">
+                <div id="LightningComponentid" class="vfWrapper"/>    
+            </div>
+            <script>
+                document.addEventListener('lightning__showtoast', event => {
+                    sforce.one.showToast(event.toastAttributes);
+                });
+                $Lightning.use("c:CjfwMDMManagementNewApp", function() {
+                    $Lightning.createComponent("c:CjfwMDMManagementTabModal", 
+                    { },
+                    "LightningComponentid",
+                    function(cmp) {
+                        console.log('LWC Componenet added in VF page');
+                        // window.history.back();
+                        // location.reload();
+                    });
+                });
+            </script>
+        </body>
+    </html>
+</apex:page>

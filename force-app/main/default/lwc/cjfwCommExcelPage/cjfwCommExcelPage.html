@@ -1,0 +1,20 @@
+<!--
+  @description       : 엑셀영역 버튼노출 구간 
+  엑셀다운로드 /엑셀항목설정/ 엑셀템플릿 다운로드/ 엑셀업로드 버튼 노출예정
+  <c-cjfw-comm-excel-page>
+  @author            : eunyoung.choi@dkbmc.com
+  @group             : 
+  @last modified on  : 08-07-2023
+  @last modified by  : eunyoung.choi@dkbmc.com
+  Modifications Log
+  Ver   Date         Author                    Modification
+  1.0   08-07-2023   eunyoung.choi@dkbmc.com   Initial Version
+-->
+<template>
+    <div class="excel-container">
+        <lightning-button variant="neutral" label="엑셀 템플릿 다운로드" onclick={handleClose} class="slds-m-left_x-small"></lightning-button>
+        <lightning-button variant="neutral" label="엑셀 업로드" onclick={handleClose} class="slds-m-left_x-small"></lightning-button>
+        <lightning-button variant="neutral" label="엑셀항목설정" onclick={handleClose} class="slds-m-left_x-small"></lightning-button>
+        <lightning-button variant="neutral" label="엑셀다운로드" onclick={handleClose} class="slds-m-left_x-small"></lightning-button>
+    </div>
+</template>

@@ -1,0 +1,424 @@
+<!--
+* ==================================================================================
+*   File Name   : CK_InAndOutMgmt.cmp
+*   Author      : Minje.kim
+*   Date        : 2022.05.09
+*   Description : CK 입출고 관리 모듈
+*   Modification Log
+* ==================================================================================
+*   Ver     Date          Author          Modification
+* ==================================================================================
+*   1.0     2022.05.09    Minje.kim       Create
+* ==================================================================================
+-->
+<aura:component access="global" implements="force:appHostable,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes" controller="CK_InAndOutMgmtController">
+                
+    
+    <!-- 화면상태변환 조건 -->
+    <aura:attribute name="isMobile" type="Boolean" default="false" description="Mobile, DeskTop 구분자"/>
+    <aura:attribute name="screenStatus" type="String" default="Home" description="Home, import, export 화면 구분자"/>
+    <aura:attribute name="taskStatus" type="String" default="View" description="View, MenualEdit, Barcodescan 구분자"/>
+    <aura:attribute name="confirmStatus" type="String" default="Hide" description="Cancel, Save, LastConfirm, Hide 상태 구분자"/>
+    <aura:attribute name="isAllOpen" type="Boolean" default="false" description="상세내역 모두펼치기/모두접기 구분자"/>
+    
+    <aura:attribute name="ScanedItem" type="String" default="" description="스캔된 내역의 ID"/>
+    <aura:attribute name="strScanInput" type="String" default="" description=""/>
+
+    <aura:attribute name="mapPicklist" type="Map" />
+    
+    <!-- 조회조건 -->
+    <aura:attribute name="SearchDate" type="Date"/>
+
+    <aura:attribute name="sortedBy"
+                    type="String" />
+    <aura:attribute name="sortedDirection"
+                    type="Boolean"
+                    default="true" />
+
+    <!-- 조회결과-->
+    <aura:attribute name="listResultColumn" type="List"/>
+    <aura:attribute name="listData" type="List" default="[]"/>    
+    <aura:attribute name="listBackUpData" type="List" default="[]" description="수동변경/라벨스캔 모드 임시저장"/>    
+    <aura:attribute name="listDatalength" type="Integer" default="0"/>    
+    
+    <!-- Paging Attribute -->
+    <aura:attribute name="countPerPage" type="Integer" default="10" />
+    <aura:attribute name="pageNumber" type="Integer" default="1" />
+    <aura:attribute name="maxPage" type="Integer" default="1" />
+    <aura:attribute name="pageRecords" type="List" default="[]" />
+
+    <!-- Spinner -->
+    <aura:attribute name="showSpinner" type="Boolean" default="false" />
+
+    <!-- Param Attribute -->
+    <aura:attribute name="CommonConfirm" type="Aura.Component" />
+
+    <!-- Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.fnInit}" />
+    <aura:handler name="change" value="{!v.pageNumber}" action="{!c.fnRenderPage}" />
+
+    <div class="mainContainer" aura:id="mainContainer" style="{!v.isMobile ? '' : 'width: 30vw; left:35vw;' }" >
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="{!v.isMobile ? 'slds-modal slds-fade-in-open slds-modal_large':''}">       
+            
+            <aura:if isTrue="{!v.showSpinner}">
+                <lightning:spinner alternativeText="Loading" size="large" variant="brand" />
+            </aura:if>
+            
+            <div class="{!v.isMobile ? 'slds-modal__content slds-p-around--medium' : ''}" style="text-align:center;width: 100%; background-color:white;padding:0px; margin:0px"> 
+                <!-- HOME 화면 START -->
+                <aura:if isTrue="{!v.screenStatus == 'Home'}">
+                    <lightning:layout class="slds-m-top_x-small slds-size_1-of-1" multipleRows="true" >
+                        <lightning:layoutItem size="12"> 
+                                <lightning:layout multipleRows="true">
+                                    <lightning:layoutItem size="12" padding="around-small">
+                                        <button class="slds-button slds-button_outline-brand"  style="{!v.isMobile ? 'width:100%;height:45vh;':'width:100%; height: -webkit-calc(45vh - 45px)'}"  onclick="{!c.fnImportMode}">
+                                            <lightning:icon  iconName="utility:package" size="middle" /><span style="font-size:3rem; font-weight:bold">&nbsp; 입고</span>
+                                        </button>
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="12" padding="around-small">
+                                        <button class="slds-button slds-button_outline-brand"  style="{!v.isMobile ? 'width:100%;height:45vh':'width:100%; height: -webkit-calc(45vh - 45px)'}"  onclick="{!c.fnExportMode}">
+                                            <lightning:icon  iconName="utility:checkout" size="middle" /><span style="font-size:3rem; font-weight:bold">&nbsp; 출고</span>
+                                        </button>
+                                    </lightning:layoutItem> 
+                                </lightning:layout>
+                        </lightning:layoutItem>
+                    </lightning:layout>
+                </aura:if>
+                <!-- HOME 화면 END -->
+                <!-- 입출고 작업 화면 START -->
+                <aura:if isTrue="{!v.screenStatus != 'Home'}">
+                    <!-- 액션 BTN START -->
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table--fixed-layout" style="height:10vh;padding-top:1vh;padding-bottom:1vh;width:100%;text-align:center;background-color:rgb(250, 250, 249);">
+                        <tr>                
+                            <aura:if isTrue="{!v.screenStatus == 'Import' || v.screenStatus == 'Export'}">
+                                <aura:if isTrue="{!v.taskStatus == 'View'}">
+                                    <td style="text-align:center; padding-bottom:0px">                                
+                                        <lightning:icon iconName="action:back" class="Icon_Red" size="x-small" onclick="{!c.fnHomeMode}"/>
+                                        <br/>
+                                        <small><small>뒤로가기</small></small>
+                                    </td>   
+                                    <aura:if isTrue="{!v.isMobile}">
+                                        <td style="text-align:center; padding-bottom:0px">                                
+                                            <lightning:icon iconName="action:record" size="x-small" onclick="{!c.fnScanMode}"/> 
+                                            <br/>
+                                            <small><small>라벨스캔</small></small>
+                                        </td>     
+                                    </aura:if> 
+                                    <td style="text-align:center; padding-bottom:0px">
+                                        <lightning:icon iconName="action:edit" size="x-small" onclick="{!c.fnEditMode}"/>
+                                        <br/>
+                                        <small><small>수동변경</small></small>
+                                    </td>             
+                                    <td style="text-align:center; padding-bottom:0px">                         
+                                        <lightning:icon iconName="action:goal" size="x-small" onclick="{!c.fnApprovalConfirm}"/>
+                                        <br/>
+                                        <small><small>확정</small></small>
+                                    </td>       
+                                </aura:if>
+                                <aura:if isTrue="{!or(v.taskStatus == 'MenualEdit',v.taskStatus == 'BarcodeScan')}">     
+                                    <td style="text-align:center; padding-bottom:0px">
+                                        <lightning:icon iconName="action:back" class="Icon_Red" size="x-small" onclick="{!c.fnTaskCancelConfirm}"/>
+                                        <br/>
+                                        <small><small>뒤로가기</small></small>
+                                    </td>    
+                                    <aura:if isTrue="{!v.taskStatus == 'BarcodeScan'}">   
+                                        <td style="text-align:center; padding-bottom:0px">  
+                                            <c:cK_BarcodeScan
+                                                    onrefreshview="{!c.handleRefreshView}"
+                                                    onreturnBarcode="{!c.returnBarcode}">
+                                            </c:cK_BarcodeScan>
+                                        </td>    
+                                    </aura:if>
+                                    <td style="text-align:center; padding-bottom:0px">
+                                        <lightning:icon iconName="action:check" class="Icon_Green" size="x-small" onclick="{!c.fnTaskSaveConfirm}"/>
+                                        <br/>
+                                        <small><small>저장</small></small>
+                                    </td>         
+                                </aura:if>
+                            </aura:if>     
+                        </tr>
+                    </table>
+                    <!-- 액션 BTN END -->
+                    <!-- 레코드 START -->
+                    <article class="slds-card slds-card_boundary related_list_card_border" style="{!v.isMobile ? 'height:90vh;':'height: -webkit-calc(85vh - 90px);'}">
+                        <lightning:card iconName="custom:custom98">                
+                            <aura:set attribute="actions">
+                                    <div style="height:15px ;"></div>
+                                    &nbsp;
+                            </aura:set>    
+                            <aura:set attribute="title">
+                                <aura:if isTrue="{!v.screenStatus == 'Import'}">
+                                    <b>입고대상 ({!v.listDatalength})</b>
+                                </aura:if>   
+                                <aura:if isTrue="{!v.screenStatus == 'Export'}">
+                                    <b>출고대상 ({!v.listDatalength}) </b>
+                                </aura:if>
+                            </aura:set>            
+                            <!-- 입고 레코드 START -->   
+                            <aura:if isTrue="{!v.screenStatus == 'Import'}">
+                                <div class="slds-scrollable_y" style="{!v.isMobile ? 'height:60vh;':'height: -webkit-calc(65vh - 90px)'}">
+                                    <div class="slds-border_top"></div>
+                                    <table class="slds-table slds-table_bordered" style="width:100%;">
+                                        <colgroup>
+                                            <col width="10%"/>
+                                            <col width="10%"/>
+                                            <col width="35%"/>
+                                            <col width="25%"/>
+                                            <col width="20%"/>
+                                        </colgroup>
+                                        <thead>
+                                            <tr class="slds-line-height_reset">
+                                                <th style="text-align:center;" onclick="{!c.fnDetailAllOpenToggle}"> 
+                                                    <aura:if isTrue="{!v.isAllOpen}">
+                                                        <lightning:icon iconName="utility:chevrondown" size="x-small"/>
+                                                        <aura:set attribute="else">
+                                                            <lightning:icon iconName="utility:chevronright" size="x-small"/>
+                                                        </aura:set>    
+                                                    </aura:if>   
+                                                </th>
+                                                <th> </th>
+                                                <th style="text-align:center;">주문번호</th>
+                                                <th style="text-align:center;">주문유형</th>
+                                                <th style="text-align:center;">입고확인</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <aura:iteration items="{!v.pageRecords}" var="objORDER_H" indexVar="idx">
+                                                <tr id="{!'row-'+idx}" class="{!objORDER_H.CHECK__c == 'Y' ? 'Custom_CheckedRow' : ''}" >
+                                                    <td id="{!idx}" style="text-align:center;" onclick="{!c.fnDetailOpenToggle}" >
+                                                        <aura:if isTrue="{!objORDER_H.isOpen}">
+                                                            <lightning:icon iconName="utility:chevrondown" size="x-small"/>
+                                                            <aura:set attribute="else">
+                                                                <lightning:icon iconName="utility:chevronright" size="x-small"/>
+                                                            </aura:set>    
+                                                        </aura:if>   
+                                                    </td>     
+                                                    <td id="{!idx}" style="text-align:center;" onclick="{!c.fnDetailOpenToggle}">{!(v.countPerPage*(v.pageNumber-1))+idx+1}</td>
+                                                    <td id="{!idx}" style="text-align:center;" onclick="{!c.fnDetailOpenToggle}">{!objORDER_H.EBELN__c}</td>
+                                                    <td id="{!idx}" style="text-align:center;" onclick="{!c.fnDetailOpenToggle}">{!objORDER_H.SHIP_TYP__c}</td>
+                                                    <td id="{!idx}" style="text-align:center;padding:0px;" onclick="{!c.fnDetailOpenToggle}">
+                                                        <aura:if isTrue="{!v.taskStatus == 'MenualEdit'}">
+                                                            <lightning:input id="{!idx}" style="margin:0px;" type="checkbox" variant="label-hidden" onchange="{!c.fnCheckToggle}" checked="{!objORDER_H.CHECK__c == 'Y' ? true : false }" disabled="false"/>
+                                                            <aura:set attribute="else">
+                                                                <lightning:input id="{!idx}" style="margin:0px;" type="checkbox" variant="label-hidden" checked="{!objORDER_H.CHECK__c == 'Y' ? true : false }" disabled="true"/>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </td>
+                                                </tr>
+                                                <tr style="{!objORDER_H.isOpen ? 'padding:0px;margin:0px' : 'display:none;padding:0px;margin:0px'}">
+                                                    <td class="slds-table slds-table_bordered slds-table--fixed-layout" colspan="5" style="padding:0px;margin:0px">
+                                                        <table style="margin:0px">
+                                                            <colgroup>
+                                                                <col width="15%"/>
+                                                                <col width="65%"/>
+                                                                <col width="20%"/>
+                                                            </colgroup>
+                                                            <tr style="background-color:rgb(173, 193, 206);">       
+                                                                <td style="text-align:center;" >
+                                                                    번호
+                                                                </td>             
+                                                                <td style="text-align:center;">
+                                                                    상품코드 / 상품명
+                                                                </td>
+                                                                <td style="text-align:center;" >
+                                                                    개수
+                                                                </td>
+                                                            </tr>
+                                                            <aura:iteration items="{!objORDER_H.ORDER_D__r}" var="objORDER_D" indexVar="idx">
+                                                                <tr style="background-color:rgb(198, 214, 224);">       
+                                                                    <td style="text-align:center; ">
+                                                                        {!idx+1}
+                                                                    </td>                   
+                                                                    <td style="text-align:center; white-space:normal;">
+                                                                        <b> &#60; Code : <ui:outputNumber format="0" value="{!objORDER_D.MATNR__c}"/> &#62;</b> <br/>
+                                                                            {!objORDER_D.MAKTX__c}
+                                                                    </td>
+                                                                    
+                                                                    <aura:if isTrue="{!or(v.taskStatus == 'MenualEdit', v.ScanedItem == objORDER_H.EBELN__c)}">
+                                                                        <td style="text-align:center; " >
+                                                                            <lightning:input class="myCustomClass" type="text" variant="label-hidden"  value="{!objORDER_D.MENGE__c}" min="0"/>
+                                                                        </td>
+                                                                        <aura:set attribute="else">
+                                                                            <td style="text-align:center;">{!objORDER_D.MENGE__c}&nbsp;</td>
+                                                                        </aura:set>
+                                                                    </aura:if>
+                                                                </tr>
+                                                            </aura:iteration>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </aura:if>
+                            <!-- 입고레코드 END -->
+                            <!-- 출고레코드 START -->
+                            <aura:if isTrue="{!v.screenStatus == 'Export'}">
+                                <div class="slds-scrollable_y" style="{!v.isMobile ? 'height:60vh;':'height: -webkit-calc(65vh - 90px)'}">
+                                    <div class="slds-border_top"></div>
+                                    <table class="slds-table slds-table_bordered" style="width:100%;">
+                                        <colgroup>
+                                            <col width="10%"/>
+                                            <col width="10%"/>
+                                            <col width="35%"/>
+                                            <col width="25%"/>
+                                            <col width="20%"/>
+                                        </colgroup>
+                                        <thead>
+                                            <tr class="slds-line-height_reset">
+                                                <th style="text-align:center;" onclick="{!c.fnDetailAllOpenToggle}"> 
+                                                    <aura:if isTrue="{!v.isAllOpen}">
+                                                        <lightning:icon iconName="utility:chevrondown" size="x-small"/>
+                                                        <aura:set attribute="else">
+                                                            <lightning:icon iconName="utility:chevronright" size="x-small"/>
+                                                        </aura:set>    
+                                                    </aura:if>   
+                                                </th>
+                                                <th> </th>
+                                                <th style="text-align:center;">출고번호</th>
+                                                <th style="text-align:center;">품목수</th>
+                                                <th style="text-align:center;">출고확인</th>
+                                            </tr>
+                                        </thead> 
+                                        <tbody>
+                                            <aura:iteration items="{!v.pageRecords}" var="objRELEASE_H" indexVar="idx">
+                                                <tr id="{!'row-'+idx}" class="{!objRELEASE_H.CHECK__c == 'Y' ? 'Custom_CheckedRow' : '' }">
+                                                    <td id="{!idx}" style="text-align:center;" onclick="{!c.fnDetailOpenToggle}">
+                                                        <aura:if isTrue="{!objRELEASE_H.isOpen}">
+                                                            <lightning:icon iconName="utility:chevrondown" size="x-small"/>
+                                                            <aura:set attribute="else">
+                                                                <lightning:icon iconName="utility:chevronright" size="x-small"/>
+                                                            </aura:set>    
+                                                        </aura:if>   
+                                                    </td>     
+                                                    <td id="{!idx}" style="text-align:center;" onclick="{!c.fnDetailOpenToggle}">{!(v.countPerPage*(v.pageNumber-1))+idx+1}</td>
+                                                    <td id="{!idx}" style="text-align:center;" onclick="{!c.fnDetailOpenToggle}">{!objRELEASE_H.EBELN__c}</td>
+                                                    <td id="{!idx}" style="text-align:center;" onclick="{!c.fnDetailOpenToggle}">{!objRELEASE_H.RELEASE_D__r.length} </td>
+                                                    <td id="{!idx}" style="text-align:center; padding:0px;" onclick="{!c.fnDetailOpenToggle}">
+                                                        <aura:if isTrue="{!v.taskStatus == 'MenualEdit'}">
+                                                            <lightning:input id="{!idx}" style="margin:0px;" type="checkbox" variant="label-hidden" onchange="{!c.fnCheckToggle}" checked="{!objRELEASE_H.CHECK__c == 'Y' ? true : false }" disabled="false"/>
+                                                            <aura:set attribute="else">
+                                                                <lightning:input id="{!idx}" style="margin:0px;" type="checkbox" variant="label-hidden" checked="{!objRELEASE_H.CHECK__c == 'Y' ? true : false }" disabled="true"/>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </td>
+                                                </tr>
+                                                <tr style="{!objRELEASE_H.isOpen ? 'padding:0px;margin:0px' : 'display:none;padding:0px;margin:0px' }">
+                                                    <td class="slds-table slds-table_bordered slds-table--fixed-layout" colspan="5" style="padding:0px;margin:0px">
+                                                        <table style="margin:0px">
+                                                            <colgroup>
+                                                                <col width="15%"/>
+                                                                <col width="65%"/>
+                                                                <col width="20%"/>
+                                                            </colgroup>
+                                                            <tr style="background-color:rgb(173, 193, 206);">       
+                                                                <td style="text-align:center;" >
+                                                                    번호
+                                                                </td>             
+                                                                <td style="text-align:center;">
+                                                                    상품코드 / 상품명
+                                                                </td>
+                                                                <td style="text-align:center;" >
+                                                                    개수
+                                                                </td>
+                                                            </tr>
+                                                            <aura:iteration items="{!objRELEASE_H.RELEASE_D__r}" var="objRELEASE_D" indexVar="idx">
+                                                                <tr style="background-color:rgb(198, 214, 224);">       
+                                                                    <td style="text-align:center; ">
+                                                                        {!idx+1}
+                                                                    </td>                   
+                                                                    <td style="text-align:center; white-space:normal;">
+                                                                        <b> &#60; Code : <ui:outputNumber format="0" value="{!objRELEASE_D.MATNR__c}"/> &#62;</b> <br/>
+                                                                            {!objRELEASE_D.MAKTX__c}
+                                                                    </td>
+                                                                    
+                                                                    <aura:if isTrue="{!or(v.taskStatus == 'MenualEdit', v.ScanedItem == objRELEASE_D.EBELN__c)}">
+                                                                        <td style="text-align:center; " >
+                                                                            <lightning:input class="myCustomClass" type="text" variant="label-hidden"  value="{!objRELEASE_D.MENGE__c}" min="0"/>
+                                                                        </td>
+                                                                        <aura:set attribute="else">
+                                                                            <td style="text-align:center;">{!objRELEASE_D.MENGE__c}&nbsp;</td>
+                                                                        </aura:set>
+                                                                    </aura:if>
+                                                                </tr>
+                                                            </aura:iteration>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </aura:if>                            
+                            <!-- 출고레코드 END -->
+                            <div class="slds-col slds-align_absolute-center slds-p-top_medium" style="padding:3vh 1vh 0vh 1vh;">
+                                <c:DN_Paging currentPageNumber="{!v.pageNumber}" maxPageNumber="{!v.maxPage}" />
+                            </div>
+                        </lightning:card>
+                    </article>
+                    <!-- 레코드 END -->
+                </aura:if>    
+                <!-- 입출고 작업 화면 END -->   
+            </div>
+            <!-- 컨펌 창 START -->
+            <aura:if isTrue="{!v.confirmStatus != 'Hide'}">
+                <section style="position:absolute;width:100%;" class="slds-modal slds-fade-in-open" >
+                    <div id="popup" aura:id="popup" class="slds-modal__container" style="width:100%;min-width:100%;max-width:100px;margin:0px" >
+                        <header class="slds-modal__header">
+                            <aura:if isTrue="{!v.confirmStatus == 'Scan'}">
+                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">라벨스캔</h2>
+                            </aura:if>   
+                            <aura:if isTrue="{!v.confirmStatus == 'Cancel'}">
+                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">뒤로가기</h2>
+                            </aura:if>   
+                            <aura:if isTrue="{!v.confirmStatus == 'Save'}">
+                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">저장</h2>
+                            </aura:if>   
+                            <aura:if isTrue="{!v.confirmStatus == 'Approval'}">
+                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">확정</h2>
+                            </aura:if>   
+                        </header>
+                        <div class="slds-modal__content" style="position:relative" >
+                            <aura:if isTrue="{!v.confirmStatus == 'Scan'}"><br/>
+                                <div class="text-align:center" onkeyup="{!c.fnSearch}" >
+                                    <p class="slds-p-bottom_small" style="text-align:center" >
+                                        라벨을 스캔해주세요.
+                                        <br/>
+                                    </p>
+                                    <lightning:input aura:id="scanInput" value="{!v.strScanInput}" class="myCustomClass" type="number" onblur="{!c.fnRefocus }" variant="label-hidden"/>
+                                </div>
+                            </aura:if>    
+                            <aura:if isTrue="{!v.confirmStatus == 'Cancel'}"><br/>
+                                <p class="slds-p-bottom_small" style="text-align:center">작업 내역이 사라집니다. 다시 한번 확인하세요.</p>
+                            </aura:if>   
+                            <aura:if isTrue="{!v.confirmStatus == 'Save'}"><br/>
+                                <p class="slds-p-bottom_small" style="text-align:center">작업 내역이 저장됩니다.</p>
+                            </aura:if>   
+                            <aura:if isTrue="{!v.confirmStatus == 'Approval'}"><br/>
+                                <p class="slds-p-bottom_small" style="text-align:center">작업 내역이 확정됩니다. 다시 한번 확인하세요.</p>
+                            </aura:if>   
+                        </div>
+                        <footer class="modal-footer slds-modal__footer">
+                            <lightning:button variant="neutral" label="닫기" onclick="{! c.fnConfirmHide }"/>
+
+                            <aura:if isTrue="{!v.confirmStatus == 'Cancel'}">
+                                <lightning:button variant="brand" label="확인" onclick="{! c.fnTaskCancel }"/>
+                            </aura:if>   
+                            <aura:if isTrue="{!v.confirmStatus == 'Save'}">
+                                <lightning:button variant="brand" label="저장" onclick="{! c.fnTaskSave }"/>
+                            </aura:if>   
+                            <aura:if isTrue="{!v.confirmStatus == 'Approval'}">
+                                <lightning:button variant="brand" label="확정" onclick="{! c.fnTaskConfirm }"/>
+                            </aura:if>   
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </aura:if>
+            <!-- 컨펌 창 END -->
+        </section>
+    </div>
+    
+    {!v.CommonConfirm}
+</aura:component>

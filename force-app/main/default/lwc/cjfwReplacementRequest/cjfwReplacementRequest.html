@@ -1,0 +1,71 @@
+<template>
+    <lightning-card label="Replacement Request" icon-name="standard:custom" title="매출/물량 대체 신청" type="media" href="#" class="list_view_container replacementRequest related-card" style="background-color: #F3F3F3 ;">
+        <!-- icon-name="utility:form" -->
+        <!-- 상단 영역 [S] -->    
+        <!-- 상단 영역 [E] -->
+            <c-cjfw-replacement-request-filter  ></c-cjfw-replacement-request-filter>
+                <!--  -->
+                <div class="">
+                    <div class="inlineBlock scroll">
+                        <table class="cjfwtable fixlayout">
+                            <thead>
+                                <tr>
+                                    <th><lightning-input type="checkbox" ></lightning-input></th>
+                                    <th>상품코드</th>
+                                    <th>상품명</th>
+                                    <th>단위</th>
+                                    <th>출고량</th>
+                                    <th>평균 실 매입 단가</th>
+                                    <th>평균 기준 매입 단가</th>
+                                    <th>평균 한계 단가</th>
+                                    <th>평균 적정 단가</th>
+                                    <th>실판가(VAT미포함)</th>
+                                    <th>순매출</th>
+                                    <th>부가세</th>
+                                    <th>총매출</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={replacementRequestData} for:item="rrDatum" for:index="rridx">
+                                    <tr key={rrDatum.idx} data-idx={rridx}>
+                                        <td><lightning-input type="checkbox" ></lightning-input></td>
+                                        <td>상품코드</td>
+                                        <td>상품명</td>
+                                        <td>단위</td>
+                                        <td class="textRight" data-name="isShipmentQuantity" data-field="shipmentQuantity" onclick={handleFocus}>
+                                            <template lwc:if={rrDatum.isShipmentQuantity}>
+                                                <input class="isShipmentQuantity textRight" type="number" onblur={handleFocusOut} />
+                                            </template>
+                                            <template lwc:else>
+                                                
+                                                {rrDatum.shipmentQuantity}
+                                            </template>
+                                            <!-- 출고량 -->
+                                        </td>
+                                        <td class="textRight">1,759</td>
+                                        <td class="textRight">1,943</td>
+                                        <td class="textRight">2,375</td>
+                                        <td class="textRight">2,792</td>
+                                        <td class="textRight">2,100</td>
+                                        <td class="textRight">121,800</td>
+                                        <td class="textRight">0</td>
+                                        <td class="textRight">121,800</td>
+                                    </tr>
+                                </template>
+                                
+                                <tr class="summaryTr">
+                                    <td class="textRight" colspan="10">합계</td>
+                                    <td class="textRight">243,600</td>
+                                    <td class="textRight">0</td>
+                                    <td class="textRight">243,600</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+        </lightning-card>
+        <!-- Data Table start :tr/td사용 -->
+        <!-- <lightning-card class="replacementRequest related-card">
+            
+            </lightning-card> -->
+</template>

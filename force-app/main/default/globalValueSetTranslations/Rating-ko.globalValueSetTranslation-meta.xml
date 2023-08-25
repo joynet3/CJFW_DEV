@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSetTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <valueTranslation>
+        <masterLabel>FocusingElementry</masterLabel>
+        <translation>초등집중교</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>Nurturing</masterLabel>
+        <translation>육성</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>VIP</masterLabel>
+        <translation>VIP</translation>
+    </valueTranslation>
+    <valueTranslation>
+        <masterLabel>et cetera</masterLabel>
+        <translation>기타</translation>
+    </valueTranslation>
+</GlobalValueSetTranslation>

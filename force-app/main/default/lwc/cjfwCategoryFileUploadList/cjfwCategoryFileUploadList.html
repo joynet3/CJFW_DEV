@@ -1,0 +1,54 @@
+<!--
+  @description       : 
+  @author            : seol.kim@dkbmc.com
+  @group             : 
+  @last modified on  : 08-25-2023
+  @last modified by  : seol.kim@dkbmc.com
+-->
+<template>
+    <article class="slds-card">
+        <div class="slds-card__header slds-grid">
+          <header class="slds-media slds-media_center slds-has-flexi-truncate">
+            <div class="slds-media__body">
+              <h2 class="slds-card__header-title">
+                <a href="#" class="slds-card__header-link slds-truncate">
+                  <span>{category} ({totalCount})</span>
+                </a>
+              </h2>
+            </div>
+            <div class="slds-no-flex">
+              <lightning-layout>
+                <lightning-layout-item size="12">
+                    <div class="slds-p-left_medium">
+                        <lightning-file-upload
+                            name="uploadFile"
+                            accept={acceptedFormats}
+                            record-id={recordId}    
+                            onuploadfinished={handleUploadFinished}  
+                            multiple
+                            >
+                        </lightning-file-upload>
+                    </div> 
+                </lightning-layout-item>
+            </lightning-layout>
+            </div>
+          </header>
+        </div>
+        <div class="slds-card__body">
+          <template if:true={wireData}>
+              <lightning-datatable 
+                    key-field="Id" 
+                    data={data} 
+                    columns={columns} 
+                    hide-checkbox-column
+                >
+              </lightning-datatable>
+          </template>
+        </div>
+        <footer class="slds-card__footer">
+          <a class="slds-card__footer-action">View All
+            <span class="slds-assistive-text">Contacts</span>
+          </a>
+        </footer>
+    </article>
+</template>

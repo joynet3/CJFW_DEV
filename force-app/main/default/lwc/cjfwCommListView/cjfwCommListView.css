@@ -1,0 +1,38 @@
+.excel-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+
+.center-align {
+    text-align: center; /* 텍스트 가운데 정렬 */
+}
+
+.custom-width {
+    width: 20px;
+}
+
+
+.scrollArea {
+    position: relative;
+
+}
+
+.totalCnt{
+    /* background-color: #f3f3f3; */
+    font-weight: bold;
+    padding-left: 5px!important;
+    overflow: hidden;
+}
+
+/* Column 영역 고정 */
+th{
+position: sticky;
+ top:0px;
+ z-index: 1;
+}
+
+thead{
+    border: 0.02px solid grey;
+}

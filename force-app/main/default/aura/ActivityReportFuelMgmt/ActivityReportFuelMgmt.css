@@ -1,0 +1,44 @@
+.THIS .custom-button { 
+    /* padding-left: 0;  */
+    /* padding-right: 0; */
+    min-height:auto;
+    line-height: 2rem;
+    text-align: center;
+    width:inherit;
+}
+
+.THIS .custom-DescBtn {
+    background-color:grey; 
+    border-color:white;
+}
+
+.THIS .custom-input .slds-input { 
+    /* padding-left: 0;  */
+    /* padding-right: 0; */
+    /* min-height:auto; */
+    line-height: 2rem;
+    /* text-align: center; */
+    /* width:inherit; */
+}
+
+.THIS .Icon_Gray svg{
+    fill: gray;
+}
+
+.THIS .custom-textarea textarea{
+    height: 10rem;
+}
+
+.THIS .custom-ViaBadge {
+    color: rgba(197, 79, 30, 1);
+    background-color: white;
+}
+
+.THIS .custom-ViaBadge .slds-badge__icon{
+    color: inherit;
+}
+
+.THIS .custom-MobileBtn{
+    padding: 0.2rem;
+    line-height: 1.2rem;
+}

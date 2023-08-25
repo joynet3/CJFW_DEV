@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>BalanceCompactFinal</fullName>
+    <fields>Name</fields>
+    <fields>Classification__c</fields>
+    <fields>IRRPct__c</fields>
+    <fields>SalesRevenueAmt__c</fields>
+    <fields>PurchasingCostAmt__c</fields>
+    <fields>CreatedById</fields>
+    <label>Balance Compact Final</label>
+</CompactLayout>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>대두유 시황</value>
+    </caseValues>
+    <fieldSets>
+        <label></label>
+        <name>CJOilPriceTracking</name>
+    </fieldSets>
+    <nameFieldLabel>가격 구분</nameFieldLabel>
+    <validationRules>
+        <errorMessage></errorMessage>
+        <name>CJOilPriceNameChangeValidationCheck</name>
+    </validationRules>
+</CustomObjectTranslation>

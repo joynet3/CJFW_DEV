@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>IsRentalAgreement__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>공통 - 임대차확인각서</description>
+    <externalId>false</externalId>
+    <label>공통 - 임대차확인각서</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

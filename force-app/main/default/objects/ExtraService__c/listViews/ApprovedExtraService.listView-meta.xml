@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ApprovedExtraService</fullName>
+    <columns>NAME</columns>
+    <columns>Customer__c</columns>
+    <columns>ServiceStartDateTime__c</columns>
+    <columns>ProgressTime__c</columns>
+    <columns>AuthorizedCapacity__c</columns>
+    <columns>Status__c</columns>
+    <columns>OWNER.FIRST_NAME</columns>
+    <columns>Instructor__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Status__c</field>
+        <operation>equals</operation>
+        <value>A</value>
+    </filters>
+    <filters>
+        <field>fm_MyClass__c</field>
+        <operation>equals</operation>
+        <value>Y</value>
+    </filters>
+    <label>승인된 부가서비스</label>
+</ListView>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>영업기회 팀 및 제품 보고서가 있는 기회</value>
+    </caseValues>
+    <name>opportunity_team_product_report</name>
+</CustomFieldTranslation>

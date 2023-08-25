@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>AllAccounts</fullName>
+    <columns>ACCOUNT.NAME</columns>
+    <columns>CustomerType__c</columns>
+    <columns>ACCOUNT.PHONE1</columns>
+    <columns>ACCOUNT.URL</columns>
+    <columns>Address__c</columns>
+    <columns>ACCOUNT.INDUSTRY</columns>
+    <columns>ACCOUNT.RECORDTYPE</columns>
+    <columns>ACCOUNT.CREATED_DATE</columns>
+    <columns>CORE.USERS.ALIAS</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>CustomerType__c</field>
+        <operation>equals</operation>
+        <value>C02</value>
+    </filters>
+    <label>모든 고객</label>
+</ListView>

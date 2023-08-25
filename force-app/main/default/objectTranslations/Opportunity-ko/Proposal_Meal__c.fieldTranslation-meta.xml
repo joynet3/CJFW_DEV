@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>식수종류</label>
+    <name>Proposal_Meal__c</name>
+    <picklistValues>
+        <masterLabel>상수도</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>지하수</masterLabel>
+        <translation></translation>
+    </picklistValues>
+</CustomFieldTranslation>

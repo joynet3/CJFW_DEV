@@ -1,0 +1,447 @@
+<!--
+* ==================================================================================
+*   File Name   : LineItemMgmt.cmp
+*   Author      : Minje.Kim
+*   Date        : 2022.07.20
+*   Description : Opportunity / Quote LineItem Management 
+*   Modification Log
+* ==================================================================================
+*   Ver     Date          Author          Modification
+* ==================================================================================
+*   1.0     2022.07.20    Minje.Kim    Create
+* ==================================================================================
+-->
+
+<aura:component implements="force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable,force:hasRecordId" controller="LineItemMgmtController">
+
+    <!-- Common Attribute -->   
+    <aura:attribute name="showSpinner" type="Boolean" default="false" description="showSpinner"/>
+    <aura:attribute name="objUser" type="Object" description="현 사용자 정보"/>
+    <aura:attribute name="isBTNClicked" type="Boolean" default="false" description="더블클릭 방지 Check"/>
+
+    <!-- Lineitem Attribute -->
+    <aura:attribute name="recordId" type="String" description="상위 Record Id"/>
+    <aura:attribute name="sObjectName" type="Object" description="상위 Record ObjectType"/>
+    <aura:attribute name="objParent" type="Object" description="상위 Record Object"/>
+    <aura:attribute name="listLineItem" type="List" description="견적상품 목록 List"/>
+    <aura:attribute name="setLineItemCode" type="Set" default="[]" description="견적상품 목록 상품코드 Set"/>
+    <aura:attribute name="lastIdx" type="Integer" default="-1" description="마지막 행"/>
+    <aura:attribute name="isOpenMarginBox" type="Boolean" default="false" description="매익률 일괄적용 화면 Open 여부"/>
+    <aura:attribute name="intAllMargin" type="Integer" default="0" description="매익률 일괄적용 Input 값"/>
+    <aura:attribute name="chunkSize" type="Integer" default="1000" description="저장시 한 Call에 담을 DataSize"/>
+    <aura:attribute name="saveType" type="String" description="저장/임시저장 구분"/>
+    
+    <!-- Search Attribute -->
+    <aura:attribute name="isChangeCondition" type="Boolean" default="true" description="검색 조건 변경 여부"/>
+    <aura:attribute name="listCurrentEntry" type="List" description="상품검색 현 페이지 List"/>
+    <aura:attribute name="listSearchEntry" type="List" description="상품검색 결과 전체 List"/>
+    <aura:attribute name="listSearchEntryCode" type="List" description="상품검색 결과 전체 코드 List"/>
+    <aura:attribute name="listAllEntry" type="List" description="선택된 센터 기준 전체 상품 List"/>
+    <aura:attribute name="listOrigin" type="Map" default="{}" description="상품검색 원산지 구분"/>
+    <aura:attribute name="listMonth" type="List" description="상품검색 기준월 구분"/>
+    <aura:attribute name="selectedMonth" type="String" description="상품검색 기준월 선택값"/>
+    <aura:attribute name="listCenter" type="List" description="상품검색 물류센터 구분"/>
+    <aura:attribute name="selectedCenter" type="String" description="상품검색 물류센터 선택값"/>
+    <aura:attribute name="listCategoryL" type="List" description="상품검색 분류(대) 구분"/>
+    <aura:attribute name="mapCategoryM" type="Map" description="상품검색 분류(중) 구분 (전체)"/>
+    <aura:attribute name="listCategoryM" type="List" description="상품검색 분류(중) 구분 (선택)"/>
+    <aura:attribute name="selectedCategoryL" type="String" description="상품검색 분류(대) 선택값"/>
+    <aura:attribute name="selectedCategoryL_A" type="String" description="상품검색 분류(대) 선택값 (일괄 매익률)"/>
+    <aura:attribute name="selectedCategoryM_A" type="String" description="상품검색 분류(중) 선택값 (일괄 매익률)"/>
+    <aura:attribute name="selectedControl" type="String" default="N" description="상품검색 중단제어 선택값"/>
+    <aura:attribute name="isAISearch" type="Boolean" description="상품검색 일반/AI 검색 선택값"/>
+    <aura:attribute name="strSearchInput" type="String" description="상품검색 입력란 값"/>
+    <aura:attribute name="strSearchInputForLearning" type="String" description="직전 상품검색 값 (학습데이터 전송용)"/>
+
+    <!-- ExcelPaste Attribute -->
+    <aura:attribute name="isOpenExcelPaste" type="Boolean" default="false" description="ExcelPaste 화면 Open 여부"/>
+    <aura:attribute name="isComplete" type="Boolean" default="false" description="ExcelPaste Data Return 여부"/>
+    <aura:attribute name="openTab" type="String" description="ExcelPaste 견본/전체 활성화탭 구분"/>
+    <aura:attribute name="listPasteResult" type="List" description="ExcelPaste Data Return 값"/>
+    <aura:attribute name="idxPasteMapping" type="Integer" default="0" description="견본 자동 매핑 Index"/>
+    <aura:attribute name="isExcelEdit" type="Boolean" default="false" description="견본 Data 수정모드 여부"/>
+    <aura:attribute name="isReplace" type="Boolean" default="false" description="데이터 생성시 변경 여부 (false 시 행 추가)"/>
+    <aura:attribute name="currentIdx" type="Integer" default="0" description="현재 인덱스"/>
+    <aura:attribute name="isNewUpload" type="Boolean" default="false" description="신규 업로드 여부"/>
+    <aura:attribute name="isExcelExist" type="Boolean" default="false" description="Excel 견본 데이터 존재여부"/>
+    
+    <!-- Sorting Attribute -->
+    <aura:attribute name="sortStatus" type="String" default="none" description=""/>
+    
+
+    <!-- LineItem Paging Attribute -->
+    <aura:attribute name="countPerPage" type="Integer" default="30" description="Paging 단위"/>
+    <aura:attribute name="maxPage" type="Integer" default="1" description="최대 페이지"/>
+    <aura:attribute name="pageNumber" type="Integer" default="1" description="현재 페이지 위치"/>
+    <aura:attribute name="pageRecords" type="List" default="[]" description="현재 페이지 데이터 List"/>
+
+    <!-- SearchResult Paging Attribute -->
+    <aura:attribute name="subCountPerPage" type="Integer" default="30" description="Paging 단위"/>
+    <aura:attribute name="subMaxPage" type="Integer" default="1" description="최대 페이지"/>
+    <aura:attribute name="subPageNumber" type="Integer" default="1" description="현재 페이지 위치"/>
+
+    
+    <!-- Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.fnInit}" />
+    <aura:handler name="change" value="{!v.selectedCenter}" action="{!c.fnChangeCenter}" />
+    <aura:handler name="change" value="{!v.selectedMonth}" action="{!c.fnChangeMonth}" />
+    <aura:handler name="change" value="{!v.selectedControl}" action="{!c.fnChangeControl}" />
+    <aura:handler name="change" value="{!v.isAISearch}" action="{!c.fnChangeSearchType}" />
+    <aura:handler name="change" value="{!v.pageNumber}" action="{!c.fnRenderPage}" />
+    <aura:handler name="change" value="{!v.subPageNumber}" action="{!c.fnSubRenderPage}" />
+    <aura:handler name="change" value="{!v.pageReference}" action="{!c.fnhandlePageChange}" />
+    <aura:handler name="change" value="{!v.isComplete}" action="{!c.fnHandleExcelpaste}" />
+   
+    <!-- Contents -->
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-id" aria-modal="true" aria-describedby="modal-content-id" class="slds-modal slds-modal_medium slds-fade-in-open">
+        <aura:if isTrue="{!v.showSpinner}">
+            <lightning:spinner aura:id="spinner" alternativeText="Loading" size="large" variant="brand" />
+        </aura:if>
+        
+        <div class="slds-modal__container" style="min-width:99%; max-width:99%; padding:0; height:100vh">
+            <!-- Header[S] -->
+            <header class="modal-header slds-modal__header">
+                <lightning:buttonIcon iconName="utility:close" size="small" alternativeText="Close" variant="bare-inverse" class="slds-modal__close" onclick="{!c.fnCancel}" />
+                <h2 id="modal-heading-id" class="slds-text-heading_medium slds-hyphenate">
+                    견적 상품목록 관리
+                </h2>
+            </header> 
+            <!-- Header[E] -->
+            <!-- Body[S] -->
+            <div class="modal-body slds-modal__content" style="height:80%">
+                <div class="slds-grid slds-gutters" style="margin:0; height:100%">
+                    <!-- 상품검색 목록[S] -->
+                    <div class="slds-col slds-size_4-of-12 slds-text-align_center " style="padding:0;height:inherit">
+                        <div class="slds-grid slds-gutters" style="height:3.5rem; width:100%"> 
+                            <div class="slds-col slds-size_4-of-4 slds-align_absolute-center"  style="margin-bottom:0; justify-content:left; ">
+                                <lightning:select class="custom-form-element" label="물류센터" value="{!v.selectedCenter}">
+                                    <aura:iteration items="{!v.listCenter}" var="option">
+                                        <option text="{!option.label}" value="{!option.value}" selected="{!option.selected}"/>
+                                    </aura:iteration>
+                                </lightning:select>
+                                <lightning:select class="custom-form-element" label="기준월" value="{!v.selectedMonth}">
+                                    <aura:iteration items="{!v.listMonth}" var="option">
+                                        <option text="{!option.label}" value="{!option.value}" selected="{!option.selected}"/>
+                                    </aura:iteration>
+                                </lightning:select>
+                                <lightning:select class="custom-form-element" label="대분류" onchange="{!c.fnChangeCategoryL}" value="{!v.selectedCategoryL}">
+                                    <aura:iteration items="{!v.listCategoryL}" var="option">
+                                        <option text="{!option.label}" value="{!option.value}" selected="{!option.selected}"/>
+                                    </aura:iteration>
+                                </lightning:select>     
+                                <lightning:select class="custom-form-element" label="중단제어" value="{!v.selectedControl}" >
+                                        <option value="N">미적용</option>
+                                        <option value="Y">적용</option>
+                                </lightning:select>                                              
+                            </div>
+                        </div>
+                        <div class="slds-grid slds-gutters" style="height:3rem; width:100%">
+                            <div class="slds-col slds-size_7-of-8 slds-text-align_center slds-align_absolute-center" style="width:100%" onkeyup="{!c.fnSearch}">
+                                <lightning:input variant="label-hidden" class="slds-col" value="{!v.strSearchInput}" type="search" aura:id="Search" placeholder="상품 검색"/>
+                                <lightning:input class="custom-toggle-nodesc" type="toggle" label="AI 검색" onchange="{!c.fnChangeSearchType}" checked="{!v.isAISearch}"/>
+                            </div>
+                        </div>
+                        <div class="tableFixHead slds-scrollable_y" style="height:-webkit-calc(90% - 6.5rem)">
+                            <table class="custom-table slds-table slds-table_bordered slds-table_col-bordered" width="100%">
+                                <thead>
+                                    <tr class="slds-hint-parent">
+                                        <th class="slds-text-align_center">번호</th>
+                                        <th class="slds-text-align_center" id="Code">
+                                            <span>대분류</span> 
+                                        </th>
+                                        <th class="slds-text-align_center" id="Code">
+                                            <span>중분류</span> 
+                                        </th>
+                                        <th class="slds-text-align_center" id="Code">
+                                            <span>상품코드</span> 
+                                        </th>
+                                        <th class="slds-text-align_center" id="Name">
+                                            <span>상품명</span> 
+                                        </th>
+                                        <th class="slds-text-align_center">
+                                            <span>전년 기준매입가</span> 
+                                        </th>
+                                        <th class="slds-text-align_center" id="Price" onclick="{!c.fnEntrySort}">
+                                            <span>기준매입가</span> 
+                                            <aura:if isTrue="{!v.sortStatus == 'UPPrice'}">
+                                                <lightning:icon iconName="utility:arrowup" size="xx-small"/>
+                                            </aura:if>
+                                            <aura:if isTrue="{!v.sortStatus == 'DNPrice'}">
+                                                <lightning:icon iconName="utility:arrowdown" size="xx-small"/>
+                                            </aura:if>
+                                        </th>
+                                        <th class="slds-text-align_center" id="Tax">
+                                            <span>면세</span> 
+                                        </th>
+                                        <th class="slds-text-align_center" id="Unit">
+                                            <span>단위</span> 
+                                        </th>
+                                        <th class="slds-text-align_center" id="Origin">
+                                            <span>원산지</span> 
+                                        </th>
+                                        <th class="slds-text-align_center" id="Storage">
+                                            <span>저장조건</span> 
+                                        </th>
+                                        <th style="position:sticky; right:0; background:rgb(243, 243, 243);" class="slds-text-align_center">
+                                            <aura:if isTrue="{!!v.isReplace}">
+                                                <div onclick="{!c.fnToggleAddMode}"> 
+                                                    <lightning:icon class="Icon_Blue" iconName="utility:replace" size="xx-small"/>
+                                                </div>
+                                            </aura:if>
+                                            <aura:if isTrue="{!v.isReplace}">
+                                                <div onclick="{!c.fnToggleAddMode}"> 
+                                                    <lightning:icon class="Icon_Green" iconName="utility:share" size="xx-small"/>
+                                                </div>
+                                            </aura:if>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.listCurrentEntry}" var="objPriceBookEntry" indexVar="searchIdx">
+                                        <tr>    
+                                            <td style="padding-left: 0.5rem" class="slds-text-align_center"> {!(v.subCountPerPage*(v.subPageNumber -1)) + searchIdx + 1} </td>
+                                            <td>{!objPriceBookEntry.Product2.fm_LAR_CLS_NM__c}</td>
+                                            <td>{!objPriceBookEntry.Product2.fm_MID_CLS_NM__c}</td>
+                                            <td>{!objPriceBookEntry.Product2.gd_no__c}</td>
+                                            <td>{!objPriceBookEntry.Name}</td>
+                                            <td class="slds-text-align_right">
+                                                <ui:outputNumber format="#,###" value="{!objPriceBookEntry.OldUnitPrice}"/>
+                                            </td>
+                                            <td class="slds-text-align_right">
+                                                <ui:outputNumber format="#,###" value="{!objPriceBookEntry.UnitPrice}"/>
+                                            </td>
+                                            <td class="slds-text-align_center">
+                                                {!objPriceBookEntry.Product2.fm_TaxType__c}
+                                            </td>
+                                            <td class="slds-text-align_center">{!objPriceBookEntry.Product2.bas_unit_cd__c}</td>
+                                            <td class="slds-text-align_center">{!objPriceBookEntry.Product2.migr_orinat_cd__c}</td>
+                                            <td class="slds-text-align_center">{!objPriceBookEntry.Product2.strg_cond_cd__c}</td>
+                                            <td style="position:sticky; right:0; background:rgb(243, 243, 243);">
+                                                <aura:if isTrue="{! OR(objPriceBookEntry.isInActive,objPriceBookEntry.isRestrict) }">
+                                                    <aura:if isTrue="{!objPriceBookEntry.isRestrict}">
+                                                        <lightning:icon class="Icon_Red" iconName="utility:error" size="xx-small"/>
+                                                        <aura:set attribute="else">
+                                                            <lightning:icon class="Icon_Gray" iconName="utility:linked" size="xx-small"/>
+                                                        </aura:set>    
+                                                   </aura:if>
+                                                </aura:if>   
+                                                <aura:if isTrue="{!!OR(objPriceBookEntry.isInActive,objPriceBookEntry.isRestrict)}">
+                                                    <aura:if isTrue="{!v.isReplace}">
+                                                        <div id="{!searchIdx}"  onclick="{!c.fnReplaceData}"> 
+                                                            <lightning:icon class="Icon_Blue" iconName="utility:replace" size="xx-small"/>
+                                                        </div>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!!v.isReplace}">
+                                                        <div id="{!searchIdx}"  onclick="{!c.fnAddData}"> 
+                                                            <lightning:icon class="Icon_Green" iconName="utility:share" size="xx-small"/>
+                                                        </div>
+                                                    </aura:if>
+                                                </aura:if>
+
+                                            </td>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="slds-align_absolute-center" style="height:10%">
+                            <c:DN_Paging currentPageNumber="{!v.subPageNumber}" maxPageNumber="{!v.subMaxPage}" />
+                        </div>
+                    </div>
+                    <!-- 상품검색 목록[E] -->
+                    <!-- 견적상품 목록[S] -->
+                    <div class="slds-col slds-size_8-of-12 slds-text-align_center " style="padding:0;height:inherit;border-left: 1px gray solid;">
+                        <div class="slds-grid slds-gutters" style="height:3rem"> 
+                            <div class="slds-col slds-size_3-of-4 slds-align_absolute-center" style="width:98%; justify-content: right;">
+                                <div style="position:relative; padding-right: 0.5rem;">
+                                    <div style="position:inherit">
+                                        <lightning:button label="매익률 일괄적용" onclick="{!c.fnToggleMarginBox}" />
+                                    </div>
+                                    <aura:if isTrue="{!v.isOpenMarginBox}">
+                                        <div class="slds-box" style="position:absolute; z-index:3; padding:0; width:130%; background-color: white;">
+                                            <div class="slds-var-p-around_small">
+                                                <lightning:select class="custom-input-center" label="대분류" onchange="{!c.fnChangeCategoryL_A}" value="{!v.selectedCategoryL_A}">
+                                                    <aura:iteration items="{!v.listCategoryL}" var="option">
+                                                        <option text="{!option.label}" value="{!option.value}" selected="{!option.selected}"/>
+                                                    </aura:iteration>
+                                                </lightning:select>     
+                                            </div>
+                                            <div class="slds-var-p-around_small">
+                                                <lightning:select class="custom-input-center" label="중분류" value="{!v.selectedCategoryM_A}">
+                                                    <aura:iteration items="{!v.listCategoryM}" var="option">
+                                                        <option text="{!option.label}" value="{!option.value}" selected="{!option.selected}"/>
+                                                    </aura:iteration>
+                                                </lightning:select>     
+                                            </div>
+                                                <div class="slds-var-p-around_small">
+                                                    <lightning:input class="custom-input-center" label="매익률" aura:id="intAllMargin" type="number" min="-1000000"  max="99" messageWhenValueMissing="정상적인 값이 아닙니다" messageWhenBadInput="정상적인 값이 아닙니다"   value="{!v.intAllMargin}"  step="0.01" formatter="percent-fixed" />
+                                                </div>
+                                                <div class="slds-var-p-around_small" > 
+                                                     <lightning:button label="적용" onclick="{!c.fnEditAllMargin}"/>
+                                                </div>
+                                        </div>
+                                    </aura:if>
+                                </div>
+                                <lightning:button variant="success" label="Excel Paste" onclick="{!c.fnOpenExcelPaste}" />
+                            </div>
+                        </div>
+                        <div class="tableFixHead slds-scrollable_y"  style="height:-webkit-calc(90% - 3rem)">
+                            <table class="custom-table slds-table slds-table_bordered  slds-table_cell-buffer slds-table_col-bordered" width="100%">
+                                <thead>
+                                    <tr class="slds-hint-parent">
+                                        <th width="5%"></th>
+                                        <aura:if isTrue="{!v.isExcelExist}">
+                                            <th class="slds-text-align_center" >
+                                                <div onclick="{!c.fnToggleExcelEdit}"> 
+                                                    Excel <lightning:icon class="Icon_Green" iconName="utility:edit" size="xx-small"/>
+                                                </div>
+                                            </th>
+                                        </aura:if>
+                                        <th class="slds-text-align_center"> 대분류</th>
+                                        <th class="slds-text-align_center"> 중분류</th>
+                                        <th class="slds-text-align_center"> 상품코드</th>
+                                        <th class="slds-text-align_center"><span style="color:red">*</span>상품명</th>
+                                        <th class="slds-text-align_center"> 물류센터</th>
+                                        <th class="slds-text-align_center"> 기준월</th>
+                                        <th class="slds-text-align_center"> 전년 기준매입가</th>
+                                        <th class="slds-text-align_center"> 기준매입가</th>
+                                        <th class="slds-text-align_center"> 견적가</th>
+                                        <th class="slds-text-align_center"> 매익률</th>
+                                        <th class="slds-text-align_center"> 면세</th>
+                                        <th class="slds-text-align_center"> VAT포함가</th>
+                                        <th class="slds-text-align_center"> 단위</th>
+                                        <th class="slds-text-align_center"> 원산지</th>
+                                        <th class="slds-text-align_center"> 저장조건</th>
+                                        <th style="text-align: center; padding-right:0.5rem; position:sticky; right:0; background:rgb(243, 243, 243);" class="slds-text-align_center">  </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.pageRecords}" var="objLineItem" indexVar="idx">
+                                        <tr class="{!((v.currentIdx == (v.countPerPage*(v.pageNumber -1) + idx)) ? 'custom-selectedRow' : '')}" id="{!'row-' + ((v.countPerPage*(v.pageNumber -1)) + idx)}" onclick="{!c.fnCheckIndex}" >
+                                            <td>
+                                                {!((v.countPerPage*(v.pageNumber -1)) + idx +1)}
+                                            </td>
+                                            <aura:if isTrue="{!v.isExcelExist}">
+                                                <aura:if isTrue="{!!v.isExcelEdit}">
+                                                    <td id ="{!idx}" title="{!objLineItem.ExcelData}" onclick="{!c.fnAutoSearch}">
+                                                        {!objLineItem.ExcelData}
+                                                    </td>
+                                                </aura:if>
+                                                <aura:if isTrue="{!v.isExcelEdit}">
+                                                    <td style='padding-top:0; padding-bottom:0; width:0' id="{!idx}" title="{!objLineItem.ExcelData}" onkeyup="{!c.fnExcelSearch}" >
+                                                        <lightning:input class="custom-input" type="text" variant="label-hidden" value="{!objLineItem.ExcelData}"/>
+                                                    </td>
+                                                </aura:if>
+                                            </aura:if>
+                                            <td style="text-align: center;">
+                                                {!objLineItem.ProductCategoryLName__c}
+                                            </td>
+                                            <td style="text-align: center;">
+                                                {!objLineItem.ProductCategoryMName__c}
+                                            </td>
+                                            <td style="text-align: center;">
+                                                {!objLineItem.fm_ProductCode__c}
+                                            </td>
+                                            <td title="{!objLineItem.fm_PriceBookEntryName__c}">
+                                                {!objLineItem.fm_PriceBookEntryName__c} 
+                                            </td>
+                                            <td style="text-align: center;">
+                                                {!objLineItem.CenterToLabel}
+                                            </td>
+                                            <td style="text-align: center;">
+                                                {!objLineItem.MonthToLabel}
+                                            </td>
+                                            <td style="text-align: center;">
+                                                <lightning:formattedNumber value="{!objLineItem.OldBasePurchasePrice__c}" style="currency" currencyCode="KRW"/>
+                                            </td>
+                                            <td style="text-align: center;">
+                                                <lightning:formattedNumber value="{!objLineItem.BasePurchasePrice__c}" style="currency" currencyCode="KRW"/>
+                                            </td>
+                                            <td style='padding-top:0; padding-bottom:0; width:0'>
+                                                <aura:if isTrue="{!objLineItem.fm_PriceBookEntryName__c}">
+                                                    <lightning:input id="{!'QuotedPrice-'+idx}" name="QuotedPrice" oncommit="{!c.fnCalc}" aura:id="validTarget" class="custom-input" type="number" min="0" messageWhenValueMissing="정상적인 값이 아닙니다" messageWhenBadInput="정상적인 값이 아닙니다" required="true" variant="label-hidden" value="{!objLineItem.UnitPrice}" formatter="currency" max="1000000000" />
+                                                </aura:if>
+                                                <aura:if isTrue="{!!objLineItem.fm_PriceBookEntryName__c}">
+                                                    <lightning:input class="custom-input" type="number" variant="label-hidden" value="{!objLineItem.UnitPrice}" readonly="true" formatter="currency" max="1000000000" />
+                                                </aura:if>
+                                            </td>
+                                            <td style='padding-top:0; padding-bottom:0; width:0'>
+                                                <aura:if isTrue="{!objLineItem.fm_PriceBookEntryName__c}">
+                                                    <lightning:input id="{!'ProfitMargin-' + idx}" name="ProfitMargin" oncommit="{!c.fnCalc}" aura:id="validTarget" class="custom-input " type="number" min="-100000000"  messageWhenValueMissing="정상적인 값이 아닙니다" messageWhenBadInput="정상적인 값이 아닙니다" required="true" variant="label-hidden" value="{!objLineItem.ProfitMargin__c}"  step="0.01" formatter="percent-fixed" max="100" />
+                                                </aura:if>
+                                                <aura:if isTrue="{!!objLineItem.fm_PriceBookEntryName__c}">
+                                                    <lightning:input class="custom-input" type="number" variant="label-hidden" value="{!objLineItem.ProfitMargin__c}" readonly="true" step="0.01" formatter="percent-fixed" max="1000000000" />
+                                                </aura:if>
+                                            </td>
+                                            <td style="text-align: center;">
+                                                {!objLineItem.TaxTypeName__c}
+                                            </td>
+                                            <td style="text-align: center;">
+                                                <lightning:formattedNumber value="{!objLineItem.UnitPriceWithVAT__c}" style="currency" currencyCode="KRW"/>
+                                            </td>
+                                            <td style="text-align: center;">
+                                                {!objLineItem.fm_QuantityUnitOfMeasure__c}
+                                            </td>
+                                            <td style="text-align: center;">
+                                                {!objLineItem.CountryOfOriginName__c}
+                                            </td>
+                                            <td style="text-align: center;">
+                                                {!objLineItem.StorageConditionName__c}
+                                            </td>
+                                            <td  style="text-align: center; padding-right:0.5rem; position:sticky; right:0; background:rgb(243, 243, 243);">
+                                                
+                                                <aura:if isTrue="{!objLineItem.fm_PriceBookEntryName__c}">
+                                                    <div id="{!(v.countPerPage*(v.pageNumber -1)) + idx}" style="text-align:center;" onclick="{!c.fnRemoveData}">
+                                                        <lightning:icon class="Icon_Gray" iconName="utility:delete" size="xx-small"/>
+                                                    </div>
+                                                </aura:if>
+                                                <aura:if isTrue="{!!objLineItem.fm_PriceBookEntryName__c}">
+                                                        <lightning:icon class="Icon_LightGray" iconName="utility:delete" size="xx-small"/>
+                                                </aura:if>
+                                            </td>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="slds-align_absolute-center" style="height:10%">
+                            <c:DN_Paging currentPageNumber="{!v.pageNumber}" maxPageNumber="{!v.maxPage}" />
+                        </div>
+                    </div>
+                    <!-- 견적상품 목록[E] -->
+                </div>
+            </div>
+            <!-- Body[E] -->    
+            <!-- Footer[S] -->
+            <footer class="modal-footer slds-modal__footer">
+                <lightning:button label="취소" onclick="{!c.fnCancel}" variant="neutral"   />
+                <lightning:button label="임시저장" onclick="{!c.fnSave}" value="Temp"/>
+                <lightning:button label="저장" onclick="{!c.fnSave}" value="Final" variant="brand"   />
+            </footer>
+            <!-- Footer[E] -->
+        </div>
+        <!-- ExcelPaste 기능[S] -->
+        <aura:if isTrue="{!v.isOpenExcelPaste}">
+            <c:LineItemExcelPaste 
+                title = "Excel Data Upload" 
+                openTab = "{!v.openTab}" 
+                isComplete = "{!v.isComplete}" 
+                pricebookId = "{!v.objParent.Pricebook2Id}" 
+                isOpen = "{!v.isOpenExcelPaste}" 
+                recordId = "{!v.recordId}" 
+                sObjectName = "{!v.sObjectName}" 
+                listPasteResult = "{!v.listPasteResult}"
+                listLineItem = "{!v.listLineItem}"
+                isNewUpload = "{!v.isNewUpload}"
+                listCenter = "{!v.listCenter}"
+                selectedCenter = "{!v.selectedCenter}"
+                listMonth = "{!v.listMonth}"
+                selectedMonth = "{!v.selectedMonth}"
+                selectedControl = "{!v.selectedControl}"
+                isAISearch = "{!v.isAISearch}"
+            /> 
+        </aura:if>
+        <!-- ExcelPaste 기능[E] -->
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</aura:component>

@@ -1,0 +1,70 @@
+.allContainer{
+    display: flex;
+    width: 100%;
+    /* border : solid 2px red; */
+    overflow: auto; 
+}
+
+.layout{
+    width: 100%;
+    /* border : solid 2px yellow; */
+}
+
+.itemOne{
+    flex : 5;
+    /* border : solid 2px blue; */
+}
+
+.itemTwo{
+    flex : 10;
+    /* border : solid 2px purple; */
+}
+
+.itemThree{
+    flex : 3;
+    /* border : solid 2px palevioletred; */
+}
+
+/* 모바일 스타일 */
+@media screen and (max-width: 768px) {
+    /* 필터전체 컨테이너 모바일 스타일 */
+    .allContainer {
+        /* border-color: blue; */ /* 테두리 색 변경 */
+        max-height: 300px;
+        flex-direction: column; /*세로로 쌓이도록 변경 */
+        padding: 5px; /* 패딩 값 조정 */
+        padding-right: 15px;
+    }
+
+    .allContainer lightning-input {
+        flex: 1; /*  각 lightning-input의 너비를 균등하게 설정 */
+    }
+
+    lightning-layout.slds-grid{/**/
+        display: block;
+        /* flex-direction: column; */
+    }
+
+    .itemThree{
+        width: 100%; /* 현재 컨테이너의 너비에 맞추려고 시도 */
+        text-align: center;
+    }
+
+    .itemThree lightning-button{
+        width: 100%;
+        /* flex: 1; */
+    }
+
+    /* lightning-layout-item{
+        flex : 10;
+    } */
+
+    .customSelectBox{
+        /* width: 280px; */
+        width: 100%; 
+        margin-top: 40px;
+        margin-bottom: 10px;
+        height: 32px; 
+    }
+    
+}

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>고객계정그룹</label>
+    <name>AccountGroup__c</name>
+    <picklistValues>
+        <masterLabel>CJ FW금융 고객</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>CJ FW일반 고객</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>CJ FW일회성 고객</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>경영계획부서고객</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>관리처</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>일반고객(판매처)</masterLabel>
+        <translation></translation>
+    </picklistValues>
+</CustomFieldTranslation>

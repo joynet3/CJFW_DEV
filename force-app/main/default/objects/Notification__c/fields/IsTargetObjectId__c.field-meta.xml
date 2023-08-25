@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>IsTargetObjectId__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Single Email Limit Count 제외 여부로 true 일때 수신자가 1건이면서 Id 일때만 setTargetObjectId 를 수신자로 설정하여 송신</description>
+    <externalId>false</externalId>
+    <label>IsTargetObjectId</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

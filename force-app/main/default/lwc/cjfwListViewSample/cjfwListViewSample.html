@@ -1,0 +1,88 @@
+<!--
+  @description       : 
+  @author            : eunyoung.choi@dkbmc.com
+  @group             : 
+  @last modified on  : 08-02-2023
+  @last modified by  : eunyoung.choi@dkbmc.com
+  Modifications Log
+  Ver   Date         Author                    Modification
+  1.0   08-01-2023   eunyoung.choi@dkbmc.com   Initial Version
+-->
+<template>
+    <lightning-card label="List of Case" icon-name="utility:form"  title="List Sample" type="media" href="#" class="list_view_container" style="background-color: #F3F3F3 ;">
+        <!-- <lightning-button label="조회" slot="actions"  variant="brand" onclick={handleSave}></lightning-button> -->
+        <lightning-layout style ="background-color: #F3F3F3;">
+            <lightning-layout-item size="2" padding="around-small">
+                <lightning-input label="시작일자" type="date" value={inputDate} onchange={onDataChange} field-level-help={helpText}></lightning-input>
+            </lightning-layout-item>
+            <div class="date-separator-container">
+                <div class="date-separator">~</div>
+            </div>
+            <lightning-layout-item size="2" padding="around-small">
+                <lightning-input label="종료일자" type="date" value={inputDate} onchange={onDataChange} field-level-help={helpText}></lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="3" padding="around-small">
+                <lightning-input label="본부" type="picklist" value={selectedValue} options={picklistOptions} onchange={onPicklistChange}></lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="2" padding="around-small" >
+                <lightning-input label="관리처" data-label="관리처" name="enter-search" type="search" value={searchKey} onchange={handleSearch} onkeypress={handleEnter} ></lightning-input>
+            </lightning-layout-item>
+            
+
+            <lightning-layout-item flexibility="grow" padding="around-small"></lightning-layout-item>
+            <lightning-layout-item size="auto" padding="around-small" class="search-button-item" >
+                <lightning-button label="조회" variant="brand" onclick={openAccountModal}></lightning-button>
+            </lightning-layout-item>
+
+            <template if:true={IsShow}>
+                <c-cjfw-account-search-modal 
+                onsetsearchacc={handleSearchKey} >
+                </c-cjfw-account-search-modal>
+            </template>
+
+        </lightning-layout>
+    
+
+        <!-- 조회 영역 -->
+<!--         <lightning-layout style="padding-bottom: 1rem; background-color: #F3F3F3;">
+
+            <lightning-layout-item size="2" padding="around-small" >
+                <lightning-input label ="시작일자" type ="date"  value ={inputDate} onchange={onDataChange} field-level-help={helpText}></lightning-input>
+            </lightning-layout-item>
+            <div class="date-separator-container">
+                <div class="date-separator">~</div>
+            </div>
+            <lightning-layout-item size="2" padding="around-small" >
+                <lightning-input label ="종료일자" type ="date"  value ={inputDate} onchange={onDataChange} field-level-help={helpText}></lightning-input>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="2" padding="around-small" >
+                <lightning-input label ="본부" type ="picklist" value ={selectedValue} options={picklistOptions} onchange={onPicklistChange} ></lightning-input>
+            </lightning-layout-item>
+            
+            <lightning-layout-item size="2" padding="around-small" >
+                <lightning-input label="관리처" name="enter-search" type="search" value={searchVal} onchange={handleSearch} onkeypress={handleEnter} ></lightning-input>
+            </lightning-layout-item>
+            
+            <lightning-layout-item size="2" padding="around-small" >
+                <lightning-input label="사원" name="enter-search" type="search" value={searchVal} onchange={handleSearch} onkeypress={handleEnter} ></lightning-input>
+                <lightning-button label="조회" slot="actions" variant="brand" onclick={handleSave}></lightning-button>
+            </lightning-layout-item>
+        </lightning-layout> -->
+        <!-- 이쪽  -->
+
+    </lightning-card>
+    <lightning-card>
+        <template if:true = {data}> 
+        <lightning-datatable key-field="id" 
+                            data={data} 
+                            columns={columns} 
+                            draft-values={saveDraftValues} 
+                            show-row-number-column >
+        </lightning-datatable>
+        </template>
+    </lightning-card>
+
+</template>

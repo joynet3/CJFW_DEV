@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DueWeek__c</fullName>
+    <description>전월 주유비 입력 가능한 기한(마감) 주차 설정으로 1주차 설정 시 해당 주의 금요일이 마감일로 설정됨.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>예시) 1=1주, 2=2주</inlineHelpText>
+    <label>마감주차</label>
+    <precision>1</precision>
+    <required>true</required>
+    <scale>0</scale>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Proposal_Meal__c</fullName>
+    <externalId>false</externalId>
+    <label>Proposal_Meal</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>상수도</fullName>
+                <default>false</default>
+                <label>상수도</label>
+            </value>
+            <value>
+                <fullName>지하수</fullName>
+                <default>false</default>
+                <label>지하수</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

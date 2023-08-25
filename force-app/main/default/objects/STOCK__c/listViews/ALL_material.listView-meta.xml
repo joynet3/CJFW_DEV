@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ALL_material</fullName>
+    <columns>MATNR__c</columns>
+    <columns>NAME</columns>
+    <columns>MAT_TYP__c</columns>
+    <columns>MENGE__c</columns>
+    <columns>MENGE_KG__c</columns>
+    <columns>BATCH__c</columns>
+    <columns>LGORT__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>MAT_TYP__c</field>
+        <operation>equals</operation>
+        <value>2</value>
+    </filters>
+    <filters>
+        <field>MENGE__c</field>
+        <operation>notEqual</operation>
+        <value>0</value>
+    </filters>
+    <label>전체 원자재</label>
+</ListView>

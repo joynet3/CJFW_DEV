@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>EffectiveDateValidationCheck</fullName>
+    <active>true</active>
+    <description>견적 만료일자가 시작일자보다 빠를 경우 ValidationCheck</description>
+    <errorConditionFormula>EffectiveStartDate__c &gt; ExpirationDate</errorConditionFormula>
+    <errorMessage>만료 일자를 시작 일자 이후로 설정해주세요.</errorMessage>
+</ValidationRule>

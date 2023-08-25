@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>보세구분</label>
+    <name>Proposal_BSType__c</name>
+    <picklistValues>
+        <masterLabel>보세구역 내</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>보세구역 외</masterLabel>
+        <translation></translation>
+    </picklistValues>
+</CustomFieldTranslation>

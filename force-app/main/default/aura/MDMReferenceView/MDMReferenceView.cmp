@@ -1,0 +1,42 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 11-27-2022
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<aura:component implements="force:appHostable" >
+    <aura:attribute name="objCustomer" type="MDMRegRequestCustomer__c" default="{'sobjectType':'MDMRegRequestCustomer__c', 'PV_CESSION_KZ__c':'', 'PV_KTOKD__c':'Z300'}"/>
+    <aura:attribute name="inputText1" type="String" default=""/>
+    <aura:attribute name="inputText2" type="String" default="[Z300]일반고객판매처"/>
+
+
+    <c:MDMReferenceCodeSearch
+        groupId="TCESSION"
+        label="고객상태"
+        value="{!v.objCustomer.PV_CESSION_KZ__c}"
+        inputText="{!v.inputText1}"
+        isRequired="false"
+        isDisabled="false"
+    />
+
+    <c:MDMReferenceCodeSearch
+        groupId="T077D"
+        label="고객계정그룹"
+        value="{!v.objCustomer.PV_KTOKD__c}"
+        inputText="{!v.inputText2}"
+        isRequired="false"
+        isDisabled="true"
+    />
+
+    <!--
+    <c:MDMReferenceCodeSearch
+        groupId="SALESGROUPH"
+        label="영업그룹"
+        value="{!v.objCustomer.PV_VKGRP__c}"        
+        inputText="{!v.inputText}"
+        isRequired="false"
+        isDisabled="false"
+    />
+    -->
+</aura:component>

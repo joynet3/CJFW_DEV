@@ -1,0 +1,91 @@
+.lineOne{
+    padding-left: 10px;  /* 원하는 좌측 패딩 값을 설정 */
+    padding-top: 0px; /* 윗쪽 패딩 0 */ 
+    border-color: solid 2px red;
+}
+
+
+/* 필터전체 컨테이너 */
+.allContainer{
+    /* border : solid 2px red; */
+    display: flex;
+    max-width: 100%;
+    overflow: auto; 
+    outline: none; /* container keyPress 할때 외곽에 검정라인 생기는 것 방지 */
+}
+
+/*  show and hide 할때 숨길때 적용할 스타일 */
+.hideStyle{
+    display: none;
+}
+
+/* 해당부분 적용해야 combobox 사이즈가 좌우 비율에 맞춰서 늘어남 */
+.LineOne.slds-grid {
+    flex-wrap: initial; /* 기본 스타일 덮어쓰기 */
+}
+
+/* selectBox Style */
+.customSelectBox{
+    width: 17%;  
+    padding-left:10px;
+}
+
+/* 필드부분 노출되는 컨테이너 */
+.filterContainer{
+    flex: 9; /* 화면 너비의 90% */
+}
+
+
+/* 버튼 노출되는 컨테이너 */
+.buttoncontainer{
+    flex: 1; /* 화면 너비의 10% */
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* 버튼들을 컨테이너의 시작 부분(위쪽)에 정렬 */
+    flex-direction: column; /* 버튼 배치방향 조절 */
+    margin-bottom: 20px;
+}
+
+
+/* 모바일 스타일 */
+@media screen and (max-width: 768px) {
+    .buttoncontainer {
+        flex: none; /* 너비 제한 해제 */
+        /* border-color: red; */
+        /* justify-content: space-between; */ /* 버튼을 가로로 나란히 배치하고 양 끝에 맞춤 */
+        /* flex-direction: row; */ /* 버튼을 가로로 나란히 배치 */
+        padding: 10px; /* 패딩 값 조정 */
+        flex-direction: column; /* 버튼을 위아래로 배치 */
+        align-items: center; /* 가운데 정렬 */
+    }
+
+    .buttoncontainer lightning-button{
+        width: 100%; /* 현재 컨테이너의 너비에 맞추려고 시도 */
+    }
+
+    .customSelectBox{
+        /* width: 280px; */
+        width: 100%; 
+        margin-top: 40px;
+        margin-bottom: 10px;
+        height: 32px; 
+    }
+
+    .LineOne.slds-grid {
+        flex-wrap: wrap; /* 기본 스타일 덮어쓰기 */
+    }
+
+    /* 필터전체 컨테이너 모바일 스타일 */
+    .allContainer {
+        /* border-color: blue; */ /* 테두리 색 변경 */
+        max-height: 300px;
+        flex-direction: column; /* 세로로 쌓이도록 변경 */
+        padding: 5px; /* 패딩 값 조정 */
+        padding-right: 15px;
+    }
+    .allContainer lightning-input {
+        flex: 1; /* 각 lightning-input의 너비를 균등하게 설정 */
+    }
+
+
+}

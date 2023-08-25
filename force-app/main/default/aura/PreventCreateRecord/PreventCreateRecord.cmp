@@ -1,0 +1,24 @@
+<!--
+* ==================================================================================
+*   File Name   : PreventCreateRecord.cmp
+*   Author      : Minje.Kim
+*   Date        : 2023.02.05
+*   Description : MDM 고객 등록 요청 직접 생성 방지 Override
+*   Modification Log
+* ==================================================================================
+*   Ver     Date          Author          Modification
+* ==================================================================================
+*   1.0     2023.02.05    Minje.Kim       Create
+* ==================================================================================
+-->
+
+<aura:component implements="lightning:actionOverride,lightning:isUrlAddressable,force:hasRecordId" >
+
+    <!-- Attribute -->
+    <aura:attribute name="showSpinner" type="Boolean" default="false" description="Spinner"/>
+
+    <!-- Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.fnInit}" />
+    <aura:handler name="change" value="{!v.pageReference}" action="{!c.fnInit}" />
+
+</aura:component>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>이관대상 판매처</label>
+    <name>ReplacementSoldTo__c</name>
+    <relationshipLabel>매출/물량 대체신청 (이관 대상 판매처)</relationshipLabel>
+</CustomFieldTranslation>

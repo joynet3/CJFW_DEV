@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>BidOpenPlace__c</fullName>
+    <description>나라장터 입찰 공고의 개찰 장소</description>
+    <externalId>false</externalId>
+    <label>Bid Open Place</label>
+    <length>255</length>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

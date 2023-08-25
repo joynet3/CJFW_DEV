@@ -1,0 +1,41 @@
+<!--
+  @description       : 세금계산서 발행 Tab Main > 신규발행 Btn 화면 (Raido Btn)
+  @author            : joohyeon.jang@dkbmc.com
+  @group             : 
+  @last modified on  : 08-09-2023
+  @last modified by  : joohyeon.jang@dkbmc.com
+  Modifications Log
+  Ver   Date         Author                    Modification
+  1.0   08-01-2023   joohyeon.jang@dkbmc.com   Initial Version
+-->
+<template>
+    <Template lwc:if={showModal}>
+        <!-- Header -->
+        <lightning-modal-header label="신규 발행">
+        </lightning-modal-header>
+        
+        <!-- Body -->
+        <lightning-modal-body>
+            <div class="container">
+                <lightning-radio-group 
+                    name="radioGroup"
+                    options={options}
+                    value={issuanceTypeVal}
+                    type="radio"
+                    onchange={handleChangeRadio}
+                    class="invoiceTye">
+                </lightning-radio-group>
+            </div>
+        </lightning-modal-body>
+
+        <!-- Footer -->
+        <lightning-modal-footer>
+            <div class="slds-clearfix">
+                <div class="slds-float_right">
+                    <lightning-button variant="neutral" label="취소" onclick={handleClose} class="slds-m-left_x-small"></lightning-button>
+                    <lightning-button variant="brand" label="다음" onclick={handleNext} class="slds-m-left_x-small"></lightning-button>
+                </div>
+              </div>
+        </lightning-modal-footer>
+    </Template>
+</template>

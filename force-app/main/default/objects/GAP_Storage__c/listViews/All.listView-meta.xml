@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>All</fullName>
+    <columns>NAME</columns>
+    <columns>Table_Ko__c</columns>
+    <columns>Desc__c</columns>
+    <columns>Field_Cnt__c</columns>
+    <columns>Total_Row__c</columns>
+    <columns>Table_MB__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>NAME</field>
+        <operation>contains</operation>
+        <value>sa</value>
+    </filters>
+    <label>All</label>
+</ListView>

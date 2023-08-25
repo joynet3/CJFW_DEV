@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>FieldBriefing_BiddingMethod__c</fullName>
+    <externalId>false</externalId>
+    <label>FieldBriefing_BiddingMethod</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>공개입찰</fullName>
+                <default>false</default>
+                <label>공개입찰</label>
+            </value>
+            <value>
+                <fullName>지명입찰</fullName>
+                <default>false</default>
+                <label>지명입찰</label>
+            </value>
+            <value>
+                <fullName>단독입찰</fullName>
+                <default>false</default>
+                <label>단독입찰</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

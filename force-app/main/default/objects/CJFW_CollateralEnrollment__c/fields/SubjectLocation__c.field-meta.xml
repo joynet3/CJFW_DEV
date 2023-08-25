@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SubjectLocation__c</fullName>
+    <description>대상물 소재지 구분</description>
+    <externalId>false</externalId>
+    <label>대상물 소재지 구분</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>서울시</fullName>
+                <default>false</default>
+                <label>서울시</label>
+            </value>
+            <value>
+                <fullName>과밀억제권역,용인,세종,화성</fullName>
+                <default>false</default>
+                <label>과밀억제권역,용인,세종,화성</label>
+            </value>
+            <value>
+                <fullName>광역시,안산,김포,광주,파주</fullName>
+                <default>false</default>
+                <label>광역시,안산,김포,광주,파주</label>
+            </value>
+            <value>
+                <fullName>그 밖의 지역</fullName>
+                <default>false</default>
+                <label>그 밖의 지역</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

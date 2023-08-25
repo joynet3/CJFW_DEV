@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>OwnerExpriationNoticeValidationCheck</fullName>
+    <active>true</active>
+    <description>담당MA 만료 알림이 계약기간보다 길 경우 Validation Check</description>
+    <errorConditionFormula>ContractTerm__c &lt;= Value(Text(OwnerExpirationNotice__c))/30</errorConditionFormula>
+    <errorMessage>담당MA 만료 알림이 계약기간보다 큽니다.</errorMessage>
+</ValidationRule>

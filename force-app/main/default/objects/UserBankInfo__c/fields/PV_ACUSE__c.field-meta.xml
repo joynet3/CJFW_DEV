@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>PV_ACUSE__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>사용여부</description>
+    <externalId>false</externalId>
+    <label>PV_ACUSE</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

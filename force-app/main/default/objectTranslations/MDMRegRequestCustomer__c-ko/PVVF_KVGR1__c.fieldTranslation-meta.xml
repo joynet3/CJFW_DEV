@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>단가그룹(유효일자 관리 필요) - 미래 속성의 VALID FROM</label>
+    <name>PVVF_KVGR1__c</name>
+</CustomFieldTranslation>

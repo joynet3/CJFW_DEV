@@ -1,0 +1,18 @@
+<!--
+* ==================================================================================
+*   File Name   : ExtraServiceCreate.cmp
+*   Author      : Minje.Kim
+*   Date        : 2022.11.14
+*   Description : 서비스컨텐츠 Detail Page에서 QuickAction을 통해 부가서비스 내역을 생성하는 기능
+*   Modification Log
+* ==================================================================================
+*   Ver     Date          Author          Modification
+* ==================================================================================
+*   1.0     2022.11.14    Minje.Kim    Create
+* ==================================================================================
+-->
+
+<aura:component implements="force:lightningQuickActionWithoutHeader,force:hasRecordId" controller="ExtraServiceCreateController">
+    <aura:attribute name="recordId" type="String" description="서비스컨텐츠 Record Id"/>   
+    <aura:handler name="init" value="{!this}" action="{!c.fnInit}"/>
+</aura:component>

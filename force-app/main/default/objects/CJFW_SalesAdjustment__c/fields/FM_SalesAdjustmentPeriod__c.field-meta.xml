@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>FM_SalesAdjustmentPeriod__c</fullName>
+    <externalId>false</externalId>
+    <formula>TEXT ( YEAR( StartDate__c ) ) +&quot;-&quot;+ 
+ IF(MONTH(StartDate__c ) &lt; 10, &quot;0&quot; + TEXT(MONTH(StartDate__c )), TEXT(MONTH(StartDate__c )) ) +&quot;-&quot;+ 
+ IF(DAY(StartDate__c ) &lt; 10,  &quot;0&quot; + TEXT(DAY(StartDate__c )), TEXT(DAY(StartDate__c )) ) + 
+&quot; ~ &quot; +
+TEXT ( YEAR( EndDate__c ) )+&quot;-&quot; + 
+ IF(MONTH(EndDate__c ) &lt; 10, &quot;0&quot; + TEXT(MONTH(EndDate__c )), TEXT(MONTH(EndDate__c )) ) +&quot;-&quot;+ 
+ IF(DAY(EndDate__c ) &lt; 10,  &quot;0&quot; + TEXT(DAY(EndDate__c )), TEXT(DAY(EndDate__c )) )</formula>
+    <label>Sales Adjustment Period</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

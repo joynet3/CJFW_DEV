@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>PV_TEMPTARGET__c</fullName>
+    <externalId>false</externalId>
+    <label>PV_TEMPTARGET</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>01</fullName>
+                <default>false</default>
+                <label>필수 제출처</label>
+            </value>
+            <value>
+                <fullName>02</fullName>
+                <default>false</default>
+                <label>고객 요청</label>
+            </value>
+            <value>
+                <fullName>03</fullName>
+                <default>false</default>
+                <label>해당 없음</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

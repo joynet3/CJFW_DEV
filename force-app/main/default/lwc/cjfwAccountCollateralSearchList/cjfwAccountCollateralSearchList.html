@@ -1,0 +1,592 @@
+<!--
+  @description       : 
+  @author            : doyeon.kim@dkbmc.com
+  @group             : 
+  @last modified on  : 08-25-2023
+  @last modified by  : doyeon.kim@dkbmc.com
+-->
+<template>
+    <lightning-card>
+        <div class="listcontainer">
+            <!-- 부서별 배부 Start-->
+            <div style="padding-left:12px; padding-right:12px;">
+                <div class="totalCnt">부서별 배부 /  TOTAL : {totalCnt}</div>
+                <div class="deptablecontainer">
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="row-number fiexedHeader">No</th>
+                                <th class="slds-text-title_caps">거래처 코드</th>
+                                <th class="slds-text-title_caps">영업그룹명</th>
+                                <th class="slds-text-title_caps">담보번호</th>
+                                <th class="slds-text-title_caps">거래처</th>
+                                <th class="slds-text-title_caps">거래처명</th>
+                                <th class="slds-text-title_caps">총 담보</th>
+                                <th class="slds-text-title_caps">실 담보</th>
+                                <th class="slds-text-title_caps">만기여부</th>
+                                <th class="slds-text-title_caps">해지여부</th>
+                                <th class="slds-text-title_caps">비고</th>
+                            </tr>
+                        </thead>
+    
+                        <tbody>
+                            <template for:each={departList} for:item="item" for:index="index">
+                                <tr class="slds-hint-parent" key={item.id} data-index={index}>
+                                    <td class="disable_td row-number">
+                                        <div class="slds-truncate">{index}</div>
+                                    </td>
+                                    <td class="cell-disable slds-text-align_left">
+                                        <div class="slds-truncate">{item.Customer__r.searchKey__c}</div>
+                                    </td>
+                                    <td class="cell-disable slds-text-align_left">
+                                        <div class="slds-truncate">{item.DeptName__c}</div>
+                                    </td>
+                                    <td class="cell-disable slds-text-align_left">
+                                        <div class="slds-truncate" onclick={searchCertiPage}>{item.CollateralEnrollment__r.Name}</div>
+                                    </td>
+                                    <td class="cell-disable slds-text-align_left">
+                                        <div class="slds-truncate">{item.FM_CustomerId__c}</div>
+                                    </td>
+                                    <td class="cell-disable slds-text-align_left">
+                                        <div class="slds-truncate">{item.Customer__r.Name}</div>
+                                    </td>
+                                    <td class="cell-disable slds-text-align_right">
+                                        <div class="slds-truncate comma">{item.FM_TotalCollateralAmount__c}</div>
+                                    </td>
+                                    <td class="cell-disable slds-text-align_right">
+                                        <div class="slds-truncate comma">{item.ActualCollateralAmount__c}</div>
+                                    </td>
+                                    <td class="cell-disable slds-text-align_left">
+                                        <div class="slds-truncate">{item.ExpirationStatus__c}</div>
+                                    </td>
+                                    <td class="cell-disable slds-text-align_left">
+                                        <div class="slds-truncate">{item.CloseStatus__c}</div>
+                                    </td>
+                                    <td class="cell-disable slds-text-align_left">
+                                        <div class="slds-truncate">{item.Description__c}</div>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- 부서별 배부 End-->
+    
+            <br/>
+            <div class="tabSetContainer" style="padding-left:12px; padding-right:12px;">
+                <!-- 담보Tab Start-->
+                <template if:true={showTabSet}>
+                    <lightning-tabset class="Dambo-Tabset-Style" variant="scoped" active-tab-value="two">
+                        <!-- 보증보험 Tab Start-->
+                        <template if:true={showGITab}>
+                            <lightning-tab label="보증보험" value="two">
+                                <div class="tableWrapper" style="display:flex; height:auto;">
+                                    <div class="ltable-container">
+                                        <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
+                                            <thead>
+                                                <tr class="slds-line-height_reset">
+                                                    <th class="row-number fiexedHeader">No</th>
+                                                    <th class="slds-text-title_caps">거래처 코드</th>
+                                                    <th class="slds-text-title_caps">담보번호</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <template for:each={GIItemList} for:item="item" for:index="index">
+                                                    <tr class="slds-hint-parent GiId collId" key={item.id} data-index={index}>
+                                                        <td class="disable_td row-number">
+                                                            <div class="slds-truncate">{index}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.FM_Customer__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left" style="text-decoration-line:underline; color:blue;">
+                                                            <div class="slds-truncate mouseOver" onclick={searchCertiPage}>{item.CollateralNo__c}</div>
+                                                        </td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="rtable-container" onscroll={handleScroll}>
+                                        <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
+                                            <thead>
+                                                <tr class="slds-line-height_reset">
+                                                    <th class="slds-text-title_caps">증서번호</th>
+                                                    <th class="slds-text-title_caps">종류</th>
+                                                    <th class="slds-text-title_caps">발행처</th>
+                                                    <th class="slds-text-title_caps">채무자</th>
+                                                    <th class="slds-text-title_caps">발행금액</th>
+                                                    <th class="slds-text-title_caps">발행일</th>
+                                                    <th class="slds-text-title_caps">게시일</th>
+                                                    <th class="slds-text-title_caps">만기일</th>
+                                                    <th class="slds-text-title_caps">총담보</th>
+                                                    <th class="slds-text-title_caps">실담보</th>
+                                                    <th class="slds-text-title_caps">처리구분</th>
+                                                    <th class="slds-text-title_caps">승인일</th>
+                                                    <th class="slds-text-title_caps">만기여부</th>
+                                                    <th class="slds-text-title_caps">해지여부</th>
+                                                    <th class="slds-text-title_caps">비고</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <template for:each={GIItemList} for:item="item" for:index="index">
+                                                    <tr class="slds-hint-parent" key={item.id} data-index={index}>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <!-- 증서번호 -->
+                                                            <div class="slds-truncate">{item.CertificateNo__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <!-- 종류 -->
+                                                            <div class="slds-truncate">{item.Category__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <!-- 발행처 -->
+                                                            <div class="slds-truncate">{item.Issuer__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <!-- 채무자 -->
+                                                            <div class="slds-truncate">{item.Debtor__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_right">
+                                                            <!-- 발행금액 -->
+                                                            <div class="slds-truncate comma">{item.GuaranteeAmount__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <!-- 발행일 -->
+                                                            <div class="slds-truncate">{item.IssueDate__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <!-- 게시일 -->
+                                                            <div class="slds-truncate">{item.CommencementDate__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <!-- 만기일 -->
+                                                            <div class="slds-truncate">{item.DueDate__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_right">
+                                                            <!-- 총담보 -->
+                                                            <div class="slds-truncate comma">{item.TotalCollateralAmount__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_right">
+                                                            <!-- 실담보 -->
+                                                            <div class="slds-truncate comma">{item.ActualCollateralAmount__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <!-- 처리구분 -->
+                                                            <div class="slds-truncate">{item.ProcessStatus__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <!-- 승인일 -->
+                                                            <div class="slds-truncate">{item.ApprovalDate__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <!-- 만기여부 -->
+                                                            <div class="slds-truncate">{item.ExpirationStatus__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <!-- 해지여부 -->
+                                                            <div class="slds-truncate">{item.CloseStatus__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <!-- 비고 -->
+                                                            <div class="slds-truncate">{item.Description__c}</div>
+                                                        </td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </lightning-tab>
+                        </template>
+                        <!-- 보증보험 Tab End-->
+                        
+                        <!-- 부동산 Tab Start-->
+                        <template if:true={showRETab}>
+                            <lightning-tab label="부동산">
+                                <div class="tableWrapper" style="display:flex; height:auto;">
+                                    <div class="ltable-container">
+                                        <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
+                                            <thead>
+                                                <tr class="slds-line-height_reset">
+                                                    <th class="row-number fiexedHeader">No</th>
+                                                    <th class="slds-text-title_caps">거래처 코드</th>
+                                                    <th class="slds-text-title_caps">담보번호</th>
+                                                    <th class="slds-text-title_caps">종류</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <template for:each={REItemList} for:item="item" for:index="index">
+                                                    <tr class="slds-hint-parent ReId collId" key={item.id}>
+                                                        <td class="disable_td row-number">
+                                                            <div class="slds-truncate">{index}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.FM_Customer__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left" style="text-decoration-line:underline; color:blue;">
+                                                            <div class="slds-truncate mouseOver" onclick={searchPage}>{item.CollateralNo__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.Category__c}</div>
+                                                        </td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="rtable-container slds-scrollable_x" style="height:auto;" tabindex="0">
+                                        <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-scrollable_x slds-table_col-bordered">
+                                            <thead>
+                                                <tr class="slds-line-height_reset">
+                                                    <th class="slds-text-title_caps">담보주소</th>
+                                                    <th class="slds-text-title_caps">채무자</th>
+                                                    <th class="slds-text-title_caps">제공자</th>
+                                                    <th class="slds-text-title_caps">채무자와의 관계</th>
+                                                    <th class="slds-text-title_caps">감정가</th>
+                                                    <th class="slds-text-title_caps">감정일</th>
+                                                    <th class="slds-text-title_caps">설정액</th>
+                                                    <th class="slds-text-title_caps">설정일</th>
+                                                    <th class="slds-text-title_caps">총담보</th>
+                                                    <th class="slds-text-title_caps">실담보</th>
+                                                    <th class="slds-text-title_caps">처리구분</th>
+                                                    <th class="slds-text-title_caps">승인일</th>
+                                                    <th class="slds-text-title_caps">만기여부</th>
+                                                    <th class="slds-text-title_caps">해지여부</th>
+                                                    <th class="slds-text-title_caps">비고</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <template for:each={REItemList} for:item="item" for:index="index">
+                                                    <tr class="slds-hint-parent" key={item.id}>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.CollateralAddress__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.Debtor__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.Provider__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.DebtorRelationship__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_right">
+                                                            <div class="slds-truncate comma">{item.CollateralValue__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.AppraisalDate__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_right">
+                                                            <div class="slds-truncate comma">{item.MortgageAmount__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.MortgageDate__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_right">
+                                                            <div class="slds-truncate comma">{item.TotalCollateralAmount__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_right">
+                                                            <div class="slds-truncatecomma">{item.ActualCollateralAmount__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.ProcessStatus__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.ApprovalDate__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.ExpirationStatus__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.CloseStatus__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.Description__c}</div>
+                                                        </td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </lightning-tab>
+                        </template>
+                        <!-- 부동산 Tab End-->
+    
+                        <!-- 채권 Tab Start-->
+                        <template if:true={showBondTab}>
+                            <lightning-tab label="채권">
+                                <div class="tableWrapper" style="display:flex; height:auto;">
+                                    <div class="ltable-container">
+                                        <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
+                                            <thead>
+                                                <tr class="slds-line-height_reset">
+                                                    <th class="row-number fiexedHeader">No</th>
+                                                    <th class="slds-text-title_caps">담보번호</th>
+                                                    <th class="slds-text-title_caps">종류</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <template for:each={BondItemList} for:item="item" for:index="index">
+                                                    <tr class="slds-hint-parent BondId collId" key={item.id}>
+                                                        <td class="disable_td row-number">
+                                                            <div class="slds-truncate">{index}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left" style="text-decoration-line:underline; color:blue;">
+                                                            <div class="slds-truncate mouseOver" onclick={searchPage}>{item.CollateralNo__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.Category__c}</div>
+                                                        </td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="rtable-container slds-scrollable_x" style="height:auto;" tabindex="0">
+                                        <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-scrollable_x slds-table_col-bordered">
+                                            <thead>
+                                                <tr class="slds-line-height_reset">
+                                                    <th class="slds-text-title_caps">발행처</th>
+                                                    <th class="slds-text-title_caps">발행금액</th>
+                                                    <th class="slds-text-title_caps">구입금액</th>
+                                                    <th class="slds-text-title_caps">발행일</th>
+                                                    <th class="slds-text-title_caps">만기일</th>
+                                                    <th class="slds-text-title_caps">총담보</th>
+                                                    <th class="slds-text-title_caps">실담보</th>
+                                                    <th class="slds-text-title_caps">처리구분</th>
+                                                    <th class="slds-text-title_caps">승인일</th>
+                                                    <th class="slds-text-title_caps">만기여부</th>
+                                                    <th class="slds-text-title_caps">해지여부</th>
+                                                    <th class="slds-text-title_caps">비고</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <template for:each={BondItemList} for:item="item" for:index="index">
+                                                    <tr class="slds-hint-parent" key={item.id}>
+                                                        <td class="cell-disable slds-text-align_left" >
+                                                            <div class="slds-truncate">{item.Issuer__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_right">
+                                                            <div class="slds-truncate comma">{item.GuaranteeAmount__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_right">
+                                                            <div class="slds-truncate comma">{item.PurchaseAmount__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.IssueDate__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.DueDate__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_right">
+                                                            <div class="slds-truncate comma">{item.TotalCollateralAmount__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_right">
+                                                            <div class="slds-truncate comma">{item.ActualCollateralAmount__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.ProcessStatus__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.ApprovalDate__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.ExpirationStatus__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.CloseStatus__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.Description__c}</div>
+                                                        </td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </lightning-tab>
+                        </template>
+                        <!-- 채권 Tab End-->
+    
+                        <!-- 예적금증서 Tab Start-->
+                        <template if:true={showTDTab}>
+                            <lightning-tab label="예적금증서">
+                                <div class="tableWrapper" style="display:flex; height:auto;">
+                                    <div class="ltable-container">
+                                        <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
+                                            <thead>
+                                                <tr class="slds-line-height_reset">
+                                                    <th class="row-number fiexedHeader">No</th>
+                                                    <th class="slds-text-title_caps">거래처 코드</th>
+                                                    <th class="slds-text-title_caps">담보번호</th>
+                                                    <th class="slds-text-title_caps">종류</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <template for:each={TDItemList} for:item="item" for:index="index">
+                                                    <tr class="slds-hint-parent collId" key={item.id}>
+                                                        <td class="disable_td row-number">
+                                                            <div class="slds-truncate">{index}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.FM_Customer__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left" style="text-decoration-line:underline; color:blue;">
+                                                            <div class="slds-truncate mouseOver" onclick={searchCertiPage}>{item.CollateralNo__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.Category__c}</div>
+                                                        </td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="rtable-container slds-scrollable_x" style="height:auto;" tabindex="0">
+                                        <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-scrollable_x slds-table_col-bordered">
+                                            <thead>
+                                                <tr class="slds-line-height_reset">
+                                                    <th class="slds-text-title_caps">발행처</th>
+                                                    <th class="slds-text-title_caps">입금금액</th>
+                                                    <th class="slds-text-title_caps">발행일</th>
+                                                    <th class="slds-text-title_caps">만기일</th>
+                                                    <th class="slds-text-title_caps">총담보</th>
+                                                    <th class="slds-text-title_caps">실담보</th>
+                                                    <th class="slds-text-title_caps">처리구분</th>
+                                                    <th class="slds-text-title_caps">승인일</th>
+                                                    <th class="slds-text-title_caps">만기여부</th>
+                                                    <th class="slds-text-title_caps">해지여부</th>
+                                                    <th class="slds-text-title_caps">비고</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <template for:each={TDItemList} for:item="item" for:index="index">
+                                                    <tr class="slds-hint-parent" key={item.id}>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.Issuer__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_right">
+                                                            <div class="slds-truncate comma">{item.Deposit__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.IssueDate__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.DueDate__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_right">
+                                                            <div class="slds-truncate comma">{item.TotalCollateralAmount__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_right">
+                                                            <div class="slds-truncate comma">{item.ActualCollateralAmount__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.ProcessStatus__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.ApprovalDate__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.ExpirationStatus__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.CloseStatus__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.Description__c}</div>
+                                                        </td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </lightning-tab>
+                        </template>
+                        <!-- 예적금증서 Tab End-->
+                        
+                        <!-- 현금 Tab Start-->
+                        <template if:true={showCashTab}>
+                            <lightning-tab label="현금">
+                                <div class="tableWrapper" style="display:flex; height:auto;">
+                                    <div class="rtable-container" style="height:auto; width:auto">
+                                        <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
+                                            <thead>
+                                                <tr class="slds-line-height_reset">
+                                                    <th class="row-number fiexedHeader">No</th>
+                                                    <th class="slds-text-title_caps">거래처 코드</th>
+                                                    <th class="slds-text-title_caps">담보번호</th>
+                                                    <th class="slds-text-title_caps">입금금액</th>
+                                                    <th class="slds-text-title_caps">입금일</th>
+                                                    <th class="slds-text-title_caps">전표번호</th>
+                                                    <th class="slds-text-title_caps">총담보</th>
+                                                    <th class="slds-text-title_caps">실담보</th>
+                                                    <th class="slds-text-title_caps">처리구분</th>
+                                                    <th class="slds-text-title_caps">승인일</th>
+                                                    <th class="slds-text-title_caps">만기여부</th>
+                                                    <th class="slds-text-title_caps">해지여부</th>
+                                                    <th class="slds-text-title_caps">비고</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <template for:each={CashItemList} for:item="item" for:index="index">
+                                                    <tr class="slds-hint-parent collId" key={item.id}>
+                                                        <td class="disable_td row-number">
+                                                            <div class="slds-truncate">{index}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.FM_Customer__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left" style="text-decoration-line:underline; color:blue;">
+                                                            <div class="slds-truncate mouseOver" onclick={searchCertiPage}>{item.CollateralNo__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_right">
+                                                            <div class="slds-truncate comma">{item.Deposit__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.DepositDate__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.CashCollateralReceipt__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_right">
+                                                            <div class="slds-truncate comma">{item.TotalCollateralAmount__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_right">
+                                                            <div class="slds-truncate comma">{item.ActualCollateralAmount__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.ProcessStatus__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.ApprovalDate__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.ExpirationStatus__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.CloseStatus__c}</div>
+                                                        </td>
+                                                        <td class="cell-disable slds-text-align_left">
+                                                            <div class="slds-truncate">{item.Description__c}</div>
+                                                        </td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </lightning-tab>
+                        </template>
+                        <!-- 현금 Tab End-->
+                    </lightning-tabset>
+                </template>
+                <!-- 담보Tab End-->
+            </div>
+        </div>
+    </lightning-card>
+</template>

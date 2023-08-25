@@ -1,0 +1,47 @@
+<!--
+* ==================================================================================
+*   File Name   : QuoteExcelCreate.cmp
+*   Author      : Minje.Kim
+*   Date        : 2023.03.03
+*   Description : Quote PDF Modal Create
+*   Modification Log
+* ==================================================================================
+*   Ver     Date          Author          Modification
+* ==================================================================================
+*   1.0     2023.03.03    Minje.Kim    Create
+* ==================================================================================
+-->
+<aura:component implements="force:appHostable" controller="OilApporvalController">
+
+    <!-- Attribute -->
+    <aura:attribute name="userType" type="String" description="사용자 유형 - BM(사업부장), TM(팀장), IT, AS(어시스턴스)"/>          
+    <aura:attribute name="approvalTabAccess" type="Boolean" description="주유비 승인 탭 접근권한 여부"/>          
+    <aura:attribute name="sendTabAccess" type="Boolean" description="주유비 전표처리 탭 접근권한 여부"/>                      
+    <!-- Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.fnInit}"/>
+
+    <lightning:layout multipleRows="true">
+        <!-- Contents [S] -->
+        <lightning:layoutItem size="12">
+            <lightning:tabset aura:id="tab">        
+                <aura:if isTrue="{!and(v.userType != 'None', v.approvalTabAccess)}">
+                    <lightning:tab label="신청내역" id="request" aura:id="request">
+                        <c:OilApprovalRequest userType ="{!v.userType}"/>
+                    </lightning:tab>                
+                </aura:if>
+                <aura:if isTrue="{!and(v.userType != 'None', v.sendTabAccess)}">
+                    <lightning:tab label="재무시스템전송" id="send" aura:id="sendEacct">
+                        <c:OilApprovalSendEacct userType ="{!v.userType}"/>
+                    </lightning:tab>
+                </aura:if>
+                <aura:if isTrue="{!and(v.userType != 'None', v.sendTabAccess)}">
+                    <lightning:tab label="전송이력" id="history" aura:id="sendhistory">
+                        <c:OilApprovalSendHistory userType ="{!v.userType}"/>
+                    </lightning:tab>
+                </aura:if>
+            </lightning:tabset>
+        </lightning:layoutItem>
+        <!-- Contents [E] -->
+    </lightning:layout>
+    
+</aura:component>

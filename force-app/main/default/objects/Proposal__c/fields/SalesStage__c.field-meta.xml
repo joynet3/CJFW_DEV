@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SalesStage__c</fullName>
+    <description>제안영업단계</description>
+    <externalId>false</externalId>
+    <label>Sales Stage</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>핵심 니즈 파악</fullName>
+                <default>false</default>
+                <label>핵심 니즈 파악</label>
+            </value>
+            <value>
+                <fullName>제안 컨셉 도출</fullName>
+                <default>false</default>
+                <label>제안 컨셉 도출</label>
+            </value>
+            <value>
+                <fullName>경쟁사 동향 파악</fullName>
+                <default>false</default>
+                <label>경쟁사 동향 파악</label>
+            </value>
+            <value>
+                <fullName>제안서 제출</fullName>
+                <default>false</default>
+                <label>제안서 제출</label>
+            </value>
+            <value>
+                <fullName>해당없음</fullName>
+                <default>false</default>
+                <label>해당없음</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

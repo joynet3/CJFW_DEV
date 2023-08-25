@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>MyAccounts</fullName>
+    <columns>ACCOUNT.NAME</columns>
+    <columns>CustomerType__c</columns>
+    <columns>ACCOUNT.RECORDTYPE</columns>
+    <columns>ACCOUNT.PHONE1</columns>
+    <columns>ACCOUNT.URL</columns>
+    <columns>Address__c</columns>
+    <columns>ACCOUNT.INDUSTRY</columns>
+    <columns>CORE.USERS.LAST_NAME</columns>
+    <columns>ACCOUNT.CREATED_DATE</columns>
+    <filterScope>Mine</filterScope>
+    <filters>
+        <field>ACCOUNT.RECORDTYPE</field>
+        <operation>equals</operation>
+        <value>Account.ExistingCustomer</value>
+    </filters>
+    <filters>
+        <field>CustomerStatus__c</field>
+        <operation>equals</operation>
+        <value>01,02</value>
+    </filters>
+    <label>내 고객(기존+가망)</label>
+</ListView>

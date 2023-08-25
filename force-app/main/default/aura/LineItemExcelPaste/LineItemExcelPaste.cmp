@@ -1,0 +1,259 @@
+<!--
+* ==================================================================================
+*   File Name   : LineItemExcelPaste.cmp
+*   Author      : Minje.Kim
+*   Date        : 2022.09.16
+*   Description : Excel Grid Paste funtion
+*   Modification Log
+* ==================================================================================
+*   Ver     Date          Author          Modification
+* ==================================================================================
+*   1.0     2022.09.16    Minje.Kim    Create
+* ==================================================================================
+-->
+
+<aura:component implements="force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable" controller="LineItemExcelPasteController">
+
+    <!-- Common Attribute -->   
+    <aura:attribute name="showSpinner" type="Boolean" default="false" description="showSpinner"/>
+    <aura:attribute name="isBTNClicked" type="Boolean" default="false" description="더블클릭 방지 Check"/>
+
+    <!-- Attribute -->
+    <aura:attribute name="recordId" type="String" description="상위 Record Id"/>
+    <aura:attribute name="sObjectName" type="String" description="상위 Record ObjectType"/>
+    <aura:attribute name="pricebookId" type="String" description="상품 가격 목록 Record Id"/>
+    
+    <aura:attribute name="title" type="String" default="Excel Data Import" description="화면 상단 헤더 명"/>
+
+    <aura:attribute name="isComplete" type="Boolean" default="false" description="Excel 업로드 Data 완료 여부"/>
+    <aura:attribute name="isOpen" type="Boolean" default="false" description="Excel 업로드 화면 Open 여부"/>
+    <aura:attribute name="openTab" type="String" default="Sample" description="Excel 업로드 견본/전체 활성화탭 구분"/>
+    <aura:attribute name="isValid" type="Boolean" default="false" description="Excel 업로드 렌더링 유효성 여부"/>
+    <aura:attribute name="isNewUpload" type="Boolean" default="false" description="신규 Excel 업로드 여부 (↔ 끝행추가)"/>
+    <aura:attribute name="listLineItem" type="List" description="선택된 견적 상품 리스트"/>
+    
+    <!-- Sample Paste Attribute-->
+    <aura:attribute name="listPasteTempResult_Sample" type="List" description="Excel 업로드 된 견본 데이터 (미리보기창)"/>
+    <aura:attribute name="listCenter" type="List" description="상품검색 물류센터 구분"/>
+    <aura:attribute name="selectedCenter" type="String" description="상품검색 물류센터 선택값"/>
+    <aura:attribute name="listMonth" type="List" description="상품검색 기준월 구분"/>
+    <aura:attribute name="selectedMonth" type="String" description="상품검색 기준월 선택값"/>
+    <aura:attribute name="isAISearch" type="Boolean" description="상품검색 일반/AI 검색 선택값"/>
+    <aura:attribute name="selectedControl" type="String" default="N" description="상품검색 중단제어 선택값"/>
+
+    <!-- Full Paste Attribute-->
+    <aura:attribute name="listAvailable" type="List" default="[]" description="전체 업로드 필드 선택 목록"/>
+    <aura:attribute name="listRequiredField" type="List" default="[]" description="전체 업로드 필드 선택 목록 중 고정값"/>
+    <aura:attribute name="listSelected" type="List" default="[]" description="전체 업로드 필드 선택 목록 중 선택값 (ApiName)"/>
+    <aura:attribute name="listSelectedLabel" type="List" default="[]" description="전체 업로드 필드 선택 목록 중 고정값 (Label)"/>
+    
+    <aura:attribute name="listViewData_Full" type="List" default="[]" />
+    <aura:attribute name="listValidTargetData" type="List" default="[]"/>
+    <aura:attribute name="listPasteTempResult_Full" type="List" />
+    <aura:attribute name="listPasteResult" type="List" />
+    
+    <!-- Paging Attribute -->
+    <aura:attribute name="countPerPage_Sample" type="Integer" default="30" />
+    <aura:attribute name="pageNumber_Sample" type="Integer" default="1" />
+    <aura:attribute name="maxPage_Sample" type="Integer" default="1" />
+    <aura:attribute name="pageRecords_Sample" type="List" default="[]" />
+
+    
+    <!-- Paging Attribute -->
+    <aura:attribute name="countPerPage_Full" type="Integer" default="30" />
+    <aura:attribute name="pageNumber_Full" type="Integer" default="1" />
+    <aura:attribute name="maxPage_Full" type="Integer" default="1" />
+    <aura:attribute name="pageRecords_Full" type="List" default="[]" />
+    
+    <!-- Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.fnInit}" />
+    <aura:handler name="change" value="{!v.pageNumber_Sample}" action="{!c.fnRenderPage_Sample}" />
+    <aura:handler name="change" value="{!v.pageNumber_Full}" action="{!c.fnRenderPage_Full}" />
+    <aura:handler name="change" value="{!v.pageReference}" action="{!c.handlePageChange}" />
+
+    <!-- Contents -->
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-id" aria-modal="true" aria-describedby="modal-content-id" class="slds-modal slds-modal_medium slds-fade-in-open">
+        <aura:if isTrue="{!v.showSpinner}">
+            <lightning:spinner aura:id="spinner" alternativeText="Loading" size="large" variant="brand" />
+        </aura:if>
+        
+        <div class="slds-modal__container" style="padding:0">
+            <!-- Header[S] -->
+            <header class="modal-header slds-modal__header">
+                <lightning:buttonIcon iconName="utility:close" size="small" alternativeText="Close" variant="bare-inverse" class="slds-modal__close" onclick="{!c.fnCancel}" />
+                <h2 id="modal-heading-id" class="slds-text-heading_medium slds-hyphenate">
+                    {!v.title}
+                </h2>
+            </header> 
+            <!-- Header[E] -->
+            <!-- Body[S] -->
+            <div class="modal-body slds-modal__content" style="min-height:50%; max-height:70%">
+                <div style="height:100%; padding:1rem">
+                    
+                    <lightning:tabset variant="scoped" class="custom-beige-bgColor" selectedTabId="{!v.openTab}">  
+                        <lightning:tab id="Sample" label="견본 Upload" onactive="{!c.fnHandleActive}">         <div class="slds-grid slds-gutters" style="margin:0; height:100%; padding: 5px;">
+                            <div class="slds-card_boundary related_list_card_border slds-col slds-size_1-of-2 slds-text-align_center " style=" padding: 0;">
+                                <div class="slds-scrollable"  style="height:90%">
+                                    <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_col-bordered" width="100%">
+                                        <thead>
+                                            <tr class="slds-hint-parent">
+                                                <th width="5%"></th>
+                                                <th>Excel Data</th>
+                                            </tr>
+                                        </thead>    
+                                        <tbody>
+                                            <aura:iteration items="{!v.pageRecords_Sample}" var="objData" indexVar="idx">
+                                                <tr>
+                                                    <td>{!(v.countPerPage_Sample*(v.pageNumber_Sample-1)) + idx + 1}</td>
+                                                    <td>{!objData}</td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="slds-align_absolute-center" style="height:10%">
+                                    <c:DN_Paging currentPageNumber="{!v.pageNumber_Sample}" maxPageNumber="{!v.maxPage_Sample}" />
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2 slds-text-align_center " style="height:inherit">
+                                <div>
+                                    <div style="display:flex; width:50%; position:absolute; padding:0.25rem 3rem 0.25rem 3rem; text-align:right; z-index:1" >
+                                        <!-- <div style="margin-left:auto">
+                                            <lightning:input class="custom-toggle-nodesc slds-col" type="toggle" label="AI 매핑" checked="{!v.isAISearch}"/>
+                                        </div> -->
+                                        <div style="margin-left:auto">
+                                            <lightning:button label="메뉴얼 다운로드" onclick="{!c.fnManualDownload}" />
+                                        </div>
+                                    </div>  
+                                    <lightning:tabset>
+                                        <lightning:tab label="데이터 입력">
+                                        <div class="slds-grid" style="display:flex; margin-bottom:1rem">
+                                            <div style="margin:auto">
+                                                <lightning:select class="custom-form-element" label="물류센터" value="{!v.selectedCenter}">
+                                                    <aura:iteration items="{!v.listCenter}" var="option">
+                                                        <option text="{!option.label}" value="{!option.value}" selected="{!option.selected}"/>
+                                                    </aura:iteration>
+                                                </lightning:select>
+                                            </div>
+                                            <div style="margin:auto">
+                                                <lightning:select class="custom-form-element" label="기준월" value="{!v.selectedMonth}">
+                                                    <aura:iteration items="{!v.listMonth}" var="option">
+                                                        <option text="{!option.label}" value="{!option.value}" selected="{!option.selected}"/>
+                                                    </aura:iteration>
+                                                </lightning:select>
+                                            </div>
+                                            <div style="margin:auto">
+                                                <lightning:select class="custom-form-element" label="중단제어" value="{!v.selectedControl}" >
+                                                        <option value="N">미적용</option>
+                                                        <option value="Y">적용</option>
+                                                </lightning:select>      
+                                            </div>
+                                            <div style="margin:auto">
+                                                <span class="slds-form-element__label" style="margin-left:0.5rem"> AI 매핑</span>
+                                                <lightning:input class="custom-toggle-nodesc slds-col" type="toggle" variant="label-hidden" checked="{!v.isAISearch}"/>
+                                            </div>
+                                        </div>
+                                        <div class="slds-grid">
+                                            <div class="slds-col slds-size--1-of-2">
+                                                <lightning:input type="radio" label="신규 업로드 (기존 데이터 전체삭제)" value="Y" onchange="{!c.fnCheckRadioHandle}" checked="{!v.isNewUpload}"/>
+                                            </div>
+                                            <div class="slds-col slds-size--1-of-2 custom-min-width-75px">
+                                                <lightning:input type="radio" label="끝 행에 추가" value="N" onchange="{!c.fnCheckRadioHandle}" checked="{!!v.isNewUpload}"/>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <lightning:textarea class="custom-resizeNone" variant="label-hidden" aura:id="exceldata_Sample" placeholder="양식 데이터를 복사해서 붙혀넣으세요. 자세한 내용은 메뉴얼을 참고하세요."/>
+                                        <lightning:button variant="neutral" label="적용" onclick="{!c.fnDataRender_Sample}" />
+                                        
+                                        <br/><br/><br/><br/><br/><br/><br/>
+                                        <br/><br/><br/>
+                                        </lightning:tab> 
+                                    </lightning:tabset>
+                                </div>
+                            </div>
+                        </div>  
+
+                        </lightning:tab>
+                        <!-- 양식데이터 drop & upload 구간 -->
+                        <lightning:tab id="Full" label="전체 Upload" onactive="{!c.fnHandleActive}"  >
+                            <div class="slds-grid slds-gutters" style="margin:0; height:100%; padding: 5px;">
+                                <div class="slds-card_boundary related_list_card_border slds-col slds-size_1-of-2 slds-text-align_center " style=" padding: 0;">
+                                    <div class="slds-scrollable"  style="height:90%">
+                                        <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_col-bordered" width="100%">
+                                            <thead>
+                                                <tr class="slds-hint-parent">
+                                                    <th width="5%"></th>
+                                                    <aura:iteration items="{!v.listSelectedLabel}" var="strSelectedLabel" indexVar="idx">
+                                                        <th>{!strSelectedLabel}</th>
+                                                    </aura:iteration>
+                                                    <aura:if isTrue="{!!v.isValid}">
+                                                        <th> 결과 </th>
+                                                    </aura:if>
+                                                </tr>
+                                            </thead>    
+                                            <tbody>
+                                                <aura:iteration items="{!v.pageRecords_Full}" var="objData" indexVar="idx">
+                                                    <tr>
+                                                        <td>{!(v.countPerPage_Full*(v.pageNumber_Full -1)) + idx + 1}</td>
+                                                        <aura:iteration items="{!objData}" var="objSubData">
+                                                                <td>{!objSubData}</td>
+                                                        </aura:iteration>
+                                                    </tr>
+                                                </aura:iteration>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="slds-align_absolute-center" style="height:10%">
+                                        <c:DN_Paging currentPageNumber="{!v.pageNumber_Full}" maxPageNumber="{!v.maxPage_Full}" />
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-text-align_center " style="height:inherit">
+                                    <div>
+                                        <div style="width:50%; left:50%; position:absolute;padding:0.25rem 2rem 0.25rem 2rem; text-align:right; z-index:1" >
+                                            <lightning:button label="메뉴얼 다운로드" onclick="{!c.fnManualDownload}" />
+                                        </div>  
+                                        <lightning:tabset>
+                                            <lightning:tab label="필드 선택">
+                                                <lightning:dualListbox  variant="label-hidden" sourceLabel="Available" selectedLabel="Selected"
+                                                                        options="{!v.listAvailable}"
+                                                                        requiredOptions="{!v.listRequiredField}" 
+                                                                        value="{!v.listSelected}"
+                                                                        onchange="{!c.fnHandleChangeDuallistBox}"
+                                                                        size="3"/>
+                                            </lightning:tab>
+                                        </lightning:tabset>
+                                    </div>
+                                    <div>
+                                        <lightning:tabset>
+                                            <lightning:tab label="데이터 입력">
+                                                <div class="slds-grid">
+                                                    <div class="slds-col slds-size--1-of-2">
+                                                        <lightning:input type="radio" label="신규 업로드 (기존 데이터 전체삭제)" value="Y" onchange="{!c.fnCheckRadioHandle}" checked="{!v.isNewUpload}"/>
+                                                    </div>
+                                                    <div class="slds-col slds-size--1-of-2 custom-min-width-75px">
+                                                        <lightning:input type="radio" label="끝 행에 추가" value="N" onchange="{!c.fnCheckRadioHandle}" checked="{!!v.isNewUpload}"/>
+                                                    </div>
+                                                </div>
+                                                <br/>
+                                                <lightning:textarea class="custom-resizeNone" variant="label-hidden" aura:id="exceldata_Full" placeholder="양식 데이터를 복사해서 붙혀넣으세요. 자세한 내용은 메뉴얼을 참고하세요."/>
+                                                <lightning:button variant="neutral" label="적용" onclick="{!c.fnDataRender_Full}" />
+                                            </lightning:tab> 
+                                        </lightning:tabset>
+                                    </div>
+                                </div>
+                            </div>
+                        </lightning:tab>
+                    </lightning:tabset>
+                </div>
+            </div>
+            <!-- Body[E] -->    
+            <!-- Footer[S] -->
+            <footer class="modal-footer slds-modal__footer">
+                <lightning:button variant="neutral" label="취소" onclick="{!c.fnCancel}" />
+                <lightning:button variant="brand" label="저장" onclick="{!c.fnSave}" />
+            </footer>
+            <!-- Footer[E] -->
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</aura:component>

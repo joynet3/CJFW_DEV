@@ -1,0 +1,55 @@
+/**
+ * Created by 천유정 on 2022-12-27.
+ */
+
+.THIS .richTextAreaCSS .slds-rich-text-editor {
+    border: none;
+}
+
+.THIS .richTextAreaCSS .slds-rich-text-area__content {
+    min-height: 38vh;
+    max-height: 38vh;
+}
+
+.THIS .slds-modal__container {
+    margin: auto auto;
+}
+
+.THIS .tableFixHead {
+    overflow: auto;
+}
+
+.THIS .tableFixHead table {
+    border-collapse: inherit;
+    border : 1px solid rgb(243, 243, 243);
+    width: 100%;
+}
+
+.THIS .tableFixHead th {
+    position: sticky;
+    top: 0;
+    background: rgb(243, 243, 243);
+    z-index: 2;
+}
+
+.THIS .helptextCSS .slds-form-element__icon {
+    padding-top : 0 !important;
+}
+
+.THIS .helptextCSS .slds-form-element__icon {
+    padding-top : 0 !important;
+}
+
+.THIS .slds-pill_container {
+    height:auto !important;
+    overflow:hidden !important;
+    display : block; /*pill 수에 따라 Pill Container 자동 div height 변경 속성*/
+}
+
+.THIS .subjectCSS .slds-form-element__control {
+    padding-left: 10%;
+}
+
+.THIS .progressBarCSS {
+    height: 1.75rem;
+}

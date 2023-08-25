@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>fm_MonthlySalesScore__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF( MonthlySales__c &gt;= 5000000 , 6, IF(MonthlySales__c &gt;= 3000000, 5, IF(MonthlySales__c &gt;= 2000000, 4, IF(MonthlySales__c &gt;= 1000000, 3, IF(MonthlySales__c &gt;= 500000, 2, 1)))))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>[ 6 Point = Monthly Sales &gt;= 5,000,000 ] [ 5 Point = Monthly Sales &gt;= 3,000,000 ] [ 4 Point = Monthly Sales &gt;= 2,000,000 ] [ 3 Point = Monthly Sales &gt;= 1,000,000 ] [ 2 Point = Monthly Sales &gt;= 500,000 ] [ 1 Point = Monthly Sales &lt; 500,000 ]</inlineHelpText>
+    <label>Monthly Sales Score</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

@@ -1,0 +1,6 @@
+<aura:event type="APPLICATION" description="OilApproval_SearchDetail_evt" access="global">
+    <aura:attribute name="selectedHeadOffice" type="String" /> 
+    <aura:attribute name="selectedSU" type="String" /> 
+    <aura:attribute name="selectedTeam" type="String" /> 
+    <aura:attribute name="selectedMAName" type="String" /> 
+</aura:event>

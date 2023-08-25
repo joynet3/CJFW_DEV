@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>HasDeposit__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>보증금 여부</description>
+    <externalId>false</externalId>
+    <label>Has Deposit?</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

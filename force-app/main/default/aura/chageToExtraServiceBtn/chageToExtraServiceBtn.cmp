@@ -1,0 +1,66 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 08-16-2023
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader" access="global" controller="changeToExtraServiceBtn">
+  <aura:attribute name="showSpinner" type="Boolean" default="false" description="로딩바 활성화 여부"/>
+
+  <aura:handler name="init" value="{!this}" action="{!c.fnInit}" />
+  
+  <aura:html tag="style">
+        .slds-modal__container{
+        min-width: 75px !important;        
+        max-width: fit-content !important;
+        padding: 0 20px;
+        }
+        .cuf-content {
+        padding: 0 0rem !important;
+        }
+        .slds-p-around--medium {
+        padding: 0rem !important;
+        }
+        .slds-modal__content {
+        overflow-y: hidden !important;
+        height: unset !important;
+        max-height: unset !important;
+        }
+    </aura:html>  
+  
+
+  <div class="slds-col modal-body scrollable slds-p-around--medium divContent">
+      <!-- Modal Header -->
+      <aura:if isTrue="{!v.showSpinner}">
+          <lightning:spinner variant="brand" size="medium" />
+      </aura:if>
+      
+      <div class="slds-modal__header">
+          <lightning:buttonIcon iconName="utility:close" size="large" alternativeText="Close" variant="bare-inverse" class="slds-modal__close" onclick="{!c.fnCancel}" />
+          <h2 class="title slds-text-heading--medium">
+              <label>안내</label>
+          </h2>
+      </div>
+
+      <!-- (Style) divContentDetail : 전체 Modal 내용 크기 조절 -->
+      <div class="" style="position:relative;min-width:550px">
+          <div>
+              <lightning:layout multipleRows="true" class="slds-p-left--small slds-p-right--small">
+                  <lightning:layoutItem padding="around-small" size="12">
+                      
+                      
+                      <div class="title slds-text-heading--small" style="text-align:center !important">
+                          <label>부가서비스내역으로 레코드변경 하시겠습니까?</label>
+                      </div>
+                  </lightning:layoutItem>
+              </lightning:layout>
+          </div>
+      </div>
+
+      <div class="slds-col modal-footer slds-modal__footer">
+          <lightning:button variant="Neutral" name="Cancel" label="취소" onclick="{!c.fnCancel}"/>
+          <lightning:button variant="Brand" name="Change" label="변경" onclick="{!c.fnChange}"/>
+      </div>
+  </div>
+</aura:component>

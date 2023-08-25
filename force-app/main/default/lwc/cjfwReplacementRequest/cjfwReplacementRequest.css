@@ -1,0 +1,11 @@
+.summaryTr {
+    background-color:rgb(219, 227,243);
+}
+
+.textRight {
+    text-align: right;
+}
+
+.scroll {
+    overflow: auto;
+}

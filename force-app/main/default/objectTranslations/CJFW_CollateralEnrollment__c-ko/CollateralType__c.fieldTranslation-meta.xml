@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label></label>
+    <name>CollateralType__c</name>
+    <picklistValues>
+        <masterLabel>계약이행</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>외상물품대금</masterLabel>
+        <translation></translation>
+    </picklistValues>
+</CustomFieldTranslation>

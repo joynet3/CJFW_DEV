@@ -1,0 +1,4 @@
+<aura:event type="COMPONENT">
+    <aura:attribute name="isOpen" type="Boolean" default="true"></aura:attribute>
+    <aura:attribute name="recordId" type="List"></aura:attribute>
+</aura:event>

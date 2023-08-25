@@ -1,0 +1,1232 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 01-02-2023
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+                controller="cj_workflowDoInformationCtrl"
+                access="global" >
+
+    <aura:html tag="style">
+        .slds-modal__container {
+            max-width: 70rem !important;
+            width: 80% !important;
+        }
+    </aura:html>
+    <aura:handler name="init" value="{!this}" action="{!c.fnInit}" />
+    <aura:attribute name="processId" type="String"/>
+    
+    <aura:registerevent name="componentEventFired" type="c:cj_CustomEvent"></aura:registerevent>
+    
+    <aura:attribute name="objCustomer" type="MDMRegRequestCustomer__c" default="{'sobjectType':'MDMRegRequestCustomer__c', 'PV_CESSION_KZ__c':'', 'PV_KTOKD__c':'Z300'}"/>
+    
+    
+    
+    <aura:attribute name="listItems" type="list" default="['3194-001','3208-001','3209-001', '3210-001', '3211-001',
+                                                          '3212-001', '3213-001','3214-001','3215-001', '3216-001', 
+                                                           '3217-001', '3218-001','3219-001', '3220-001','3221-001',
+                                                          '3222-001','3223-001', '3224-001']"/>
+    
+    <aura:attribute name="isModalOpen" type="boolean" default="false"/>
+
+    <aura:attribute name="pv_knvkgb" type="String"/>
+    <aura:attribute name="pv_bkont_lu" type="String"/>
+
+    <aura:attribute name="inputpv_deligroup" type="String"/>
+    <aura:attribute name="custypes" type="String"/>
+    <aura:attribute name="accountgroup" type="String"/>
+    
+    <aura:attribute name="pv_paycust" type="String"/>
+    
+    <aura:attribute name="pv_vkgrp" type="String"/>
+	<aura:attribute name="inputpv_vkgrp" type="String"/>
+    <aura:attribute name="pv_pernrempno" type="String"/>
+    <aura:attribute name="pv_adminmaempno" type="String"/>
+    
+    <aura:attribute name="pv_lifnr" type="String"/>
+    <aura:attribute name="inputpv_lifnr" type="String"/>
+    
+    
+    <aura:attribute name="pv_regio" type="String"/>
+    <aura:attribute name="inputpv_regio" type="String"/>
+
+    
+    <aura:attribute name="pv_gform" type="String"/>
+    <aura:attribute name="inputpv_gform" type="String"/>
+
+    
+	<aura:attribute name="pv_chargecust" type="String"/>
+    <aura:attribute name="inputpv_chargecust" type="String"/>
+
+    <aura:attribute name="isRequireOLDBIZPlace" type="Boolean"/>
+    <aura:attribute name="pv_pernr" type="String"/>
+	<aura:attribute name="inputpv_pernr" type="String"/>
+    
+    <aura:attribute name="pv_stcdt" type="String"/>
+    <aura:attribute name="inputpv_stcdt" type="String"/>
+    <aura:attribute name="pv_vbund" type="String"/>
+    <aura:attribute name="inputpv_vbund" type="String"/>
+    <aura:attribute name="pv_land1" type="String"/>
+    
+    
+    <aura:attribute name="inputpv_land1" type="String"/>
+    <aura:attribute name="pv_fityp" type="String"/>
+    <aura:attribute name="inputpv_fityp" type="String"/>
+    <aura:attribute name="pv_knvktype" type="String"/>
+    <aura:attribute name="inputpv_knvktype" type="String"/>
+
+    
+    <aura:attribute name="inputpv_zuawa" type="String" default="009"/>    
+    <aura:attribute name="inputpv_akont" type="String"/>
+	    
+    <aura:attribute name="inputpv_konda" type="String"/>
+    <aura:attribute name="inputpv_cuhr1" type="String"/>
+
+    <aura:attribute name="inputpv_kvgr1" type="String"/>
+
+    <aura:attribute name="inputpv_waers" type="String"/>
+
+    <aura:attribute name="inputpv_zterm_vv" type="String"/>
+
+    <aura:attribute name="inputpv_old_bizplace_new" type="String"/>
+    
+    
+    <aura:attribute name="InforecordId" type="List"/>
+    <aura:attribute name="isAddressModalOpen" type="Boolean" default="false"/>
+	<aura:attribute name="recordId" type="String"/>	
+    <aura:attribute name="accountId" type="String"/>
+    <aura:attribute name="PV_ADRES_ROADMGMTNO" type="String" />
+    <aura:attribute name="PV_ADRES_ADDR1" type="String" />
+    <aura:attribute name="PV_ADRES_ROADADDR1" type="String" />
+    <aura:attribute name="PV_ADRES_ROADADDR2" type="String" />
+    <aura:attribute name="PV_ADRES_ADDR2" type="String" />
+    <aura:attribute name="PV_ADRES_ZIPCODE" type="String" />
+    <aura:attribute name="PV_ADRES_SEQ" type="String" />
+    <aura:attribute name="isDisabled" type="boolean" default="false"/>
+    
+    
+	<aura:attribute name="roadNameAddress" type="String" />
+    <aura:attribute name="detailAddress" type="String" />
+    <aura:attribute name="zipcodes" type="String" />
+    
+    <!--우편 Attr-->
+     <!-- Parameter Attribute -->
+    <aura:attribute name="hasSaveFunc" type="Boolean" default="true" />
+    <aura:attribute name="objAddress" type="cj_workflowDoInformationCtrl.WrapperAddress" />
+    <aura:attribute name="headerName" type="String" default="Search" />
+
+    <!-- Component Attribute -->
+    <aura:attribute name="bIsSearchAddr"    type="Boolean"    default="true" />
+    <aura:attribute name="bIsShowSpinner"   type="Boolean"    default="false" />
+    
+         
+    <aura:attribute name="sErrorCode"     type="String"  />
+    <aura:attribute name="intTotalCount"  type="Integer" />
+    <aura:attribute name="intTotalPage"   type="Integer" />
+    <aura:attribute name="intCntPerPage"  type="Integer" default="10" />
+    <aura:attribute name="intCurrentPage" type="Integer" default="1"  />
+    <aura:attribute name="intPageIdx"     type="Integer" default="1"  />
+    <aura:attribute name="listAddress"  type="cj_workflowDoInformationCtrl.WrapperAddress[]" />
+    
+	<!--추가-->
+    <aura:attribute name="AddrInputDiv"    type="Boolean"    default="false" />
+    <aura:attribute name="btnSave"    type="Boolean"    default="false" />
+    <aura:attribute name="searchForm"    type="Boolean"    default="true" />
+
+    <aura:attribute name="objName" type="String" description="빌더에서 입력받는 오브젝트 명" />
+    <aura:attribute name="zipCodeField" type="String" description="빌더에서 입력받는 우편번호 필드명" />
+    <aura:attribute name="addressField" type="String" description="빌더에서 입력받는 주소 필드명" />
+    <aura:attribute name="addressDetailField" type="String" description="빌더에서 입력받는 주소 상세 필드명" />
+    <aura:attribute name="labelPostalCode" type="String" description="빌더에서 입력받는 우편번호 라벨명" />
+    <aura:attribute name="labelAddress" type="String" description="빌더에서 입력받는 주소 라벨명" />
+    <aura:attribute name="labelAddressDetail" type="String" description="빌더에서 입력받는 주소 상세 라벨명" />
+
+    <aura:attribute name="isRequirePVShape" type="Boolean" />
+
+    <aura:attribute name="isReadOnlyPVKULTG" type="Boolean" default="false"/>
+    <aura:attribute name="isReadOnlyPAYCust" type="Boolean" default="false"/>
+
+    <aura:attribute name="isReadOnlyPVCharge" type="Boolean" default="false"/>
+    <aura:handler name="cmpEvent" event="c:ceEvent" action="{!c.handleCmpEvent}"/>
+    
+
+    <!-- contact modal -->
+    <aura:attribute name="isContactModalOpen" type="Boolean" default="False" />
+    <aura:attribute name="headerContactModal" type="String" default="담당자" />
+    <aura:attribute name="contactData" type="Object" />
+    <aura:attribute name="contactSelected" type="Object" />
+
+
+    <!-- bank modal -->
+    <aura:attribute name="isBankModalOpen" type="Boolean" default="False" />
+    <aura:attribute name="headerBankModal" type="String" default="은행정보" />
+    <aura:attribute name="bankData" type="Object" />
+    <aura:attribute name="bankSelected" type="Object" />
+    
+    <aura:handler name="ztermEvent" event="c:ceEvent" action="{!c.handleztermEvent}"/>
+     
+    <!-- Event -->
+    <aura:registerEvent name="RoadAddrSearchEvt" type="c:DN_AddrSearch_evt" />
+    
+    
+    <!--기본 영업 정보-->    
+    <aura:attribute name="basicInfo" type="Boolean" default="false"/>
+    
+    <!--기본 회계 정보-->  
+    <aura:attribute name="financialInfo" type="Boolean" default="false"/>
+    
+    <!--기본 영업 정보-->
+    <aura:attribute name="salesInfo" type="Boolean" default="false"/>
+    
+    <aura:html tag="style">.toastMessage.forceActionsText{white-space : pre-line !important;}</aura:html>
+    
+    <div class="modal-header slds-modal__header slds-size_1-of-1">
+        <h4 class="title slds-text-heading--medium" >정보생성</h4>
+    </div>
+     
+         <lightning:recordEditForm aura:id="generalrecordEditForm"
+                objectApiName="MDMRegRequestCustomer__c"
+                density="comfy"
+    			onsuccess="{!c.customerhandleSuccess}"                   
+				onerror="{!c.handleError}"
+				onsubmit="{!c.customerhandleSubmit}"                                   
+                >
+    <div class="slds-modal__content slds-p-around--x-small slds-size_1-of-1 slds-is-relative" aura:id="modalbody" id="modalbody">
+       
+  
+        <lightning:tabset>
+            
+            <aura:if isTrue="{!v.basicInfo}">
+                
+                <lightning:tab label="기본정보" id="basic">
+                    <table style="width: 100%">
+                        <tr>
+                            <td style="width: 50%;">
+                                <lightning:inputField fieldName="Account__c" disabled="true" value="{!v.accountId}" aura:id="account"/>
+                            </td> 
+                            <td style="width: 50%;">
+                                <lightning:inputField fieldName="PV_OLDCD__c" value="{!v.objCustomer.PV_OLDCD__c}" aura:id="customeridasis"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="required-block">
+                                    <p class="required-mark">*</p>
+                                    <lightning:inputField fieldName="PV_NAME1__c" value="{!v.objCustomer.PV_NAME1__c}" aura:id="pv_name1"/>
+                                </div>
+                            </td>
+                            <td>
+                                <lightning:inputField fieldName="PV_NAME_G__c" value="{!v.objCustomer.PV_NAME_G__c}" aura:id="namekor"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <lightning:inputField fieldName="PV_NAME2__c" value="{!v.objCustomer.PV_NAME2__c}" aura:id="pv_name2" />
+                            </td>
+                            <td>
+                                <lightning:inputField fieldName="PV_KTOKD__c" value="{!v.accountgroup}" disabled="true" aura:id="accountgroup"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <lightning:inputField fieldName="PV_CUSTTYPE__c" required="true" disabled="true" value="{!v.custypes}" aura:id="pv_custtype"/>
+                            </td>
+                            <td>
+                                <div class="required-block">
+                                    <p class="required-mark">*</p>
+                                    <lightning:inputField fieldName="PV_STCD2__c" aura:id="pv_stcd2" value="{!v.objCustomer.PV_STCD2__c}"/>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <lightning:inputField fieldName="PV_STCD3__c" aura:id="pv_stcd3" value="{!v.objCustomer.PV_STCD3__c}"/>
+                            </td>
+                            <td>
+                                <div class="required-block">
+                                    <p class="required-mark">*</p>
+                                    <lightning:inputField fieldName="PV_STCD4__c" aura:id="pv_stcd4" value="{!v.objCustomer.PV_STCD4__c}"/>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="required-block">
+                                    <p class="required-mark">*</p>
+                                    <lightning:inputField fieldName="PV_GFORM__c" value="{!v.objCustomer.PV_GFORM__c}" aura:id="pv_gform"/>                                                        
+                                </div>
+                            </td>
+                            <td>
+                                <div class="required-block">
+                                    <p class="required-mark">*</p>
+                                    <lightning:inputField class="required-input" fieldName="PV_J_1KFREPRE__c" value="{!v.objCustomer.PV_J_1KFREPRE__c}" aura:id="pv_j_1kfrepre"/>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="required-block">
+                                    <p class="required-mark">*</p>                                          
+                                    <lightning:inputField fieldName="PV_STCD1__c" value="{!v.objCustomer.PV_STCD1__c}" aura:id="pvstcd1"/>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="required-block">
+                                    <p class="required-mark">*</p>
+                                    <lightning:inputField fieldName="PV_J_1KFTBUS__c" value="{!v.objCustomer.PV_J_1KFTBUS__c}" aura:id="pv_j_1kftbus"/>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="required-block">
+                                    <p class="required-mark">*</p>
+                                    <lightning:inputField fieldName="PV_J_1KFTIND__c" value="{!v.objCustomer.PV_J_1KFTIND__c}" aura:id="pv_j_1kftind"/>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="required-block">
+                                    <p class="required-mark">*</p>
+                                    <lightning:inputField fieldName="PV_TELF1__c" value="{!v.objCustomer.PV_TELF1__c}" aura:id="pv_telf1"/>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <lightning:inputField fieldName="PV_TELFX__c" value="{!v.objCustomer.PV_TELFX__c}" aura:id="pv_telfx"/>
+                            </td>
+                            <td>
+                                <lightning:inputField fieldName="PV_PAYCUST__c" disabled="true" class="slds-hide" value="{!v.objCustomer.PV_PAYCUST__c}" aura:id="pv_paycust"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <lightning:inputField fieldName="PV_CHARGECUST__c" disabled="true" class="slds-hide" value="{!v.objCustomer.PV_CHARGECUST__c}" aura:id="pv_chargecust"/>
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0px 15px 0px 15px; vertical-align: bottom;">
+                                <lightning:inputField fieldName="PV_VKGRP__c" value="{!v.objCustomer.PV_VKGRP__c}" class="slds-hide" disabled="true" aura:id="pv_vkgrp"/>
+                                <c:MDMReferenceCodeSearch
+                                    groupId="SALESGROUPH"
+                                    label="영업그룹"
+                                    id="{!v.objCustomer.PV_VKGRP_lu__c}"
+                                    value="{!v.objCustomer.PV_VKGRP__c}"
+                                    inputText="{!v.inputpv_vkgrp}"
+                                    isRequired="true"
+                                    isDisabled="false" 
+                                />
+                            </td>
+                            <td>
+                                <lightning:input label="영업그룹(유효기간 관리)" type="Date" value="{!v.objCustomer.PVRA_VKGRP__c}" onchange="{!c.grpChanged}"  aura:id="pvra_vkgrp__c"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <lightning:inputField fieldName="PV_PERNR__c" disabled="true" class="slds-hide" value="{!v.pv_pernrempno}" aura:id="pv_pernrempno"/>
+                                <lightning:inputField fieldName="PV_PERNR_lu__c" required="true" value="{!v.pv_pernr}" onchange="{!c.pvChanged}" aura:id="pv_pernr"/>
+                            </td>
+                            <td>
+                                <lightning:input label="담당MA(유효기간 관리)" type="Date" value="{!v.objCustomer.PVRA_PERNR__c}" onchange="{!c.dangrpChanged}"  aura:id="pvra_pernr"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <lightning:inputField fieldName="PV_ADMINMA__c" value="{!v.pv_adminmaempno}" aura:id="pv_adminma"/>
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <lightning:inputField fieldName="PV_LOGISCENTER__c" value="{!v.objCustomer.PV_LOGISCENTER__c}" aura:id="pv_logiscenter"/>
+                            </td>
+                            <td>
+                                <lightning:input label="FW 출고센터" type="Date" value="{!v.objCustomer.PVRA_LOGISCENTER__c}" onchange="{!c.logiscenterChanged}"  aura:id="pvra_logiscenter"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0px 15px 0px 15px; vertical-align: bottom;">
+                                <lightning:inputField fieldName="PV_STCDT__c" disabled="true" class="slds-hide" value="{!v.objCustomer.PV_STCDT__c}" aura:id="pv_stcdt"/> 
+                        		<c:MDMReferenceCodeSearch
+                                    groupId="J_1ATODC"
+                                    label="세금계산서 발행 유형"
+                                    id="{!v.objCustomer.PV_STCDT_lu__c}"
+                                    value="{!v.objCustomer.PV_STCDT__c}"
+                                    inputText="{!v.inputpv_stcdt}"
+                                    isRequired="true" 
+                                    isDisabled="false"
+                                />
+                            </td>
+                            <td>
+                                <div class="required-block">
+                                    <p class="required-mark">*</p>
+                                    <lightning:inputField fieldName="PV_FITYP__c" value="{!v.objCustomer.PV_FITYP__c}" aura:id="pv_fityp"/>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <lightning:inputField fieldName="PV_HDOFFICEYN__c" value="{!v.objCustomer.PV_HDOFFICEYN__c}"  aura:id="pv_hdofficeyn"/>
+                            </td>
+                            <td>
+                                <lightning:inputField fieldName="PV_HKUNNR__c" value="{!v.objCustomer.PV_HKUNNR__c}"  aura:id="pv_hkumnr"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <lightning:input label="관계사여부" type="checkbox" value="{!v.objCustomer.PV_SUBSIDIARYYN__c}" onchange="{!c.subsidiChange}"  aura:id="pv_subsi"/>
+                            </td>
+                            <td style="padding: 0px 15px 0px 15px; vertical-align: bottom;">
+                                <lightning:inputField fieldName="PV_VBUND__c" disabled="true" class="slds-hide" value="{!v.objCustomer.PV_VBUND__c}" aura:id="pv_vbund"/> 
+                        		<c:MDMReferenceCodeSearch
+                                    groupId="T880"
+                                    label="관계사 코드"
+                                    id="{!v.objCustomer.PV_VBUND_lu__c}"
+                                    value="{!v.objCustomer.PV_VBUND__c}"
+                                    inputText="{!v.inputpv_vbund}"
+                                    isRequired="{!v.isRequireOLDBIZPlace}"
+                                    isDisabled="false"
+                                /> 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0px 15px 0px 15px; vertical-align: bottom;">
+                                <lightning:inputField fieldName="PV_LIFNR__c" class="slds-hide" disabled="true" value="{!v.objCustomer.PV_LIFNR__c}" aura:id="pv_lifnr"/>
+                                <c:MDMReferenceCodeSearch
+                                    groupId="VENDOR"
+                                    label="수수료지급처"
+                                    id="{!v.objCustomer.PV_LIFNR_lu__c}"
+                                    value="{!v.objCustomer.PV_LIFNR__c}"
+                                    inputText="{!v.inputpv_lifnr}"
+                                    isRequired="false"
+                                    isDisabled="false"
+                                />
+                            </td>
+                            <td style="padding: 0px 15px 0px 15px; vertical-align: bottom;">
+                                <lightning:inputField fieldName="PV_LAND1__c" disabled="true" class="slds-hide" value="{!v.objCustomer.PV_LAND1__c}" aura:id="pv_land1"/> 
+                        		<c:MDMReferenceCodeSearch
+                                    groupId="T005"
+                                    label="국가키"
+                                    id="{!v.objCustomer.PV_LAND1_lu__c}"
+                                    value="{!v.objCustomer.PV_LAND1__c}"
+                                    inputText="{!v.inputpv_land1}"
+                                    isRequired="false"
+                                    isDisabled="false"
+                                />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="required-block">
+                                    <p class="required-mark">*</p>
+                                    <lightning:inputField fieldName="PV_KNVKTYPE__c" value="{!v.objCustomer.PV_KNVKTYPE__c}" aura:id="pv_knvktype"/>
+                                </div>
+                            </td>
+                            <td>
+                                <lightning:inputField fieldName="PV_CLOSEDT__c" value="{!v.objCustomer.PV_CLOSEDT__c}" aura:id="pv_closedt"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0px 15px 0px 15px; vertical-align: bottom;">
+                                <lightning:inputField fieldName="PV_REGIO__c" disabled="true" class="slds-hide" value="{!v.objCustomer.PV_REGIO_lu__c}" aura:id="pv_regio"/>
+                                <c:MDMReferenceCodeSearch
+                                    groupId="T005S"
+                                    label="지역"
+                                    id="{!v.objCustomer.PV_REGIO_lu__c}"
+                                    value="{!v.objCustomer.PV_REGIO_lu__c}"
+                                    inputText="{!v.inputpv_regio}"
+                                    isRequired="true" 
+                                    isDisabled="false"
+                                />
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="slds-grid slds-wrap" style="padding: 14px;">
+                        <div class="slds-col slds-size_10-of-12">
+                            <lightning:button class="find-addr-btn" label="주소검색" iconName="utility:search" iconPosition="right" variant="brand" onclick="{!c.openAddressModal}" />
+                        </div>
+                       
+                       <div class="slds-col slds-grid slds-size_1-of-2">
+                            <div class="slds-col slds-size_1-of-2">
+                           <lightning:inputField fieldName="PV_ADRES_ROADADDR1__c"  value="{!v.roadNameAddress}" disabled="true"/>
+                           </div>
+                           <div class="slds-col slds-size_1-of-2">
+                               <lightning:inputField fieldName="PV_ADRES_ROADADDR2__c"  value="{!v.detailAddress}" disabled="true"/>
+                           </div>
+                            <div class="slds-col slds-size_1-of-2">
+                              <lightning:inputField fieldName="PV_ADRES_ZIPCODE__c"  value="{!v.zipcodes}" disabled="true"/>
+                           </div>
+                          
+                        </div>
+                       
+                        <br></br>
+                        <div class="slds-col slds-size_10-of-12">
+                            <lightning:button class="find-addr-btn" label="담당자" iconName="utility:search" onclick="{!c.setContactModal}" iconPosition="right" variant="brand"/>
+                            
+                            <div class="table-container table-contact-container table-responsive">
+                                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-p-top_large"
+                                    aria-label="Example table of Opportunities with vertical borders">
+                                    <thead>
+                                        <tr class="slds-line-height_reset">
+                                            <th class="so-table-3" scope="col">
+                                                <div class="" title="No">No</div>
+                                            </th>
+                                            <th class="so-table-3" scope="col">
+                                                <div class="" title="담당자명">담당자명</div>
+                                            </th>
+                                            <th class="so-table-3" scope="col">
+                                                <div class="" title="담당자유형">담당자유형</div>
+                                            </th>
+                                            <th class="so-table-3" scope="col">
+                                                <div class="" title="담당자연락처">담당자연락처</div>
+                                            </th>
+                                            <th class="so-table-3" scope="col">
+                                                <div class="" title="담당자 부서">담당자 부서</div>
+                                            </th>
+                                            <th class="so-table-3" scope="col">
+                                                <div class="" title="담당자 직책">담당자 직책</div>
+                                            </th>
+                                            <th class="so-table-3" scope="col">
+                                                <div class="" title="담당자 전자우편">담당자 전자우편</div>
+                                            </th>
+                                            <th class="so-table-3" scope="col">
+                                                <div class="" title="담당자 통화가능시간">담당자 통화가능시간</div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.contactSelected}" var="contact">
+                                            <tr class="slds-hint-parent">
+                                                <td class="so-table-3" data-label="No">
+                                                    {!contact.no}
+                                                </td>
+                                                <td class="so-table-3" data-label="담당자명">
+                                                    {!contact.PV_NAME1_VK__c}
+                                                </td>
+                                                <td class="so-table-3" data-label="담당자유형">
+                                                    {!contact.PV_KNVKGB__c}
+                                                </td>
+                                                <td class="so-table-3" data-label="담당자연락처">
+                                                    {!contact.PV_TELF1_VK__c}
+                                                </td>
+                                                <td class="so-table-3" data-label="담당자 부서">
+                                                    {!contact.PV_ABTNR_VK__c}
+                                                </td>
+                                                <td class="so-table-3" data-label="담당자 직책">
+                                                    {!contact.PV_PAFKT_VK__c}
+                                                </td>
+                                                <td class="so-table-3" data-label="담당자 전자우편">
+                                                    {!contact.PV_EMAIL_VK__c}
+                                                </td>
+                                                <td class="so-table-3" data-label="담당자 통화가능시간">
+                                                    {!contact.PV_TALKT_VK__c}
+                                                </td>
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </lightning:tab>
+                
+            </aura:if>    
+            <aura:if isTrue="{!v.financialInfo}"> 
+                <lightning:tab label="회계정보" id="financial">
+                    <h3 class="slds-dynamic-menu__header slds-m-bottom_x-small" style="font-weight: bold; text-decoration: underline #EB5F26;" role="presentation">지급정보</h3>
+                    <div class="slds-grid slds-gutters">
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:inputField fieldName="PV_BUSAB__c" required="true" value="{!v.objCustomer.PV_BUSAB__c}" />
+                        <lightning:inputField fieldName="PV_ZUAWA__c" disabled="true" class="slds-hide" value="{!v.objCustomer.PV_ZUAWA__c}" aura:id="pv_zuawa"/> 
+                        <div class="padding-side">
+                            <c:MDMReferenceCodeSearch
+                                groupId="TZUN"
+                                label="정렬키"
+                                id="{!v.objCustomer.PV_ZUAWA_lu__c}"
+                                value="{!v.objCustomer.PV_ZUAWA__c}"
+                                inputText="{!v.inputpv_zuawa}"
+                                isRequired="false"
+                                isDisabled="false"
+                            />
+                        </div>
+                        <lightning:inputField fieldName="PV_FDGRV__c" value="{!v.objCustomer.PV_FDGRV__c}"  aura:id="pv_fdgrv"/>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:inputField fieldName="PV_CESSION_KZ__c" required="true" value="{!v.objCustomer.PV_CESSION_KZ__c}"  aura:id="pv_cession_kz"/>
+                        <lightning:inputField fieldName="PV_AKONT__c" disabled="true" class="slds-hide" value="{!v.objCustomer.PV_AKONT__c}" aura:id="pv_akont"/> 
+                        <div class="padding-side">
+                            <c:MDMReferenceCodeSearch
+                                groupId="SKB1_D"
+                                label="조정계정"
+                                id="{!v.objCustomer.PV_AKONT_lu__c}"
+                                value="{!v.objCustomer.PV_AKONT__c}"
+                                inputText="{!v.inputpv_akont}"
+                                isRequired="false"
+                                isDisabled="false"
+                            />                                
+                        </div>
+                            <lightning:inputField fieldName="PV_VRSDG__c" value="{!v.objCustomer.PV_VRSDG__c}"  aura:id="pv_vrsdg"/>
+                        </div>
+                    </div>
+                    <br></br>
+                    <h3 class="slds-dynamic-menu__header slds-m-bottom_x-small" style="font-weight: bold; text-decoration: underline #EB5F26;" role="presentation">세금정보</h3>
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning:inputField fieldName="PV_TAXKDD__c" value="{!v.objCustomer.PV_TAXKDD__c}"  aura:id="pv_taxkdd"/>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning:inputField fieldName="PV_KATR5__c" value="{!v.objCustomer.PV_KATR5__c}"  aura:id="pv_katr5"/>
+                        </div>
+                    </div>
+                    <br></br>
+                    <!-- <div class="slds-col slds-size_10-of-12">
+                        <lightning:button class="find-addr-btn" label="은행정보" iconName="utility:search" onclick="{!c.setBankModal}" iconPosition="right" variant="brand"/>
+                        
+                        <div class="table-container table-contact-container table-responsive">
+                            <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-p-top_large"
+                                aria-label="Example table of Opportunities with vertical borders">
+                                <thead>
+                                    <tr class="slds-line-height_reset">
+                                        <th class="so-table-3" scope="col">
+                                            <div class="" title="No">No</div>
+                                        </th>
+                                        <th class="so-table-3" scope="col">
+                                            <div class="" title="은행키">은행키</div>
+                                        </th>
+                                        <th class="so-table-3" scope="col">
+                                            <div class="" title="가상계좌번호">가상계좌번호</div>
+                                        </th>
+                                        <th class="so-table-3" scope="col">
+                                            <div class="" title="예금주">예금주</div>
+                                        </th>
+                                        <th class="so-table-3" scope="col">
+                                            <div class="" title="은행관리키">은행관리키</div>
+                                        </th>
+                                        <th class="so-table-3" scope="col">
+                                            <div class="" title="은행유형">은행유형</div>
+                                        </th>
+                                        <th class="so-table-3" scope="col">
+                                            <div class="" title="계좌해지여부">계좌해지여부</div>
+                                        </th>
+                                        <th class="so-table-3" scope="col">
+                                            <div class="" title="계좌해지일자">계좌해지일자</div>
+                                        </th>
+                                        <th class="so-table-3" scope="col">
+                                            <div class="" title="참조명세">참조명세</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.bankSelected}" var="bank">
+                                        <tr class="slds-hint-parent">
+                                            <td class="so-table-3" data-label="No">
+                                                {!bank.no}
+                                            </td>
+                                            <td class="so-table-3" data-label="담당자명">
+                                                {!bank.PV_BANKL__c}
+                                            </td>
+                                            <td class="so-table-3" data-label="담당자유형">
+                                                {!bank.PV_BANKN__c}
+                                            </td>
+                                            <td class="so-table-3" data-label="담당자연락처">
+                                                {!bank.PV_KOINH__c}
+                                            </td>
+                                            <td class="so-table-3" data-label="담당자 부서">
+                                                {!bank.PV_BKONT__c}
+                                            </td>
+                                            <td class="so-table-3" data-label="담당자 직책">
+                                                {!bank.PV_BVTYP__c}
+                                            </td>
+                                            <td class="so-table-3 select-option" data-label="담당자 전자우편">
+                                                <aura:if isTrue="{!bank.PV_ACTCLOSEYN__c}">Y
+                                                    <aura:set attribute="else">
+                                                        N
+                                                    </aura:set>
+                                                </aura:if>
+                                            </td>
+                                            <td class="so-table-3" data-label="담당자 통화가능시간">
+                                                {!bank.PV_ACTCLOSED__c}
+                                            </td>
+                                            <td class="so-table-3" data-label="담당자 통화가능시간">
+                                                {!bank.PV_BKREF__c}
+                                            </td>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div> -->
+                </lightning:tab>
+            </aura:if>
+            <aura:if isTrue="{!v.salesInfo}">
+                <lightning:tab label="영업정보" id="sales">
+                    	
+                    <table class="main-table">
+                        <tr>
+                            <td class="padding-side">
+                                <lightning:inputField fieldName="PV_CUHR1__c" disabled="true" class="slds-hide" value="{!v.objCustomer.PV_CUHR1__c}" aura:id="pv_cuhr1"/>
+                                
+                                <c:MDMReferenceCodeSearch
+                                    groupId="CUHR1"
+                                    label="고객분류"
+                                    id="{!v.objCustomer.PV_CUHR1_lu__c}"
+                                    value="{!v.objCustomer.PV_CUHR1__c}"
+                                    inputText="{!v.inputpv_cuhr1}"
+                                    isRequired="false"
+                                    isDisabled="false"
+                                />
+                            </td>
+                            <td class="input-date">
+                                <lightning:input label="고객그룹(유효기간 관리)" type="Date" value="{!v.objCustomer.PVRA_CUHR1__c}" onchange="{!c.cuhrChanged}"  aura:id="pvra_pernr"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="padding-side">
+                                <lightning:inputField fieldName="PV_KONDA__c" disabled="true" class="slds-hide" value="{!v.objCustomer.PV_KONDA__c}" aura:id="pv_konda"/> 
+                                <c:MDMReferenceCodeSearch
+                                    groupId="T188"
+                                    label="가격그룹"
+                                    id="{!v.objCustomer.PV_KONDA_lu__c}"
+                                    value="{!v.objCustomer.PV_KONDA__c}"
+                                    inputText="{!v.inputpv_konda}"
+                                    isRequired="false"
+                                    isDisabled="false"
+                                />
+                            </td>
+                            <td class="input-date">
+         	 					<lightning:input label="가격그룹(유효기간 관리)" type="Date" value="{!v.objCustomer.PVRA_KONDA__c}" onchange="{!c.kondagrpChanged}"  aura:id="pvra_konda"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="padding-side">
+                                <lightning:inputField fieldName="PV_KVGR1__c" disabled="true" class="slds-hide" value="{!v.objCustomer.PV_KVGR1__c}" aura:id="pv_kvgr1"/> 
+                                <c:MDMReferenceCodeSearch
+                                    groupId="TVV1"
+                                    label="단가그룹"
+                                    id="{!v.objCustomer.PV_KVGR1_lu__c}"
+                                    value="{!v.objCustomer.PV_KVGR1__c}"
+                                    inputText="{!v.inputpv_kvgr1}"
+                                    isRequired="false"
+                                    isDisabled="false"
+                                />
+                            </td>
+                            <td class="input-date">                                
+             					<lightning:input label="단가그룹(유효기간 관리)" type="Date" value="{!v.objCustomer.PVRA_KVGR1__c}" onchange="{!c.kvgr1Changed}"  aura:id="pvra_kvgr1"/>                   
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="padding-side">
+                                <lightning:inputField fieldName="PV_WAERS__c" disabled="true" class="slds-hide" value="{!v.objCustomer.PV_WAERS__c}" aura:id="pv_waers"/> 
+                                <c:MDMReferenceCodeSearch
+                                    groupId="TCURC"
+                                    label="통화"
+                                    id="{!v.objCustomer.PV_WAERS_lu__c}"
+                                    value="{!v.objCustomer.PV_WAERS__c}"
+                                    inputText="{!v.inputpv_waers}"
+                                    isRequired="false"
+                                    isDisabled="false"
+                                />
+                            </td>
+                            <td>
+                                <aura:if isTrue="{!v.custypes != 'C01'}">
+                                    <lightning:inputField fieldName="PV_KDGRP__c" value="{!v.objCustomer.PV_KDGRP__c}" aura:id="pv_kdgrp"/>
+                                </aura:if> 
+                                <aura:if isTrue="{!v.custypes == 'C01'}">
+                                    <lightning:select aura:id="PV_KDGRP" name="selectItem" label="여신관리(고객향)" onchange="{!c.setPV_KDGRP}" class="selectList">
+                                        <option value="">--없음--</option>
+                                        <option value="C03">관리처-배송</option>
+                                        <option value="C04">관리처-분할</option>
+                                    </lightning:select>
+                                </aura:if>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <lightning:inputField fieldName="PV_KVGR3__c" value="{!v.objCustomer.PV_KVGR3__c}" aura:id="pv_kvgr3"/>
+                            </td>
+                            <td>
+                                <lightning:inputField fieldName="PV_KVGR2__c" value="{!v.objCustomer.PV_KVGR2__c}" aura:id="pv_kvgr2"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <lightning:inputField fieldName="PV_KVGR3_BOT__c" value="{!v.objCustomer.PV_KVGR3_BOT__c}" aura:id="pv_kvgr3_bot"/>
+                            </td>
+                            <td>
+                                <lightning:inputField fieldName="PV_ODCLOSEGB__c" value="{!v.objCustomer.PV_ODCLOSEGB__c}" aura:id="pv_odclosegb"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <lightning:inputField fieldName="PV_VACCPRTEXCYN__c" value="{!v.objCustomer.PV_VACCPRTEXCYN__c}" aura:id="pv_vaccprtexcyn"/>
+                            </td>
+                            <td class="padding-side">
+                                <lightning:inputField fieldName="PV_ZTERM_VV__c" disabled="true" class="slds-hide" value="{!v.objCustomer.PV_ZTERM_VV__c}" aura:id="pv_zterm_vv"/> 
+                                <c:MDMReferenceCodeSearch
+                                    groupId="T052_D"
+                                    label="지급조건"
+                                    id="{!v.objCustomer.PV_ZTERM_VV_lu__c}"
+                                    value="{!v.objCustomer.PV_ZTERM_VV__c}"
+                                    inputText="{!v.inputpv_zterm_vv}"
+                                    isRequired="false"
+                                    isDisabled="false"
+                                />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <lightning:inputField fieldName="PV_DSTRHISTREGYN__c" value="{!v.objCustomer.PV_DSTRHISTREGYN__c}" aura:id="pv_dstrhistregyn"/>
+                            </td>
+                            <td>
+                                <lightning:inputField fieldName="PV_KULTG__c" readonly="{!v.isReadOnlyPVKULTG}" value="{!v.objCustomer.PV_KULTG__c}" aura:id="pv_kultg"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="padding-side">
+                                <lightning:inputField fieldName="PV_OLD_BIZPLACE_NEW__c" disabled="true" class="slds-hide" value="{!v.objCustomer.PV_OLD_BIZPLACE_NEW__c}" aura:id="pv_old_bizplace_new"/> 
+                                <c:MDMReferenceCodeSearch 
+                                    groupId="ROUTETVBUR"
+                                    label="경로(사업부)"
+                                    id="{!v.objCustomer.PV_OLD_BIZPLACE_NEW_lu__c}"
+                                    value="{!v.objCustomer.PV_OLD_BIZPLACE_NEW__c}"
+                                    inputText="{!v.inputpv_old_bizplace_new}"
+                                    isRequired="true"
+                                    isDisabled="false"
+                                />
+                            </td>
+                            <td  class="input-date">
+                                <lightning:input label="경로사업부-(유효기간 관리)" type="Date" value="{!v.objCustomer.PVRA_OLD_BIZPLACE_NEW__c}" onchange="{!c.oldbizplzceChanged}"  aura:id="pvra_old_bizplace_new"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td  class="input-date">
+                            	<lightning:input label="외형(정원)" type="text" value="{!v.objCustomer.PV_SHAPE__c}" required="{!v.isRequirePVShape}" aura:id="pv_shape"/>
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <lightning:inputField fieldName="PV_DELIGROUP__c" disabled="true" class="slds-hide" value="{!v.objCustomer.PV_DELIGROUP__c}" aura:id="pv_deligroup"/> 
+                                <c:MDMReferenceCodeSearch 
+                                    groupId="DELIGROUP"
+                                    label="배송그룹"
+                                    id="{!v.objCustomer.PV_DELIGROUP_lu__c}"
+                                    value="{!v.objCustomer.PV_DELIGROUP__c}"
+                                    inputText="{!v.inputpv_deligroup}"
+                                    isRequired="true"
+                                    isDisabled="true"
+                                /> 
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                    </table> 
+                </lightning:tab>
+            </aura:if>
+        </lightning:tabset>
+          </div>
+    
+    <div class="modal-footer slds-modal__footer slds-size_1-of-1">
+        <div class="forceChangeRecordTypeFooter">
+            <lightning:button class="slds-m-top_small" variant="brand-outline" label="취소" onclick="{!c.closeModel}" disabled="{!v.isDisabled}"/>
+           	<lightning:button class="slds-m-top_small" type="submit" variant="brand" label="저장" disabled="{! v.isDisabled}"/>
+               
+        </div>
+    </div>
+  </lightning:recordEditForm>    
+
+    <!-- 검색 주소 저장 Comp addresses -->
+    <aura:if isTrue="{!v.isAddressModalOpen}">
+		<section role="dialog" tabindex="-1" aria-labelledby="modal-heading-id" aria-modal="true" aria-describedby="modal-content-id" 
+                class="slds-modal slds-fade-in-open slds-modal_large custom_modal" style="min-width: 800px !important;">
+            <div class="slds-modal__container">
+                <!-- Header -->
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" size="small" alternativeText="Close" variant="bare-inverse" class="slds-modal__close" 
+                                          onclick="{!c.fnSearchClose}" />
+                    <h2 id="modal-heading-id" class="slds-text-heading_medium slds-hyphenate">{!v.headerName}</h2>
+                </header>
+                
+                <!-- Content -->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id">
+                    <!-- 도로명주소 검색 -->
+                    <aura:if isTrue="{!v.searchForm}">
+                        <div class="custom_search" onkeyup="{!c.fnHandleKeyup}" id="testkey">
+                            <lightning:input    type="search" aura:id="searchKey" 
+                                                label="검색어 입력" variant="label-hidden"
+                                                placeholder="도로명주소, 건물명 또는 지번 입력"
+                                                class="searchKey" />
+                        </div>
+					</aura:if>
+                    <aura:if isTrue="{!v.bIsShowSpinner}">
+                        <lightning:spinner variant="brand" size="medium" />
+                    </aura:if>
+
+                    <aura:if isTrue="{!and(v.AddrInputDiv == false, v.sErrorCode == '0')}">
+                        <div class="custom_resultCnt">
+                            <b>도로명주소 검색 결과 ({!v.intTotalCount})</b>
+                        </div>
+
+                        <div class="custom_resultTable">
+                            <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" width="5%">
+                                            <div class="slds-truncate">No</div>
+                                        </th>
+                                        <th scope="col" width="85%">
+                                            <div class="slds-truncate" title="도로명주소">{!v.labelAddress}</div>
+                                        </th>
+                                        <th scope="col" width="10%">
+                                            <div class="slds-truncate" title="우편번호">{!v.labelPostalCode}</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.listAddress}" var="objAddress" indexVar="idx">
+                                        <tr>
+                                            <td>
+                                                <div class="slds-truncate">{!v.intPageIdx + idx}</div>
+                                            </td>
+                                            <td data-idx="{!idx}" onclick="{!c.fnClickRoadAddr}" style="cursor: pointer;">
+                                                <div class="slds-truncate" title="{!objAddress.sRoadAddr}">
+                                                    <b>{!objAddress.sRoadAddr}</b><br/>
+                                                    [지번] {!objAddress.sJibunAddr}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate" title="{!objAddress.sZipNo}">{!objAddress.sZipNo}</div>
+                                            </td>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Paging -->
+                        <div class="custom_paging slds-float_right">
+                            <aura:if isTrue="{!v.intCurrentPage != 1}">
+                                <lightning:buttonIcon iconName="utility:chevronleft" variant="bare" onclick="{!c.fnPrevPage}" />
+                            </aura:if>
+
+                            &nbsp;{!v.intCurrentPage}&nbsp;
+
+                            <aura:if isTrue="{!and(v.intTotalPage != 0, v.intCurrentPage != v.intTotalPage)}">
+                                <lightning:buttonIcon iconName="utility:chevronright" variant="bare" onclick="{!c.fnNextPage}" />
+                            </aura:if>
+                        </div>
+                    </aura:if>
+                    <!-- 주소 수정 화면 -->
+                    <aura:if isTrue="{!v.AddrInputDiv}">
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem padding="" size="6">
+                                <!-- 우편번호 (ZipCode__c) -->
+                                <lightning:input label="{!v.labelPostalCode}" value="{!v.objAddress.sZipNo}" title="{!v.objAddress.sZipNo}" disabled="true" /> 
+                            </lightning:layoutItem>
+                            <lightning:layoutItem padding="" size="6">
+
+                            </lightning:layoutItem>
+                            <lightning:layoutItem padding="" size="12">
+                                <!-- 도로명주소 (AddressFull__c) -->
+                                <lightning:input label="{!v.labelAddress}" value="{!v.objAddress.sRoadAddr}" title="{!v.objAddress.sRoadAddr}" disabled="true" /> 
+                            </lightning:layoutItem>
+                            <lightning:layoutItem padding="" size="12">
+                                <!-- 상세주소 (AddressDetail__c) -->
+                                <lightning:input label="{!v.labelAddressDetail}" value="{!v.objAddress.sAddrDetail}" />
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                    </aura:if>
+                    
+                   
+                </div>
+                
+                <!-- Footer -->
+                <aura:if isTrue="{!v.btnSave}">
+                    <footer class="slds-modal__footer slds-modal__footer_directional">
+                        <lightning:button variant="neutral" label="취소" onclick="{!c.fnSearchClose}" />
+                        <lightning:button variant="neutral" label="이전" onclick="{!c.fnPrepage}" />
+                        <lightning:button variant="brand"   label="저장" onclick="{!c.fnSave}" />
+                    </footer>
+
+                    <aura:set attribute="else">
+                        <footer class="slds-modal__footer">
+                            <lightning:button variant="neutral" label="취소" onclick="{!c.fnSearchClose}" />
+                        </footer>
+                    </aura:set>
+                </aura:if>
+            </div>
+        </section>
+
+        <div class="slds-backdrop slds-backdrop_open custom_backdrop"></div>
+    </aura:if>
+    
+    <!-- contact modal -->
+    <aura:if isTrue="{!v.isContactModalOpen}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-id" aria-modal="true"
+            aria-describedby="modal-content-id" class="slds-modal slds-fade-in-open slds-modal_large custom_modal"
+            style="min-width: 800px !important;">
+            <div class="slds-modal__container">
+                <!-- Header -->
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" size="small" alternativeText="Close"
+                        variant="bare-inverse" class="slds-modal__close" onclick="{!c.setCloseContactModal}" />
+                    <h2 id="modal-heading-id" class="slds-text-heading_medium slds-hyphenate">{!v.headerContactModal}</h2>
+                </header>
+    
+                <!-- Content -->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id">
+                    <!-- <lightning:datatable columns="{! v.columnsContact }" data="{! v.contactData }" keyField="no" aura:id="contact-table" onsave="{! c.handleSaveContactData }"/> -->
+    
+                    <div class="table-container table-contact-container table-responsive">
+                        <table
+                            class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-p-top_large"
+                            aria-label="Example table of Opportunities with vertical borders">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th class="so-table-3" scope="col">
+                                        <lightning:input type="checkbox" onchange="{!c.fnSelectAllContact}"
+                                            aura:id="select-all-contact" data-id="all" label="Basic option" name="input1"
+                                            variant="label-hidden" />
+                                    </th>
+                                    <!-- <th class="so-table-3" scope="col">
+                                        <div class="" title="No">No</div>
+                                    </th> -->
+                                    <th class="so-table-3" scope="col">
+                                        <div class="" title="담당자명">담당자명</div>
+                                    </th>
+                                    <th class="so-table-3" scope="col">
+                                        <div class="" title="담당자유형">담당자유형</div>
+                                    </th>
+                                    <th class="so-table-3" scope="col">
+                                        <div class="" title="담당자연락처">담당자연락처</div>
+                                    </th>
+                                    <th class="so-table-3" scope="col">
+                                        <div class="" title="담당자 부서">담당자 부서</div>
+                                    </th>
+                                    <th class="so-table-3" scope="col">
+                                        <div class="" title="담당자 직책">담당자 직책</div>
+                                    </th>
+                                    <th class="so-table-3" scope="col">
+                                        <div class="" title="담당자 전자우편">담당자 전자우편</div>
+                                    </th>
+                                    <th class="so-table-3" scope="col">
+                                        <div class="" title="담당자 통화가능시간">담당자 통화가능시간</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.contactData}" var="contact">
+                                    <tr class="slds-hint-parent">
+                                        <td class="so-table-3" data-label="No">
+                                            <lightning:input type="checkbox" onchange="{!c.fnSelectContact}"
+                                                class="{!contact.no}" aura:id="select-contact" data-id="{!contact.no}"
+                                                label="Basic option" name="input1" variant="label-hidden" />
+                                        </td>
+                                        <!-- <td class="so-table-3" data-label="No">
+                                            {!contact.no}
+                                        </td> -->
+                                        <td class="so-table-3" data-label="담당자명">
+                                            {!contact.PV_NAME1_VK__c}
+                                        </td>
+                                        <td class="so-table-3" data-label="담당자유형">
+                                            <c:MDMReferenceCodeSearch 
+                                                label=""
+                                                groupId="KNVKGB"
+                                                id="{!v.contact.PV_KNVKGB__c}"
+                                                value="{!contact.PV_KNVKGB__c}"
+                                                inputText="{!v.pv_knvkgb}"
+                                                isRequired="false"
+                                                isDisabled="false"
+                                            />
+                                        </td>
+                                        <td class="so-table-3" data-label="담당자연락처">
+                                            {!contact.PV_TELF1_VK__c}
+                                        </td>
+                                        <td class="so-table-3" data-label="담당자 부서">
+                                            {!contact.PV_ABTNR_VK__c}
+                                        </td>
+                                        <td class="so-table-3" data-label="담당자 직책">
+                                            {!contact.PV_PAFKT_VK__c}
+                                        </td>
+                                        <td class="so-table-3" data-label="담당자 전자우편">
+                                            {!contact.PV_EMAIL_VK__c}
+                                        </td>
+                                        <td class="so-table-3" data-label="담당자 통화가능시간">
+                                            <lightning:input class="{!contact.no}" style="width: 100%;"
+                                                label="Enter some text" variant="label-hidden"
+                                                onchange="{!c.fnPVTALKTVK}" />
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+    
+                <!-- Footer -->
+                <footer class="slds-modal__footer slds-modal__footer_directional">
+                    <lightning:button variant="neutral" label="이전" onclick="{!c.setCloseContactModal}" />
+                    <lightning:button variant="brand" label="저장" onclick="{!c.fnContactSelected}" />
+                </footer>
+            </div>
+        </section>
+    
+        <div class="slds-backdrop slds-backdrop_open custom_backdrop"></div>
+    </aura:if>
+    
+    <!-- bank modal -->
+    <aura:if isTrue="{!v.isBankModalOpen}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-id" aria-modal="true"
+            aria-describedby="modal-content-id" class="slds-modal slds-fade-in-open slds-modal_large custom_modal"
+            style="min-width: 800px !important;">
+            <div class="slds-modal__container">
+                <!-- Header -->
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" size="small" alternativeText="Close"
+                        variant="bare-inverse" class="slds-modal__close" onclick="{!c.setCloseBankModal}" />
+                    <h2 id="modal-heading-id" class="slds-text-heading_medium slds-hyphenate">{!v.headerBankModal}</h2>
+                </header>
+    
+                <!-- Content -->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id">
+                    <!-- <lightning:datatable columns="{! v.columnsContact }" data="{! v.contactData }" keyField="no" aura:id="contact-table" onsave="{! c.handleSaveContactData }"/> -->
+    
+                    <div class="table-container table-contact-container table-responsive">
+                        <table
+                            class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-p-top_large"
+                            aria-label="Example table of Opportunities with vertical borders">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th class="so-table-3" scope="col">
+                                        <div class="" title="No">No</div>
+                                    </th>
+                                    <th class="so-table-3" scope="col">
+                                        <div class="" title="은행키">은행키</div>
+                                    </th>
+                                    <th class="so-table-3" scope="col">
+                                        <div class="" title="가상계좌번호">가상계좌번호</div>
+                                    </th>
+                                    <th class="so-table-3" scope="col">
+                                        <div class="" title="예금주">예금주</div>
+                                    </th>
+                                    <th class="so-table-3" scope="col">
+                                        <div class="" title="은행관리키">은행관리키</div>
+                                    </th>
+                                    <th class="so-table-3" scope="col">
+                                        <div class="" title="은행유형">은행유형</div>
+                                    </th>
+                                    <th class="so-table-3" scope="col">
+                                        <div class="" title="계좌해지여부">계좌해지여부</div>
+                                    </th>
+                                    <th class="so-table-3" scope="col">
+                                        <div class="" title="계좌해지일자">계좌해지일자</div>
+                                    </th>
+                                    <th class="so-table-3" scope="col">
+                                        <div class="" title="참조명세">참조명세</div>
+                                    </th>
+                                    <th class="so-table-3" scope="col">
+                                        <lightning:button class="bank-button" ariaLabel="add" iconName="utility:add" onclick="{!c.addBankItem}" variant="destructive">
+                                        </lightning:button>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.bankData}" var="bank">
+                                    <tr class="slds-hint-parent">
+                                        <td class="so-table-3" data-label="No">
+                                            {!bank.no}
+                                        </td>
+                                        <td class="so-table-3" data-label="담당자명">
+                                            <lightning:recordEditForm aura:id="recordEditForm" objectApiName="MDMRegRequestBank__c">
+                                                <lightning:inputField 
+                                                    disabled="true"
+                                                    style="display: none;"
+                                                    class="{!bank.no}" 
+                                                    fieldName="PV_BANKL__c" 
+                                                    label="PV_BANKL__c" 
+                                                    variant="label-hidden" 
+                                                    value="{!bank.PV_BANKL__c}"
+                                                    onchange="{!c.fnChangeBankData}"/>
+                                                <c:MDMReferenceCodeSearch groupId="SALESGROUPH" label="" id="{!bank.PV_BANKL_lu__c}"
+                                                    value="{!bank.PV_BANKL__c}" inputText="" isRequired="true" isDisabled="false" />
+                                            </lightning:recordEditForm>
+                                            <!-- <lightning:input class="{!bank.no}" field="dsa" style="width: 100%;"
+                                                label="PV_BANKL_lu__c" variant="label-hidden" onchange="{!c.fnChangeBankData}" /> -->
+                                        </td>
+                                        <td class="so-table-3" data-label="담당자유형">
+                                            <lightning:input class="{!bank.no}" style="width: 100%;"
+                                                label="PV_BANKN__c" variant="label-hidden" field="fnChangeBankData"
+                                                onchange="{!c.fnChangeBankData}" />
+                                        </td>
+                                        <td class="so-table-3" data-label="담당자연락처">
+                                            <lightning:input class="{!bank.no}" style="width: 100%;"
+                                                label="PV_KOINH__c" variant="label-hidden" onchange="{!c.fnChangeBankData}" />
+                                        </td>
+                                        <td class="so-table-3" data-label="담당자 부서">
+                                            <c:MDMReferenceCodeSearch 
+                                                label=""
+                                                groupId="ZFITBKONT"
+                                                id="{!v.bank.PV_BKONT_lu__c}"
+                                                value="{!bank.PV_BKONT__c}"
+                                                inputText="{!v.pv_bkont_lu}"
+                                                isRequired="false"
+                                                isDisabled="false"
+                                            />
+                                        </td>
+                                        <td class="so-table-3" data-label="담당자 직책">
+                                            <lightning:input class="{!bank.no}" style="width: 100%;"
+                                                label="PV_BVTYP__c" variant="label-hidden" onchange="{!c.fnChangeBankData}" />
+                                        </td>
+                                        <td class="so-table-3 select-option" data-label="담당자 전자우편">
+                                            <lightning:select 
+                                                class="{!bank.no}" 
+                                                name="selectItem" label="" value="{!bank.PV_ACTCLOSEYN__c}"
+                                                variant="label-hidden" onchange="{!c.fnChangeBankData}">
+                                                <option value="true">Y</option>
+                                                <option value="false">N</option>
+                                            </lightning:select>
+                                            <!-- <lightning:input class="{!bank.no}" style="width: 100%;" type="checkbox"
+                                                label="PV_ACTCLOSEYN__c" variant="label-hidden" onchange="{!c.fnChangeBankData}" /> -->
+                                        </td>
+                                        <td class="so-table-3" data-label="담당자 통화가능시간">
+                                            <lightning:input class="{!bank.no}" style="width: 100%;" type="Date"
+                                                label="PV_ACTCLOSED__c" variant="label-hidden" onchange="{!c.fnChangeBankData}" />
+                                        </td>
+                                        <td class="so-table-3" data-label="담당자 통화가능시간">
+                                            <lightning:input class="{!bank.no}" style="width: 100%;" label="PV_BKREF__c"
+                                                variant="label-hidden" onchange="{!c.fnChangeBankData}" />
+                                        </td>
+                                        <td class="so-table-3" data-label="담당자 통화가능시간">
+                                            <lightning:button class="{!bank.no}" ariaLabel="dash" iconName="utility:dash" onclick="{!c.removeBankItem}"
+                                                variant="destructive-outline">
+                                            </lightning:button>
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+    
+                <!-- Footer -->
+                <footer class="slds-modal__footer slds-modal__footer_directional">
+                    <lightning:button variant="neutral" label="이전" onclick="{!c.setCloseBankModal}" />
+                    <lightning:button variant="brand" label="저장" onclick="{!c.fnBankSelected}" />
+                </footer>
+            </div>
+        </section>
+    
+        <div class="slds-backdrop slds-backdrop_open custom_backdrop"></div>
+    </aura:if>
+
+</aura:component>

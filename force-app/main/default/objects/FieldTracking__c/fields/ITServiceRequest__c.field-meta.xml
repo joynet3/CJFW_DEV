@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ITServiceRequest__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <externalId>false</externalId>
+    <label>CRM 서비스 요청</label>
+    <referenceTo>ITServiceRequest__c</referenceTo>
+    <relationshipLabel>변경내역</relationshipLabel>
+    <relationshipName>Field_Tracking</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

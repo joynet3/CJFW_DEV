@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>FM_TaxationType__c</fullName>
+    <externalId>false</externalId>
+    <formula>CASE( TEXT( Account__r.TaxationType__c ),
+&quot;01&quot;, &quot;일반과세자&quot;,
+&quot;02&quot;, &quot;간이과세자&quot;,
+&quot;03&quot;, &quot;면세사업자&quot;,
+&quot;04&quot;, &quot;휴업자&quot;,
+&quot;05&quot;, &quot;비영리법인,단체·국가기관&quot;,
+&quot;06&quot;, &quot;폐업자&quot;,
+&quot;07&quot;, &quot;기타유형&quot;,
+&quot;91&quot;, &quot;미등록사업자(해외건수)&quot;,
+&quot;99&quot;, &quot;오류(일반)사용중&quot;,
+TEXT( Account__r.TaxationType__c))</formula>
+    <label>Taxation Type</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

@@ -1,0 +1,88 @@
+<template>
+    <!-- 필터 영역 [s]-->
+    
+        <lightning-layout multiple-rows="true" style="padding-bottom: 1rem; background-color: #F3F3F3;">
+            <!--             
+            <lightning-layout-item size="12" medium-device-size="2" padding="around-small" >
+                <c-comm-custom-select
+                    is-required
+                    is-empty-option
+                    options={headOfficeOptions}
+                    label="본부"
+                    class="headOffice"
+                    >
+                </c-comm-custom-select>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" medium-device-size="2" padding="around-small" >
+                <c-comm-custom-select 
+                    is-empty-option
+                    options={suOptions}
+                    label="SU"
+                    
+                    >
+                </c-comm-custom-select>
+             </lightning-layout-item>
+            <lightning-layout-item size="12" medium-device-size="2" padding="around-small" >
+                <c-comm-custom-select 
+                    is-empty-option
+                    options={teamOptions}
+                    label="팀"
+                    
+                    >
+                </c-comm-custom-select>
+             </lightning-layout-item>
+            <lightning-layout-item size="12" medium-device-size="2" padding="around-small" >
+                <lightning-input label="사번" name="enter-search" type="search" ></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" medium-device-size="4" padding="around-small" >
+            </lightning-layout-item>
+            
+            <lightning-layout-item size="12" medium-device-size="2" padding="around-small" >
+                <lightning-input label="고객사" class="soldTo" name=" enter-search" type="search" required onclick={handleSearchModalClick}></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" medium-device-size="2" padding="around-small" >
+                <lightning-input label="관리처" class="shipTo " name="enter-search" type="search"  ></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" medium-device-size="8" padding="around-small" >
+            </lightning-layout-item> -->
+
+            <lightning-layout-item size="12" medium-device-size="2" padding="around-small" >
+                <lightning-input label ="기간" type ="date" class="fromDate"  ></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" medium-device-size="2" padding="around-small" >
+                <lightning-input label ="　" type ="date" class="toDate"  ></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" medium-device-size="2" padding="around-small" >
+                <!-- 매출조정유형 -->
+
+                <c-comm-custom-select 
+                    is-required
+                    is-empty-option
+                    options='[
+                    {"label":"상품 매출조정","value":"상품 매출조정"},
+                    {"label":"VoC 조정","value":"VoC 조정"},
+                    {"label":"마감 차액조정","value":"마감 차액조정"}
+                    ]'
+                    label="매출조정유형" 
+                    onselected={handleSelected} 
+                    
+                    >
+                </c-comm-custom-select>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" medium-device-size="2" padding="around-small" >
+                <!-- 대금청구일 -->
+                <lightning-input label ="대금청구일" type ="date" class="dueDate"  ></lightning-input>
+            </lightning-layout-item>
+           
+            <lightning-layout-item flexibility="grow" padding="around-small" ></lightning-layout-item>
+            <lightning-layout-item size="auto" padding="around-small" class="search-button-item btnContainer"  >
+                <lightning-button label="조회" variant="brand" onclick={handleSearch} class="search-button"></lightning-button>
+            </lightning-layout-item>
+            <lightning-layout-item size="auto" padding="around-small" class="search-button-item btnContainer"  >
+                <lightning-button label="저장"  onclick={handleSave} class="save-button"></lightning-button>
+            </lightning-layout-item>
+            
+     </lightning-layout>
+   
+    <!-- 필터 영역 [e] -->
+</template>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>VIP</fullName>
+        <default>false</default>
+        <label>VIP</label>
+    </customValue>
+    <customValue>
+        <fullName>Nurturing</fullName>
+        <default>false</default>
+        <label>Nurturing</label>
+    </customValue>
+    <customValue>
+        <fullName>FocusingElementry</fullName>
+        <default>false</default>
+        <label>FocusingElementry</label>
+    </customValue>
+    <customValue>
+        <fullName>et cetera</fullName>
+        <default>false</default>
+        <label>et cetera</label>
+    </customValue>
+    <masterLabel>Rating</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

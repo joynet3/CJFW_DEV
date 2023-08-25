@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>MA휴대전화</label>
+    <name>MAMobilePhone__c</name>
+</CustomFieldTranslation>

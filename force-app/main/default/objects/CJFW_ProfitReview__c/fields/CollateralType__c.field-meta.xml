@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CollateralType__c</fullName>
+    <externalId>false</externalId>
+    <label>담보유형</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>거래처별 담보현황</fullName>
+                <default>false</default>
+                <label>거래처별 담보현황</label>
+            </value>
+            <value>
+                <fullName>담보현황 분석</fullName>
+                <default>false</default>
+                <label>담보현황 분석</label>
+            </value>
+            <value>
+                <fullName>보증보험 담보현황</fullName>
+                <default>false</default>
+                <label>보증보험 담보현황</label>
+            </value>
+            <value>
+                <fullName>연대보증 입보현황</fullName>
+                <default>false</default>
+                <label>연대보증 입보현황</label>
+            </value>
+            <value>
+                <fullName>보증보험 감액/해지 모니터링</fullName>
+                <default>false</default>
+                <label>보증보험 감액/해지 모니터링</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

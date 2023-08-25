@@ -1,0 +1,23 @@
+<!--
+* ==================================================================================
+*   File Name   : DN_LookupSelected_evt.evt
+*   Author      : Soyoung.Jung
+*   Date        : 2019.03.25
+*   Description : Daeunextier common lookup component
+                (https://github.com/jungleeforce/lookupcomponent)
+*   Modification Log
+* ==================================================================================
+*   Ver     Date          Author          Modification
+* ==================================================================================
+*   1.0     2019.03.25    Soyoung.Jung    Create
+* ==================================================================================
+-->
+
+<aura:event type="COMPONENT" description="Event template">
+
+    <aura:attribute name="uniqueLookupIdentifier" type="String" description="고유 아이디, 이 값은 드롭 다운에서 값을 선택할 때마다 이벤트 매개 변수로 전송" />
+    <aura:attribute name="selectedId" type="String" description="선택한 레코드의 아이디(싱글)" />
+    <aura:attribute name="selectedLabel" type="String" description="선택한 레코드의 보여질 값, primaryDisplayField로 값을 꺼냄(싱글)" />
+    <aura:attribute name="selectedObject" type="Object" description="선택한 레코드(싱글), 선택한 레코드 리스트(멀티)" />
+    
+</aura:event>

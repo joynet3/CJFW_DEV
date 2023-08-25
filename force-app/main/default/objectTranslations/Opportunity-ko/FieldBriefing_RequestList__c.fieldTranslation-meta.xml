@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>요청목록</label>
+    <name>FieldBriefing_RequestList__c</name>
+    <picklistValues>
+        <masterLabel>계약서날인</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>기타</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>보증보험날인</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>입찰참가</masterLabel>
+        <translation></translation>
+    </picklistValues>
+</CustomFieldTranslation>

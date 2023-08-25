@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <help></help>
+    <label>업무유형</label>
+    <name>WorkType__c</name>
+    <picklistValues>
+        <masterLabel>내근</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>외근</masterLabel>
+        <translation></translation>
+    </picklistValues>
+</CustomFieldTranslation>

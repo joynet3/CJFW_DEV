@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ContractTermValidationCheck</fullName>
+    <active>true</active>
+    <description>계약 기간이 양의 정수가 아닐 경우 ValidationCheck</description>
+    <errorConditionFormula>ContractTerm__c &lt;= 0</errorConditionFormula>
+    <errorMessage>계약기간(월)을 양의 정수로 설정해주세요.</errorMessage>
+</ValidationRule>

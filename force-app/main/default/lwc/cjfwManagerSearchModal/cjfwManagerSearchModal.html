@@ -1,0 +1,85 @@
+<template>
+    <template lwc:if={showModal}>
+        <!-- Header -->
+        <lightning-modal-header label="담당자">
+            
+        </lightning-modal-header>
+        
+        <!-- Body -->
+        <lightning-modal-body>
+            <div class="table-container table-item-container table-responsive">
+                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-p-top_large"
+                    aria-label="Example table of Opportunities with vertical borders">
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th class="so-table-3" scope="col">
+                                <div class="" title="No">No</div>
+                            </th>
+                            <th class="so-table-3" scope="col">
+                                <div class="" title="담당자명">담당자 명</div>
+                            </th>
+                            <th class="so-table-3" scope="col">
+                                <div class="" title="담당자유형">담당자 유형</div>
+                            </th>
+                            <th class="so-table-3" scope="col">
+                                <div class="" title="담당자연락처">담당자 연락처</div>
+                            </th>
+                            <th class="so-table-3" scope="col">
+                                <div class="" title="담당자 부서">담당자 부서</div>
+                            </th>
+                            <th class="so-table-3" scope="col">
+                                <div class="" title="담당자 직책">담당자 직책</div>
+                            </th>
+                            <th class="so-table-3" scope="col">
+                                <div class="" title="담당자 전자우편">담당자 전자우편</div>
+                            </th>
+                            <th class="so-table-3" scope="col">
+                                <div class="" title="담당자 통화가능시간">담당자 통화가능시간</div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={data} for:item="item">
+                            <tr class="slds-hint-parent" key={item.Id}>
+                                <td class="so-table-3" data-label="No">
+                                    {item.PV_NO__c}
+                                </td>
+                                <td class="so-table-3" data-label="담당자 명">
+                                    {item.PV_NAME1_VK__c}
+                                </td>
+                                <td class="so-table-3" data-label="담당자 유형">
+                                    {item.PV_KNVKGB__c}
+                                </td>
+                                <td class="so-table-3" data-label="담당자 연락처">
+                                    {item.PV_TELF1_VK__c}
+                                </td>
+                                <td class="so-table-3" data-label="담당자 부서">
+                                    {item.PV_ABTNR_VK__c}
+                                </td>
+                                <td class="so-table-3" data-label="담당자 직책">
+                                    {item.PV_PAFKT_VK__c}
+                                </td>
+                                <td class="so-table-3" data-label="담당자 전자우편">
+                                    {item.PV_EMAIL_VK__c}
+                                </td>
+                                <td class="so-table-3" data-label="담당자 통화가능시간">
+                                    {item.PV_TALKT_VK__c}
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </lightning-modal-body>
+        <!-- Body End-->
+
+        <!-- Footer -->
+        <lightning-modal-footer>
+            <div class="slds-clearfix">
+                <div class="slds-float_right">
+                    <lightning-button variant="neutral" label="취소" onclick={handleClose} class="slds-m-left_x-small"></lightning-button>
+                </div>
+              </div>
+        </lightning-modal-footer>
+    </template>
+</template>

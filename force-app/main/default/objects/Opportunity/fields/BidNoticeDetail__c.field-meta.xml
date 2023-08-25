@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>BidNoticeDetail__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(ISBLANK(BidNoticeDetailUrl__c)  , &quot;&quot; , HYPERLINK(  BidNoticeDetailUrl__c , &quot;상세보기&quot;,&quot;_blank&quot;))</formula>
+    <label>Bid Notice Detail</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

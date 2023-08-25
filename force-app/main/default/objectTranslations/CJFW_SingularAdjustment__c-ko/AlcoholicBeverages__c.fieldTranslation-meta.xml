@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>주류 여부</label>
+    <name>AlcoholicBeverages__c</name>
+    <picklistValues>
+        <masterLabel>N</masterLabel>
+        <translation>아니오</translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>Y</masterLabel>
+        <translation>예</translation>
+    </picklistValues>
+</CustomFieldTranslation>

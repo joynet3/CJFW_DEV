@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>EventLeadValidation</fullName>
+    <active>true</active>
+    <description>if(
+   And(
+      // 리드의 값이 있고
+      NOT(Isblank(Lead__c)),
+      // 고객또는 영업활동이 있으면
+      OR(
+         NOT(Isblank(Account__c)),
+         NOT(Isblank(Opportunity__c))
+      )
+   ),
+   // 오류
+   TRUE,
+   FALSE
+)</description>
+    <errorConditionFormula>if(
+   And(
+      NOT(Isblank(Lead__c)), 
+      IsPastActivity__c = False,
+      OR(
+         NOT(Isblank(Account__c)),
+         NOT(Isblank(Opportunity__c)),
+         NOT(Isblank(Contact__c))
+      )
+   ),
+   TRUE,
+   FALSE
+)</errorConditionFormula>
+    <errorMessage>리드 입력시 고객, 영업기회, 연락처는 입력하실 수 없습니다.</errorMessage>
+</ValidationRule>

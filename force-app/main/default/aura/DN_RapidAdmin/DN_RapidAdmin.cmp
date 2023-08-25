@@ -1,0 +1,108 @@
+<!--
+* ==================================================================================
+*   File Name   : AccountOwnerUpdate.cmp
+*   Author      : Kwanwoo.Jeon
+*   Date        : 2022.12.28
+*   Description : Account Owner Dummy Update
+*   Modification Log
+* ==================================================================================
+*   Ver     Date          Author          Modification
+* ==================================================================================
+*   1.0     2022.12.28    Kwanwoo.Jeon    Create
+*   1.1     2023.04.12    sy.lee          update
+* ==================================================================================
+-->
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes" controller="AccountOwnerUpdateController">
+    <!-- 조회조건 -->
+    <aura:attribute name="selectedLocationStateProvince" type="String" description="지역(시/도)" />
+    <aura:attribute name="selectedLocationState" type="String" description="지역"/>
+    <aura:attribute name="selectedUserId" type="String" default="" description="담당자 Id"/>
+    <aura:attribute name="selectedUserName" type="String" default="" description="담당자 명"/>
+    <aura:attribute name="requiredYn" type="Boolean" default="true" description="필수 조회 조건"/>  
+    <aura:attribute name="childValue" type="String" default="" description="담당자 선택된 정보 담는 용도"/>  
+
+    <!-- 조회결과 -->
+    <aura:attribute name="listSearchWrapper" type="List" description="조회 리스트"/>
+    <aura:attribute name="isData" type="Boolean" default="false" description="데이터 여부"/>
+
+    <!-- select list-->
+    <aura:attribute name="listLocationStateProvince" type="List" description="지역(시/도) Select 리스트"/>
+    <aura:attribute name="listLocationState" type="List" description="지역 Select 리스트"/>
+    <aura:attribute name="listSmaCustMngGrdCd" type="List" description="SMA 고객 관리 등급 코드 리스트"/>
+    <aura:attribute name="mapLocation" type="Map" description="지역(시/도) 지역 종속성"/>    
+
+    <!-- 선택된 SMA 고객 관리 등급 코드-->
+    <aura:attribute name="selectedSmaCustMngGrdCd" type="String" default="none" description="정렬타겟"/>
+
+    <!-- DataTable 용도-->
+    <aura:attribute name="listColumn" type="List" description="컬럼리스트"/>
+    <aura:attribute name="sortedBy" type="String" default="Name" description="정렬타겟"/>
+    <aura:attribute name="sortedDirection" type="String" default="asc" description="정렬방향"/>
+    <aura:attribute name="keyField" type="String" default="Id" description="Row Unique Key"/>
+    <aura:attribute name="listSelected" type="List" description="선택된 리스트"/>
+    <aura:attribute name="selectedRows" type="List" description="선택된 리스트의 KeyFields"/>
+    <aura:attribute name="openModal" type="String" default="Hide" description="Hide, User, Check, Change"/>
+    <aura:attribute name="totalCount" type="Integer" default="0" description="검색된 현재 건수"/>
+    <aura:attribute name="totalNum" type="Integer" default="0" description="검색된 총건수"/>
+    <aura:attribute name="rowNumber" type="Integer" default="0" description="행번호 계산을 시작할 위치"/>
+
+    <!-- User 조회결과 -->
+    <aura:attribute name="listSearchWrapperUser" type="List" description="조회된 사용자리스트"/>
+    <aura:attribute name="isDataUser" type="Boolean" default="false" description="사용자 검색 여부"/>  
+    <aura:attribute name="displayedvalue" type="String" default="" description="담당자 입력값"/>      
+
+    <!-- User DataTable 용도-->
+    <aura:attribute name="listColumnUser" type="List" description="컬럼시스트"/>
+    <aura:attribute name="sortedByUser" type="String" default="name" description="정렬타겟"/>
+    <aura:attribute name="sortedDirectionUser" type="String" default="asc" description="정렬방향"/>
+    <aura:attribute name="keyFieldUser" type="String" default="Id" description="Row Unique Key"/>
+    <aura:attribute name="listSelectedUser" type="object" description="선택된 리스트"/>
+    <aura:attribute name="selectedRowsUser" type="list" description="선택된 리스트의 KeyFields"/>
+    <aura:attribute name="isSelectUser" type="Boolean" default="true" description="사용자 선택 여부"/>
+
+    <!-- Change Data 조회결과 -->
+    <aura:attribute name="listSearchWrapperChange" type="List" description="변경된 데이터 리스트"/>
+
+    <!-- Change Data DataTable 용도-->
+    <aura:attribute name="listColumnChange" type="List" description="컬럼리스트"/>
+    <aura:attribute name="sortedByChange" type="String" default="name" description="정렬타겟"/>
+    <aura:attribute name="sortedDirectionChange" type="String" default="asc" description="정렬방향"/>
+    <aura:attribute name="keyFieldChange" type="String" default="Id" description="Row Unique Key"/>
+
+    <!-- ETC-->
+    <aura:attribute name="showSpinner" type="Boolean" default="false"/>
+    <aura:attribute name="chunkSize" type="Integer" default="600" description="한 Call에 담을 DataSize"/> 
+    <aura:attribute name="reportUrl" type="String" default="" description="전체리스트 버튼에 연결된 보고서 URL"/>
+
+    <!-- Handler -->
+    <!-- <aura:handler name="init" value="{!this}" action="{!c.fnInit}"/> -->
+    <!-- <aura:handler name="change" value="{!v.selectedUserId}" action="{!c.selectedUserIdChange}" /> -->
+
+    <aura:if isTrue="{!v.showSpinner}">
+        <lightning:spinner aura:id="spinner" alternativeText="Loading" variant="brand" size="medium" />
+    </aura:if>
+
+    <div>
+
+                            <lightning:tabset variant="vertical">
+                                <lightning:tab label="Item One">
+                                    Content in Tab One
+                                </lightning:tab>
+                                <lightning:tab label="Item Two">
+                                    Content in Tab Two
+                                </lightning:tab>
+                                <lightning:tab label="Item Three">
+                                    Content in Tab Three
+                                </lightning:tab>
+                                <lightning:tab label="Item Four">
+                                    Content in Tab Four
+                                </lightning:tab>
+                                <lightning:tab label="Item Five">
+                                    Content in Tab Five
+                                </lightning:tab>
+                                <lightning:tab label="Item Six">
+                                    Content in Tab Six
+                                </lightning:tab>
+                            </lightning:tabset>
+    </div>
+</aura:component>

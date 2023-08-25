@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ExistingAccountCompactLayout_Final</fullName>
+    <fields>Name</fields>
+    <fields>CustomerType__c</fields>
+    <fields>LegalStatus__c</fields>
+    <fields>BusinessConditions__c</fields>
+    <fields>BusinessCategory__c</fields>
+    <fields>SalesForm__c</fields>
+    <fields>CustomerStatus__c</fields>
+    <label>Existing Account Compact Layout Final</label>
+</CompactLayout>

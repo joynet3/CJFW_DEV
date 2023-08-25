@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CustomRELEASE</fullName>
+    <columns>fm_EBELN_link__c</columns>
+    <columns>CHECK__c</columns>
+    <columns>CONFIRM__c</columns>
+    <columns>xmsgs__c</columns>
+    <columns>IFDATE__c</columns>
+    <columns>CREATED_DATE</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>CONFIRM__c</field>
+        <operation>equals</operation>
+        <value>N</value>
+    </filters>
+    <label>미확정 출고내역</label>
+</ListView>

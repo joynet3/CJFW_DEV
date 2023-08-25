@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>다음 배치, 스케쥴 체크 및 실행 관리 데이터</description>
+    <label>Batch Sequence</label>
+    <visibility>Public</visibility>
+</CustomObject>

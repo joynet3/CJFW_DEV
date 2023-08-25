@@ -1,0 +1,40 @@
+<!--
+  * ===============================================================
+  * File Name   : DN_Alert.cmp
+  * Author      : Soyoung.Jung
+  * Date        : 2018.06.18
+  * Description : DN_Alert Component
+  * Modification Log
+  * ===============================================================
+  * Ver     Date        Author          Modification
+  * ===============================================================
+  * 1.0     2018.06.18  Soyoung.Jung    Create
+  * ===============================================================
+-->
+
+<aura:component>
+    
+    <!-- Component Attribute -->
+    <aura:attribute name="sType"    type="String" description="Alert 타입" />
+    <aura:attribute name="sMessage" type="String" description="Alert 내용" />
+    <aura:attribute name="showAlert" type="Boolean" description="알림 활성화 여부"/>
+
+
+    <!-- Contents -->
+    <div class="{!'slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_' + v.sType}" role="alert">
+        <span class="slds-assistive-text">{!v.sType}</span>
+        <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small" title="Description of icon when needed">
+            <lightning:icon iconName="{!'utility:' + v.sType}" variant="inverse" size="x-small" />
+        </span>
+
+        <h2>
+            <aura:unescapedHtml value="{!v.sMessage}" />
+        </h2>
+        
+        <button class="slds-button slds-button_icon slds-notify__close slds-button_icon-inverse" title="Close" onclick="{!c.fnCancel}">
+            <lightning:icon iconName="utility:close" variant="inverse" size="x-small" />
+            <span class="slds-assistive-text">Close</span>
+        </button>
+    </div> 
+
+</aura:component>

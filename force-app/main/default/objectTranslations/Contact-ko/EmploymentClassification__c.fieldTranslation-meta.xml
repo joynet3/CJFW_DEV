@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>고용구분</label>
+    <name>EmploymentClassification__c</name>
+    <picklistValues>
+        <masterLabel>계약</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>위탁</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>임시</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>정규</masterLabel>
+        <translation></translation>
+    </picklistValues>
+</CustomFieldTranslation>

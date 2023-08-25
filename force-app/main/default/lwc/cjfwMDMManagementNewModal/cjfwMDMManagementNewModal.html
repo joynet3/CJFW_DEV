@@ -1,0 +1,157 @@
+<!--
+  @description       : MDM 고객 등록 요청 Object ListView > "관리처 생성" Btn 화면
+  @author            : joohyeon.jang@dkbmc.com
+  @group             : 
+  @last modified on  : 08-18-2023
+  @last modified by  : joohyeon.jang@dkbmc.com
+  Modifications Log
+  Ver   Date         Author                    Modification
+  1.0   08-09-2023   joohyeon.jang@dkbmc.com   Initial Version
+-->
+<template>
+    <!-- Loading -->
+    <template if:true={isLoading}>
+        <div class="slds-spinner_container">
+            <div role="status" class="slds-spinner slds-spinner_medium">
+                <span class="slds-assistive-text">Loading...</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </template>
+    <!-- Loading End -->
+    <!-- New Modal(관리처 생성) -->
+    <template lwc:if={isShowMenu}>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_small">
+            <div class="slds-modal__container slds-is-relative modal-container cjfwMDMManagement">
+                <!-- #Header-->
+                <lightning-modal-header>
+                       <!-- Close Icon -->
+                        <lightning-button-icon icon-name="utility:close" alternative-text="close" size="large" variant="bare-inverse" class="slds-button slds-button_icon slds-modal__close" onclick={handleClose}></lightning-button-icon>
+
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">관리처 생성</h2>
+                </lightning-modal-header>
+                
+                <!-- #Body -->
+                <lightning-modal-body>
+                        <lightning-layout-item padding="around-small" size="12">
+                            <lightning-layout>
+                                <!-- 첫번째 박스 (관리처) -->
+                                <lightning-layout-item padding="around-small" size="4">
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <table border="1"  style="margin-bottom: 15px;">
+                                                    <tr style="background-color:#f5f3f2; font-weight: bold;">
+                                                        <th class="slds-text-title_caps miniHeader">관리처</th>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div style="height:250px; overflow:auto;">
+                                                    <table class="table-level-1" border="1">
+                                                        <template for:each={categoryLevel1Options} for:item="option" for:index="index">
+                                                            <tr class="row1 {option.isSelected ? 'selected' : ''}" key={option.Id} data-index={index} data-record={index} onclick={handleLevel1Clicked} ondblclick={handleDoubleClick}>
+                                                                <td class="slds-text-title_caps miniBodyMain">{option.value}</td>
+                                                            </tr>
+                                                        </template>
+                                                    </table>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </lightning-layout-item>
+                                <!-- 첫번째 박스 (관리처) End -->
+                                <!-- <template lwc:if={isLoading}>
+                                    <div class="exampleHolder">
+                                        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+                                    </div>
+                                </template> -->
+                                <!-- 두번째 박스 (워크플로우명) -->
+                                <lightning-layout-item padding="around-small" size="4">
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <table border="1" style="margin-bottom: 15px;">
+                                                    <tr class="slds-line-height_reset">
+                                                        <th class="slds-text-title_caps miniHeader">워크플로우명</th>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div style="height:250px; overflow:auto;">
+                                                    <table class="table-level-2" border="1">
+                                                        <template for:each={categoryLevel2Options} for:item="option" for:index="index">
+                                                            <tr class="row2" key={option.Id} data-name={option.value} data-index={index} data-record={index} onclick={handleLevel2Clicked} ondblclick={handleDoubleClick}>
+                                                                <td class="slds-text-title_caps miniBody">{option.value}</td>
+                                                            </tr>
+                                                        </template>
+                                                    </table>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </lightning-layout-item>
+                                <!-- 두번째 박스 (워크플로우명) End-->
+                                <!-- 세번째 박스 (기본,회계,영업(정보)) -->
+                                <lightning-layout-item padding="around-small" size="4">
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <table border="1" style="margin-bottom: 15px;">
+                                                    <tr class="slds-line-height_reset">
+                                                        <th class="slds-text-title_caps miniHeader">기본,회계,영업(정보)</th>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div style="height:250px; overflow:auto;">
+                                                    <table class="table-level-3" border="1">
+                                                        <template for:each={categoryLevel3Options} for:item="option" for:index="index">
+                                                            <tr class="row3" key={option.Id} data-name={option.value} data-index={index} data-record={index} onclick={handleLeve31Clicked} ondblclick={handleDoubleClick}>
+                                                                <td class="slds-text-title_caps miniBody">{option.value}</td>
+                                                            </tr>
+                                                        </template>
+                                                    </table>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </lightning-layout-item>
+                                <!-- 세번째 박스 (기본,회계,영업(정보)) End-->
+                            </lightning-layout>
+                            <!-- #Footer -->
+                            
+                        </lightning-layout-item>
+                </lightning-modal-body>
+
+                <!-- #Footer -->
+                <lightning-modal-footer>
+                   <div class="slds-clearfix">
+                                <div class="slds-float_right">
+                                    <lightning-button variant="neutral" label="취소" onclick={handleClose} class="slds-m-left_x-small"></lightning-button>
+                                    <lightning-button variant="brand" label="다음" onclick={handleNext} class="slds-m-left_x-small" disabled={isNextButtonDisabled}
+                                    ></lightning-button>
+                                </div>
+                            </div>
+                </lightning-modal-footer>
+            </div>
+        </section>
+    </template>
+    <!-- New Modal(관리처 생성) End-->
+    <!-- # 관리처-배송 Modal -->
+    <template lwc:if={IsShowDelivery}>
+        <c-cjfw-m-d-m-management-delivery-modal
+       >
+        </c-cjfw-m-d-m-management-delivery-modal>
+    </template>
+    <!--Info Modal End-->
+    <div class="slds-backdrop slds-backdrop_open"></div>
+    
+</template>

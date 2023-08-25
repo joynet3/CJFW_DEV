@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ActivityCompactLayoutFinal</fullName>
+    <fields>Name</fields>
+    <fields>EventStartDate__c</fields>
+    <fields>ApprovalStatus__c</fields>
+    <fields>OilTotalAmount__c</fields>
+    <fields>fm_SalesGroup__c</fields>
+    <label>Activity Compact Layout Final</label>
+</CompactLayout>

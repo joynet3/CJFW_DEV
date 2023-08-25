@@ -1,0 +1,181 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 01-04-2023
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<aura:component implements="lightning:actionOverride,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader" access="global"
+                controller="cj_workflowMainCtrl"
+                >
+    <aura:attribute name="categoryLevel1Options" type="List" access="PRIVATE"/>
+    <aura:attribute name="categoryLevel2Options" type="List" access="PRIVATE"/>
+    <aura:attribute name="categoryLevel3Options" type="List" access="PRIVATE"/>
+    <aura:attribute name="categoryLevel3values" type="List" access="PRIVATE"/>
+    <aura:attribute name="categoryLevel1Selected" type="List" access="PUBLIC"/>
+    <aura:attribute name="categoryLevel2Selected" type="List" access="PUBLIC"/>
+    <aura:attribute name="categoryLevel3Selected" type="List" access="PUBLIC"/>
+    <aura:attribute name="selectedCategoriesText" type="String" access="PUBLIC"/>
+    <aura:attribute name="selectedCategoriesCode" type="String" access="PUBLIC"/>
+    <aura:attribute name="isOpenOrgModal" type="boolean" default="false"/>
+    <aura:attribute name="isOpenOrgModal2" type="boolean" default="false"/>
+    <aura:attribute name="prevRowLevel1" type="String" access="PRIVATE"/>
+    <aura:attribute name="prevRowLevel2" type="String" access="PRIVATE"/>
+    <aura:attribute name="prevRowLevel3" type="String" access="PRIVATE"/>
+	<aura:attribute name="recordId" type="String"></aura:attribute>
+
+    <aura:attribute name="processId" type="String"></aura:attribute>
+    <aura:attribute name="isShowMenu" type="boolean" default="false"/>
+
+    <aura:attribute name="isLoading" type="boolean" default="true"/>
+    <aura:handler name="componentEventFired" event="c:cj_CustomEvent" action="{!c.handleEvent}"></aura:handler>
+    <aura:handler name="init" value="{!this}" action="{!c.fnInit}" />
+    
+    <aura:html tag="style">
+        .row-level-1, .row-level-2, .row-level-3 {
+        transition: all .1s ease-in-out;
+        background-color: white;
+        }
+        .selected {
+        background-color: #EB5F26; 
+        font-weight: bold; 
+        color: black;
+        }
+        
+        .cuf-content {
+        padding: 0 0rem !important;
+        }
+        .slds-p-around--medium {
+        padding: 0rem !important;
+        }       
+        .slds-modal__content{
+        overflow-y:hidden !important;
+        height:unset !important;
+        max-height:unset !important;
+        }
+    </aura:html>
+
+    <aura:attribute name="CustomComponent" type="Aura.Component" />
+    
+    <aura:if isTrue="{!v.isShowMenu}">
+        <div class="modal-header slds-modal__header slds-size_1-of-1">
+            <h4 class="title slds-text-heading--medium" >워크플로우 생성</h4>
+        </div>
+        
+        <div class="slds-modal__content slds-p-around--x-small slds-size_1-of-1 slds-is-relative" aura:id="modalbody" id="modalbody">
+             
+            <lightning:card class="search-by-category-container">
+                <lightning:layoutItem padding="around-small" size="12">
+                    <lightning:layout>
+                        <lightning:layoutItem padding="around-small" size="4">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <table border="1">
+                                            <tr style="background-color:#f5f3f2; font-weight: bold;">
+                                                <th class="slds-item">본사/거래처</th>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div style="height:250px; overflow:auto;">
+                                            <table class="table-level-1" border="1">
+                                                <aura:iteration items="{!v.categoryLevel1Options}" var="option" indexVar="index">
+                                                    <tr class="row1" data-record="{!index}" onclick="{!c.handleLevel1Clicked}">
+                                                        <td>{!option.Name}</td>
+                                                    </tr>
+                                                </aura:iteration>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </lightning:layoutItem>
+                        <aura:if isTrue="{!v.isLoading}">
+                            <div class="exampleHolder">
+                                <lightning:spinner alternativeText="Loading" size="medium" />
+                            </div>
+                        </aura:if>
+                        <lightning:layoutItem padding="around-small" size="4">
+                            
+                            <table>
+                                <tr>
+                                    <td>
+                                        <table border="1">
+                                            <tr style="background-color:#f5f3f2; font-weight: bold;">
+                                                <th class="slds-item">워크플로우명</th>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div style="height:250px; overflow:auto;">
+                                            <table class="table-level-2" border="1">
+                                                <aura:iteration items="{!v.categoryLevel2Options}" var="option" indexVar="index">
+                                                    <tr class="row2" data-record="{!index}" onclick="{!c.handleLevel2Clicked}">
+                                                        <td>{!option.Name}</td>
+                                                    </tr>
+                                                </aura:iteration>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem padding="around-small" size="4">
+                            
+                            <table>
+                                <tr>
+                                    <td>
+                                        <table border="1">
+                                            <tr style="background-color:#f5f3f2; font-weight: bold;">
+                                                <th class="slds-item">기본,회계,영업(정보)</th>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div style="height:250px; overflow:auto;">
+                                            <table class="table-level-3" border="1">
+                                                <aura:iteration items="{!v.categoryLevel3Options}" var="option" indexVar="index">
+                                                    <tr class="row2" data-record="{!index}">
+                                                        <!--
+                                                        <td>
+                                                            <lightning:input type="checkbox-button" checked="{!option.isChecked}" value="{!option.isChecked}" disabled="disabled"></lightning:input>                                                        
+                                                        </td>
+                                                        -->
+                                                        <td class="selected">{!option.Name}</td>
+                                                    </tr>
+                                                </aura:iteration>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </lightning:layoutItem>      
+                    </lightning:layout>
+                </lightning:layoutItem>
+                <lightning:layout horizontalAlign="end">
+                        <lightning:button variant="brand" label="다음"  onclick="{!c.handleLevel3Clicked}"/>
+                    </lightning:layout>
+            </lightning:card>
+            		
+        </div>
+        
+    </aura:if>
+
+    <!--
+    {!v.CustomComponent}
+    -->
+
+    <aura:if isTrue="{!v.isOpenOrgModal}">
+        <c:cj_workflowDoInformation processId="{!v.processId}" InforecordId="{!v.categoryLevel3values}" recordId="{!v.recordId}" ></c:cj_workflowDoInformation>
+    </aura:if>
+    <aura:if isTrue="{!v.isOpenOrgModal2}">
+        <c:cj_workflowDoInformation2 processId="{!v.processId}" InforecordId="{!v.categoryLevel3values}" recordId="{!v.recordId}" ></c:cj_workflowDoInformation2>
+    </aura:if>    
+</aura:component>

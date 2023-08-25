@@ -1,0 +1,29 @@
+<!--
+  @description       : 메뉴바 > 매출원장 클릭시 호출되는 페이지
+  <c-cjfw-sales-ledger-info-page>
+  @author            : eunyoung.choi@dkbmc.com
+  @group             : 
+  @last modified on  : 08-18-2023
+  @last modified by  : eunyoung.choi@dkbmc.com
+  Modifications Log
+  Ver   Date         Author                    Modification
+  1.0   08-07-2023   eunyoung.choi@dkbmc.com   Initial Version
+-->
+<template>
+  
+    <div class="container">
+      <!-- Head 필터영역 -->
+      <div class="headerContainer">
+        <c-cjfw-comm-header-filter></c-cjfw-comm-header-filter> 
+      </div>
+      <!-- Excel 버튼영역  -->
+      <div class="buttonContainer">
+        <c-cjfw-comm-excel-page></c-cjfw-comm-excel-page>
+      </div>
+      <div class="totalCnt" >  TOTAL : {totalCnt}</div>
+      <!-- List VIEW 영역-->
+      <div class="listviewContainer">
+        <c-cjfw-comm-list-view></c-cjfw-comm-list-view>
+      </div>
+  </div>
+</template>

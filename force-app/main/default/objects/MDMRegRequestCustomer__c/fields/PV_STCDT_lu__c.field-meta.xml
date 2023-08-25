@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>PV_STCDT_lu__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>세금계산서발행유형
+GroupId : J_1ATODC</description>
+    <externalId>false</externalId>
+    <label>PV_STCDT_lu</label>
+    <lookupFilter>
+        <active>false</active>
+        <filterItems>
+            <field>MDMReferenceCode__c.GROUPID__c</field>
+            <operation>equals</operation>
+            <value>J_1ATODC</value>
+        </filterItems>
+        <isOptional>true</isOptional>
+    </lookupFilter>
+    <referenceTo>MDMReferenceCode__c</referenceTo>
+    <relationshipName>MDMRegRequestCustomer_PV_STCDT_del</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

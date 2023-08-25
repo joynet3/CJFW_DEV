@@ -1,0 +1,887 @@
+<!--
+* ==================================================================================
+*   File Name   : ActivityReportFuelMgmt.cmp
+*   Author      : Minje.Kim
+*   Date        : 2022.08.02
+*   Description : 활동별 주유비 관리
+*   Modification Log
+* ==================================================================================
+*   Ver     Date          Author          Modification
+* ==================================================================================
+*   1.0     2022.08.02    Minje.Kim       Create
+* ==================================================================================
+-->
+
+<aura:component implements="force:lightningQuickActionWithoutHeader,force:hasRecordId" controller="ActivityReportFuelMgmtController">
+
+    <!-- Data Attribute -->
+    <aura:attribute name="objOilInfo" type="Object" description="주유비 단가 정보"/>
+    <aura:attribute name="totalDistance" type="Integer" default="0" description="주유비 총 거리"/>
+    <aura:attribute name="totalCost" type="Integer" default="0" description="주유비 총 금액"/>
+    <aura:attribute name="recordId" type="String" description="활동보고 레코드 Id"/>
+    <aura:attribute name="selectedIndex" type="String" description="선택된 활동(거리검색)"/>
+    <aura:attribute name="selectedDeleteIndex" type="String" description="선택된 활동(삭제)"/>
+    <aura:attribute name="isDeleteConfirm" type="Boolean" default="false" description="삭제 재확인(Confirm) 여부"/>
+    <aura:attribute name="listData" type="List" description="조회된 활동 리스트"/>
+    <aura:attribute name="listDatalength" type="Integer" default="0" description="조회된 활동 리스트 길이"/>
+    <aura:attribute name="isAllOpen" type="Boolean" default="false" description="상세내역 모두펼치기/모두접기 구분자"/>
+
+    <!-- Tmap Attribute -->
+    <aura:attribute name="tmapOriginDistance" type="String" default="" description="Tmap 원본 거리"/>
+    <aura:attribute name="tmapDistance" type="String" default="" description="산정 거리 (변경된 거리)"/>
+    <aura:attribute name="tmapStartAddr" type="String" default="" description="출발지 주소"/>
+    <aura:attribute name="tmapEndAddr" type="String" default="" description="도착지 주소"/>
+    <aura:attribute name="tmapViaPoints" type="List" default="[]" description="경유지 주소 리스트"/>
+
+    <aura:attribute name="tmapStartDesc" type="String" default="" description="출발지 주소 비고"/>
+    <aura:attribute name="tmapEndDesc" type="String" default="" description="도착지 주소 비고"/>
+    <aura:attribute name="tmapViaPointsDesc" type="List" description="경유지 주소 리스트 비고"/>
+    
+    <!-- Etc. Attribute -->
+    <aura:attribute name="isMobile" type="Boolean" default="false" description="Mobile, DeskTop 구분자"/>
+    <aura:attribute name="isOpenTmap" type="Boolean" default="false" description="Tmap 검색 화면 Open 여부"/>
+    <aura:attribute name="isComplete" type="Boolean" default="false" description="Tmap 검색 완료 여부"/>
+    <aura:attribute name="showSpinner" type="Boolean" default="false" description="Spinner"/>
+    <aura:attribute name="isBTNClicked" type="Boolean" default="false" description="버튼 클릭 여부 (중복 클릭 방지)"/>
+    
+    <aura:attribute name="modalStatus" type="String" default="Hide" description="모달창 상태값 Hide(숨김), Description(비고입력)"/>
+    <aura:attribute name="modalTitle" type="String" default="" description="모달창 제목"/>
+    <aura:attribute name="modalType" type="String" default="" description="모달창 비고 유형"/>
+    <aura:attribute name="modalViaNo" type="String" default="" description="모달창 비고 경유지 번호"/>
+    <aura:attribute name="modalDesc" type="String" default="" description="모달창 비고 내용"/>
+    
+    <!-- Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.fnInit}" />
+    <aura:handler name="change" value="{!v.isComplete}" action="{!c.fnSubmit}" />
+
+    <!-- Contents -->
+    <aura:html tag="style">
+        .cuf-content {
+            padding: 0 0rem !important;
+        }
+        
+        .slds-p-around--medium {
+            padding: 0rem !important;
+        }
+        
+        .slds-modal__content {
+            overflow-y: hidden !important;
+            height: unset !important;
+            max-height: unset !important;
+        }
+
+        .slds-modal__container {
+            width: 80vw; 
+            max-width: none; 
+            min-width: 50vw;
+        }
+        .slds-modal__header .slds-modal__close{
+            display:none
+        }
+        
+        .bg_color_gray{
+            background-color: #f3f3f3; !important;
+        }
+        .bg_color_white{
+            background-color: white; !important;
+        }
+
+        table.custom-mobile-table td{
+            border:1px gray solid;
+        }
+
+    </aura:html>
+    
+    <div aura:id="modalContainer">
+        <aura:if isTrue="{!v.showSpinner}">
+            <lightning:spinner aura:id="spinner" style="margin: var(--lwc-squareIconLargeBoundary,3rem) 0 var(--lwc-squareIconLargeBoundaryAlt,5rem) 0;" alternativeText="Loading" size="large" variant="brand" />
+        </aura:if>
+    
+        <!-- 활동 조회 화면(데스크탑) -->
+        <aura:if isTrue="{!!v.isMobile}">
+            <!-- Header[S] -->
+            <header class="modal-header slds-modal__header">
+                <h2 id="modal-heading-id" class="slds-text-heading_medium slds-hyphenate">
+                    활동 별 주유비 관리
+                    <lightning:buttonIcon 
+                        iconName="utility:close"
+                        onclick="{! c.fnCloseModel }"
+                        alternativeText="close"
+                        variant="bare-inverse"
+                        class="slds-modal__close"
+                    />
+                </h2>
+            </header>
+            <!-- Header[E] -->
+            <!-- Body[S] -->
+            <div class="modal-body slds-modal__content">
+                <lightning:layout class="slds-size_1-of-1" multipleRows="true" >
+                    <lightning:layoutItem size="12"> 
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <div class="slds-page-header" style="width:100%">
+                                        <article class="slds-card" style="background: transparent;">
+                                            <div class="slds-card__header slds-grid" style="margin:1%; padding:0">
+                                                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                                    <div class="slds-media__figure">
+                                                        <lightning:icon iconName="custom:custom31" size="auto" class="custom_headerIcon" />
+                                                    </div>
+                                                    <div class="slds-media__body">
+                                                    <h2 class="slds-card__header-title">
+                                                        <div class="slds-truncate">
+                                                            <span> 유류유형 </span>
+                                                            <span Style="color: chocolate"> <big> {!v.objOilInfo.TypeName} </big> </span>
+                                                        </div>
+                                                        </h2>
+                                                    </div>
+                                                </header>
+                                            </div>
+                                        </article>
+                                    </div>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <div class="slds-page-header" style="width:100%">
+                                        <article class="slds-card" style="background: transparent;">
+                                            <div class="slds-card__header slds-grid" style="margin:1%; padding:0">
+                                                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                                    <div class="slds-media__figure">
+                                                        <lightning:icon iconName="standard:pricing_workspace" size="auto" class="custom_headerIcon" />
+                                                    </div>
+                                                    <div class="slds-media__body">
+                                                        <h2 class="slds-card__header-title">
+                                                            <div class="slds-truncate">
+                                                                <span>  단가 </span>
+                                                                <span Style="color: chocolate"> <big> {!v.objOilInfo.Price} </big> </span>
+                                                                <span>  원 </span>
+                                                            </div>
+                                                        </h2>
+                                                    </div>
+                                                </header>
+                                            </div>
+                                        </article>
+                                    </div>
+                                </lightning:layoutItem> 
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <div class="slds-page-header" style="width:100%">
+                                        <article class="slds-card" style="background: transparent;">
+                                            <div class="slds-card__header slds-grid" style="margin:1%; padding:0">
+                                                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                                    <div class="slds-media__figure">
+                                                        <lightning:icon iconName="standard:tour_check" size="auto" class="custom_headerIcon" />
+                                                    </div>
+                                                    <div class="slds-media__body">
+                                                        <h2 class="slds-card__header-title">
+                                                            <div class="slds-truncate">
+                                                                <span>  총 거리 </span>
+                                                                <span Style="color: chocolate"> <big> <lightning:formattedNumber value="{!v.totalDistance}" maximumFractionDigits="2"/> </big> </span>
+                                                                <span>   Km </span>
+                                                            </div>
+                                                        </h2>
+                                                    </div>
+                                                </header>
+                                            </div>
+                                        </article>
+                                    </div>
+                                </lightning:layoutItem> 
+                                <lightning:layoutItem size="3" padding="around-small">
+                                    <div class="slds-page-header" style="width:100%">
+                                        <article class="slds-card" style="background: transparent;">
+                                            <div class="slds-card__header slds-grid" style="margin:1%; padding:0">
+                                                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                                    <div class="slds-media__figure">
+                                                        <lightning:icon iconName="standard:partner_marketing_budget" size="auto" class="custom_headerIcon" />
+                                                        <span class="slds-icon_container slds-icon-standard-opportunity" title="opportunity">
+                                                            <span class="slds-assistive-text">opportunity</span>
+                                                        </span>
+                                                    </div>
+                                                    <div class="slds-media__body">
+                                                        <h2 class="slds-card__header-title">
+                                                            <div class="slds-truncate">
+                                                                <span> 총 금액 </span>
+                                                                <span Style="color: chocolate"> <big> <lightning:formattedNumber value="{!v.totalCost}" maximumFractionDigits="2"/>  </big> </span>
+                                                                <span> 원 </span>
+                                                            </div>
+                                                        </h2>
+                                                    </div>
+                                                </header>
+                                            </div>
+                                        </article>
+                                    </div>
+                                </lightning:layoutItem> 
+                            </lightning:layout>
+                    </lightning:layoutItem>
+                </lightning:layout>
+
+                <div class="slds-table--header-fixed_container" style="height:60vh;">
+                    <div class="slds-scrollable" style="height:100%;">
+                        <table class="slds-table slds-table--header-fixed slds-table_bordered slds-table_col-bordered" style="width:100%;">
+                            <thead class="table--header">
+                                <tr class="slds-line-height_reset">
+                                    <th scope="col" width="5%">
+                                        <div class="slds-align_absolute-center slds-cell-fixed" style="width:inherit; text-align:center;" onclick="{!c.fnDetailAllOpenToggle}"> 
+                                            <aura:if isTrue="{!v.isAllOpen}">
+                                                <lightning:icon iconName="utility:chevrondown" size="x-small"/>
+                                                <aura:set attribute="else">
+                                                    <lightning:icon iconName="utility:chevronright" size="x-small"/>
+                                                </aura:set>
+                                            </aura:if>
+                                        </div>
+                                    </th>
+                                    <th scope="col" >
+                                        <div class="slds-align_absolute-center slds-cell-fixed" style="width:20%; text-align:center;">업무명</div>
+                                    </th>
+                                    <th scope="col" >
+                                        <div class="slds-align_absolute-center slds-cell-fixed" style="width:20%; text-align:center;">활동시간</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-align_absolute-center slds-cell-fixed" style="width:55%; text-align:center;">주유비</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.listData}" var="objEvent" indexVar="idx">
+                                    <tr id="{!'row-'+idx}" >
+                                        <!-- <td rowspan="{! objEvent.WayPoint5__c ? 8 : (objEvent.WayPoint4__c ? 7: (objEvent.WayPoint3__c ? 6: (objEvent.WayPoint2__c ? 5: (objEvent.WayPoint1__c ? 4: 3))))}"  -->
+                                            
+                                        <td rowspan="{! objEvent.WayPointCount > 1 ? objEvent.WayPointCount + 4 : objEvent.WayPointCount + 3}" id="{!idx}" style="text-align:center;" onclick="{!c.fnDetailOpenToggle}" >
+                                            <aura:if isTrue="{!objEvent.isDetailOpen}">
+                                                <lightning:icon iconName="utility:chevrondown" size="x-small"/>
+                                                <aura:set attribute="else">
+                                                    <lightning:icon iconName="utility:chevronright" size="x-small"/>
+                                                </aura:set>    
+                                            </aura:if>   
+                                        </td>     
+                                        <td rowspan="{! objEvent.WayPointCount > 1 ? objEvent.WayPointCount + 4 : objEvent.WayPointCount + 3}" style="text-align:center; width:20%;">
+                                            <aura:if isTrue="{!objEvent.Account__c != null}">
+                                                <lightning:badge label="{!'[고객] '+objEvent.accountName}" iconName="utility:company" /><br/> 
+                                            </aura:if>  
+                                            <aura:if isTrue="{!objEvent.Lead__c != null}">
+                                                <lightning:badge label="{!'[리드] '+objEvent.leadName}" iconName="utility:lead" /><br/>  
+                                            </aura:if>      
+                                            <big> <b> {!objEvent.Subject} </b></big>
+                                        </td>
+                                        <td rowspan="{! objEvent.WayPointCount > 1 ? objEvent.WayPointCount + 4 : objEvent.WayPointCount + 3}" style="text-align:center; width:20%;"> 
+                                            <div class="slds-form-element">
+                                                <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left">
+                                                    <lightning:icon class="slds-icon slds-input__icon slds-input__icon_left slds-icon-text-default" iconName="utility:date_input" size="x-small" alternativeText="Search address"/>
+                                                    <div class="slds-input" disabled="true" type="text" >
+                                                        <lightning:formattedDateTime value="{!objEvent.StartDateTime}" year="numeric" month="short" day="2-digit" weekday="narrow"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="slds-form-element" style="margin-top:0.3rem">
+                                                <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left">
+                                                    <lightning:icon class="slds-icon slds-input__icon slds-input__icon_left slds-icon-text-default" iconName="utility:clock" size="x-small" alternativeText="Search address"/>
+                                                    <div class="slds-input" disabled="true" type="text" >
+                                                        <lightning:formattedDateTime value="{!objEvent.StartDateTime}"  hour="2-digit"  minute="2-digit" hour12="true"/> ~
+                                                        <lightning:formattedDateTime value="{!objEvent.EndDateTime}"  hour="2-digit"  minute="2-digit" hour12="true"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>     
+                                        <td style="width:55%"> 
+                                            <lightning:badge iconName="utility:agent_home" label="출발지 "/>  &nbsp; {!objEvent.Departure__c} &nbsp; 
+                                            <aura:if isTrue="{!objEvent.DepartureDesc__c}">
+                                                <lightning:button aura:id="StartDesc" name="{!idx}" label="비고 보기" class="custom-DescBtn" onclick="{!c.fnOpenModal}" variant="brand"/>
+                                            </aura:if>
+                                        </td>
+                                    </tr>
+                                    
+                                    <aura:if isTrue="{!objEvent.WayPointCount == 1}">
+                                        <tr>
+                                            <td style="border-left: var(--lwc-borderWidthThin,1px) solid var(--lwc-colorBorder,rgb(229, 229, 229));"> 
+                                                <lightning:badge iconName="utility:flow_alt" label="경유 1"/> &nbsp; {!objEvent.WayPoint1__c} &nbsp; 
+                                                <aura:if isTrue="{!objEvent.WayPointDesc1__c}">
+                                                    <lightning:button aura:id="ViaDesc1" name="{!idx}" label="비고 보기" class="custom-DescBtn" onclick="{!c.fnOpenModal}" variant="brand"/>
+                                                </aura:if>
+                                            </td>
+                                        </tr>
+                                    </aura:if>
+                                    
+                                    <aura:if isTrue="{!objEvent.WayPointCount > 1}">
+                                        
+                                        <tr>
+                                            <td style="border-left: var(--lwc-borderWidthThin,1px) solid var(--lwc-colorBorder,rgb(229, 229, 229)); text-align:center; background-color: rgb(243, 243, 243)"> 
+                                                <b>경유지 {!objEvent.WayPointCount}개</b> &nbsp; &nbsp;
+                                                <span id="{!idx}" onclick="{!c.fnWayPointOpenToggle}" >
+                                                    <aura:if isTrue="{!objEvent.isWayPointOpen}">
+                                                        <lightning:badge class="custom-ViaBadge" iconName="utility:chevronup" label="접기"/> 
+                                                        <aura:set attribute="else">
+                                                            <lightning:badge class="custom-ViaBadge" iconName="utility:chevrondown" label="펼치기"/> 
+                                                        </aura:set>    
+                                                    </aura:if>   
+                                                </span>
+                                            </td>
+                                        </tr>
+
+                                        <aura:if isTrue="{!objEvent.isWayPointOpen}">
+                                            <aura:if isTrue="{!objEvent.WayPoint1__c}">
+                                                <tr>
+                                                    <td style="border-left: var(--lwc-borderWidthThin,1px) solid var(--lwc-colorBorder,rgb(229, 229, 229));"> 
+                                                        <lightning:badge iconName="utility:flow_alt" label="경유 1"/> &nbsp; {!objEvent.WayPoint1__c} &nbsp; 
+                                                        <aura:if isTrue="{!objEvent.WayPointDesc1__c}">
+                                                            <lightning:button aura:id="ViaDesc1" name="{!idx}" label="비고 보기" class="custom-DescBtn" onclick="{!c.fnOpenModal}" variant="brand"/>
+                                                        </aura:if>
+                                                    </td>
+                                                </tr>
+                                            </aura:if>
+                                            <aura:if isTrue="{!objEvent.WayPoint2__c}">
+                                                <tr>
+                                                    <td style="border-left: var(--lwc-borderWidthThin,1px) solid var(--lwc-colorBorder,rgb(229, 229, 229));"> 
+                                                        <lightning:badge iconName="utility:flow_alt" label="경유 2"/> &nbsp; {!objEvent.WayPoint2__c} &nbsp;  
+                                                        <aura:if isTrue="{!objEvent.WayPointDesc2__c}">
+                                                            <lightning:button aura:id="ViaDesc2" name="{!idx}" label="비고 보기" class="custom-DescBtn" onclick="{!c.fnOpenModal}" variant="brand"/>
+                                                        </aura:if>
+                                                    </td>
+                                                </tr>
+                                            </aura:if>
+                                            <aura:if isTrue="{!objEvent.WayPoint3__c}">
+                                                <tr>
+                                                    <td style="border-left: var(--lwc-borderWidthThin,1px) solid var(--lwc-colorBorder,rgb(229, 229, 229));"> 
+                                                        <lightning:badge iconName="utility:flow_alt" label="경유 3"/> &nbsp; {!objEvent.WayPoint3__c} &nbsp;  
+                                                        <aura:if isTrue="{!objEvent.WayPointDesc3__c}">
+                                                            <lightning:button aura:id="ViaDesc3" name="{!idx}" label="비고 보기" class="custom-DescBtn" onclick="{!c.fnOpenModal}" variant="brand"/>
+                                                        </aura:if>
+                                                    </td>
+                                                </tr>
+                                            </aura:if>
+                                            <aura:if isTrue="{!objEvent.WayPoint4__c}">
+                                                <tr>
+                                                    <td style="border-left: var(--lwc-borderWidthThin,1px) solid var(--lwc-colorBorder,rgb(229, 229, 229));"> 
+                                                        <lightning:badge iconName="utility:flow_alt" label="경유 4"/> &nbsp; {!objEvent.WayPoint4__c} &nbsp;  
+                                                        <aura:if isTrue="{!objEvent.WayPointDesc4__c}">
+                                                            <lightning:button aura:id="ViaDesc4" name="{!idx}" label="비고 보기" class="custom-DescBtn" onclick="{!c.fnOpenModal}" variant="brand"/>
+                                                        </aura:if>
+                                                    </td>
+                                                </tr>
+                                            </aura:if>
+                                            <aura:if isTrue="{!objEvent.WayPoint5__c}">
+                                                <tr>
+                                                    <td style="border-left: var(--lwc-borderWidthThin,1px) solid var(--lwc-colorBorder,rgb(229, 229, 229));"> 
+                                                        <lightning:badge iconName="utility:flow_alt" label="경유 5"/> &nbsp; {!objEvent.WayPoint5__c} &nbsp;  
+                                                        <aura:if isTrue="{!objEvent.WayPointDesc5__c}">
+                                                            <lightning:button aura:id="ViaDesc5" name="{!idx}" label="비고 보기" class="custom-DescBtn" onclick="{!c.fnOpenModal}" variant="brand"/>
+                                                        </aura:if>
+                                                    </td>
+                                                </tr>
+                                            </aura:if>
+                                            <aura:if isTrue="{!objEvent.WayPoint6__c}">
+                                                <tr>
+                                                    <td style="border-left: var(--lwc-borderWidthThin,1px) solid var(--lwc-colorBorder,rgb(229, 229, 229));"> 
+                                                        <lightning:badge iconName="utility:flow_alt" label="경유 6"/> &nbsp; {!objEvent.WayPoint6__c} &nbsp;  
+                                                        <aura:if isTrue="{!objEvent.WayPointDesc6__c}">
+                                                            <lightning:button aura:id="ViaDesc6" name="{!idx}" label="비고 보기" class="custom-DescBtn" onclick="{!c.fnOpenModal}" variant="brand"/>
+                                                        </aura:if>
+                                                    </td>
+                                                </tr>
+                                            </aura:if>
+                                            <aura:if isTrue="{!objEvent.WayPoint7__c}">
+                                                <tr>
+                                                    <td style="border-left: var(--lwc-borderWidthThin,1px) solid var(--lwc-colorBorder,rgb(229, 229, 229));"> 
+                                                        <lightning:badge iconName="utility:flow_alt" label="경유 7"/> &nbsp; {!objEvent.WayPoint7__c} &nbsp;  
+                                                        <aura:if isTrue="{!objEvent.WayPointDesc7__c}">
+                                                            <lightning:button aura:id="ViaDesc7" name="{!idx}" label="비고 보기" class="custom-DescBtn" onclick="{!c.fnOpenModal}" variant="brand"/>
+                                                        </aura:if>
+                                                    </td>
+                                                </tr>
+                                            </aura:if>
+                                            <aura:if isTrue="{!objEvent.WayPoint8__c}">
+                                                <tr>
+                                                    <td style="border-left: var(--lwc-borderWidthThin,1px) solid var(--lwc-colorBorder,rgb(229, 229, 229));"> 
+                                                        <lightning:badge iconName="utility:flow_alt" label="경유 8"/> &nbsp; {!objEvent.WayPoint8__c} &nbsp;  
+                                                        <aura:if isTrue="{!objEvent.WayPointDesc8__c}">
+                                                            <lightning:button aura:id="ViaDesc8" name="{!idx}" label="비고 보기" class="custom-DescBtn" onclick="{!c.fnOpenModal}" variant="brand"/>
+                                                        </aura:if>
+                                                    </td>
+                                                </tr>
+                                            </aura:if>
+                                            <aura:if isTrue="{!objEvent.WayPoint9__c}">
+                                                <tr>
+                                                    <td style="border-left: var(--lwc-borderWidthThin,1px) solid var(--lwc-colorBorder,rgb(229, 229, 229));"> 
+                                                        <lightning:badge iconName="utility:flow_alt" label="경유 9"/> &nbsp; {!objEvent.WayPoint9__c} &nbsp;  
+                                                        <aura:if isTrue="{!objEvent.WayPointDesc9__c}">
+                                                            <lightning:button aura:id="ViaDesc9" name="{!idx}" label="비고 보기" class="custom-DescBtn" onclick="{!c.fnOpenModal}" variant="brand"/>
+                                                        </aura:if>
+                                                    </td>
+                                                </tr>
+                                            </aura:if>
+                                        </aura:if>
+                                    </aura:if>
+                                    <tr>
+                                        <td style="border-left: var(--lwc-borderWidthThin,1px) solid var(--lwc-colorBorder,rgb(229, 229, 229));"> 
+                                            <lightning:badge iconName="utility:priority" label="도착지 "/> &nbsp; {!objEvent.Arrival__c} &nbsp;  
+                                            <aura:if isTrue="{!objEvent.ArrivalDesc__c}">
+                                                <lightning:button aura:id="EndDesc" name="{!idx}" label="비고 보기" class="custom-DescBtn" onclick="{!c.fnOpenModal}" variant="brand"/>
+                                            </aura:if>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="height:2rem; border-left: var(--lwc-borderWidthThin,1px) solid var(--lwc-colorBorder,rgb(229, 229, 229));"> 
+                                            <div style="width:70%; float:left; padding-top:0.175rem">  
+                                                <lightning:badge iconName="utility:truck" label="거리 / 금액"/> &nbsp; 
+                                                {!objEvent.Distancekm__c} (km) / <lightning:formattedNumber value="{!objEvent.VehicleRefuelingCosts__c}" maximumFractionDigits="2"/> (원)
+                                            </div>
+                                            <div style="width:30%; float:right; text-align:right;" >
+                                                <aura:if isTrue="{!objEvent.Distancekm__c > 0}">
+                                                    <lightning:button title="{!idx}" class="Icon_Gray" variant="base" iconName="utility:delete" onclick="{!c.fnDeleteAddress}"/>
+                                                </aura:if>
+                                                <lightning:button title="{!idx}" label="계산하기" iconName="utility:location" onclick="{!c.fnSearchAddress}"/>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr style="{!objEvent.isDetailOpen ? 'padding:0px;margin:0px' : 'display:none;padding:0px;margin:0px'}">    
+                                        <td style="text-align:center; ">
+                                            &nbsp;
+                                        </td>                
+                                        <td colspan="2">
+                                            <p class="title"> 관련 항목</p>
+                                            <c:DN_Lookup
+                                                objectName="{!objEvent.WhatType}"
+                                                fieldSet="['Name']"
+                                                whereCondition="" 
+                                                limit="5"
+                                                comparisonField="['Name']"
+                                                lightningIconName="{! 'standard:' + objEvent.WhatType}"
+                                                selectedId="{!objEvent.WhatId}"
+                                                displayLabel="{!objEvent.WhatName}"
+                                                compact="true"
+                                                readOnly="true"
+                                                minimumCharacter="1" 
+                                            />
+                                        </td>       
+                                        <td colspan="2">
+                                            <p class="title">설명</p>
+                                            <ui:inputTextArea value="{!objEvent.Description}" rows="5" disabled="true"/>
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- Body[E] -->
+
+            <!-- Footer[S] -->
+            <footer class="modal-footer slds-modal__footer">
+                <lightning:button label="닫기" onclick="{!c.fnCancel}" variant="neutral"   />
+                <lightning:button label="임시저장" onclick="{!c.fnSave}" aura:id="Temp"/>
+                <lightning:button label="제출" onclick="{!c.fnSave}" aura:id="Final" variant="brand"   />
+            </footer>
+            <!-- Footer[E] -->
+            
+        </aura:if>
+
+        <!-- 활동 조회 화면 (모바일) -->
+        <aura:if isTrue="{!v.isMobile}">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_large">       
+                <header class="modal-header slds-modal__header">
+                    <h2 id="modal-heading-id" class="slds-text-heading_small slds-hyphenate">
+                        <div onclick="{!c.fnDetailAllOpenToggle}"> 
+                            <aura:if isTrue="{!v.isAllOpen}">
+                                <lightning:icon iconName="utility:chevrondown" size="x-small" />
+                                <aura:set attribute="else">
+                                    <lightning:icon iconName="utility:chevronright" size="x-small"/>
+                                </aura:set>
+                            </aura:if>
+                            활동 별 주유비 관리
+                        </div>
+                    </h2>
+                </header>
+                <table class="slds-table slds-table_cell-buffer slds-table--fixed-layout" style="border-bottom:2px solid lightgray; height:10vh;width:100%;text-align:center;background-color:rgb(250, 250, 249);">
+                    <tr>                
+                        <td style="text-align:center; padding-bottom:0px">                                
+                            <lightning:icon iconName="action:back" class="Icon_Red" size="x-small" onclick="{!c.fnCancel}"/>
+                            <br/>
+                            <small><small>닫기</small></small>
+                        </td>   
+                        <td style="text-align:center; padding-bottom:0px">
+                            <lightning:icon aura:id="Temp" iconName="action:edit" size="x-small" onclick="{!c.fnSave}"/>
+                            <br/>
+                            <small><small>임시저장</small></small>
+                        </td>             
+                        <td style="text-align:center; padding-bottom:0px">                         
+                            <lightning:icon aura:id="Final" iconName="action:goal" size="x-small" onclick="{!c.fnSave}"/>
+                            <br/>
+                            <small><small>제출</small></small>
+                        </td>    
+                    </tr>
+                </table>
+                <div class="slds-scrollable_y" style="height:80vh;">
+                <div class="slds-modal__content slds-p-around--medium" style="text-align:center;width: 100%; background-color:white;padding:0px; margin:0px"> 
+                    <lightning:layout multipleRows="true" >
+                        <lightning:layoutItem size="12"> 
+                                <lightning:layout multipleRows="true">
+                                    <lightning:layoutItem size="12" >
+                                        <div class="slds-page-header" style="width:100%">
+                                            <article class="slds-card" style="background: transparent;">
+                                                <div class="slds-card__header slds-grid" style="margin:0; padding:0">
+                                                    <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                                        <div class="slds-media__figure">
+                                                            <lightning:icon iconName="custom:custom31" size="auto" class="custom_headerIcon" />
+                                                        </div>
+                                                        <div class="slds-media__body">
+                                                        <h2 class="slds-card__header-title">
+                                                            <div class="slds-truncate">
+                                                                <span> 유류유형 </span>
+                                                                <span Style="color: chocolate"> <big> {!v.objOilInfo.TypeName} </big> </span>
+                                                            </div>
+                                                            </h2>
+                                                        </div>
+                                                    </header>
+                                                </div>
+                                            </article>
+                                            <article class="slds-card" style="background: transparent;">
+                                                <div class="slds-card__header slds-grid" style="margin:0; padding:0">
+                                                    <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                                        <div class="slds-media__figure">
+                                                            <lightning:icon iconName="standard:pricing_workspace" size="auto" class="custom_headerIcon" />
+                                                        </div>
+                                                        <div class="slds-media__body">
+                                                            <h2 class="slds-card__header-title">
+                                                                <div class="slds-truncate">
+                                                                    <span>  단가 </span>
+                                                                    <span Style="color: chocolate"> <big> {!v.objOilInfo.Price} </big> </span>
+                                                                    <span>  원 </span>
+                                                                </div>
+                                                            </h2>
+                                                        </div>
+                                                    </header>
+                                                </div>
+                                            </article>
+                                            <article class="slds-card" style="background: transparent;">
+                                                <div class="slds-card__header slds-grid" style="margin:0; padding:0">
+                                                    <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                                        <div class="slds-media__figure">
+                                                            <lightning:icon iconName="standard:tour_check" size="auto" class="custom_headerIcon" />
+                                                        </div>
+                                                        <div class="slds-media__body">
+                                                            <h2 class="slds-card__header-title">
+                                                                <div class="slds-truncate">
+                                                                    <span>  총 거리 </span>
+                                                                    <span Style="color: chocolate"> <big> <lightning:formattedNumber value="{!v.totalDistance}" maximumFractionDigits="2"/> </big> </span>
+                                                                    <span>   Km </span>
+                                                                </div>
+                                                            </h2>
+                                                        </div>
+                                                    </header>
+                                                </div>
+                                            </article>
+                                            <article class="slds-card" style="background: transparent;">
+                                                <div class="slds-card__header slds-grid" style="margin:0; padding:0">
+                                                    <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                                        <div class="slds-media__figure">
+                                                            <lightning:icon iconName="standard:partner_marketing_budget" size="auto" class="custom_headerIcon" />
+                                                            <span class="slds-icon_container slds-icon-standard-opportunity" title="opportunity">
+                                                                <span class="slds-assistive-text">opportunity</span>
+                                                            </span>
+                                                        </div>
+                                                        <div class="slds-media__body">
+                                                            <h2 class="slds-card__header-title">
+                                                                <div class="slds-truncate">
+                                                                    <span> 총 금액 </span>
+                                                                    <span Style="color: chocolate"> <big> <lightning:formattedNumber value="{!v.totalCost}" maximumFractionDigits="2"/> </big> </span>
+                                                                    <span> 원 </span>
+                                                                </div>
+                                                            </h2>
+                                                        </div>
+                                                    </header>
+                                                </div>
+                                            </article>
+                                        </div>
+                                    </lightning:layoutItem> 
+                                </lightning:layout>
+                        </lightning:layoutItem>
+                    </lightning:layout>
+                    
+                    <aura:iteration items="{!v.listData}" var="objEvent" indexVar="idx">
+                    <table class="slds-table custom-mobile-table" style="width:100%; border:1px gray solid">
+                            <tr id="{!'row-'+idx}">
+                                <td class="bg_color_white" style="text-align:center; border-top:2px gray solid">
+                                    <b> {!idx+1}</b>
+                                </td>
+                                <td class="bg_color_gray" style="text-align:center; border-top:2px gray solid">
+                                    <b> 업무명 </b>
+                                </td>
+                                <td class="bg_color_white" style="text-align:center; border-top:2px gray solid" >
+                                    <aura:if isTrue="{!objEvent.Account__c != null}">
+                                        <lightning:badge label="{!'[고객] '+objEvent.accountName}" iconName="utility:company" /><br/> 
+                                    </aura:if>  
+                                    <aura:if isTrue="{!objEvent.Lead__c != null}">
+                                        <lightning:badge label="{!'[리드] '+objEvent.leadName}" iconName="utility:lead" /><br/>  
+                                    </aura:if>
+                                    {!objEvent.Subject}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" id="{!idx}" onclick="{!c.fnDetailOpenToggle}" class="bg_color_gray" style="text-align:center;"> 
+                                    <aura:if isTrue="{!objEvent.isDetailOpen}">
+                                        <lightning:icon iconName="utility:chevrondown" size="x-small"/>
+                                        <aura:set attribute="else">
+                                            <lightning:icon iconName="utility:chevronright" size="x-small"/>
+                                        </aura:set>    
+                                    </aura:if>  
+                                    <b> 활동시간 &nbsp; </b>
+                                </td>
+                                <td class="bg_color_white" style="text-align:center;"> 
+                                    
+                                    <div class="slds-form-element">
+                                        <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left">
+                                            <lightning:icon class="slds-icon slds-input__icon slds-input__icon_left slds-icon-text-default" iconName="utility:date_input" size="x-small" alternativeText="Search address"/>
+                                            <div class="slds-input" disabled="true" type="text" >
+                                                <lightning:formattedDateTime value="{!objEvent.StartDateTime}" year="numeric" month="short" day="2-digit" weekday="narrow"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-form-element" style="margin-top:0.3rem">
+                                        <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left">
+                                            <lightning:icon class="slds-icon slds-input__icon slds-input__icon_left slds-icon-text-default" iconName="utility:clock" size="x-small" alternativeText="Search address"/>
+                                            <div class="slds-input" disabled="true" type="text" >
+                                                <lightning:formattedDateTime value="{!objEvent.StartDateTime}"  hour="2-digit"  minute="2-digit" hour12="true"/> ~
+                                                <lightning:formattedDateTime value="{!objEvent.EndDateTime}"  hour="2-digit"  minute="2-digit" hour12="true"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <aura:if isTrue="{!objEvent.WhatType}">
+                                <tr style="{!objEvent.isDetailOpen ? 'padding:0px;margin:0px' : 'display:none;padding:0px;margin:0px'}">    
+                                    <td colspan="3" class="bg_color_white">
+                                        <b> <p> 관련 항목 </p> </b>
+                                        <c:DN_Lookup
+                                                objectName="{!objEvent.WhatType}"
+                                                fieldSet="['Name']"
+                                                whereCondition="" 
+                                                limit="5"
+                                                comparisonField="['Name']"
+                                                lightningIconName="{! 'standard:' + objEvent.WhatType}"
+                                                selectedId="{!objEvent.WhatId}"
+                                                displayLabel="{!objEvent.WhatName}"
+                                                compact="true"
+                                                readOnly="true"
+                                                minimumCharacter="1" />
+                                    </td>  
+                                </tr>
+                            </aura:if>
+                            <tr style="{!objEvent.isDetailOpen ? 'padding:0px;margin:0px' : 'display:none;padding:0px;margin:0px'}">    
+                                <td colspan="3" class="bg_color_white">
+                                    <b> <p> 설명 </p> </b>
+                                    <ui:inputTextArea value="{!objEvent.Description}" rows="5" disabled="true"/>
+                                </td>  
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="bg_color_gray" style="text-align:center;"> 
+                                    <lightning:badge iconName="utility:agent_home" label="출발지 "/> 
+                                </td>
+                                <td class="bg_color_white" > 
+                                    {!objEvent.Departure__c}&nbsp;
+                                    <aura:if isTrue="{!objEvent.DepartureDesc__c}">
+                                        <small>
+                                            <lightning:button aura:id="StartDesc" name="{!idx}" label="비고보기" class="custom-MobileBtn custom-DescBtn" onclick="{!c.fnOpenModal}" variant="brand"/>
+                                        </small>
+                                    </aura:if>
+                                </td>
+                            </tr>
+                            
+                            <aura:if isTrue="{!objEvent.WayPointCount == 1}">
+                                <tr>
+                                    <td colspan="2" class="bg_color_gray" style="text-align:center;"> 
+                                        <lightning:badge iconName="utility:flow_alt" label="경유 1"/> 
+                                    </td>
+                                    <td class="bg_color_white" > 
+                                        {!objEvent.WayPoint1__c}&nbsp;
+                                        <aura:if isTrue="{!objEvent.WayPointDesc1__c}">
+                                            <small>
+                                                <lightning:button aura:id="ViaDesc1" name="{!idx}" label="비고보기" class="custom-MobileBtn custom-DescBtn" onclick="{!c.fnOpenModal}" variant="brand"/>
+                                            </small>
+                                        </aura:if>
+                                    </td>
+                                </tr>
+                            </aura:if>
+                            
+                            <aura:if isTrue="{!objEvent.WayPointCount > 1}">
+                                <aura:if isTrue="{!objEvent.WayPoint1__c}">
+                                    <tr>
+                                        <td colspan="3" class="bg_color_gray" style="text-align:center;"> 
+                                            <b>경유지 {!objEvent.WayPointCount}개</b> &nbsp; &nbsp;
+                                            <span id="{!idx}" onclick="{!c.fnWayPointOpenToggle}" >
+                                                <aura:if isTrue="{!objEvent.isWayPointOpen}">
+                                                    <lightning:badge class="custom-ViaBadge" iconName="utility:chevronup" label="접기"/> 
+                                                    <aura:set attribute="else">
+                                                        <lightning:badge class="custom-ViaBadge" iconName="utility:chevrondown" label="펼치기"/> 
+                                                    </aura:set>    
+                                                </aura:if>   
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </aura:if>
+                                <aura:if isTrue="{!objEvent.isWayPointOpen}">
+                                    <aura:if isTrue="{!objEvent.WayPoint1__c}">
+                                        <tr>
+                                            <td colspan="2" class="bg_color_gray" style="text-align:center;"> 
+                                                <lightning:badge iconName="utility:flow_alt" label="경유 1"/> 
+                                            </td>
+                                            <td class="bg_color_white" > 
+                                                {!objEvent.WayPoint1__c}&nbsp;
+                                                <aura:if isTrue="{!objEvent.WayPointDesc1__c}">
+                                                    <small>
+                                                        <lightning:button aura:id="ViaDesc1" name="{!idx}" label="비고보기" class="custom-MobileBtn custom-DescBtn" onclick="{!c.fnOpenModal}" variant="brand"/>
+                                                    </small>
+                                                </aura:if>
+                                            </td>
+                                        </tr>
+                                    </aura:if>
+                                    <aura:if isTrue="{!objEvent.WayPoint2__c}">
+                                        <tr>
+                                            <td colspan="2" class="bg_color_gray" style="text-align:center;"> 
+                                                <lightning:badge iconName="utility:flow_alt" label="경유 2"/> 
+                                            </td>
+                                            <td class="bg_color_white" > 
+                                                {!objEvent.WayPoint2__c}&nbsp;
+                                                <aura:if isTrue="{!objEvent.WayPointDesc2__c}">
+                                                    <small>
+                                                        <lightning:button aura:id="ViaDesc2" name="{!idx}" label="비고보기" class="custom-MobileBtn custom-DescBtn" onclick="{!c.fnOpenModal}" variant="brand"/>
+                                                    </small>
+                                                </aura:if>
+                                            </td>
+                                        </tr>
+                                    </aura:if>
+                                    <aura:if isTrue="{!objEvent.WayPoint3__c}">
+                                        <tr>
+                                            <td colspan="2" class="bg_color_gray" style="text-align:center;"> 
+                                                <lightning:badge iconName="utility:flow_alt" label="경유 3"/> 
+                                            </td>
+                                            <td class="bg_color_white" > 
+                                                {!objEvent.WayPoint3__c}&nbsp;
+                                                <aura:if isTrue="{!objEvent.WayPointDesc3__c}">
+                                                    <small>
+                                                        <lightning:button aura:id="ViaDesc3" name="{!idx}" label="비고보기" class="custom-MobileBtn custom-DescBtn" onclick="{!c.fnOpenModal}" variant="brand"/>
+                                                    </small>
+                                                </aura:if>
+                                            </td>
+                                        </tr>
+                                    </aura:if>
+                                    <aura:if isTrue="{!objEvent.WayPoint4__c}">
+                                        <tr>
+                                            <td colspan="2" class="bg_color_gray" style="text-align:center;"> 
+                                                <lightning:badge iconName="utility:flow_alt" label="경유 4"/> 
+                                            </td>
+                                            <td class="bg_color_white" > 
+                                                {!objEvent.WayPoint4__c}&nbsp;
+                                                <aura:if isTrue="{!objEvent.WayPointDesc4__c}">
+                                                    <small>
+                                                        <lightning:button aura:id="ViaDesc4" name="{!idx}" label="비고보기" class="custom-MobileBtn custom-DescBtn" onclick="{!c.fnOpenModal}" variant="brand"/>
+                                                    </small>
+                                                </aura:if>
+                                            </td>
+                                        </tr>
+                                    </aura:if>
+                                    <aura:if isTrue="{!objEvent.WayPoint5__c}">
+                                        <tr>
+                                            <td colspan="2" class="bg_color_gray" style="text-align:center;"> 
+                                                <lightning:badge iconName="utility:flow_alt" label="경유 5"/> 
+                                            </td>
+                                            <td class="bg_color_white" > 
+                                                {!objEvent.WayPoint5__c}&nbsp;
+                                                <aura:if isTrue="{!objEvent.WayPointDesc5__c}">
+                                                    <small>
+                                                        <lightning:button aura:id="ViaDesc5" name="{!idx}" label="비고보기" class="custom-MobileBtn custom-DescBtn" onclick="{!c.fnOpenModal}" variant="brand"/>
+                                                    </small>
+                                                </aura:if>
+                                            </td>
+                                        </tr>
+                                    </aura:if>
+                                </aura:if>
+                            </aura:if>
+                            <tr>
+                                <td colspan="2" class="bg_color_gray"  style="text-align:center;"> 
+                                    <lightning:badge iconName="utility:priority" label="도착지"/>
+                                </td>
+                                <td class="bg_color_white" > 
+                                    {!objEvent.Arrival__c}&nbsp;
+                                    <aura:if isTrue="{!objEvent.ArrivalDesc__c}">
+                                        <small>
+                                            <lightning:button aura:id="EndDesc" name="{!idx}" label="비고보기" class="custom-MobileBtn custom-DescBtn" onclick="{!c.fnOpenModal}" variant="brand"/>
+                                        </small>
+                                    </aura:if>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="bg_color_gray"  style="text-align:center;"> 
+                                    <lightning:badge iconName="utility:truck" label="거리"/>  
+                                </td>
+                                <td class="bg_color_white" > 
+                                    <div class="slds-align_absolute-center" style="float:left; width:40%"> 
+                                        <lightning:input class="custom-input" readonly="true" variant="label-hidden" value="{!objEvent.Distancekm__c}"/>(km)
+                                    </div>
+                                    <div style="float:right; width:fit-content">
+                                        <aura:if isTrue="{!objEvent.Distancekm__c > 0}">
+                                            <lightning:button title="{!idx}" class="Icon_Gray" variant="base" iconName="utility:delete" onclick="{!c.fnDeleteAddress}"/>
+                                        </aura:if>
+                                        <small>
+                                            <lightning:button class="custom-button" title="{!idx}" label="계산하기" iconName="utility:location" onclick="{!c.fnSearchAddress}"/>
+                                        </small>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="bg_color_gray"  style="text-align:center;"> 
+                                    <lightning:badge iconName="utility:moneybag" label="금액"/>  
+                                </td>
+                                <td class="bg_color_white" > 
+                                    <div class="slds-align_absolute-center" style="float:left; width:50%"> 
+                                        <lightning:input class="custom-input" type="number" formatter="currency" readonly="true" variant="label-hidden" value="{!objEvent.VehicleRefuelingCosts__c}"/>
+                                    </div>
+                                </td>
+                            </tr>
+                    </table>
+                </aura:iteration>
+                </div>
+            </div>
+            </section>
+        </aura:if>
+    </div>
+    
+            <!-- 주유비 비고입력 화면 -->
+            <aura:if isTrue="{!v.modalStatus == 'Description'}">
+                <section role="dialog" tabindex="-3" class="slds-modal slds-fade-in-open slds-modal_small" style="z-index:9002 !important;">
+                    <div class="slds-align_absolute-center slds-modal__container" style="{!v.isMobile ? 'max-width:100% ;min-width:100%; width:100%' : 'min-width:90%;'}">
+                        <div class="cuCheckModalCSS" style="{!v.isMobile ? 'width:100%' : 'width:40%'}">
+                            <div class="slds-modal__header" >
+                                <lightning:buttonIcon iconName="utility:close" size="large" alternativeText="Close" variant="bare-inverse" class="slds-modal__close" onclick="{!c.fnCloseModal}" />
+                                <h2 class="title slds-text-heading--medium">
+                                    <label><b>{!v.modalTitle}</b></label>
+                                </h2>
+                            </div>
+                            <div class="slds-modal__content scrollable" style="padding:15px;">   
+                                <div class="custom-textarea">
+                                    <lightning:textarea variant="label-hidden" value="{!v.modalDesc}" readonly="true" maxlength="255"/>
+                                </div>
+                            </div>
+                            <div class="modal-footer slds-modal__footer">
+                                <lightning:button variant="neutral" label="닫기" onclick="{!c.fnCloseModal}"/> 
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open" style="z-index:9001 !important;"></div>
+            </aura:if>
+    <aura:if isTrue="{!v.isOpenTmap}">
+        <!-- Tmap 검색 화면-->
+        <c:ActivityReportFuelTmap 
+            isMobile="{!v.isMobile}"  
+            isComplete="{!v.isComplete}" 
+            isOpenTmap="{!v.isOpenTmap}" 
+            tmapDistance="{!v.tmapDistance}" 
+            tmapOriginDistance="{!v.tmapOriginDistance}" 
+            tmapStartAddr="{!v.tmapStartAddr}" 
+            tmapEndAddr="{!v.tmapEndAddr}" 
+            tmapViaPoints="{!v.tmapViaPoints}" 
+            tmapStartDesc="{!v.tmapStartDesc}" 
+            tmapEndDesc="{!v.tmapEndDesc}" 
+            tmapViaPointsDesc="{!v.tmapViaPointsDesc}" 
+        />
+        
+    </aura:if>
+
+</aura:component>

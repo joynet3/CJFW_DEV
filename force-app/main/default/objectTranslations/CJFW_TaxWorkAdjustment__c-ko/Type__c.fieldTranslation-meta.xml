@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>세무조정 유형</label>
+    <name>Type__c</name>
+    <picklistValues>
+        <masterLabel>당월 사업자 변경 조정(+)</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>당월 사업자 변경 조정(-)</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>당월계산서 금액조정(+)</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>당월계산서 금액조정(-)</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>당월계산서 이월조정(+)</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>당월계산서 이월조정(-)</masterLabel>
+        <translation></translation>
+    </picklistValues>
+</CustomFieldTranslation>

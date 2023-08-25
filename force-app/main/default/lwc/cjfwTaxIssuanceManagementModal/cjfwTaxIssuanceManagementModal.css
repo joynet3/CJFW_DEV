@@ -1,0 +1,45 @@
+.search-button{
+    padding-left : 100px;
+    margin-top : 50px;
+ }
+.slds-card__header .slds-col {
+    border-right: 1px solid #d8dde6; 
+    border-left: 1px solid #d8dde6; 
+}
+
+ .myDate {
+     width: 100%;
+ }
+ 
+ .slds-form-element__control .slds-input-has-icon .slds-input-has-icon_right{
+     margin-left: 6px;
+ 
+ }
+ 
+ .slds-input-has-icon_right{
+     margin-right: 100px;
+ }
+ .slds-card__header-title{
+     width: 10%;
+ }
+ 
+ .slds-text-align_left{
+     padding-top: 5px;
+     padding-left: 7px;
+ 
+ }
+ .slds-line-height_reset{
+     width: 30%;
+ }
+
+ .slds-line-height_reset{
+     background-color: rgb(243, 243, 243);
+ }
+ 
+ .slds-text-title_caps{
+     font-weight: bold;
+ }
+
+.excelUplod{
+    margin-left: 5px;
+}

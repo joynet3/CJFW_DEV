@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>VOCLineItemNumber__c</fullName>
+    <description>VoC품목 번호</description>
+    <externalId>false</externalId>
+    <label>VOC Line Item Number</label>
+    <length>30</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

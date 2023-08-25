@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>수주매출(원)</label>
+    <name>OrderSalesAmount__c</name>
+</CustomFieldTranslation>

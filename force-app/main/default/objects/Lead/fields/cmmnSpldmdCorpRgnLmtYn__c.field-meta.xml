@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>cmmnSpldmdCorpRgnLmtYn__c</fullName>
+    <description>공동수급업체지역제한여부</description>
+    <externalId>false</externalId>
+    <label>Subcontractor Region Restriction Y/N</label>
+    <length>255</length>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

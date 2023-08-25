@@ -1,0 +1,40 @@
+<apex:page standardController="QuoteFile__c" recordSetVar="QuoteFiles" extensions="QuoteFileContainerController" >
+
+    <apex:includeLightning />
+
+    <div id="lightning" />
+    
+    <script>    
+        let selectedIdList = {!selectedIdList};
+        if(selectedIdList.length == 0) {
+            sforce.one.showToast({
+                "message": "대상을 선택해주세요.",
+                "type": "warning"
+            });
+            window.history.back();
+        }
+        else if(selectedIdList.length != 1){
+            sforce.one.showToast({
+                "message": "대상을 하나만 선택하세요.",
+                "type": "warning"
+            });
+            window.history.back();
+        }
+        else {
+            if(SfdcApp.projectOneNavigator) {
+                SfdcApp.projectOneNavigator.fireContainerEvent(
+                    "force:navigateToComponent", 
+                    {
+                        componentDef: 'c:QuoteFileEmailComposer', // 공통 컴포넌트로 변경
+                        componentAttributes: {
+                            "quoteFileId" : '{!selectedId}',
+                            "quoteId" : '{!$CurrentPage.parameters.id}'
+                        },
+                        resetHistory: false
+                    }
+                );
+            }
+        } 
+    </script>
+
+</apex:page>

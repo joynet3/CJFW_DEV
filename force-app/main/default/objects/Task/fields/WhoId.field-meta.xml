@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>WhoId</fullName>
+    <inlineHelpText>- 담당자 키맨은 고객의 &quot;누구와&quot; 진행한 혹은 진행 할 업무인지 선택
+
+- 담당자 키맨에서 리드 선택 시 관련 항목 선택 불가</inlineHelpText>
+    <trackHistory>false</trackHistory>
+    <type>Lookup</type>
+</CustomField>

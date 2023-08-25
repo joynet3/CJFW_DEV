@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>OptionValue__c</fullName>
+    <description>selectbox 에서 노출될 옵션 라벨정보</description>
+    <externalId>false</externalId>
+    <label>OptionValue</label>
+    <length>130000</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>3</visibleLines>
+</CustomField>

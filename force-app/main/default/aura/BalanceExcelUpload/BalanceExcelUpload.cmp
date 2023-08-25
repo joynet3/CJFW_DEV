@@ -1,0 +1,526 @@
+<!--
+* ==================================================================================
+*   File Name   : BalanceExcelUpload.cmp
+*   Author      : Minje.Kim
+*   Date        : 2022.10.21
+*   Description : Blance Table Excel Paste funtion
+*   Modification Log
+* ==================================================================================
+*   Ver     Date          Author          Modification
+* ==================================================================================
+*   1.0     2022.10.21    Minje.Kim    Create
+* ==================================================================================
+-->
+
+<aura:component implements="force:appHostable,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes,force:hasRecordId" controller="BalanceExcelUploadController">
+
+    <!-- Attribute -->
+    <aura:html tag="style">.toastContainer { position:inherit !important;}</aura:html>
+    <ltng:require scripts="{!join(',', $Resource.common_jszip, $Resource.common_xlsx)}"/> 
+    
+    <aura:attribute name="showSpinner" type="Boolean" default="false" />
+    <aura:attribute name="recordId" type="String"/>
+
+    <aura:attribute name="isBTNClicked" type="Boolean" default="false" />
+    <aura:attribute name="isComplete" type="Boolean" default="false" />
+    <aura:attribute name="isOpen" type="Boolean" default="false" />
+
+    <aura:attribute name="uploadFieldName" type="String" default="Sample" />
+    <aura:attribute name="myVal" type="String" default="" />
+    <aura:attribute name="balanceType" type="String" />
+    
+    <aura:attribute name="isValid" type="Boolean" default="false" />
+    <aura:attribute name="listLineItem" type="List"/>
+    
+    <!-- Sample Paste Attribute-->
+    
+    <aura:attribute name="isExistSum" type="Boolean" default="false" />
+    <aura:attribute name="isExistIRR" type="Boolean" default="false" />
+    <aura:attribute name="isExistPL" type="Boolean" default="false" />
+
+    <aura:attribute name="listPasteTempResultSum" type="List" />
+    <aura:attribute name="listPasteTempResultIRR" type="List" />
+    <aura:attribute name="listPasteTempResultPL" type="List" />
+    
+    <aura:attribute name="strPasteResultSum" type="String" default="" />
+    <aura:attribute name="strPasteResultIRR" type="String" default="" />
+    <aura:attribute name="strPasteResultPL" type="String" default="" />
+
+    <aura:attribute name="listBalanceDetail" type="List" />
+
+    <aura:attribute name="objBalance" type="Object" />
+
+    <!-- Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.fnInit}" />
+
+    
+    <!-- CSS -->
+    <aura:html tag="style">       
+         
+        .customModalSize{
+            min-width: 90% !important;
+            max-width: 90% !important;
+            width: 90% !important;
+            padding: 0 20px;
+            
+         }
+
+        /* html default
+        ----------------------------------*/
+        @font-face{font-family:NBG;src:url(/approval/common/styles/Font/NanumBarunGothic.eot);src:local('Nanum Barun Gothic Regular'),url(/approval/common/styles/Font/NanumBarunGothic.woff) format('woff');}
+
+        html,body{margin:0;padding:0;height:100%;width:100%;font-family:NBG,"Malgun Gothic",Dotum,tahoma,AppleGothic,Sans-serif;}
+        p{margin-top:2px;margin-bottom:2px;LINE-HEIGHT:1.5;}
+        td,input,select,th{font-size:10pt;}
+        input{-webkit-box-sizing:border-box;/* Safari/Chrome, other WebKit */-moz-box-sizing:border-box;/* Firefox, other Gecko */box-sizing:border-box;/* Opera/IE 8+ */}
+        input::-ms-clear,input::-ms-reveal{display:none;}
+
+        a:link,a:visited{color:#888;text-decoration:none;}
+        a:hover,a:active,a:focus{color:#888;text-decoration:none;}
+
+        .autocomplete td:hover{background-color:#ff5}
+        .autocomplete td{cursor:pointer}
+        .autocomplete .selected{background-color:#ff5}
+
+        v\:*{behavior:url(#default#VML);}
+        o\:*{behavior:url(#default#VML);}
+        w\:*{behavior:url(#default#VML);}
+        .shape{behavior:url(#default#VML);}
+
+        /*
+            print option preview
+        ----------------------------------*/
+        .print_doc_info{line-height:16px;font-size:12px;font-weight:normal;margin:15px 0px 0px 15px;}
+        .print_doc_info .print_doc_serial_body{margin-bottom:15px;}
+        .print_doc_info .print_doc_serial_body .print_doc_serial_title{display:inline-block;width:60px;}
+        .print_doc_info .print_user_body{height:20px;}
+        .print_doc_info .print_user_body .print_user_activity{display:inline-block;width:60px;}
+        .print_doc_info .print_user_body .print_user_name{margin-right:20px;}
+
+        /* doc title
+        ----------------------------------*/
+        .doc_title{width:100%;height:45px;border-bottom:2px solid #b5b5b5;margin-bottom:10px;border-collapse:collapse;border-spacing:0;}
+        .doc_title input[type=text]{background:#fff;border:1px solid #b5b5b5;width:100%;height:24px;font-size:12px;}
+        .doc_title_item{padding:0 0 1px 15px;height:25px;font-size:12px;}
+
+        /* doc title section
+        ----------------------------------*/
+        .title_section{border:3px solid #29B4D5;border-radius:3px;width:98%;}
+
+        /* tablecontent
+        ----------------------------------*/
+        .tablecontent{width:100%;border-spacing:0;margin-bottom:10px;table-layout:fixed;border-top:1px solid #b5b5b5;border-right:1px solid #b5b5b5;}
+        .tablecontent tr{height:29px;}
+        .tablecontent th{line-height:16px;font-size:12px;background:#c9e6ee;border-bottom:1px solid #b5b5b5;border-left:1px solid #b5b5b5;text-align:left;font-weight:normal;padding-left:11px;}
+        .tablecontent td{line-height:16px;font-size:12px;padding:0 3px;border-bottom:1px solid #b5b5b5;border-left:1px solid #b5b5b5;}
+        .tablecontent input{padding:2px 1px 0;border:1px solid #ccc;width:100%;height:20px;text-align:left;line-height:16px;font-size:12px;}
+        .tablecontent input[type=checkbox]{padding:2px 1px 0;border:0 solid #ccc;width:11px;height:11px;text-align:left;line-height:16px;font-size:12px;vertical-align:middle;position:relative;cursor:pointer;}
+        .tablecontent input[type=radio]{padding:2px 1px 0;border:0 solid #ccc;width:11px;height:11px;text-align:left;line-height:16px;font-size:12px;vertical-align:middle;position:relative;cursor:pointer;}
+        .tablecontent label[for]{cursor:pointer;vertical-align:middle;}
+        .tablecontent span img{margin-right:3px;vertical-align:middle;}
+        .tablecontent .link{height:20px;vertical-align:middle;padding:2px 0px 2px 11px;}
+        .tablecontent .td_left{text-align:left;}
+        .tablecontent .td_right{text-align:right;}
+        .tablecontent .td_center{text-align:center;}:
+
+        /* tablecontent sub title
+        ----------------------------------*/
+        .tablecontent_sub_title{width:100%;color:#0074ba;font-size:14px;font-weight:bold;height:24px;}
+        .tablecontent_sub_title .label{width:285px;float:left;padding-left:15px;backgroundurl(/approval/common/images/button/bullet_icon.png) no-repeat left;}
+
+        /* tablecontent sub title2
+        ----------------------------------*/
+        .tablecontent_sub_title2 .label{width:282px;float:left;padding-left:18px;background:url(/approval/common/images/button/contents_box_point.png) no-repeat left;}
+
+        /* tablecontent division
+        ----------------------------------*/
+        .tablecontent_division {width:100%;margin:22px 0px 8px 0px;font-size:12px;font-weight:bold;height:18px;background:url(/approval/common/images/form/form_content_division.gif) repeat-x left;}
+        .tablecontent_division span {display:inline-block;color:#0074BA;font-size:15px;padding:0px 4px 0px 16px;background:url(/approval/common/images/form/form_content_division_title.gif) no-repeat left;background-color:#fff;}
+
+        /* tablecontent sub title button - type1
+        ----------------------------------*/
+        .tablecontent_sub_title .form_button{width:357px;float:left;font-weight:normal;}
+        .tablecontent_sub_title .form_button span{float:right;margin:0 0 0 2px;padding:3px 5px 2px 5px;color:#0072b9;font-size:11px;border:1px solid #b5b5b5;border-radius:2px;cursor:pointer;}
+        .tablecontent_sub_title .form_button span img{margin-right:3px;vertical-align:middle;}
+
+        /* tablecontent sub title button - type2
+        ----------------------------------*/
+        .tablecontent_sm_btn{font-size:12px;font-weight:normal;border:1px solid #c6c5c5;border-radius:2px;color:#333333;text-align:center;padding:1px 9px 2px 7px;cursor:pointer;}
+        .tablecontent_sm_btn:hover{background-color:#ffffff;color:#267cf1;}
+
+        /* tablecontent grid button
+        ----------------------------------*/
+        .tablecontent_grid_btn{font-size:11px;font-weight:normal;border:1px solid #c6c5c5;border-radius:2px;color:#333333;text-align:center;padding:0px 8px 1px 8px;cursor:pointer;}
+        .tablecontent_grid_btn:hover{background-color:#ffffff;color:#267cf1;}
+
+        /* tablecontent sub title help
+        ----------------------------------*/
+        .tablecontent_sub_title .help{width:357px;float:left;font-weight:normal;}
+        .tablecontent_sub_title .help span{float:right;margin:0 0 0 2px;padding:8px 0px 2px 5px;color:#0072b9;font-size:11px;border-radius:2px;}
+
+        /* tablecontent grid
+        ----------------------------------*/
+        .tablecontent_grid th{padding-left:0px !important;}
+        .tablecontent_grid thead tr{height:24px;}
+        .tablecontent_grid thead tr th{line-height:24px;font-size:12px;background:#c9e6ee;text-align:center;font-weight:normal;}
+        .tablecontent_grid tbody tr{height:20px;}
+        .tablecontent_grid tbody tr th{text-align:center;}
+        .tablecontent_grid tbody tr td{line-height:20px;font-size:12px;text-align:center;}
+        .tablecontent_grid tbody tr:nth-child(even){background-color:#eff8fc;}
+        .tablecontent_grid tfoot tr{height:24px;}
+        .tablecontent_grid tfoot tr th{text-align:center;}
+        .tablecontent_grid tfoot tr td{line-height:24px;font-size:12px;text-align:center;font-weight:normal;}
+        .tablecontent_grid .td_left{text-align:left;}
+        .tablecontent_grid .td_right{text-align:right;}
+        .tablecontent_grid .td_center{text-align:center;}
+
+        /* tablecontent calendar
+        ----------------------------------*/
+        .tablecontent .hasDatepicker{width:80px;}
+
+        /* important
+        ----------------------------------*/
+        .important_item{position:relative;left:-7px;}
+        .important_item span,.important_item_grid{color:#fe612c;font-weight:bold;padding-right:2px;}
+
+        /* web editor
+        ----------------------------------*/
+        .input_edit{padding:10px 6px 0 6px;line-height:160%;border-bottom:1px solid #b5b5b5;border-left:1px solid #b5b5b5;height:400px;text-decoration:none;vertical-align:top;}
+        .editorhelp{margin-top:10%;text-align:center;font-size:13px;line-height:normal;}
+        .editorhelp_ui_icon{background:url(/approval/common/images/button/icon_caution.png) no-repeat left;width:20px;display:inline-block;}
+
+        /* simple text editor
+        ----------------------------------*/
+        .input_editable{border:1px solid #ccc;text-align:left;line-height:16px;font-size:12px;min-height:41px;margin:5px 0 5px 0;}
+        .input_editable_single{border:1px solid #fff;text-align:left;line-height:16px;font-size:12px;min-height:41px;margin:5px 0 5px 0;}
+        .input_editable_multiline{border:1px solid #fff;text-align:left;line-height:16px;font-size:12px;min-height:110px;margin:5px 0 5px 0;}
+    </aura:html>
+
+    <!-- Contents -->
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-id" aria-modal="true" aria-describedby="modal-content-id" class="slds-modal slds-modal_medium slds-fade-in-open">
+        <aura:if isTrue="{!v.showSpinner}">
+            <lightning:spinner aura:id="spinner" alternativeText="Loading" size="large" variant="brand" />
+        </aura:if>
+        
+        <div class="customModalSize slds-modal__container" style="padding:0">
+            <!-- Header[S] -->
+            <header class="modal-header slds-modal__header">
+                <lightning:buttonIcon iconName="utility:close" size="small" alternativeText="Close" variant="bare-inverse" class="slds-modal__close" onclick="{!c.fnCancel}" />
+                <h2 id="modal-heading-id" class="slds-text-heading_medium slds-hyphenate">
+                    시산표 업로드
+                </h2>
+            </header> 
+            <!-- Header[E] -->
+            <!-- Body[S] -->
+            <div class="modal-body slds-modal__content" style="height:80%; overflow:hidden">
+                    <div class="slds-grid slds-gutters" style="margin:0; height:100%; padding: 1rem;">
+                        <div class=" slds-card_boundary related_list_card_border slds-col slds-size_3-of-4 slds-text-align_center " style=" padding: 0;">
+                            <div class="slds-scrollable_y" style="height:33%; padding:0.5rem; border:1px solid lightgray;">
+                                <!-- 시산요약표 -->
+
+                                    <div id="customtableSum" >
+                                        <table class="tablecontent tablecontent_grid" id="datatable3" >
+                                            <thead>
+                                                <tr>
+                                                    <th rowspan="2" style="text-align:center; padding-left:0px">구분</th>
+                                                    <th rowspan="2" style="text-align:center; padding-left:0px">매출액</th>
+                                                    <th rowspan="2" style="text-align:center; padding-left:0px">매입원가</th>
+                                                    <th colspan="8" style="text-align:center; padding-left:0px">제조경비</th>
+                                                    <th rowspan="2" style="text-align:center; padding-left:0px">매출이익</th>
+                                                    <th rowspan="2" style="text-align:center; padding-left:0px">영업외비용</th>
+                                                    <th rowspan="2" style="text-align:center; padding-left:0px">관리이익</th>
+                                                </tr>
+                                                <tr>
+                                                    <th style="text-align:center; padding-left:0px">인건비</th>
+                                                    <th style="text-align:center; padding-left:0px">서비스전문</th>
+                                                    <th style="text-align:center; padding-left:0px">물류비</th>
+                                                    <th style="text-align:center; padding-left:0px">상각비</th>
+                                                    <th style="text-align:center; padding-left:0px">임차료</th>
+                                                    <th style="text-align:center; padding-left:0px">유틸리티</th>
+                                                    <th style="text-align:center; padding-left:0px">소모품비</th>
+                                                    <th style="text-align:center; padding-left:0px">경비</th>
+                                                </tr>
+                                            </thead>    
+                                            <tbody>
+                                                <aura:iteration items="{!v.listPasteTempResultSum}" var="objSum" indexVar="idx">
+                                                        <tr>
+                                                            <td class="td_center">
+                                                                {!objSum.Column1__c}
+                                                            </td> 
+                                                            <td class="td_center">
+                                                                {!objSum.Column2__c}
+                                                            </td> 
+                                                            <td class="td_center">
+                                                                {!objSum.Column3__c}
+                                                            </td> 
+                                                            <td class="td_center">
+                                                                {!objSum.Column4__c}
+                                                            </td> 
+                                                            <td class="td_center">
+                                                                {!objSum.Column5__c}
+                                                            </td> 
+                                                            <td class="td_center">
+                                                                {!objSum.Column6__c}
+                                                            </td> 
+                                                            <td class="td_center">
+                                                                {!objSum.Column7__c}
+                                                            </td> 
+                                                            <td class="td_center">
+                                                                {!objSum.Column8__c}
+                                                            </td> 
+                                                            <td class="td_center">
+                                                                {!objSum.Column9__c}
+                                                            </td> 
+                                                            <td class="td_center">
+                                                                {!objSum.Column10__c}
+                                                            </td> 
+                                                            <td class="td_center">
+                                                                {!objSum.Column11__c}
+                                                            </td> 
+                                                            <td class="td_center">
+                                                                {!objSum.Column12__c}
+                                                            </td> 
+                                                            <td class="td_center">
+                                                                {!objSum.Column13__c}
+                                                            </td> 
+                                                            <td class="td_center">
+                                                                {!objSum.Column14__c}
+                                                            </td> 
+                                                        </tr>   
+                                                </aura:iteration>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                            </div>
+                            <div class="slds-scrollable_y" style="height:34%; padding:0.5rem; border:1px solid lightgray;">
+                                <!-- IRR -->
+                                    <div id="customtableIRR">
+                                        <table class="tablecontent tablecontent_grid" id="datatable3">
+                                            <thead>
+                                                <tr>
+                                                    <th style="text-align:center; padding-left:0px">구분 항목</th>
+                                                    <th style="text-align:center; padding-left:0px">Y0</th>
+                                                    <th style="text-align:center; padding-left:0px">Y1</th>
+                                                    <th style="text-align:center; padding-left:0px">Y2</th>
+                                                    <th style="text-align:center; padding-left:0px">Y3</th>
+                                                    <th style="text-align:center; padding-left:0px">Y4</th>
+                                                    <th style="text-align:center; padding-left:0px">Y5</th>
+                                                    <th style="text-align:center; padding-left:0px">Y6</th>
+                                                    <th style="text-align:center; padding-left:0px">비 고</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <aura:iteration items="{!v.listPasteTempResultIRR}" var="objIRR" indexVar="idx">
+                                                    <tr>
+                                                        <td>
+                                                            {!objIRR.Column1__c}
+                                                        </td> 
+                                                        <td class="td_center">
+                                                            {!objIRR.Column2__c}
+                                                        </td> 
+                                                        <td class="td_center">
+                                                            {!objIRR.Column3__c}
+                                                        </td> 
+                                                        <td class="td_center">
+                                                            {!objIRR.Column4__c}
+                                                        </td> 
+                                                        <td class="td_center">
+                                                            {!objIRR.Column5__c}
+                                                        </td> 
+                                                        <td class="td_center">
+                                                            {!objIRR.Column6__c}
+                                                        </td> 
+                                                        <td class="td_center">
+                                                            {!objIRR.Column7__c}
+                                                        </td> 
+                                                        <td class="td_center">
+                                                            {!objIRR.Column8__c}
+                                                        </td> 
+                                                        <td class="td_center">
+                                                            {!objIRR.Column9__c}
+                                                        </td> 
+                                                    </tr>
+                                                </aura:iteration>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="slds-scrollable_y" style="height:33%; padding:0.5rem; border:1px solid lightgray;">
+                                <!-- PL -->
+                                    <div id="customtablePL" >
+                                        <table class="tablecontent tablecontent_grid" id="datatable3">
+                                            <thead>
+                                                <tr>
+                                                    <th rowspan="2" style="text-align:center; padding-left:0px">구분</th>
+                                                    <th colspan="2" style="text-align:center; padding-left:0px">년간</th>
+                                                    <th colspan="7" style="text-align:center; padding-left:0px">상반기</th>
+                                                    <th colspan="7" style="text-align:center; padding-left:0px">하반기</th>
+                                                </tr>
+                                                <aura:iteration items="{!v.listPasteTempResultPL}" var="objPL" indexVar="idx">
+                                                    <aura:if isTrue="{!objPL.KeyCode__c == '0'}">
+                                                        <tr>
+                                                            <th style="text-align:center; padding-left:0px">{!objPL.Column2__c}</th>
+                                                            <th style="text-align:center; padding-left:0px">{!objPL.Column3__c}</th>
+                                                            <th style="text-align:center; padding-left:0px">{!objPL.Column4__c}</th>
+                                                            <th style="text-align:center; padding-left:0px">{!objPL.Column5__c}</th>
+                                                            <th style="text-align:center; padding-left:0px">{!objPL.Column6__c}</th>
+                                                            <th style="text-align:center; padding-left:0px">{!objPL.Column7__c}</th>
+                                                            <th style="text-align:center; padding-left:0px">{!objPL.Column8__c}</th>
+                                                            <th style="text-align:center; padding-left:0px">{!objPL.Column9__c}</th>
+                                                            <th style="text-align:center; padding-left:0px">{!objPL.Column10__c}</th>
+                                                            <th style="text-align:center; padding-left:0px">{!objPL.Column11__c}</th>
+                                                            <th style="text-align:center; padding-left:0px">{!objPL.Column12__c}</th>
+                                                            <th style="text-align:center; padding-left:0px">{!objPL.Column13__c}</th>
+                                                            <th style="text-align:center; padding-left:0px">{!objPL.Column14__c}</th>
+                                                            <th style="text-align:center; padding-left:0px">{!objPL.Column15__c}</th>
+                                                            <th style="text-align:center; padding-left:0px">{!objPL.Column16__c}</th>
+                                                            <th style="text-align:center; padding-left:0px">{!objPL.Column17__c}</th>
+                                                        </tr>
+                                                    </aura:if>
+                                                </aura:iteration>
+                                                <!-- <tr>
+                                                    <th style="text-align:center; padding-left:0px">계</th>
+                                                    <th style="text-align:center; padding-left:0px">(%)</th>
+                                                    <th style="text-align:center; padding-left:0px">4월</th>
+                                                    <th style="text-align:center; padding-left:0px">5월</th>
+                                                    <th style="text-align:center; padding-left:0px">6월</th>
+                                                    <th style="text-align:center; padding-left:0px">7월</th>
+                                                    <th style="text-align:center; padding-left:0px">8월</th>
+                                                    <th style="text-align:center; padding-left:0px">9월</th>
+                                                    <th style="text-align:center; padding-left:0px">계</th>
+                                                    <th style="text-align:center; padding-left:0px">10월</th>
+                                                    <th style="text-align:center; padding-left:0px">11월</th>
+                                                    <th style="text-align:center; padding-left:0px">12월</th>
+                                                    <th style="text-align:center; padding-left:0px">1월</th>
+                                                    <th style="text-align:center; padding-left:0px">2월</th>
+                                                    <th style="text-align:center; padding-left:0px">3월</th>
+                                                    <th style="text-align:center; padding-left:0px">계</th>
+                                                </tr> -->
+                                            </thead>    
+                                            <tbody>
+                                                <aura:iteration items="{!v.listPasteTempResultPL}" var="objPL" indexVar="idx">
+                                                    <aura:if isTrue="{!objPL.KeyCode__c != '0'}">
+                                                        <tr>
+                                                            <td >
+                                                                {!objPL.Column1__c}
+                                                            </td> 
+                                                            <td class="td_right">
+                                                                {!objPL.Column2__c}
+                                                            </td> 
+                                                            <td class="td_right">
+                                                                {!objPL.Column3__c}
+                                                            </td> 
+                                                            <td class="td_right">
+                                                                {!objPL.Column4__c}
+                                                            </td> 
+                                                            <td class="td_right">
+                                                                {!objPL.Column5__c}
+                                                            </td> 
+                                                            <td class="td_right">
+                                                                {!objPL.Column6__c}
+                                                            </td> 
+                                                            <td class="td_right">
+                                                                {!objPL.Column7__c}
+                                                            </td> 
+                                                            <td class="td_right">
+                                                                {!objPL.Column8__c}
+                                                            </td> 
+                                                            <td class="td_right">
+                                                                {!objPL.Column9__c}
+                                                            </td> 
+                                                            <td class="td_right">
+                                                                {!objPL.Column10__c}
+                                                            </td> 
+                                                            <td class="td_right">
+                                                                {!objPL.Column11__c}
+                                                            </td> 
+                                                            <td class="td_right">
+                                                                {!objPL.Column12__c}
+                                                            </td> 
+                                                            <td class="td_right">
+                                                                {!objPL.Column13__c}
+                                                            </td> 
+                                                            <td class="td_right">
+                                                                {!objPL.Column14__c}
+                                                            </td> 
+                                                            <td class="td_right">
+                                                                {!objPL.Column15__c}
+                                                            </td> 
+                                                            <td class="td_right">
+                                                                {!objPL.Column16__c}
+                                                            </td> 
+                                                            <td class="td_right">
+                                                                {!objPL.Column17__c}
+                                                            </td> 
+                                                        </tr>
+                                                    </aura:if>
+                                                </aura:iteration>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-4 slds-text-align_center " style="height:inherit">
+                            <div style="height:33%">
+                                <lightning:tabset>
+                                    <lightning:tab label="데이터 입력 (시산요약표)">
+                                        <lightning:textarea class="custom-resizeNone" variant="label-hidden" aura:id="exceldataSum" placeholder="양식 데이터를 복사해서 붙혀넣으세요"/>
+                                
+                                        <!-- <aura:if isTrue="{!v.isExistSum}">
+                                            <lightning:button variant="destructive" label="삭제" onclick="{!c.fnDataRenderPL}" />
+                                        </aura:if> -->
+                                        <lightning:button variant="neutral" label="적용" onclick="{!c.fnDataRenderSum}" />
+                                    <br/><br/><br/><br/><br/><br/><br/>
+                                    <br/><br/><br/><br/><br/><br/>
+                                    </lightning:tab> 
+                                </lightning:tabset>
+                            </div>
+                            
+                            <div style="height:34%">
+                                <lightning:tabset>
+                                    <lightning:tab label="데이터 입력 (IRR)">
+                                        <lightning:textarea class="custom-resizeNone" variant="label-hidden" aura:id="exceldataIRR" placeholder="양식 데이터를 복사해서 붙혀넣으세요"/>
+                                        
+                                        <!-- <aura:if isTrue="{!v.isExistIRR}">
+                                            <lightning:button variant="destructive" label="삭제" onclick="{!c.fnDataRenderPL}" />
+                                        </aura:if> -->
+                                        <lightning:button variant="neutral" label="적용" onclick="{!c.fnDataRenderIRR}" />
+                                    <br/><br/><br/><br/><br/><br/><br/>
+                                    <br/><br/><br/><br/><br/><br/>
+                                    </lightning:tab> 
+                                </lightning:tabset>
+                            </div>
+                            
+                            <div style="height:33%">
+                                <lightning:tabset>
+                                    <lightning:tab label="데이터 입력 (PL)">
+                                        <div style="color:#ff2525">
+                                            <small>※ PL의 경우 헤더의 월 정보도 같이 붙혀넣으세요. <br/> 
+                                                (구분란이 병합되어 있는 경우 병합해제 후 진행)
+                                         </small></div>
+                                        <lightning:textarea class="custom-resizeNone" variant="label-hidden" aura:id="exceldataPL" placeholder="양식 데이터를 복사해서 붙혀넣으세요"/>
+                                                              
+                                        <!-- <aura:if isTrue="{!v.isExistPL}">
+                                            <lightning:button variant="destructive" label="삭제" onclick="{!c.fnDataRenderPL}" />
+                                        </aura:if> -->
+                                        <lightning:button variant="neutral" label="적용" onclick="{!c.fnDataRenderPL}" />
+                                        
+                                    <br/><br/><br/><br/><br/><br/><br/>
+                                    <br/><br/><br/><br/><br/><br/>
+                                    </lightning:tab> 
+                                </lightning:tabset>
+                            </div>
+                        </div>
+                    </div>  
+                </div>
+            <!-- Body[E] -->    
+            <!-- Footer[S] -->
+            <footer class="modal-footer slds-modal__footer">
+                <lightning:button variant="neutral" label="취소" onclick="{!c.fnCancel}" />
+                <lightning:button variant="brand" label="저장" onclick="{!c.fnSave}" />
+            </footer>
+            <!-- Footer[E] -->
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</aura:component>

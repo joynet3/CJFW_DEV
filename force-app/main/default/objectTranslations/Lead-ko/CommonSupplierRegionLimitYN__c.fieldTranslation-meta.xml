@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>공동수급체 구성원 지역 제한 적용 여부</label>
+    <name>CommonSupplierRegionLimitYN__c</name>
+</CustomFieldTranslation>

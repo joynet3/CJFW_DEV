@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>All</fullName>
+    <columns>NAME</columns>
+    <columns>FM_CodeSoldTo__c</columns>
+    <columns>FM_CodeShipTo__c</columns>
+    <columns>FM_MA__c</columns>
+    <columns>SalesAdjustmentDate__c</columns>
+    <columns>FM_SalesAdjustmentPeriod__c</columns>
+    <columns>Tax__c</columns>
+    <columns>SalesAdjustmentType__c</columns>
+    <columns>SalesAdjustmentBillingDate__c</columns>
+    <columns>ApprovalStatus__c</columns>
+    <filterScope>Everything</filterScope>
+    <label>모두</label>
+</ListView>

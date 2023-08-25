@@ -1,0 +1,2066 @@
+<!--
+  @description       : 
+  @author            : (서원) won.seo@daeunextier.com
+  @group             : 
+  @last modified on  : 10-12-2022
+  @last modified by  : (서원) won.seo@playful-impala-5wzu0.com
+-->
+<apex:page controller="PageMapController" showHeader="false" standardStylesheets="false" sidebar="false" cache="true" docType="html-5.0" applyBodyTag="False" applyHtmlTag="False" lightningStyleSheets="true">
+    <html id="html" style="position: relative; max-height: 100%;">
+        <head id="header">
+            <style>
+                body{
+                    height: 100vh;
+                    min-height: 100vh;
+                    max-height: 100vh;
+                    margin: 0px;
+                }
+
+                #map_wrap {
+                    overflow-y: hidden;
+                    display: flex;
+                    position: relative;
+                    max-height: 100%;
+                }
+
+                #modal_child_listDiv{
+                    flex: 0.8;
+                    display: flex;
+                    flex-direction: column;
+                    position: relative;
+                    width: 25%;
+                    margin-right: 2.5px;
+                    padding-right: 2.5px;
+                }
+
+                #resultContainer{
+                    display: grid;
+                    color: rgba(157, 62, 23, 1);
+                    font: inherit;
+                    padding-bottom: 5px;
+                }
+
+                #listContainer{
+                    overflow-y: scroll;
+                    text-align-last: start;
+                }
+
+                #startEndList{
+                    overflow-y: scroll;
+                    text-align-last: start;
+                }
+
+                #img{
+                    vertical-align:middle; 
+                    float: left; 
+                    padding-top: 1rem; 
+                    padding-right: 0.5rem; 
+                    padding-bottom: 1rem;
+                }
+
+                #listButton{
+                    width: 100%;
+                    line-height: normal;
+                }
+
+                #startEndButton{
+                    width: 100%;
+                    line-height: normal;
+                }
+
+                #viaPointBtn{
+                    width: 100%;
+                    line-height: normal;
+                }
+
+                #addr_name{
+                    font-size: larger;
+                    font-weight: 600;
+                    color: black;
+                }
+
+                #description{
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+
+                #description_start{
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+
+                #description_end{
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+
+                #map_div{
+                    cursor: -webkit-grab; 
+                    cursor: grab;
+                    flex: 2;
+                    position: relative;
+                }
+
+                #distContainer{
+                    margin-top: 5px;
+                }
+
+                .pointer * {
+                    cursor: pointer;
+                }
+
+                .listBtnClick {
+                    background-color: rgba(157, 62, 23, 0.1);
+                    box-shadow: 0 5px 15px rgba(157, 62, 23, .8);
+                }
+
+                .listBtnClickTitle * {
+                    color: rgba(157, 62, 23, 1);
+                }
+
+                #noResultContainer {
+                    font-weight: 900;
+                    margin: auto;
+                }
+
+                /* add via points */
+                #btns_container{
+                    display: flex;
+                    justify-content: space-between;
+                    margin-top: 5px;
+                }
+
+                #viaInputFormContainer{
+                    display: flex;
+                }
+
+                #viaInputControllContainer{
+                    flex: 1;
+                }
+
+                .displayNone {
+                    display: none;
+                }
+
+                #description_via_1 {
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+                #description_via_2 {
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+                #description_via_3 {
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+                #description_via_4 {
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+                #description_via_5 {
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+                #description_via_6 {
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+                #description_via_7 {
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+                #description_via_8 {
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+                #description_via_9 {
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+
+                #select-01 {
+                    cursor: pointer;
+                }
+            </style>
+        </head>
+
+        <body id="body" onload="fnInit()">
+            <apex:slds /> 
+            <script src="https://apis.openapi.sk.com/tmap/jsv2?version=1&appKey=l7xx154b924aa23843ada86164026fc751d4"></script>
+            <apex:includeScript value="{! $Resource.jquery }"/>
+            <div id="map_wrap" class="slds-scope map_wrap ">
+                <div id="modal_child_listDiv" class="slds-border_right">
+                    <div class="slds-scope">
+                        <div style="display:flex" class="slds-form-element">
+                            <div style="flex:1" class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left-right">
+                                <svg class="slds-icon slds-input__icon slds-input__icon_left slds-icon-text-default" aria-hidden="true">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#search')}" />
+                                </svg>
+                                <input type="text" id="start_input" placeholder="출발지 검색" class="slds-input"/>
+                                <button class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" title="검색 초기화" onclick="fnClearStartInput()">
+                                <svg class="slds-button__icon slds-icon-text-light" aria-hidden="true">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#clear')}" />
+                                </svg>
+                                <span class="slds-assistive-text">검색 초기화</span>
+                                </button>
+                                <apex:form >
+                                    <apex:actionFunction name="fnSearchPlace" action="{!searchTmapPlace}" rerender="itemsContainer">
+                                        <apex:param name="req" value="" assignTo="{!req}"/>                
+                                    </apex:actionFunction>
+                                </apex:form>
+                            </div>
+                            <div class="slds-scope">
+                                <button onclick="fnOpenModal('Start','')" style="background-color:grey; border-color:white" class="slds-button slds-button_brand" title="비고">비고</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="viaInputContainer" style="max-height:7rem; overflow-y:auto">
+                        <apex:variable var="count" value="{!countValue}" />
+                        <apex:outputPanel id="viaInputContainer">
+                            <apex:outputPanel layout="none" rendered="{!count >= 1}">
+                                <div id="container_1" class="slds-scope">
+                                    <div id="viaInputFormContainer" class="slds-form-element">
+                                        <div id="viaInputControllContainer" class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left-right">
+                                            <svg class="slds-icon slds-input__icon slds-input__icon_left slds-icon-text-default" aria-hidden="true">
+                                                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#search')}" />
+                                            </svg>
+                                            <input type="text" id="via_input_1" placeholder="경유지 1 검색" class="slds-input" onkeyup="fnViaSearchPlace(event,this.id)"/>
+                                            <button id="via_clearBtn_1" class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" title="검색 초기화" onclick="fnClearViaInput(this.id)">
+                                            <svg class="slds-button__icon slds-icon-text-light" aria-hidden="true">
+                                                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#clear')}" />
+                                            </svg>
+                                            <span class="slds-assistive-text">검색 초기화</span>
+                                            </button>
+                                            <apex:form >
+                                                <apex:actionFunction name="fnSearchViaPlace" action="{!searchTmapPlace}" rerender="itemsContainer">
+                                                    <apex:param name="req" value="" assignTo="{!req}"/>               
+                                                </apex:actionFunction>
+                                            </apex:form>
+                                        </div>
+                                        <div class="slds-scope">
+                                            <button id="deleteBtn_1" class="slds-button slds-button_icon slds-button_icon-border-filled" title="경유지 삭제" onclick="fnDeleteViaPoint(this.id)">
+                                                <svg class="slds-button__icon" aria-hidden="true">
+                                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#dash')}" />
+                                                </svg>
+                                                <span class="slds-assistive-text">경유지 삭제</span>
+                                            </button>
+                                            <apex:form >
+                                                <apex:actionFunction name="fnDecreaseCount" action="{!increaseDecreaseCount}" reRender="viaInputContainer,viaBtnContainer">
+                                                    <apex:param name="count" value="" assignTo="{!count}"/>
+                                                </apex:actionFunction>
+                                            </apex:form>
+                                        </div>
+                                        <div class="slds-scope">
+                                            <button onclick="fnOpenModal('Via','1')" style="background-color:grey; border-color:white" class="slds-button slds-button_brand" title="비고">비고</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <apex:outputPanel layout="none" rendered="{!count >= 2}">
+                                    <div id="container_2" class="slds-scope">
+                                        <div id="viaInputFormContainer" class="slds-form-element">
+                                            <div id="viaInputControllContainer" class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left-right">
+                                                <svg class="slds-icon slds-input__icon slds-input__icon_left slds-icon-text-default" aria-hidden="true">
+                                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#search')}" />
+                                                </svg>
+                                                <input type="text" id="via_input_2" placeholder="경유지 2 검색" class="slds-input" onkeyup="fnViaSearchPlace(event,this.id)"/>
+                                                <button id="via_clearBtn_2" class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" title="검색 초기화" onclick="fnClearViaInput(this.id)">
+                                                <svg class="slds-button__icon slds-icon-text-light" aria-hidden="true">
+                                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#clear')}" />
+                                                </svg>
+                                                <span class="slds-assistive-text">검색 초기화</span>
+                                                </button>
+                                                <apex:form >
+                                                    <apex:actionFunction name="fnSearchViaPlace" action="{!searchTmapPlace}" rerender="itemsContainer">
+                                                        <apex:param name="req" value="" assignTo="{!req}"/>               
+                                                    </apex:actionFunction>
+                                                </apex:form>
+                                            </div>
+                                            <div class="slds-scope">
+                                                <button id="deleteBtn_2" class="slds-button slds-button_icon slds-button_icon-border-filled" title="경유지 삭제" onclick="fnDeleteViaPoint(this.id)">
+                                                    <svg class="slds-button__icon" aria-hidden="true">
+                                                        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#dash')}" />
+                                                    </svg>
+                                                    <span class="slds-assistive-text">경유지 삭제</span>
+                                                </button>
+                                                <apex:form >
+                                                    <apex:actionFunction name="fnDecreaseCount" action="{!increaseDecreaseCount}" reRender="viaInputContainer,viaBtnContainer">
+                                                        <apex:param name="count" value="" assignTo="{!count}"/>
+                                                    </apex:actionFunction>
+                                                </apex:form>
+                                            </div>
+                                            <div class="slds-scope">
+                                                <button onclick="fnOpenModal('Via','2')" style="background-color:grey; border-color:white" class="slds-button slds-button_brand" title="비고">비고</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <apex:outputPanel layout="none" rendered="{!count >= 3}">
+                                        <div id="container_3" class="slds-scope">
+                                            <div id="viaInputFormContainer" class="slds-form-element">
+                                                <div id="viaInputControllContainer" class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left-right">
+                                                    <svg class="slds-icon slds-input__icon slds-input__icon_left slds-icon-text-default" aria-hidden="true">
+                                                        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#search')}" />
+                                                    </svg>
+                                                    <input type="text" id="via_input_3" placeholder="경유지 3 검색" class="slds-input" onkeyup="fnViaSearchPlace(event,this.id)"/>
+                                                    <button id="via_clearBtn_3" class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" title="검색 초기화" onclick="fnClearViaInput(this.id)">
+                                                    <svg class="slds-button__icon slds-icon-text-light" aria-hidden="true">
+                                                        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#clear')}" />
+                                                    </svg>
+                                                    <span class="slds-assistive-text">검색 초기화</span>
+                                                    </button>
+                                                    <apex:form >
+                                                        <apex:actionFunction name="fnSearchViaPlace" action="{!searchTmapPlace}" rerender="itemsContainer">
+                                                            <apex:param name="req" value="" assignTo="{!req}"/>               
+                                                        </apex:actionFunction>
+                                                    </apex:form>
+                                                </div>
+                                                <div class="slds-scope">
+                                                    <button id="deleteBtn_3" class="slds-button slds-button_icon slds-button_icon-border-filled" title="경유지 삭제" onclick="fnDeleteViaPoint(this.id)">
+                                                        <svg class="slds-button__icon" aria-hidden="true">
+                                                            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#dash')}" />
+                                                        </svg>
+                                                        <span class="slds-assistive-text">경유지 삭제</span>
+                                                    </button>
+                                                    <apex:form >
+                                                        <apex:actionFunction name="fnDecreaseCount" action="{!increaseDecreaseCount}" reRender="viaInputContainer,viaBtnContainer">
+                                                            <apex:param name="count" value="" assignTo="{!count}"/>
+                                                        </apex:actionFunction>
+                                                    </apex:form>
+                                                </div>
+                                                <div class="slds-scope">
+                                                    <button onclick="fnOpenModal('Via','3')" style="background-color:grey; border-color:white" class="slds-button slds-button_brand" title="비고">비고</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <apex:outputPanel layout="none" rendered="{!count >= 4}">
+                                            <div id="container_4" class="slds-scope">
+                                                <div id="viaInputFormContainer" class="slds-form-element">
+                                                    <div id="viaInputControllContainer" class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left-right">
+                                                        <svg class="slds-icon slds-input__icon slds-input__icon_left slds-icon-text-default" aria-hidden="true">
+                                                            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#search')}" />
+                                                        </svg>
+                                                        <input type="text" id="via_input_4" placeholder="경유지 4 검색" class="slds-input" onkeyup="fnViaSearchPlace(event,this.id)"/>
+                                                        <button id="via_clearBtn_4" class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" title="검색 초기화" onclick="fnClearViaInput(this.id)">
+                                                        <svg class="slds-button__icon slds-icon-text-light" aria-hidden="true">
+                                                            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#clear')}" />
+                                                        </svg>
+                                                        <span class="slds-assistive-text">검색 초기화</span>
+                                                        </button>
+                                                        <apex:form >
+                                                            <apex:actionFunction name="fnSearchViaPlace" action="{!searchTmapPlace}" rerender="itemsContainer">
+                                                                <apex:param name="req" value="" assignTo="{!req}"/>               
+                                                            </apex:actionFunction>
+                                                        </apex:form>
+                                                    </div>
+                                                    <div class="slds-scope">
+                                                        <button id="deleteBtn_4" class="slds-button slds-button_icon slds-button_icon-border-filled" title="경유지 삭제" onclick="fnDeleteViaPoint(this.id)">
+                                                            <svg class="slds-button__icon" aria-hidden="true">
+                                                                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#dash')}" />
+                                                            </svg>
+                                                            <span class="slds-assistive-text">경유지 삭제</span>
+                                                        </button>
+                                                        <apex:form >
+                                                            <apex:actionFunction name="fnDecreaseCount" action="{!increaseDecreaseCount}" reRender="viaInputContainer,viaBtnContainer">
+                                                                <apex:param name="count" value="" assignTo="{!count}"/>
+                                                            </apex:actionFunction>
+                                                        </apex:form>
+                                                    </div>
+                                                    <div class="slds-scope">
+                                                        <button onclick="fnOpenModal('Via','4')" style="background-color:grey; border-color:white" class="slds-button slds-button_brand" title="비고">비고</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <apex:outputPanel layout="none" rendered="{!count >= 5}">
+                                                <div id="container_5" class="slds-scope">
+                                                    <div id="viaInputFormContainer" class="slds-form-element">
+                                                        <div id="viaInputControllContainer" class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left-right">
+                                                            <svg class="slds-icon slds-input__icon slds-input__icon_left slds-icon-text-default" aria-hidden="true">
+                                                                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#search')}" />
+                                                            </svg>
+                                                            <input type="text" id="via_input_5" placeholder="경유지 5 검색" class="slds-input" onkeyup="fnViaSearchPlace(event,this.id)"/>
+                                                            <button id="via_clearBtn_5" class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" title="검색 초기화" onclick="fnClearViaInput(this.id)">
+                                                            <svg class="slds-button__icon slds-icon-text-light" aria-hidden="true">
+                                                                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#clear')}" />
+                                                            </svg>
+                                                            <span class="slds-assistive-text">검색 초기화</span>
+                                                            </button>
+                                                            <apex:form >
+                                                                <apex:actionFunction name="fnSearchViaPlace" action="{!searchTmapPlace}" rerender="itemsContainer">
+                                                                    <apex:param name="req" value="" assignTo="{!req}"/>               
+                                                                </apex:actionFunction>
+                                                            </apex:form>
+                                                        </div>
+                                                        <div class="slds-scope">
+                                                            <button id="deleteBtn_5" class="slds-button slds-button_icon slds-button_icon-border-filled" title="경유지 삭제" onclick="fnDeleteViaPoint(this.id)">
+                                                                <svg class="slds-button__icon" aria-hidden="true">
+                                                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#dash')}" />
+                                                                </svg>
+                                                                <span class="slds-assistive-text">경유지 삭제</span>
+                                                            </button>
+                                                            <apex:form >
+                                                                <apex:actionFunction name="fnDecreaseCount" action="{!increaseDecreaseCount}" reRender="viaInputContainer,viaBtnContainer">
+                                                                    <apex:param name="count" value="" assignTo="{!count}"/>
+                                                                </apex:actionFunction>
+                                                            </apex:form>
+                                                        </div>
+                                                        <div class="slds-scope">
+                                                            <button onclick="fnOpenModal('Via','5')" style="background-color:grey; border-color:white" class="slds-button slds-button_brand" title="비고">비고</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <apex:outputPanel layout="none" rendered="{!count >= 6}">
+                                                    <div id="container_6" class="slds-scope">
+                                                        <div id="viaInputFormContainer" class="slds-form-element">
+                                                            <div id="viaInputControllContainer" class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left-right">
+                                                                <svg class="slds-icon slds-input__icon slds-input__icon_left slds-icon-text-default" aria-hidden="true">
+                                                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#search')}" />
+                                                                </svg>
+                                                                <input type="text" id="via_input_6" placeholder="경유지 6 검색" class="slds-input" onkeyup="fnViaSearchPlace(event,this.id)"/>
+                                                                <button id="via_clearBtn_6" class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" title="검색 초기화" onclick="fnClearViaInput(this.id)">
+                                                                <svg class="slds-button__icon slds-icon-text-light" aria-hidden="true">
+                                                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#clear')}" />
+                                                                </svg>
+                                                                <span class="slds-assistive-text">검색 초기화</span>
+                                                                </button>
+                                                                <apex:form >
+                                                                    <apex:actionFunction name="fnSearchViaPlace" action="{!searchTmapPlace}" rerender="itemsContainer">
+                                                                        <apex:param name="req" value="" assignTo="{!req}"/>               
+                                                                    </apex:actionFunction>
+                                                                </apex:form>
+                                                            </div>
+                                                            <div class="slds-scope">
+                                                                <button id="deleteBtn_6" class="slds-button slds-button_icon slds-button_icon-border-filled" title="경유지 삭제" onclick="fnDeleteViaPoint(this.id)">
+                                                                    <svg class="slds-button__icon" aria-hidden="true">
+                                                                        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#dash')}" />
+                                                                    </svg>
+                                                                    <span class="slds-assistive-text">경유지 삭제</span>
+                                                                </button>
+                                                                <apex:form >
+                                                                    <apex:actionFunction name="fnDecreaseCount" action="{!increaseDecreaseCount}" reRender="viaInputContainer,viaBtnContainer">
+                                                                        <apex:param name="count" value="" assignTo="{!count}"/>
+                                                                    </apex:actionFunction>
+                                                                </apex:form>
+                                                            </div>
+                                                            <div class="slds-scope">
+                                                                <button onclick="fnOpenModal('Via','6')" style="background-color:grey; border-color:white" class="slds-button slds-button_brand" title="비고">비고</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <apex:outputPanel layout="none" rendered="{!count >= 7}">
+                                                        <div id="container_5" class="slds-scope">
+                                                            <div id="viaInputFormContainer" class="slds-form-element">
+                                                                <div id="viaInputControllContainer" class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left-right">
+                                                                    <svg class="slds-icon slds-input__icon slds-input__icon_left slds-icon-text-default" aria-hidden="true">
+                                                                        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#search')}" />
+                                                                    </svg>
+                                                                    <input type="text" id="via_input_7" placeholder="경유지 7 검색" class="slds-input" onkeyup="fnViaSearchPlace(event,this.id)"/>
+                                                                    <button id="via_clearBtn_7" class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" title="검색 초기화" onclick="fnClearViaInput(this.id)">
+                                                                    <svg class="slds-button__icon slds-icon-text-light" aria-hidden="true">
+                                                                        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#clear')}" />
+                                                                    </svg>
+                                                                    <span class="slds-assistive-text">검색 초기화</span>
+                                                                    </button>
+                                                                    <apex:form >
+                                                                        <apex:actionFunction name="fnSearchViaPlace" action="{!searchTmapPlace}" rerender="itemsContainer">
+                                                                            <apex:param name="req" value="" assignTo="{!req}"/>               
+                                                                        </apex:actionFunction>
+                                                                    </apex:form>
+                                                                </div>
+                                                                <div class="slds-scope">
+                                                                    <button id="deleteBtn_7" class="slds-button slds-button_icon slds-button_icon-border-filled" title="경유지 삭제" onclick="fnDeleteViaPoint(this.id)">
+                                                                        <svg class="slds-button__icon" aria-hidden="true">
+                                                                            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#dash')}" />
+                                                                        </svg>
+                                                                        <span class="slds-assistive-text">경유지 삭제</span>
+                                                                    </button>
+                                                                    <apex:form >
+                                                                        <apex:actionFunction name="fnDecreaseCount" action="{!increaseDecreaseCount}" reRender="viaInputContainer,viaBtnContainer">
+                                                                            <apex:param name="count" value="" assignTo="{!count}"/>
+                                                                        </apex:actionFunction>
+                                                                    </apex:form>
+                                                                </div>
+                                                                <div class="slds-scope">
+                                                                    <button onclick="fnOpenModal('Via','7')" style="background-color:grey; border-color:white" class="slds-button slds-button_brand" title="비고">비고</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <apex:outputPanel layout="none" rendered="{!count >= 8}">
+                                                            <div id="container_5" class="slds-scope">
+                                                                <div id="viaInputFormContainer" class="slds-form-element">
+                                                                    <div id="viaInputControllContainer" class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left-right">
+                                                                        <svg class="slds-icon slds-input__icon slds-input__icon_left slds-icon-text-default" aria-hidden="true">
+                                                                            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#search')}" />
+                                                                        </svg>
+                                                                        <input type="text" id="via_input_8" placeholder="경유지 8 검색" class="slds-input" onkeyup="fnViaSearchPlace(event,this.id)"/>
+                                                                        <button id="via_clearBtn_8" class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" title="검색 초기화" onclick="fnClearViaInput(this.id)">
+                                                                        <svg class="slds-button__icon slds-icon-text-light" aria-hidden="true">
+                                                                            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#clear')}" />
+                                                                        </svg>
+                                                                        <span class="slds-assistive-text">검색 초기화</span>
+                                                                        </button>
+                                                                        <apex:form >
+                                                                            <apex:actionFunction name="fnSearchViaPlace" action="{!searchTmapPlace}" rerender="itemsContainer">
+                                                                                <apex:param name="req" value="" assignTo="{!req}"/>               
+                                                                            </apex:actionFunction>
+                                                                        </apex:form>
+                                                                    </div>
+                                                                    <div class="slds-scope">
+                                                                        <button id="deleteBtn_8" class="slds-button slds-button_icon slds-button_icon-border-filled" title="경유지 삭제" onclick="fnDeleteViaPoint(this.id)">
+                                                                            <svg class="slds-button__icon" aria-hidden="true">
+                                                                                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#dash')}" />
+                                                                            </svg>
+                                                                            <span class="slds-assistive-text">경유지 삭제</span>
+                                                                        </button>
+                                                                        <apex:form >
+                                                                            <apex:actionFunction name="fnDecreaseCount" action="{!increaseDecreaseCount}" reRender="viaInputContainer,viaBtnContainer">
+                                                                                <apex:param name="count" value="" assignTo="{!count}"/>
+                                                                            </apex:actionFunction>
+                                                                        </apex:form>
+                                                                    </div>
+                                                                    <div class="slds-scope">
+                                                                        <button onclick="fnOpenModal('Via','8')" style="background-color:grey; border-color:white" class="slds-button slds-button_brand" title="비고">비고</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <apex:outputPanel layout="none" rendered="{!count >= 9}">
+                                                                <div id="container_9" class="slds-scope">
+                                                                    <div id="viaInputFormContainer" class="slds-form-element">
+                                                                        <div id="viaInputControllContainer" class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left-right">
+                                                                            <svg class="slds-icon slds-input__icon slds-input__icon_left slds-icon-text-default" aria-hidden="true">
+                                                                                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#search')}" />
+                                                                            </svg>
+                                                                            <input type="text" id="via_input_9" placeholder="경유지 9 검색" class="slds-input" onkeyup="fnViaSearchPlace(event,this.id)"/>
+                                                                            <button id="via_clearBtn_9" class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" title="검색 초기화" onclick="fnClearViaInput(this.id)">
+                                                                            <svg class="slds-button__icon slds-icon-text-light" aria-hidden="true">
+                                                                                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#clear')}" />
+                                                                            </svg>
+                                                                            <span class="slds-assistive-text">검색 초기화</span>
+                                                                            </button>
+                                                                            <apex:form >
+                                                                                <apex:actionFunction name="fnSearchViaPlace" action="{!searchTmapPlace}" rerender="itemsContainer">
+                                                                                    <apex:param name="req" value="" assignTo="{!req}"/>               
+                                                                                </apex:actionFunction>
+                                                                            </apex:form>
+                                                                        </div>
+                                                                        <div class="slds-scope">
+                                                                            <button id="deleteBtn_9" class="slds-button slds-button_icon slds-button_icon-border-filled" title="경유지 삭제" onclick="fnDeleteViaPoint(this.id)">
+                                                                                <svg class="slds-button__icon" aria-hidden="true">
+                                                                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#dash')}" />
+                                                                                </svg>
+                                                                                <span class="slds-assistive-text">경유지 삭제</span>
+                                                                            </button>
+                                                                            <apex:form >
+                                                                                <apex:actionFunction name="fnDecreaseCount" action="{!increaseDecreaseCount}" reRender="viaInputContainer,viaBtnContainer">
+                                                                                    <apex:param name="count" value="" assignTo="{!count}"/>
+                                                                                </apex:actionFunction>
+                                                                            </apex:form>
+                                                                        </div>
+                                                                        <div class="slds-scope">
+                                                                            <button onclick="fnOpenModal('Via','9')" style="background-color:grey; border-color:white" class="slds-button slds-button_brand" title="비고">비고</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </apex:outputPanel>
+                                                        </apex:outputPanel>
+                                                    </apex:outputPanel>
+                                                </apex:outputPanel>
+                                            </apex:outputPanel>
+                                        </apex:outputPanel>
+                                    </apex:outputPanel>
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                            <script type="text/javascript">
+
+                                if ('{!count}' > 0) {
+                                    fnReinsertSearchVal();
+                                }
+
+                            </script>
+                        </apex:outputPanel>
+                    </div>
+                    <div class="slds-scope">
+                        <div style="display:flex" class="slds-form-element">
+                            <div style="flex:1" class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left-right">
+                                <svg class="slds-icon slds-input__icon slds-input__icon_left slds-icon-text-default" aria-hidden="true">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#search')}" />
+                                </svg>
+                                <input type="text" id="end_input" placeholder="도착지 검색" class="slds-input"/>
+                                <button class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" title="검색 초기화" onclick="fnClearEndInput()">
+                                <svg class="slds-button__icon slds-icon-text-light" aria-hidden="true">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#clear')}" />
+                                </svg>
+                                <span class="slds-assistive-text">검색 초기화</span>
+                                </button>
+                                <apex:form >
+                                    <apex:actionFunction name="fnSearchPlace" action="{!searchTmapPlace}" rerender="itemsContainer">
+                                        <apex:param name="req" value="" assignTo="{!req}"/>               
+                                    </apex:actionFunction>
+                                </apex:form>
+                            </div>
+                            <div class="slds-scope">
+                                <button onclick="fnOpenModal('End','')" style="background-color:grey; border-color:white" class="slds-button slds-button_brand" title="비고">비고</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-form-element">
+                        <label class="slds-form-element__label" for="select-01">경로 탐색 옵션</label>
+                        <div class="slds-form-element__control">
+                          <div class="slds-select_container">
+                            <select class="slds-select" id="select-01">
+                              <option value="0">교통최적+추천</option>
+                              <option value="1">교통최적+무료우선</option>
+                              <option value="2">교통최적+최소시간</option>
+                              <option value="3">교통최적+초보</option>
+                            </select>
+                          </div>
+                        </div>
+                    </div>
+                    <div class="slds-scope slds-border_bottom" id="resultContainer">
+                        <div id="btns_container">
+                            <button id="addViaPointsBtn" class="slds-button slds-button_neutral" title="경유지 추가">
+                                경유지 추가
+                                <svg class="slds-button__icon" aria-hidden="true" style="margin-left: 8px;">
+                                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#add')}"></use>
+                                </svg>
+                                <span class="slds-assistive-text">경유지 추가</span>
+                            </button>
+                            <button id="getDistanceBtn" class="slds-button slds-button_brand" title="거리 계산">거리 계산</button>
+                        </div>
+                        <apex:form >
+                            <apex:actionFunction name="fnGetDistance" action="{!getDistance}" reRender="distanceContainer,viaBtnContainer">
+                                <apex:param name="distanceReq" value="" assignTo="{!distanceReq}"/>
+                                <apex:param name="dataType" value="" assignTo="{!dataType}"/>
+                            </apex:actionFunction>
+                            <apex:actionFunction name="fnIncreaseCount" action="{!increaseDecreaseCount}" reRender="viaInputContainer,viaBtnContainer">
+                                <apex:param name="count" value="" assignTo="{!count}"/>
+                            </apex:actionFunction>
+                        </apex:form>
+                        <div id="distContainer">
+                            <apex:outputPanel id="distanceContainer">
+                                <ul class="slds-has-dividers_around">
+                                    <li class="slds-item" style="display: flex; align-items: center;">
+                                        <span id="distSpan" style="margin-right: 5px; margin-left: 5px;">운행거리(km): </span> 
+                                        <div class="slds-form-element">
+                                            <div class="slds-form-element__control">
+                                              <input type="text" id="text-input-id-92" placeholder="" class="slds-input" />
+                                            </div>
+                                        </div>    
+                                    </li>
+                                </ul>
+                                <script type="text/javascript">
+                                    var geomTempList = '';
+                                    if ('{!geomDataJsonString}' != '') {
+                                        geomTempList = jQuery.parseJSON('{!JSENCODE(geomDataJsonString)}');
+    
+                                        // 라인 그리기
+                                        fnGetLineString(geomTempList);
+                                    }
+    
+                                </script>
+                            </apex:outputPanel>
+                        </div>
+                    </div>
+                    <div id="listContainer" style="flex:1">
+                        <ul style="list-style-type:none; margin:0rem; padding-top: 0.2rem;"> 
+                            <apex:outputPanel id="itemsContainer">
+                                <apex:repeat value="{!tmapItemResults}" var="a" id="resultList">
+                                    <li>
+                                        <span class="slds-assistive-text" aria-live="polite"></span>
+                                        <button id="listButton" class="slds-button slds-button_neutral list_button" onclick="">
+                                            <span>
+                                                <img id="img" src='http://tmapapi.sktelecom.com/upload/tmap/marker/pin_g_m_{!a.chr}.png'/>
+                                            </span>
+                                            <span class="slds-media__body" id="description">
+                                                <span id="addr_name">
+                                                    {!a.name}
+                                                </span> <br/>
+                                                <span style="color:rgb(49, 46, 46);">{!a.roadAddr}</span> <br/>
+                                                <span style="color:rgb(49, 46, 46);">{!a.addr} <span style="color: gray;">(우) {!a.zipCode}</span></span> <br/>
+                                                <span style="color:rgb(49, 46, 46);">{!a.telNo}</span> <br/>
+                                            </span>
+                                        </button>
+                                    </li>
+                                </apex:repeat>
+                                <script type="text/javascript">
+                                    let tempList = '';
+                                    if ('{!jsonResultList}' != '') {
+                                        tempList = jQuery.parseJSON('{!JSENCODE(jsonResultList)}');
+                                    }
+                                    let listButton = document.querySelectorAll('#listButton');
+                                    let type;
+                                    let name_se;
+                                    let src_se;
+                                    let char_se;
+                                    let num_se;
+                                    let roadAddr_se;
+                                    let noorLat_se;
+                                    let noorLon_se;
+                                    let type_se;
+
+                                    if ('{!tmapItemResults.size}' == 0) {
+                                        $('div#listContainer').hide();
+
+                                        $('div#noResultContainer').show();
+
+                                        // console.log('input id::::::::::' + document.activeElement.id);
+                                        var searchKeyword = $('#'+document.activeElement.id).val();
+                                        var keywordSpan = document.getElementById('searchKeyword');
+                                        
+                                        if(keywordSpan) {
+                                            keywordSpan.innerHTML = '';
+                                            keywordSpan.innerHTML += '"' + searchKeyword + '"';
+                                        }
+                                        
+                                        var msg = document.getElementById('noResultMsg');
+
+                                        if(msg) {
+                                            msg.innerHTML = '';
+                                            msg.innerHTML += '에 대한 검색 결과가 없습니다.';
+                                        }
+                                    } else {
+                                        $('div#listContainer').show();
+                                        $('div#noResultContainer').hide();
+
+                                        // 리스트 버튼 이벤트(hoverIn)
+                                        listButton.forEach(item => {
+                                            item.addEventListener('mouseenter', handleListHoverInEvent);
+                                        });
+
+                                        // 리스트 버튼 이벤트(hoverIn)
+                                        function handleListHoverInEvent(event) {
+                                            if (!event.target.querySelector('#img').src.includes('_b_') && !event.target.querySelector('#img').src.includes('_r_')) {
+                                                event.target.querySelector('#img').src = event.target.querySelector('#img').src.replace(/_g_/, '_w_');
+                                                event.target.querySelector('#addr_name').style.color = 'rgba(157, 62, 23, 1)';
+                                            }
+                                        }
+
+                                        // 리스트 버튼 이벤트(hoverOut)
+                                        listButton.forEach(item => {
+                                            item.addEventListener('mouseleave', handleListHoverOutEvent);
+                                        });
+
+                                        // 리스트 버튼 이벤트(hoverOut)
+                                        function handleListHoverOutEvent(event) {
+                                            if (!event.target.querySelector('#img').src.includes('_b_') && !event.target.querySelector('#img').src.includes('_r_')){
+                                                event.target.querySelector('#img').src = event.target.querySelector('#img').src.replace(/_w_/, '_g_');
+                                                event.target.querySelector('#addr_name').style.color = 'black';
+                                            }
+                                        }
+                                    }
+                                    
+                                    // listBtn 클릭 이벤트
+                                    listButton.forEach(item => {
+                                        item.addEventListener("click", function handleListClickEvent(event) {
+
+                                            for(var i=0; i<listButton.length; i++) {
+                                                let switchChar = tempList[i].chr;
+                                                if(type === 'start' && listButton[i].querySelector('#img').src.includes('_b_')) {
+                                                    listButton[i].querySelector('#img').src = listButton[i].querySelector('#img').src.replace(/_b_m_s/, '_g_m_' + switchChar);
+
+                                                } else if (type === 'end' && listButton[i].querySelector('#img').src.includes('_r_')) {
+                                                    listButton[i].querySelector('#img').src = listButton[i].querySelector('#img').src.replace(/_r_m_e/, '_g_m_' + switchChar);
+
+                                                } else if (type === 'via' && listButton[i].querySelector('#img').src.includes('_w_')) {
+                                                    var regexStr = new RegExp(`_w_m_(${tempList[i].index})`);
+                                                    
+                                                    listButton[i].querySelector('#img').src = listButton[i].querySelector('#img').src.replace(regexStr, '_g_m_' + switchChar);
+                                                }
+                                                listButton[i].querySelector('#addr_name').style.color = 'black';
+                                                listButton[i].addEventListener('mouseleave', handleListHoverOutEvent);
+                                            }
+
+                                            if (!item.querySelector('#img').src.includes('_b_') && !item.querySelector('#img').src.includes('_r_')) {
+                                                let src = item.querySelector('#img').src;
+                                                let char = src.substring(src.length - 4, src.length - 5);
+                                                let num = char.charCodeAt(0) - 97;
+                                                let roadAddr = tempList[num].roadAddr;
+                                                let noorLat = tempList[num].noorLat;
+                                                let noorLon = tempList[num].noorLon;
+                                                let name = tempList[num].name;
+
+                                                if (tempList[num].type === 'start') {
+                                                    type = tempList[num].type;
+                                                    $('#start_input').val(tempList[num].roadAddr);
+                                                    if(item.querySelector('#img').src.includes('_g_')) {
+                                                        item.querySelector('#img').src = src.replace(/_g_m_./, '_b_m_s');
+                                                    } else {
+                                                        item.querySelector('#img').src = src.replace(/_w_m_./, '_b_m_s');
+                                                    }
+                                                    char_se = tempList[num].chr;
+                                                    num_se = char_se.charCodeAt(0) - 97;
+                                                } else if (tempList[num].type === 'end') {
+                                                    type = tempList[num].type;
+                                                    $('#end_input').val(tempList[num].roadAddr);
+                                                    if(item.querySelector('#img').src.includes('_g_')) {
+                                                        item.querySelector('#img').src = src.replace(/_g_m_./, '_r_m_e');
+                                                    } else {
+                                                        item.querySelector('#img').src = src.replace(/_w_m_./, '_r_m_e');
+                                                    }
+                                                    char_se = tempList[num].chr;
+                                                    num_se = char_se.charCodeAt(0) - 97;
+                                                } else {
+                                                    type = tempList[num].type;
+                                                    $('#via_input_'+tempList[num].index).val(tempList[num].roadAddr);
+
+                                                    if(item.querySelector('#img').src.includes('_g_')) {
+                                                        item.querySelector('#img').src = src.replace(/_g_m_./, '_w_m_'+tempList[num].index);
+                                                    } else {
+                                                        item.querySelector('#img').src = src.replace(/_w_m_./, '_w_m_'+tempList[num].index);
+                                                    }
+                                                    char_se = tempList[num].chr;
+                                                    num_se = tempList[num].index;
+
+                                                    fnAddToViaList(parseInt(num_se), tempList[num]);
+                                                }
+
+                                                // console.log('type::::::::::::::::' + type);
+
+                                                src_se = item.querySelector('#img').src;
+                                                name_se = name;
+                                                roadAddr_se = roadAddr;
+                                                noorLat_se = noorLat;
+                                                noorLon_se = noorLon;
+                                                type_se = type;
+
+                                                // console.log('src_se: ' + src_se +
+                                                //             '\nname_se: ' + name_se +
+                                                //             '\nchar_se: ' + char_se + 
+                                                //             '\nnum_se: ' + num_se + 
+                                                //             '\nroadAddr_se: ' + roadAddr_se + 
+                                                //             '\nnoorLat_se: ' + noorLat_se + 
+                                                //             '\nnoorLon_se: ' + noorLon_se + 
+                                                //             '\ntype_se: ' + type_se)
+
+                                                item.querySelector('#addr_name').style.color = 'rgba(157, 62, 23, 1)';
+                                                item.removeEventListener('mouseleave', handleListHoverOutEvent);
+
+                                                fnClickToChngIcon(src_se, name_se, num_se, roadAddr_se, tempList[num].addr, tempList[num].zipCode, tempList[num].telNo, noorLat_se, noorLon_se, type_se);
+                                            }
+                                        })
+                                    });
+
+                                    function fnDeleteViaList(via_id_num, select_viaList) {
+                                        if (select_viaList.length === 1) {
+                                            var char = select_viaList[0].chr;
+                                            var newNum = char.charCodeAt(0) - 97;
+                                            var listSrc = listButton[newNum].querySelector('#img').src;
+                                            var listIdx = listSrc.substring(listSrc.length - 4, listSrc.length - 5);
+                                            
+                                            fnDeleteViaList2(via_id_num);
+
+                                            listButton[newNum].querySelector('#img').src = listSrc.replace(/_w_m_./, '_g_m_'+char);
+                                            listButton[newNum].addEventListener('mouseleave', handleListHoverOutEvent);
+                                            listButton[newNum].querySelector('#addr_name').style.color = 'black';
+
+                                        } else if (select_viaList.length > 1) {
+                                            for (var i=0; i<select_viaList.length; i++) {
+                                                if (select_viaList[i] !== undefined) {
+                                                    var char = select_viaList[i].chr;
+                                                    var newNum = char.charCodeAt(0) - 97;
+                                                    var listSrc = listButton[newNum].querySelector('#img').src;
+                                                    var listIdx = listSrc.substring(listSrc.length - 4, listSrc.length - 5);
+                                                    if (listIdx === select_viaList[i].index) {
+                                                        listButton[newNum].querySelector('#img').src = listSrc.replace(/_w_m_./, '_g_m_'+char);
+                                                        
+                                                        listButton[newNum].addEventListener('mouseleave', handleListHoverOutEvent);
+                                                        listButton[newNum].querySelector('#addr_name').style.color = 'black';
+                                                    } else {
+                                                        var listIdxNum = parseInt(listIdx);
+                                                        var selViaNum = parseInt(select_viaList[i].index);
+                                                        if (listIdxNum > selViaNum) {
+                                                            listButton[newNum].querySelector('#img').src = listSrc.replace(/_w_m_./, '_w_m_'+(listIdxNum-1).toString());
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            fnDeleteViaList2(via_id_num);
+                                        }
+                                    }
+
+                                    function fnResetListIcon(strType) {
+                                        if (typeof type_se != 'undefined' && listButton.length != 0) {
+                                            var charToInt = parseInt(num_se);
+                                            if (type_se === 'start' && strType === 'start') {
+                                                var iconSrc = listButton[charToInt].querySelector('#img').src;
+                                                listButton[charToInt].querySelector('#img').src = iconSrc.replace(/_b_m_s/, '_g_m_' + char_se);
+                                            } else if (type_se === 'end' && strType === 'end') {
+                                                var iconSrc = listButton[charToInt].querySelector('#img').src;
+                                                listButton[charToInt].querySelector('#img').src = iconSrc.replace(/_r_m_e/, '_g_m_' + char_se);
+                                            } else if (type_se === 'via' && strType === 'via') {
+                                                charToInt--;
+                                                var iconSrc = listButton[charToInt].querySelector('#img').src;
+                                                listButton[charToInt].querySelector('#img').src = iconSrc.replace(/_w_m_./, '_g_m_' + char_se);
+                                            }
+                                            listButton[charToInt].querySelector('#addr_name').style.color = 'black';
+                                            listButton[charToInt].addEventListener('mouseleave', handleListHoverOutEvent);
+                                        }
+                                    }
+                                </script>
+                            </apex:outputPanel>
+                        </ul>
+                    </div>
+                    <div id="noResultContainer">
+                        <span class="slds-media__body" style="color: rgba(157, 62, 23, 1)" id="searchKeyword">
+
+                        </span>
+                        <span class="slds-media__body" id="noResultMsg">
+
+                        </span>
+                    </div>
+                    <div id="startEndList">
+                        <ul style="list-style-type:none; margin:0rem; padding-top: 0.2rem;">
+                            <li  id="li_start">
+                                <span class="slds-assistive-text" aria-live="polite"></span>
+                                <button id="startEndButton" class="slds-button slds-button_neutral list_button" onclick="">
+                                    <span>
+                                        <img id="img" src='http://tmapapi.sktelecom.com/upload/tmap/marker/pin_b_m_s.png'/>
+                                    </span>
+                                    <span class="slds-media__body" id="description_start">
+
+                                    </span>
+                                </button>
+                            </li>
+                            <apex:outputPanel id="viaBtnContainer">
+                                <apex:outputPanel layout="none" rendered="{!count >= 1}">
+                                    <li id="li_via_1">
+                                        <span class="slds-assistive-text" aria-live="polite"></span>
+                                        <button id="viaPointBtn" class="slds-button slds-button_neutral list_button">
+                                            <span>
+                                                <img id="img" src='http://tmapapi.sktelecom.com/upload/tmap/marker/pin_g_m_1.png'/>
+                                            </span>
+                                            <span class="slds-media__body" id="description_via_1">
+
+                                            </span>
+                                        </button>
+                                    </li>
+                                    <apex:outputPanel layout="none" rendered="{!count >= 2}">
+                                        <li id="li_via_2">
+                                            <span class="slds-assistive-text" aria-live="polite"></span>
+                                            <button id="viaPointBtn" class="slds-button slds-button_neutral list_button">
+                                                <span>
+                                                    <img id="img" src='http://tmapapi.sktelecom.com/upload/tmap/marker/pin_g_m_2.png'/>
+                                                </span>
+                                                <span class="slds-media__body" id="description_via_2">
+    
+                                                </span>
+                                            </button>
+                                        </li>
+                                        <apex:outputPanel layout="none" rendered="{!count >= 3}">
+                                            <li id="li_via_3">
+                                                <span class="slds-assistive-text" aria-live="polite"></span>
+                                                <button id="viaPointBtn" class="slds-button slds-button_neutral list_button">
+                                                    <span>
+                                                        <img id="img" src='http://tmapapi.sktelecom.com/upload/tmap/marker/pin_g_m_3.png'/>
+                                                    </span>
+                                                    <span class="slds-media__body" id="description_via_3">
+        
+                                                    </span>
+                                                </button>
+                                            </li>
+                                            <apex:outputPanel layout="none" rendered="{!count >= 4}">
+                                                <li id="li_via_4">
+                                                    <span class="slds-assistive-text" aria-live="polite"></span>
+                                                    <button id="viaPointBtn" class="slds-button slds-button_neutral list_button">
+                                                        <span>
+                                                            <img id="img" src='http://tmapapi.sktelecom.com/upload/tmap/marker/pin_g_m_4.png'/>
+                                                        </span>
+                                                        <span class="slds-media__body" id="description_via_4">
+            
+                                                        </span>
+                                                    </button>
+                                                </li>
+                                                <apex:outputPanel layout="none" rendered="{!count >= 5}">
+                                                    <li id="li_via_5">
+                                                        <span class="slds-assistive-text" aria-live="polite"></span>
+                                                        <button id="viaPointBtn" class="slds-button slds-button_neutral list_button">
+                                                            <span>
+                                                                <img id="img" src='http://tmapapi.sktelecom.com/upload/tmap/marker/pin_g_m_5.png'/>
+                                                            </span>
+                                                            <span class="slds-media__body" id="description_via_5">
+                
+                                                            </span>
+                                                        </button>
+                                                    </li>
+                                                    <apex:outputPanel layout="none" rendered="{!count >= 6}">
+                                                        <li id="li_via_6">
+                                                            <span class="slds-assistive-text" aria-live="polite"></span>
+                                                            <button id="viaPointBtn" class="slds-button slds-button_neutral list_button">
+                                                                <span>
+                                                                    <img id="img" src='http://tmapapi.sktelecom.com/upload/tmap/marker/pin_g_m_6.png'/>
+                                                                </span>
+                                                                <span class="slds-media__body" id="description_via_6">
+                    
+                                                                </span>
+                                                            </button>
+                                                        </li>
+                                                        <apex:outputPanel layout="none" rendered="{!count >= 7}">
+                                                            <li id="li_via_7">
+                                                                <span class="slds-assistive-text" aria-live="polite"></span>
+                                                                <button id="viaPointBtn" class="slds-button slds-button_neutral list_button">
+                                                                    <span>
+                                                                        <img id="img" src='http://tmapapi.sktelecom.com/upload/tmap/marker/pin_g_m_7.png'/>
+                                                                    </span>
+                                                                    <span class="slds-media__body" id="description_via_7">
+                        
+                                                                    </span>
+                                                                </button>
+                                                            </li>
+                                                            <apex:outputPanel layout="none" rendered="{!count >= 8}">
+                                                                <li id="li_via_8">
+                                                                    <span class="slds-assistive-text" aria-live="polite"></span>
+                                                                    <button id="viaPointBtn" class="slds-button slds-button_neutral list_button">
+                                                                        <span>
+                                                                            <img id="img" src='http://tmapapi.sktelecom.com/upload/tmap/marker/pin_g_m_8.png'/>
+                                                                        </span>
+                                                                        <span class="slds-media__body" id="description_via_8">
+                            
+                                                                        </span>
+                                                                    </button>
+                                                                </li>
+                                                                <apex:outputPanel layout="none" rendered="{!count >= 9}">
+                                                                    <li id="li_via_9">
+                                                                        <span class="slds-assistive-text" aria-live="polite"></span>
+                                                                        <button id="viaPointBtn" class="slds-button slds-button_neutral list_button">
+                                                                            <span>
+                                                                                <img id="img" src='http://tmapapi.sktelecom.com/upload/tmap/marker/pin_g_m_9.png'/>
+                                                                            </span>
+                                                                            <span class="slds-media__body" id="description_via_9">
+                                
+                                                                            </span>
+                                                                        </button>
+                                                                    </li>
+                                                                </apex:outputPanel>
+                                                            </apex:outputPanel>
+                                                        </apex:outputPanel>
+                                                    </apex:outputPanel>
+                                                </apex:outputPanel>
+                                            </apex:outputPanel>
+                                        </apex:outputPanel>
+                                    </apex:outputPanel>
+                                </apex:outputPanel>
+                                <script type="text/javascript">
+
+                                    var viaPointList = document.querySelectorAll('#viaPointBtn');
+
+                                    if ('{!count}' > 0) {
+                                        fnViaBtnEvent(viaPointList);
+                                        fnRerenderViaBtnList();
+
+                                    }
+
+                                    const isHidden = elem => {
+                                        const styles = window.getComputedStyle(elem)
+                                        return styles.display === 'none' || styles.visibility === 'hidden'
+                                    }
+
+                                    function fnResetViaListIcon(varCount) {
+                                        for (var i=0; i<varCount; i++) {
+                                            viaPointList[i].querySelector('#img').src = viaPointList[i].querySelector('#img').src.replace(/_g_m_./, '_g_m_'+(i+1).toString());
+                                        }
+                                    }
+    
+                                </script>
+                            </apex:outputPanel>
+                            <li id="li_end">
+                                <span class="slds-assistive-text" aria-live="polite"></span>
+                                <button id="startEndButton" class="slds-button slds-button_neutral list_button" onclick="">
+                                    <span>
+                                        <img id="img" src='http://tmapapi.sktelecom.com/upload/tmap/marker/pin_r_m_e.png'/>
+                                    </span>
+                                    <span class="slds-media__body" id="description_end">
+
+                                    </span>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div id="map_div">
+
+                </div>
+                
+            </div>
+            <script type="text/javascript">
+                /*
+                function delay(callback, ms) {
+                    var timer = 0;
+                    return function() {
+                        var context = this, args = arguments;
+                        clearTimeout(timer);
+                        timer = setTimeout(function () {
+                            callback.apply(context, args);
+                        }, ms || 0);
+                    };
+                }
+                */
+
+                function delay(fn, ms) {
+                    let timer = 0
+                    return function(...args) {
+                        clearTimeout(timer)
+                        timer = setTimeout(fn.bind(this, ...args), ms || 0
+                        )
+                    }
+                }
+
+                let undefinedVar;
+                let map, marker, marker_s, marker_e;
+                let latlng_s, latlng_e;
+                let startLat, startLng, endLat, endLng;
+                let startName, endName, startDescVal, EndDescVal;
+                let startRoadAddr, endRoadAddr;
+                let totalDistance;
+                var marker_index = '';
+                let markerArr = [];
+                var drawInfoArr = [];
+                var resultdrawArr = [];
+                let startEndList = document.querySelectorAll('#startEndButton');
+                let count = 0;
+                let via_marker
+                let via_markerArr = [];
+                let via_latlng, via_lat, via_lng, via_name, via_roadAddr;
+                let via_data = [];
+                let via_searchVal = [];
+                // 비고 정보
+                let via_descVal = [];
+                let via_latlng_list = [];
+                let select_viaList = [];
+                let oldViaInputList = [];
+                let via_timerId;
+                let ok;
+
+                $('div#startEndList').hide();
+                $('div#distContainer').hide();
+                $('div#noResultContainer').hide();
+                
+
+                // Init
+                function fnInit() {
+                    // 지도 띄우기
+                    map = new Tmapv2.Map("map_div", {
+                        center : new Tmapv2.LatLng(37.49241689559544, 127.03171389453507),
+                        width : "75%",
+                        height : "100vh",
+                        zoom : 11,
+                        zoomControl : true,
+                        scrollwheel : true,
+                        border : 'none'
+                    });
+
+                    let oldStartInput = '';
+                    let oldEndInput = '';
+                    
+                    $('div#listContainer').hide();
+
+                    // 출발지 키워드 검색
+                    $('#start_input').keyup(delay(function(e) {
+
+                        console.log('start_input :: ' + $('#start_input').val());
+                        if ( oldStartInput == $('#start_input').val()){
+                            console.log( 'return ');
+                            return; 
+                        }
+
+                        let keyword = $('#start_input').val();
+                        // console.log('keyword:::::::::::::::' + keyword);
+                        let req = {type: 'start', search: $('#start_input').val()};
+                        // console.log('request-string:::::::::::::::' + JSON.stringify(req));
+                        
+                        if (typeof marker_s != 'undefined') {
+                            marker_s.setMap(null);
+                            marker_s = undefinedVar;
+                            startRoadAddr = undefinedVar;
+                            totalDistance = undefinedVar;
+                        }
+
+                        //기존 맵에 있던 정보들 초기화
+                        resettingMap();
+                        $('div#startEndList').hide();
+                        $('div#distContainer').hide();
+                        oldStartInput = $('#start_input').val();
+                        fnSearchPlace(JSON.stringify(req));
+                    }, 700));
+
+                    // 출발지 키워드 초기화
+                    $('#start_input').focusout(delay(function(e) {
+                        console.log ('출발지 초기화');
+                        oldStartInput = '';
+                    }, 700));
+
+                    // 도착지 키워드 검색
+                    $('#end_input').keyup(delay(function(e) {
+                        let keyword = $('#end_input').val();
+                        
+                        if ( oldEndInput == $('#end_input').val()){
+                            console.log( 'return ');
+                            return; 
+                        }
+
+                        let req = {type: 'end', search: $('#end_input').val()};
+                        // console.log('request-string:::::::::::::::' + JSON.stringify(req));
+
+                        if (typeof marker_e != 'undefined') {
+                            marker_e.setMap(null);
+                            marker_e = undefinedVar;
+                            endRoadAddr = undefinedVar;
+                            totalDistance = undefinedVar;
+                        }
+
+                        //기존 맵에 있던 정보들 초기화
+                        resettingMap();
+                        $('div#startEndList').hide();
+                        $('div#distContainer').hide();
+                        oldEngInput = $('#end_input').val();
+
+                        // apex 메소드 호출
+                        fnSearchPlace(JSON.stringify(req));
+                    }, 700));
+                    
+                    // 도착지 키워드 초기화
+                    $('#end_input').focusout(delay(function(e) {
+                        console.log ('도착지 초기화');
+                        oldEndInput = '';
+                    }, 700));
+
+
+                    // 거리 계산
+                    $('#getDistanceBtn').on('click', function(e) {
+
+                        // console.log("Get Distance Start::::::::::");
+
+                        var element = document.getElementById('select-01');
+                        
+                        if (typeof marker_s === 'undefined') {
+                            alert('출발지를 선택해 주세요.');
+                        } else if (typeof marker_e === 'undefined') {
+                            alert('도착지를 선택해 주세요.');
+                        } else if (count > 0) {
+                            if (via_latlng_list.length != count) {
+                                if (count > via_latlng_list.length) {
+                                    alert('선택되지 않은 경유지가 있습니다. 경유지를 선택하거나 삭제해 주세요.');
+                                } 
+                            } else if (via_latlng_list.includes('EMPTY')) {
+                                var idx = via_latlng_list.indexOf('EMPTY');
+                                alert((idx+1).toString() + '번 경유지를 선택하거나 삭제해 주세요.');
+                            } else {
+                                var viaPointsList = [];
+                                if (select_viaList.length != 0) {
+                                    for (var i=0; i<select_viaList.length; i++) {
+                                        if (select_viaList[i] !== undefined) {
+                                            var viaItem = {
+                                                viaPointId: 'Index_'+select_viaList[i].index,
+                                                viaPointName: select_viaList[i].name,
+                                                viaX: select_viaList[i].noorLon,
+                                                viaY: select_viaList[i].noorLat
+                                            };
+                                            viaPointsList.push(viaItem); 
+                                        }
+                                    }
+                                }
+
+                                if (select_viaList.length != viaPointsList.length) {
+                                    alert('선택되지 않은 경유지가 있습니다. 경유지를 선택하거나 삭제해 주세요.');
+                                } else {
+                                    let dataType = 'withVia';
+                                    let distanceReq = {
+                                        startName: startName,
+                                        startX: startLng,
+                                        startY: startLat,
+                                        endName: endName,
+                                        endX: endLng,
+                                        endY: endLat,
+                                        viaPoints: viaPointsList,
+                                        searchOption: element.value
+                                    };
+
+                                    $('#start_input').val(startRoadAddr);
+                                    $('#end_input').val(endRoadAddr);
+                                    for (var i=0; i<count; i++) {
+                                        var j = i+1;
+                                        var input_id = "via_input_" + j.toString();
+                                        $('#'+input_id).val(via_searchVal[i]);
+                                    }
+
+                                    var msgObj = new Map([
+                                        ["type", "IN PROCESS"],
+                                        ["msgStart", ''],
+                                        ["msgEnd", ''],
+                                        ["msgDist", ''],
+                                        ["msgViaPoints", []]
+                                    ]);
+
+                                    sendMsgToParent(msgObj);
+                                    console.log(' distanceReq :: ' + JSON.stringify(distanceReq));
+                                    fnGetDistance(JSON.stringify(distanceReq), dataType);
+                                }
+
+                            }
+                        } else {
+
+                            let dataType = 'withoutVia';
+                            let distanceReq = {
+                                startY: startLat,
+                                startX: startLng,
+                                endY: endLat,
+                                endX: endLng,
+                                searchOption: element.value
+                            };
+
+                            $('#start_input').val(startRoadAddr);
+                            $('#end_input').val(endRoadAddr);
+
+                            var msgObj = new Map([
+                                ["type", "IN PROCESS"],
+                                ["msgStart", ''],
+                                ["msgEnd", ''],
+                                ["msgDist", ''],
+                                ["msgViaPoints", []]
+                            ]);
+
+                            sendMsgToParent(msgObj);
+
+                            fnGetDistance(JSON.stringify(distanceReq), dataType);
+                        }
+                        ok = 'ok';
+                    })
+                }
+
+                // 경유지 리스트에 추가
+                function fnAddToViaList(num, item) {
+                    select_viaList[num-1] = item;
+                }
+
+                function debouncing(func, timeout = 300) {
+                    clearTimeout(timerId);
+                    timerId = setTimeout(func, timeout);
+                }
+
+                let timer;
+
+                // 경유지 검색
+                function fnViaSearchPlace(evtObj, input_id) {
+                    
+                    $(document).on("keyup",'#'+input_id,function(e) {
+                        if ( timer){
+                            clearTimeout(timer);
+                        } 
+                        timer = setTimeout(function() {
+                            let keyword = $('#'+input_id).val();
+                            let via_id_num = input_id.charAt(input_id.length - 1);
+                            console.log('경유지 ' + via_id_num + ' : '+ keyword);
+
+                            if ( oldViaInputList[via_id_num] == $('#'+input_id).val()){
+                                return; 
+                            }
+
+                            let req = {type: 'via', search: $('#'+input_id).val(), index: via_id_num};
+
+                            if (via_markerArr.length != 0) {
+                                if (via_markerArr[num_se-1] !== undefined) {
+                                    via_markerArr[num_se-1].setMap(null);
+                                    via_markerArr.splice(num_se-1, 1);
+                                }
+                                totalDistance = undefinedVar;
+                            }
+
+                            //기존 맵에 있던 정보들 초기화
+                            resettingMap();
+                            $('div#startEndList').hide();
+                            $('div#distContainer').hide();
+                            oldViaInputList[via_id_num] = keyword;
+                            
+                            // apex 메소드 호출
+                            fnSearchViaPlace(JSON.stringify(req));
+                            console.log('fnViaSearchPlace end');
+                        }, 500);
+
+                    });
+
+                    
+                    // 출발지 키워드 초기화
+                    $(document).on("focusout",'#'+input_id,function(e) {
+                        if ( timer){
+                            clearTimeout(timer);
+                        } 
+                        timer = setTimeout(function() {
+                            let via_id_num = input_id.charAt(input_id.length - 1);
+                            console.log('경유지 ' + via_id_num + '초기화');
+                            oldViaInputList[via_id_num] = '';
+                        }, 500);
+                    });
+
+                }
+
+                // 경유지 추가 시 rerender로 인해 input 초기화를 막는 로직
+                function fnReinsertSearchVal() {
+
+                    if (via_searchVal.length != 0) {
+                        for (var i=0; i<via_searchVal.length; i++) {
+                            var j = i+1;
+                            var input_id = "via_input_" + j.toString();
+                            document.getElementById(input_id).value = via_searchVal[i];
+                        }
+                    }
+                }
+
+                // 경유지 search 추가
+                $('#addViaPointsBtn').on('click', function(e) {
+                    
+                    count++;
+
+                    if (count == 9) {
+                        var btn = document.getElementById('addViaPointsBtn');
+                        btn.setAttribute("disabled", "");
+                    }
+
+                    fnIncreaseCount(count);
+                    $('div#startEndList').hide();
+                    $('div#distContainer').hide();
+
+                    ok = 'not ok';
+                    if ( count > 3){
+                        setTimeout(function(){ 
+                            console.log('경유지 개수 ::: ' + count) ;
+                            let activeElement = document.getElementById("via_input_" + count);
+                            activeElement.scrollIntoView({behavior: "smooth", block: "end", inline: "start"});
+                        }, 800);
+                    }
+                });
+                
+                // 비고 버튼 클릭
+                function fnOpenModal(msgType, msgViaNo) {
+                    
+                    let msgDesc = '';
+                    if ( msgType == 'Start'){
+                        msgDesc = startDescVal;
+                    } else if ( msgType == 'End'){
+                        msgDesc = EndDescVal;
+                    } else if ( msgType == 'Via'){
+                        msgDesc = via_descVal[msgViaNo-1];
+                    }
+
+                    console.log( 'msgType :: ' +msgType);
+                    console.log( 'msgViaNo :: ' +msgViaNo);
+                    var msgObj = new Map([
+                                ["type", "DESCRIPTION"],
+                                ["msgType", msgType.toString()],
+                                ["msgViaNo", msgViaNo.toString()],
+                                ["msgDesc", msgDesc]
+                            ]);
+
+                    sendMsgToParent(msgObj);
+                }
+
+                // 경유지 삭제
+                function fnDeleteViaPoint(deleteId) {
+                    // 삭제 대상 경유지
+                    var via_id_num = deleteId.charAt(deleteId.length - 1);
+                    
+                    // 경유지 비고 값 재정렬 (삭제 번호부터 한칸씩 당기기)
+                    if (via_descVal.length != 0) {
+                        via_descVal.splice(via_id_num-1, 1);
+                    }
+
+                    
+                    // 경유지 선택 값 재정렬 (삭제 번호부터 한칸씩 당기기)
+                    if (via_searchVal.length != 0) {
+                        via_searchVal.splice(via_id_num-1, 1);
+                        for (var i=0; i<via_searchVal.length; i++) {
+                            var j = i+1;
+                            var input_id = "via_input_" + j.toString();
+                            if (via_searchVal[i] === undefined) {
+                                via_searchVal[i] = '';
+                            }
+                            document.getElementById(input_id).value = via_searchVal[i];
+                        }
+                    }
+
+                    // 경유지 마커 값 재정렬 (삭제 번호부터 한칸씩 당기기)
+                    document.getElementById("via_input_"+via_id_num).value = "";
+                    if (via_markerArr.length != 0) {
+                        if (via_markerArr[via_id_num-1] !== undefined) {
+                            via_markerArr[via_id_num-1].setMap(null);
+                            via_markerArr.splice(via_id_num-1, 1);
+
+                            if (via_latlng_list[via_id_num-1] !== undefined) {
+                                via_latlng_list.splice(via_id_num-1, 1);
+                            }
+                            for (var i=0; i<via_markerArr.length; i++) {
+                                var url = via_markerArr[i].getIcon();
+                                via_markerArr[i].setIcon(url.replace(/_g_m_./, '_g_m_'+(i+1).toString()));
+                            }
+                        }
+                    }
+
+                    // 경유지 Count -1
+                    count--;
+
+                    if (count < 9) {
+                        var btn = document.getElementById('addViaPointsBtn');
+                        btn.removeAttribute("disabled");
+                    }
+
+                    $('div#listContainer').hide();
+                    $('div#distContainer').hide();
+
+                    if (!$('div#startEndList').is(":hidden")) {
+                        $('#li_via_'+via_id_num).hide();
+                    }
+
+
+                    ok = 'not ok';
+
+                    fnDecreaseCount(count);
+
+                    fnDeleteViaList(via_id_num, select_viaList);
+
+                    fnResetViaListIcon(count);
+
+                    setTimeout(function(){ 
+                        console.log('경유지 개수 ::: ' + count) ;
+                        let activeElement = document.getElementById("via_input_" + count);
+                        activeElement.scrollIntoView({behavior: "smooth", block: "end", inline: "start"});
+                    }, 500);
+                }
+
+                function fnDeleteViaList2(via_id_num) {
+                    select_viaList.splice(via_id_num-1, 1);
+                    if (select_viaList.length > 0) {
+                        for (var i=0; i<select_viaList.length; i++) {
+                            if (select_viaList[i] !== undefined) {
+                                select_viaList[i].index = (i+1).toString();
+                            }
+                        }
+                    }
+
+                }
+
+                // 출발지 input 필드 초기화
+                function fnClearStartInput() {
+                    document.getElementById("start_input").value = "";
+                    if (typeof marker_s != 'undefined') {
+                        marker_s.setMap(null);
+                        marker_s = undefinedVar;
+                        startRoadAddr = undefinedVar;
+                    }
+                    fnResetListIcon('start');
+
+                    $('#start_input').focus();
+
+                    $('div#distContainer').hide();
+                    if (!$('div#startEndList').is(":hidden")) {
+                        $('#li_start').hide();
+                    }
+                }
+
+                // 경유지 input 필드 초기화
+                function fnClearViaInput(click_id) {
+                    var via_id_num = click_id.charAt(click_id.length - 1);
+                    document.getElementById("via_input_"+via_id_num).value = "";
+                    // via_searchVal.splice(via_id_num-1, 1);
+
+                    if (via_markerArr.length != 0) {
+                        if (via_markerArr[via_id_num-1] !== undefined) {
+                            via_markerArr[via_id_num-1].setMap(null);
+                            if (via_latlng_list[via_id_num-1] !== undefined) {
+                                via_latlng_list[via_id_num-1] = 'EMPTY';
+                            }
+                        }
+                    }
+
+                    $('#via_input_'+via_id_num).focus();
+
+                    ok = 'not ok';
+                    
+                    $('div#distContainer').hide();
+
+                    if (select_viaList.length != 0) {
+                        fnResetListIcon('via');
+
+                        if (!$('div#startEndList').is(":hidden")) {
+                            $('#li_via_'+via_id_num).hide();
+                        }
+                    }
+                }
+
+                // 도착지 input 필드 초기화
+                function fnClearEndInput() {
+                    document.getElementById("end_input").value = "";
+                    if (typeof marker_e != 'undefined') {
+                        marker_e.setMap(null);
+                        marker_e = undefinedVar;
+                        endRoadAddr = undefinedVar;
+                    }
+                    fnResetListIcon('end');
+
+                    $('#end_input').focus();
+
+                    $('div#distContainer').hide();
+                    if (!$('div#startEndList').is(":hidden")) {
+                        $('#li_end').hide();
+                    }
+                }
+
+                // 마커 생성
+                function fnCreateMarkers(list) {
+
+                    if(list.length > 0) {
+                        for(var i in markerArr) {
+                            markerArr[i].setMap(null);
+                        }
+                        markerArr = [];
+                    } 
+
+                    var positionBounds = new Tmapv2.LatLngBounds();
+
+                    for(var i=0; i<list.length; i++) {
+                        var noorLat = Number(list[i].noorLat);
+                        var noorLon = Number(list[i].noorLon);
+
+                        var markerPosition = new Tmapv2.LatLng(noorLat, noorLon);
+
+                        var chr = list[i].chr;
+
+                        marker = new Tmapv2.Marker({
+                            position: new Tmapv2.LatLng(list[i].noorLat, list[i].noorLon),
+                            map: map,
+                            title: list[i].name,
+                            iconSize : new Tmapv2.Size(24, 38),
+                            icon: 'http://tmapapi.sktelecom.com/upload/tmap/marker/pin_g_m_' + chr + '.png'
+                        });
+
+                        markerArr.push(marker);
+                        positionBounds.extend(markerPosition);
+                    }
+
+                    map.panToBounds(positionBounds);
+                    map.zoomOut();
+
+                    // 마커 호버링인 이벤트
+                    markerArr.forEach(m => {
+                        m.addListener('mouseenter', event => {
+                            document.getElementById("map_div").classList.add("pointer");
+                            var iconUrl = m.getIcon();
+                            m.setIcon(iconUrl.replace(/_g_/, '_w_'));
+
+                            fnHoverInList(iconUrl);
+                        })
+                    });
+
+                    // 마커 호버링아웃 이벤트
+                    markerArr.forEach(m => {
+                        m.addListener('mouseleave', event => {
+                            document.getElementById("map_div").classList.remove("pointer");
+                            var iconUrl = m.getIcon();
+                            m.setIcon(iconUrl.replace(/_w_/, '_g_'));
+
+                            fnHoverOutList(iconUrl);
+                        })
+                    });
+                }
+                
+                // 리스트 호버 시 마커 호버링
+                function fnHoverInMarker(iconUrl) {
+                    let char = iconUrl.substring(iconUrl.length - 4, iconUrl.length - 5);
+                    let num = char.charCodeAt(0) - 97;
+
+                    markerArr[num].setIcon(iconUrl.replace(/_g_/, '_w_'));
+                }
+
+                // 리스트 호버 시 마커 호버링(원상복구)
+                function fnHoverOutMarker(iconUrl) {
+                    let char = iconUrl.substring(iconUrl.length - 4, iconUrl.length - 5);
+                    let num = char.charCodeAt(0) - 97;
+
+                    markerArr[num].setIcon(iconUrl.replace(/_w_/, '_g_'));
+                }
+
+                // 리스트 클릭 시 마커 시작점/도착점 생성
+                function fnClickToChngIcon(src_se, name_se, num_se, roadAddr_se, addr, zipCode, telNo, noorLat_se, noorLon_se, type_se) {
+                    let markerPosition = new Tmapv2.LatLng(noorLat_se, noorLon_se);
+
+                    if (type_se === 'start') {
+                        if(typeof marker_s != 'undefined') {
+                            marker_s.setMap(null);
+                        }
+                        marker_s = new Tmapv2.Marker({
+                            position: markerPosition,
+                            map: map,
+                            title: name_se,
+                            iconSize : new Tmapv2.Size(24, 38),
+                            icon: src_se
+                        });
+
+                        latlng_s = markerPosition;
+                        startLat = noorLat_se;
+                        startLng = noorLon_se;
+                        startName = name_se;
+                        startRoadAddr = roadAddr_se;
+
+                        var s_descrption = document.getElementById('description_start');
+                        s_descrption.innerHTML = '';
+                        s_descrption.innerHTML += "<span id='addr_name'>" + startName + "</span> <br/>"
+                                                + "<span style='color:rgb(49, 46, 46);'>" + startRoadAddr + "</span> <br/>"
+                                                + "<span style='color:rgb(49, 46, 46);'>" + addr + "<span style='color: gray;'>(우)" + zipCode + "</span></span> <br/>"
+                                                + "<span style='color:rgb(49, 46, 46);'>" + telNo + "</span> <br/>";
+                                                                        
+                        // 출발점 호버인 이벤트
+                        marker_s.addListener('mouseenter', event => {
+                            document.getElementById("map_div").classList.add("pointer");
+                        });
+
+                        // 출발점 호버아웃 이벤트
+                        marker_s.addListener('mouseleave', event => {
+                            document.getElementById("map_div").classList.remove("pointer");
+                        });
+
+                    } else if (type_se === 'end') {
+                        if (typeof marker_e != 'undefined') {
+                            marker_e.setMap(null);
+                        }
+                        marker_e = new Tmapv2.Marker({
+                            position: markerPosition,
+                            map: map,
+                            title: name_se,
+                            iconSize : new Tmapv2.Size(24, 38),
+                            icon: src_se
+                        });
+
+                        latlng_e = markerPosition;
+                        endLat = noorLat_se;
+                        endLng = noorLon_se;
+                        endName = name_se;
+                        endRoadAddr = roadAddr_se;
+
+                        var e_descrption = document.getElementById('description_end');
+                        e_descrption.innerHTML = '';
+                        e_descrption.innerHTML += "<span id='addr_name'>" + endName + "</span> <br/>"
+                                                + "<span style='color:rgb(49, 46, 46);'>" + endRoadAddr + "</span> <br/>"
+                                                + "<span style='color:rgb(49, 46, 46);'>" + addr + "<span style='color: gray;'>(우)" + zipCode + "</span></span> <br/>"
+                                                + "<span style='color:rgb(49, 46, 46);'>" + telNo + "</span> <br/>";
+
+                        // 도착점 호버인 이벤트
+                        marker_e.addListener('mouseenter', event => {
+                            document.getElementById("map_div").classList.add("pointer");
+                        });
+
+                        // 도착점 호버아웃 이벤트
+                        marker_e.addListener('mouseleave', event => {
+                            document.getElementById("map_div").classList.remove("pointer");
+                        });                                                 
+                    } else {
+                        if (via_markerArr.length != 0) {
+                            if (via_markerArr[num_se-1] !== undefined) {
+                                via_markerArr[num_se-1].setMap(null);
+                                if (via_latlng_list[num_se-1] !== undefined) {
+                                    via_latlng_list[num_se-1] = '';
+                                }
+                            }
+                        }
+                        via_marker = new Tmapv2.Marker({
+                            position: markerPosition,
+                            map: map,
+                            title: name_se,
+                            iconSize : new Tmapv2.Size(24, 38),
+                            icon: src_se.replace(/_w_m_./, '_g_m_'+num_se)
+                        });
+
+                        via_latlng = markerPosition;
+                        via_lat = noorLat_se;
+                        via_lng = noorLon_se;
+                        via_name = name_se;
+                        via_roadAddr = roadAddr_se
+
+                        via_searchVal[num_se-1] = via_roadAddr;
+
+                        via_markerArr[num_se-1] = via_marker;
+
+                        via_latlng_list[num_se-1] = via_latlng;
+
+
+                        for (var i=0; i<count; i++) {
+                            if (select_viaList[i] !== undefined) {
+                                var v_descrption = document.getElementById('description_via_'+(i+1).toString());
+                                v_descrption.innerHTML = '';
+                                v_descrption.innerHTML += "<span id='addr_name'>" + select_viaList[i].name + "</span> <br/>"
+                                                        + "<span style='color:rgb(49, 46, 46);'>" + select_viaList[i].roadAddr + "</span> <br/>"
+                                                        + "<span style='color:rgb(49, 46, 46);'>" + select_viaList[i].addr + "<span style='color: gray;'>(우)" + select_viaList[i].zipCode + "</span></span> <br/>"
+                                                        + "<span style='color:rgb(49, 46, 46);'>" + select_viaList[i].telNo + "</span> <br/>";
+                            }
+                        }
+
+                        // 경유지 호버인 이벤트
+                        via_markerArr.forEach(m => {
+                            m.addListener('mouseenter', event => {
+                                document.getElementById("map_div").classList.add("pointer");
+                            })
+                        });
+
+                        // 경유지 호버인 이벤트
+                        via_markerArr.forEach(m => {
+                            m.addListener('mouseleave', event => {
+                                document.getElementById("map_div").classList.remove("pointer");
+                            })
+                        });
+                    }
+
+                    map.setCenter(markerPosition);
+                    map.setZoom(16);
+
+                }
+
+                // 선택한 목적지 항목 리스트 리렌더
+                function fnRerenderViaBtnList() {
+                    for (var i=0; i<count; i++) {
+                        var v_descrption = document.getElementById('description_via_'+(i+1).toString());
+                        v_descrption.innerHTML = '';
+                        v_descrption.innerHTML += "<span id='addr_name'>" + select_viaList[i].name + "</span> <br/>"
+                                                + "<span style='color:rgb(49, 46, 46);'>" + select_viaList[i].roadAddr + "</span> <br/>"
+                                                + "<span style='color:rgb(49, 46, 46);'>" + select_viaList[i].addr + "<span style='color: gray;'>(우)" + select_viaList[i].zipCode + "</span></span> <br/>"
+                                                + "<span style='color:rgb(49, 46, 46);'>" + select_viaList[i].telNo + "</span> <br/>";
+                    }
+                }
+                
+                startEndList.forEach(item => {
+                    item.addEventListener("click", function handleStartEndListEvent(event) {
+                        if (item.querySelector('#img').src.includes('_b_m_s')) {
+                            map.setCenter(latlng_s);
+                        } else {
+                            map.setCenter(latlng_e);
+                        }
+                        map.setZoom(16);
+                    })
+                });
+
+                function fnViaBtnEvent(viaPointList) {
+
+                    viaPointList.forEach(item => {
+                        item.addEventListener("click", function handleViaPointListEvent(event) {
+                            if (item.querySelector('#img').src.includes('_1')) {
+                                map.setCenter(via_latlng_list[0]);
+                            } else if (item.querySelector('#img').src.includes('_2')) {
+                                map.setCenter(via_latlng_list[1]);
+                            } else if (item.querySelector('#img').src.includes('_3')) {
+                                map.setCenter(via_latlng_list[2]);
+                            } else if (item.querySelector('#img').src.includes('_4')) {
+                                map.setCenter(via_latlng_list[3]);
+                            } else if (item.querySelector('#img').src.includes('_5')) {
+                                map.setCenter(via_latlng_list[4]);
+                            }
+                            map.setZoom(16);
+                        })
+                    });
+                }
+
+                function fnGetLineString(geomTempList) {
+                    //기존 맵에 있던 정보들 초기화
+                    resettingMap();
+
+                    totalDistance = geomTempList.totalDistance;
+                    
+                    if (typeof totalDistance != 'undefined') {
+                        $('div#distContainer').show();
+                        var regExp = /^\d{0,4}(\.\d{0,2})?$/;
+                        // 2022-09-30 운행거리(km) 변경적용
+                        $('#text-input-id-92').on('keyup', function(e) {
+                            var value = $(this).val();
+                            if(!regExp.test(this.value)){
+                                $(this).val(value.substring(0,value.length-1));
+                            }
+                            totalDistance = $(this).val();
+                        }).focusout(function() {
+                             if (!regExp.test(totalDistance)) {
+                                 totalDistance = geomTempList.totalDistance;
+                                 document.getElementById("text-input-id-92").value = totalDistance;
+                             }
+                        });
+                    } 
+                    $('#text-input-id-92').val(totalDistance);
+
+                    var lineList = geomTempList.lineStringList;
+                    var positionBounds = new Tmapv2.LatLngBounds();
+
+                    console.log('lineList ::: ' + lineList.length);
+                    for ( var i in lineList) {
+                    // console.log('lineList ::: ' + i);
+                        for ( var j in lineList[i]) {
+                            // 경로들의 결과값들을 포인트 객체로 변환 
+                            var latlng = new Tmapv2.LatLng(
+                                lineList[i][j][1],
+                                lineList[i][j][0]
+                            )
+                            positionBounds.extend(latlng);
+                            // console.log('lineList['+i+']['+j+'] ::: ' + lineList[i][j][1] + '-' +lineList[i][j][0]);
+
+                            // 배열에 담기
+                            drawInfoArr.push(latlng);
+                        }
+                        drawLine(drawInfoArr);
+                    }
+                    map.panToBounds(positionBounds);
+
+                    var msgObj = new Map([
+                                ["type", "SUCCESS"],
+                                ["msgStart", ''],
+                                ["msgEnd", ''],
+                                ["msgDist", totalDistance],
+                                ["msgViaPoints", []]
+                            ]);
+
+                    sendMsgToParent(msgObj);
+
+                    $('div#startEndList').show();
+                    $('div#listContainer').hide();
+                    $('#li_start').show();
+                    $('#li_end').show();
+                }
+
+                //라인그리기
+                function drawLine(arrPoint) {
+                    var polyline_;
+
+                    polyline_ = new Tmapv2.Polyline({
+						path : arrPoint,
+						strokeColor : "#61AB25",
+						strokeWeight : 6,
+						map : map
+					});
+					resultdrawArr.push(polyline_);
+                }
+
+                //초기화 기능
+                function resettingMap() {
+            
+                    if (resultdrawArr.length > 0) {
+                        for (var i = 0; i < resultdrawArr.length; i++) {
+                            resultdrawArr[i].setMap(null);
+                        }
+                    }
+                    
+                    jQuery('#distSpan').find('span').remove();
+                    drawInfoArr = [];
+                    resultdrawArr = [];
+                }
+
+                window.addEventListener('message', receiveMsgFromParent);
+
+                function receiveMsgFromParent( e ) {
+                    // console.log("Child:::::::::::::::::");
+
+                    var msgStart = '';
+                    var msgEnd = '';
+                    var msgDist = '';
+                    var msgViaPoints = [];
+
+                    var msgStartDesc = '';
+                    var msgEndDesc = '';
+                    var msgViaPointsDesc = [];
+
+                    // console.log("message from parent::::::::::::", e.data);
+                    if (e.data.get('type') === "DESCRIPTION") {
+                        let msgType = e.data.get('msgType');
+                        let msgViaNo = e.data.get('msgViaNo');
+                        let msgDesc = e.data.get('msgDesc');
+
+                        console.log( 'msgType ::: ' + msgType);
+                        console.log( 'msgViaNo ::: ' + msgViaNo);
+                        console.log( 'msgDesc ::: ' + msgDesc);
+
+                        if ( msgType === 'Start' ){
+                            startDescVal = msgDesc;
+                        } else if ( msgType === 'End'){
+                            EndDescVal = msgDesc;
+                        } else if ( msgType === 'Via'){
+                            via_descVal[msgViaNo-1] = msgDesc;
+                        }
+
+                        console.log( 'startDescVal :: ' + startDescVal);
+                        console.log( 'EndDescVal :: ' + EndDescVal);
+                        console.log( 'via_descVal['+(msgViaNo-1)+'] :: ' + via_descVal);
+
+                    } else if (e.data.get('type') === "SAVE") {
+                        var msgObj = new Map([
+                            ["type", "SAVE"],
+                            ["msgStart", msgStart],
+                            ["msgEnd", msgEnd],
+                            ["msgDist", msgDist],
+                            ["msgViaPoints", msgViaPoints],
+                            ["msgStartDesc", msgStartDesc],
+                            ["msgEndDesc", msgEndDesc],
+                            ["msgViaPointsDesc", msgViaPointsDesc]
+                        ]);
+                        
+                        if (typeof startRoadAddr != 'undefined' && typeof marker_s != 'undefined') {
+                            msgStart = startRoadAddr;
+                        }
+                        if (typeof endRoadAddr != 'undefined' && typeof marker_e != 'undefined') {
+                            msgEnd = endRoadAddr;
+                        }
+                        if (typeof totalDistance != 'undefined') {
+                            msgDist = totalDistance;
+                        }
+                        if (typeof select_viaList.length != 0) {
+                            for (var i=0; i<select_viaList.length; i++) {
+                                msgViaPoints.push(select_viaList[i].roadAddr);
+                            }
+                        }
+
+                        if (msgStart === '' || msgEnd === '' || msgDist === '') {
+                            alert("출발지와 도착지 선택 후 거리 계산하시기 바랍니다.")
+                        } else if (ok === 'not ok') {
+                            alert("목적지 목록이 변경되었습니다. 거리 계산 후 다시 시도하시기 바랍니다.")
+                        } else if (count != msgViaPoints.length) {
+                            alert("경유지 선택 후 거리 계산하시기 바랍니다.")
+                        } else {
+                            msgObj.set("msgStart", msgStart);
+                            msgObj.set("msgEnd", msgEnd);
+                            msgObj.set("msgDist", msgDist);
+                            msgObj.set("msgViaPoints", msgViaPoints);
+
+                
+                            msgObj.set("msgStartDesc", startDescVal);
+                            msgObj.set("msgEndDesc", EndDescVal);
+                            msgObj.set("msgViaPointsDesc", via_descVal);
+
+                            sendMsgToParent(msgObj);
+                        }
+                    } else if (e.data.get('type') === "CANCEL"){
+                        var msgObj = new Map([
+                            ["type", "CANCEL"],
+                            ["msgStart", msgStart],
+                            ["msgEnd", msgEnd],
+                            ["msgDist", msgDist],
+                            ["msgViaPoints", msgViaPoints]
+                        ]);
+
+                        sendMsgToParent(msgObj);
+                    }
+
+                };
+
+                // 부모에게 메시지 전달
+                function sendMsgToParent( msg ) {
+                    window.parent.postMessage( msg, '*' );
+                }
+
+            </script>
+        </body>
+    </html>
+</apex:page>

@@ -1,0 +1,357 @@
+<template>
+    
+    <lightning-card label="Revenue Adjustment" icon-name="standard:custom" title="매출 조정" type="media" href="#" class="list_view_container revenueAdjustment related-card" style="background-color: #F3F3F3 ;">
+    <!-- " -->
+    <!-- 상단 영역 [S] -->    
+    <!-- 상단 영역 [E] -->
+        <c-cjfw-revenue-adjustment-filter is-not-separate=true onsearch={handleSearch} onsave={handleSave} ></c-cjfw-revenue-adjustment-filter>
+        <div class="">
+            <div class="inlineBlock tableleftContainer">
+                <table class="cjfwtable ">
+                    <thead>
+                        <tr>
+                            <th><lightning-input type="checkbox" ></lightning-input></th>
+                            <th>상품코드</th>
+                            <th>상품명</th>
+                            <th>단위</th>
+                            <th>
+                                <div class="textCenter">
+                                    기준 매입가
+                                </div>
+                                <div class="textCenter">
+                                    (VAT포함)
+                                </div>
+                                
+                            </th>
+                            <th>
+                                <div class="textCenter">
+                                    적정판가
+                                </div>
+                                <div class="textCenter">
+                                    (VAT포함)    
+                                </div>
+                                
+                            </th>
+                            <th>
+                                <div class="textCenter">
+                                    매익율
+                                </div>
+                                <div class="textCenter">
+                                    (적정판가)
+                                </div>
+                            </th>
+                            <th>
+                                <div class="textCenter">
+                                    실판가    
+                                </div>
+                                <div class="textCenter">
+                                    (VAT포함)
+                                </div>
+                            </th>
+                            <th>
+                                <div class="textCenter">
+                                    매익율    
+                                </div>
+                                <div class="textCenter">
+                                    (실판가)
+                                </div>
+                            </th>
+                            <th>물량</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- textRight -->
+                        <template for:each={raData} for:item="raDatum" for:index="raidx">
+                            <tr key={raDatum.idx}>
+                                <td>
+                                    <lightning-input type="checkbox" ></lightning-input>
+                                </td>
+                                <td>
+                                    <div class="">
+                                        <!-- slds-truncate slds-truncate_container_66 -->
+                                        {raDatum.productCode}
+                                        <!-- 상품코드 -->
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="textLeft">
+                                        <!-- slds-truncate slds-truncate_container_66  -->
+                                        {raDatum.productName}
+                                        <!-- 상품명 -->
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="">
+                                        {raDatum.unit}
+                                        <!-- 단위 -->
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="textRight">
+                                        <!-- <lightning-input class="" variant="label-hidden" type="number" value={raDatum.sppVATincl} read-only ></lightning-input> -->
+                                        {raDatum.sppVATinclStr}
+                                        <!-- 기준 매입가(VAT포함) -->
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="textRight">
+                                        {raDatum.fmvVATinclStr}
+                                        <!-- 적정판가(VAT포함) -->
+                                        
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="textRight">
+                                        {raDatum.gpmFMV}
+                                        <!-- 매익율(적정판가) -->
+                                        
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="textRight">
+                                        {raDatum.rrpVATinclStr}
+                                        <!-- 실판가(VAT포함) -->
+                                        
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="textRight">
+                                        {raDatum.gpmRRP}
+                                        <!-- 매익율(실판가) -->
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="textRight">
+                                        {raDatum.quantity}
+                                        <!-- 물량 -->
+                                    </div>
+                                </td>
+                            </tr>
+                        </template>
+
+    
+                    </tbody>
+                </table>
+            </div>
+            <div class="inlineBlock tableRightContainer" onscroll={handleScroll}>
+                <table class="cjfwtable">
+                    <thead>
+                        <tr>
+                            <th>
+                                순매출
+                           </th>
+                           <th>
+                               부가세
+                           </th>
+                           <th>
+                               총매출
+                           </th>
+                           <th>
+                            <div class="textCenter ">
+                                <abbr class="slds-required" title="required">* </abbr> 
+                                   조정판가
+                            </div>
+                            <div class="textCenter">
+                                (VAT포함)
+                            </div>
+                           </th>
+                           <th>
+                            <div class="textCenter">
+                                <abbr class="slds-required" title="required">* </abbr> 
+                               매익율
+                            </div>
+                            <div class="textCenter">
+                                (조정판가)    
+                            </div>
+                           </th>
+                           <th>
+                               가감율 (%)
+                           </th>
+                           <th>
+                               전월판가
+                           </th>
+                           <th>
+                               전월 매익율
+                           </th>
+                           <th>
+                               조정 순매출
+                           </th>
+                           <th>
+                               조정 부가세
+                           </th>
+                           <th>
+                               조정 총매출
+                           </th>
+                           <th>
+                            <div class="textCenter">
+                                <abbr class="slds-required" title="required">* </abbr> 
+                               조정총액
+                            </div>
+                            <div class="textCenter">
+                                (VAT 포함) 
+                            </div>
+                            
+                           </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={raData} for:item="raDatum" for:index="raidx">
+                            <tr key={raDatum.idx} data-idx={raidx}>
+                                <td class="textRight">
+                                    {raDatum.nsStr}
+                                    <!-- 순매출 -->
+                                </td>
+                                <td class="textRight">
+                                    {raDatum.vatStr}
+                                    <!-- 부가세 -->
+                                </td>
+                                <td class="textRight">
+                                    {raDatum.trStr}
+                                    <!-- 총매출 -->
+                                </td>
+                                <td data-name="isFocusApVATincl" data-field="apVATincl" class="focusNotVisible" tabindex="0" onfocus={handleFocus}  >
+                                    <template lwc:if={raDatum.isFocusApVATincl}>
+                                        <input class="isFocusApVATincl textRight" type="number" onblur={handleFocusOut} />
+                                    </template>
+                                    <template lwc:else>
+                                        <div class="textRight">
+                                            {raDatum.apVATinclStr}
+                                        </div>
+                                    </template>
+                                    <!-- 조정판가 -->
+                                </td>
+                                <td data-name="isFocusGpmAP" data-field="gpmAP" class="focusNotVisible" tabindex="0" onfocus={handleFocus} >
+                                    <template lwc:if={raDatum.isFocusGpmAP}>
+                                        <input class="isFocusGpmAP textRight" type="number" onblur={handleFocusOut}  />
+                                    </template>
+                                    <template lwc:else>
+                                        <div class="textRight">
+                                            {raDatum.gpmAP}
+                                        </div>
+                                    </template>
+                                    <!-- 매익율 -->
+                                </td>
+                                <td class="textRight">
+                                    {raDatum.ar}
+                                    <!-- 가감율 (%) -->
+                                </td>
+                                <td class="textRight">
+                                    {raDatum.pmpStr}
+                                    <!-- 전월판가 -->
+                                </td>
+                                <td class="textRight">
+                                    {raDatum.pmGMP}
+                                    <!-- 전월 매익율 -->
+                                </td>
+                                <td class="textRight">
+                                    {raDatum.ansStr}
+                                    <!-- 조정 순매출 -->
+                                </td>
+                                <td class="textRight">
+                                    {raDatum.aVATStr}
+                                    <!-- 조정 부가세 -->
+                                </td>
+                                <td class="textRight">
+                                    {raDatum.atrStr}
+                                    <!-- 조정 총매출 -->
+                                </td>
+                                <td data-name="isFocusAtaVATincl" data-field="ataVATincl" class="focusNotVisible" tabindex="0" onfocus={handleFocus} >
+                                    <template lwc:if={raDatum.isFocusAtaVATincl}>
+                                        <input class="isFocusAtaVATincl textRight" type="number" onblur={handleFocusOut} />
+                                    </template>
+                                    <template lwc:else>
+                                        <div class="textRight">
+                                            {raDatum.ataVATinclStr}
+                                        </div>
+                                    </template>
+                                    <!-- 조정총액 -->
+                                </td>
+                                
+                            </tr>
+                        </template>
+                        
+                        
+    
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="btnFooter">
+            <!-- 조정 관련 버튼들 -->
+            <!-- <lightning-layout style="padding-bottom: 1rem; background-color: #F3F3F3;"> -->
+                <lightning-layout multiple-rows="true">
+                    <lightning-layout-item flexibility="grow" padding="around-small" ></lightning-layout-item>
+                    <lightning-layout-item size="12" medium-device-size="4" padding="around-small" class=""  >
+                        <div class="gridContainer">
+                            <div>
+                                <c-comm-custom-select
+                                    is-empty-option
+                                    options='[
+                                    {"label":"매익율","value":"매익율"},
+                                    {"label":"가감율","value":"가감율"}
+                                    ]'
+                                    label="일괄매익조정"
+                                    class=""
+                                    >
+                                </c-comm-custom-select>
+                            </div>
+                            <div>
+                                <lightning-input class="textRight" label="　" type="number" ></lightning-input>
+                            </div>
+                            <div>
+                                <div class="btnContainer" >
+                                    <lightning-button label="일괄적용" ></lightning-button>  
+                                </div>
+                            </div>
+                            </div>
+                        <div class="gridContainer">
+                            <div></div>
+                            <div>
+                                <lightning-input class="textRight" label="일괄감가금액" type="number" ></lightning-input>
+                            </div>
+                            <div>
+                                <div class="btnContainer">
+                                    <lightning-button label="일괄적용"  ></lightning-button>
+                                </div>
+                            </div>
+                        </div>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" medium-device-size="4" padding="around-small" class="" >
+                        <div class="gridContainer grid_flow_column">
+                            <div>
+                                <div class="inlineBlock w40">
+                                    조정 전 총 매출 
+                                </div>
+                                <div class="inlineBlock w59">
+                                    <lightning-input class="textRight" type="number" name="" readonly value={preAdjustmentTotalSales} label="　" variant="label-hidden" ></lightning-input>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="inlineBlock w40">
+                                    조정금액
+                                </div>
+                                <div class="inlineBlock w59">
+                                    <lightning-input class="textRight" type="number" name="" readonly value={adjustedAmount} label="　" variant="label-hidden"></lightning-input>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="inlineBlock w40">
+                                    조정 후 총매출
+                                </div>
+                                <div class="inlineBlock w59">
+                                    <lightning-input class="textRight" type="number" name="" readonly value={afterAdjustmentTotalSales} label="　" variant="label-hidden"></lightning-input>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </lightning-layout-item>
+                </lightning-layout>
+            <!-- </lightning-layout> -->
+            
+        </div>
+    </lightning-card>
+    <!-- Data Table start :tr/td사용 -->
+    <!-- <lightning-card class="revenueAdjustment related-card">
+        
+    </lightning-card> -->
+</template>

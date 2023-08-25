@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ConformProductQuantityChange</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND( 
+   ISCHANGED(MENGE__c) ,  
+   ISPICKVAL(Action__c, &quot;&quot;), 
+   ISPICKVAL(MAT_TYP__c,&quot;1&quot;),
+   NOT(isSystemJob__c) 
+)</errorConditionFormula>
+    <errorMessage>수량변경 시 처리방안을 필수로 선택해주세요.</errorMessage>
+</ValidationRule>

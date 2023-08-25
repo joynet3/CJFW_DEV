@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Page2Level__c</fullName>
+    <description>[0810]
+Project Page2 &quot;관리처 생성&quot;을 위해 추가 함 (Page1차 본점, 판매처의 방식을 사용하되, Page1차의 코드를 수정하지 않도록 새로 추가 함)</description>
+    <externalId>false</externalId>
+    <label>Page2Level</label>
+    <length>255</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

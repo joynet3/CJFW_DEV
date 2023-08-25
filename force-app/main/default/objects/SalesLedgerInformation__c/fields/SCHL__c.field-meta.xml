@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SCHL__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <externalId>false</externalId>
+    <label>SCHL</label>
+    <referenceTo>Account</referenceTo>
+    <relationshipLabel>매출원장정보 (SCHL_CD)</relationshipLabel>
+    <relationshipName>SalesLedgerInformation</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

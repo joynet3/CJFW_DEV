@@ -1,0 +1,149 @@
+<!--
+  @description       : 삭제예정
+  @author            : joohyeon.jang@dkbmc.com
+  @group             : 
+  @last modified on  : 08-16-2023
+  @last modified by  : joohyeon.jang@dkbmc.com
+  Modifications Log
+  Ver   Date         Author                    Modification
+  1.0   08-16-2023   joohyeon.jang@dkbmc.com   Initial Version
+-->
+<template>
+     
+    <!-- Loading -->
+    <div>
+        <template if:true={showSpinner}>
+            <lightning-spinner variant="brand" size="medium"></lightning-spinner>
+        </template>
+        <!-- New Modal(관리처 생성) -->
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_medium">
+            <div class="slds-modal__container slds-is-relative modal-container">
+                <!-- #Header-->
+                <lightning-modal-header>
+                    <!-- Close Icon -->
+                        <lightning-button-icon icon-name="utility:close" alternative-text="close" size="large" variant="bare-inverse" class="slds-button slds-button_icon slds-modal__close" onclick={handleClose}></lightning-button-icon>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">MDM 고객 등록 요청</h2>
+                </lightning-modal-header>
+              
+                <!-- #Body -->
+                <lightning-modal-body class="modal-body">
+                    <lightning-record-edit-form
+                        object-api-name="MDMRegRequestCustomer__c"
+                        record-id={recordId}
+                        density="comfy"
+                        >    
+                        <!-- 탭 : 기본, 회계, 영업, 결제 정보 -->
+                        <lightning-tabset class = "tabsets">
+                            <!-- 탭 : 기본정보 -->
+                            <lightning-tab label="기본 정보">
+                                <div class="scrollable-content">
+                                    <div class="slds-grid slds-gutters">
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <!-- 고객 ID -->
+                                            <lightning-input-field field-name="Account__c" disabled required readonly value={objCustomer.Account__c}></lightning-input-field>
+                                            <!-- 고객명(영문명포함) -->
+                                            <lightning-input-field field-name="PV_NAME1__c"  required  value={objCustomer.PV_NAME1__c}></lightning-input-field>
+                                            <!-- 고객약칭명(변경) -->
+                                            <lightning-input-field field-name="PV_NAME2__c" value={objCustomer.PV_NAME2__c}></lightning-input-field>
+                                            <!-- 고객유형 -->
+                                            <lightning-input-field field-name="PV_CUSTTYPE__c" required readonly value={objCustomer.PV_CUSTTYPE__c}></lightning-input-field>
+                                            <!-- 법인코드 -->
+                                            <lightning-input-field field-name="PV_STCD3__c" value={objCustomer.PV_STCD3__c}></lightning-input-field>
+                                            <!-- 법적상태 -->
+                                            <lightning-input-field field-name="PV_GFORM__c" value={objCustomer.PV_GFORM__c}></lightning-input-field>
+                                            <!-- 대표자이름 -->
+                                            <lightning-input-field field-name="PV_J_1KFREPRE__c" value={objCustomer.PV_J_1KFREPRE__c}></lightning-input-field>
+                                            <!-- 업종 -->
+                                            <lightning-input-field field-name="PV_J_1KFTIND__c" value={objCustomer.PV_J_1KFTIND__c}></lightning-input-field>
+                                            <!-- 팩스번호 -->
+                                            <lightning-input-field field-name="PV_TELFX__c" value={objCustomer.PV_TELFX__c} onchange={handleInputPhone}></lightning-input-field>
+                                            <!-- 영업그룹 (모달) -->
+                                            <lightning-input-field field-name="PV_VKGRP__c" readonly value={objCustomer.PV_VKGRP__c}></lightning-input-field>
+                                            <!-- 담당MA -->
+                                            <lightning-input-field field-name="PV_PERNR_lu__c" readonly value={objCustomer.PV_PERNR_lu__c}></lightning-input-field>
+                                            
+                                            
+                                            <div class="required-block">
+                                                <p class="required-mark">*</p>
+                                                <lightning-input-field field-name="PV_PAYCUST_lu__c" value={objCustomer.PV_PAYCUST_lu__c} disabled={isReadOnlyPAYCust} onchange={handlePaycustChanged}></lightning-input-field>
+                                            </div>
+                                            <lightning-button variant="brand" label="SELF" onclick={handlePayhandleClick} ></lightning-button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </lightning-tab>
+                            <!-- 탭 : 기본정보 End-->
+                            <!-- 탭 : 회계정보-->
+                            <template if:true={showTabAccounting}>
+                                <lightning-tab label="회계 정보">
+                                    <div class="scrollable-content">
+                                        <lightning-layout>
+                                            <lightning-layout multiple-rows="true">
+                                                <lightning-layout-item size="12" medium-device-size="6" padding="around-small" >
+                                                    <lightning-input label="매출형태" onchange={handleFirstNameChange} required value={firstNameFieldValue}>
+                                                    </lightning-input>
+                                                </lightning-layout-item>
+                                                <lightning-layout-item size="12" medium-device-size="6" padding="around-small" >
+                                                    <lightning-input label="고객상태" onchange={handleFirstNameChange} required value={firstNameFieldValue}>
+                                                    </lightning-input>
+                                                </lightning-layout-item>
+                                                <lightning-layout-item size="12" medium-device-size="6" padding="around-small" >
+                                                    <lightning-input label="정렬키" onchange={handleFirstNameChange} required value={firstNameFieldValue}>
+                                                    </lightning-input>
+                                                </lightning-layout-item>
+                                                <lightning-layout-item size="12" medium-device-size="6" padding="around-small" >
+                                                    <lightning-input label="조정계정" onchange={handleFirstNameChange} required value={firstNameFieldValue}>
+                                                    </lightning-input>
+                                                </lightning-layout-item>
+                                                <lightning-layout-item size="12" medium-device-size="6" padding="around-small" >
+                                                    <lightning-input label="현금관리그룹" onchange={handleFirstNameChange} required value={firstNameFieldValue}>
+                                                    </lightning-input>
+                                                </lightning-layout-item>
+                                                <lightning-layout-item size="12" medium-device-size="6" padding="around-small" >
+                                                    <lightning-input label="입금여부(FS만 사용)" onchange={handleFirstNameChange} required value={firstNameFieldValue}>
+                                                    </lightning-input>
+                                                </lightning-layout-item>
+                                                <lightning-layout-item size="12" medium-device-size="6" padding="around-small" >
+                                                    <lightning-input label="세금분류" onchange={handleFirstNameChange} required value={firstNameFieldValue}>
+                                                    </lightning-input>
+                                                </lightning-layout-item>
+                                                <lightning-layout-item size="12" medium-device-size="6" padding="around-small" >
+                                                    <lightning-input label="세금납부방법" onchange={handleFirstNameChange} required value={firstNameFieldValue}>
+                                                    </lightning-input>
+                                                </lightning-layout-item>
+                                            <!-- 탭 : 기본정보 End-->
+                                            </lightning-layout>
+                                        </lightning-layout>
+                                    </div>
+                                </lightning-tab>
+                            </template>
+                            <!-- 탭 : 회계정보 End-->
+                            <template if:true={showTabSales}>
+                                <lightning-tab label="영업 정보"></lightning-tab>
+                            </template>
+                            <template if:true={showTabPayment}>
+                                <lightning-tab label="결제 정보"></lightning-tab>
+                            </template>
+                        </lightning-tabset>
+                        <!-- 탭 (기본, 회계, 영업, 결제 정보) End -->
+                    </lightning-record-edit-form>    
+                </lightning-modal-body>
+                <!-- #Body End-->
+
+                <!-- #Footer -->
+                <lightning-modal-footer>
+                    <div class="slds-clearfix">
+                        <div class="slds-float_right">
+                            <lightning-button variant="neutral" label="취소" onclick={handleClose} class="slds-m-left_x-small"></lightning-button>
+                            <lightning-button variant="brand" label="저장" onclick={handleNext} class="slds-m-left_x-small btnBackColor"></lightning-button>
+                        </div>
+                    </div>
+                </lightning-modal-footer>
+                <!-- #Footer End-->
+            </div>
+        </section>
+    </div>
+    <!-- Loading End -->    
+    <!-- New Modal(관리처 생성) End-->
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</template>

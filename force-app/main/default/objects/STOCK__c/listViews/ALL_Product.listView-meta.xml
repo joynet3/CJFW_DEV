@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ALL_Product</fullName>
+    <columns>MATNR__c</columns>
+    <columns>NAME</columns>
+    <columns>MAT_TYP__c</columns>
+    <columns>MENGE__c</columns>
+    <columns>Action__c</columns>
+    <columns>zreturn__c</columns>
+    <columns>xmsgs__c</columns>
+    <columns>MENGE_KG__c</columns>
+    <columns>P_PSMNG__c</columns>
+    <columns>BATCH__c</columns>
+    <columns>LGORT__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>MAT_TYP__c</field>
+        <operation>equals</operation>
+        <value>1</value>
+    </filters>
+    <filters>
+        <field>MENGE__c</field>
+        <operation>notEqual</operation>
+        <value>0</value>
+    </filters>
+    <label>전체 완제품</label>
+</ListView>

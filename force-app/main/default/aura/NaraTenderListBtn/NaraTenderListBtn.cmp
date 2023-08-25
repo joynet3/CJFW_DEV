@@ -1,0 +1,109 @@
+<!--
+  @description       : 
+  @author            : AhnTaeJin(tj.ahn@daeunextier.com)
+  @group             : 
+  @last modified on  : 02-16-2023
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<aura:component
+    implements="lightning:availableForFlowActions,flexipage:availableForAllPageTypes,force:appHostable,force:hasRecordId,force:lightningQuickActionWithoutHeader,force:hasSObjectName"
+    controller="NaraTenderBtnController"
+    access="global"
+>
+    <aura:attribute name="sObjName" type="String" description="호출한 개체 API명" />
+    <aura:attribute name="bidNtceNo" type="String" description="공고 번호" />
+    <aura:attribute name="sourceSiteChk" type="String" description="데이터 소스 사이트"/>
+    <aura:attribute name="workDivision" type="String" description="업무 구분" />
+    <aura:attribute name="showSpinner" type="Boolean" default="false" />
+    <aura:attribute name="apiData" type="Lead" description="나라장터 api에서 불러온 데이터" />
+    <!-- <aura:attribute name="apiData" type="List<sObject>" description="나라장터 api에서 불러온 데이터" /> -->
+    <!-- <aura:attribute name="d2bChk" type="Boolean" default="false" description="군납사이트 데이터?" /> -->
+    <aura:attribute name="insertId" type="Id" description="insert한 레코드 id" />
+
+    <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <aura:if isTrue="{!v.showSpinner}">
+                <lightning:spinner alternativeText="Loading" size="large" variant="brand" />
+            </aura:if>
+
+            <div class="slds-modal__header">
+                <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">나라장터 입찰 공고 가져오기</h1>
+            </div>
+
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <!-- <lightning:input label="군납사이트 공고" type="checkbox" default='false' checked="{!v.d2bChk}" /> -->
+                <!-- <lightning:select name="select1" label="공고 종류" value="{!v.sourceSiteChk}" required="true">
+                    <option value="null">공고 종류 선택</option>
+                    <option value="1">국방전자조달시스템 </option>
+                    <option value="2">나라장터</option>
+                </lightning:select> -->
+                <lightning:select name="select2" label="업무 구분" value="{!v.workDivision}" required="true" onchange="{!c.fnChange}">
+                    <option value="none">업무 구분 선택</option>
+                    <option value="getBidPblancListInfoThng">물품</option>
+                    <option value="getBidPblancListInfoServc">용역</option>
+                    <!-- <option value="getBidPblancListInfoCnstwk">공사</option> -->
+                    <option value="getBidPblancListInfoFrgcpt">외자</option>
+                    <option value="getBidPblancListInfoEtc">기타</option>
+                    <option value="getPrvtBidPblancListInfoThng">민간물품</option>
+                    <option value="getPrvtBidPblancListInfoServc">민간용역</option>
+                    <option value="getPrvtBidPblancListInfoEtc">민간기타</option>
+                </lightning:select>
+                <lightning:input
+                    name="bidNoticeNum"
+                    label="공고 번호"
+                    type="text"
+                    placeholder="(공백을 제외한)공고 번호 입력 ex) 12345678-00"
+                    required="true"
+                    value="{!v.bidNtceNo}"
+                />
+            </div>
+            <aura:if isTrue="{!and (!empty(v.apiData) , and (v.bidNtceNo != null,v.bidNtceNo != ''))}">
+                <div class="slds-modal__content slds-p-around_medium" style="overflow-x: scroll" id="modal-content-id-2">
+                    <table
+                        class="slds-table slds-table_cell-buffer slds-table_bordered"
+                        aria-labelledby="element-with-table-label other-element-with-table-label"
+                    >
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="공고 번호(나라장터 기준)">공고 번호</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="입찰공고명">입찰공고명</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="차수">차수</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="slds-hint-parent">
+                                <th data-label="BidNoticeNumber__c" scope="row">
+                                    <div class="slds-truncate">
+                                        <div class="slds-truncate" title="공고 번호(나라장터 기준)">{!v.apiData.BidNoticeNumber__c}</div>
+                                    </div>
+                                </th>
+                                <td data-label="BidNoticeName__c">
+                                    <div class="slds-truncate" title="입찰공고명">{!v.apiData.BidNoticeName__c}</div>
+                                </td>
+                                <td data-label="bidNtceOrd__c">
+                                    <div class="slds-truncate" title="차수">{!v.apiData.SubNumber__c}</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </aura:if>
+            <div class="slds-modal__footer">
+                <button class="slds-button slds-button_neutral" aria-label="Cancel and close" onclick="{!c.fnClose}">취소</button>
+                <aura:if isTrue="{!empty(v.apiData)}">
+                    <button class="slds-button slds-button_brand" onclick="{!c.fnSearch}">조회</button>
+                    <aura:set attribute="else">
+                        <button class="slds-button slds-button_brand" onclick="{!c.fnSave}">저장</button>
+                    </aura:set>
+                </aura:if>
+            </div>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+</aura:component>

@@ -1,0 +1,141 @@
+<!--
+  @description       : EDMS 파일 업로드
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 03-09-2023
+  @last modified by  : admin
+-->
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader" access="global" controller="EDMSFileUpload">
+    <aura:attribute name="showSpinner" type="Boolean" default="false" description="showSpinner"/>
+
+    <aura:attribute name="listSelectType" type="List" description="EDMS 파일 구분 리스트"/>
+    <aura:attribute name="strType" type="String" default="" description="선택된 구분"/>
+    <aura:attribute name="documentId" type="String" default="" description="ContentDocument Id"/>
+    <aura:attribute name="downloadUrl" type="String" default="" description="다운로드 URL"/>
+    <aura:attribute name="listFileWrapper" type="List" description="EDMS 파일리스트"/>
+    <aura:attribute name="selectedDeleteFile" type="String" description="선택된 삭제 대상 파일"/>
+    
+    <!-- Modal Attribute -->
+    <aura:attribute name="modalStatus" type="String" default="Hide" description="모달창 상태값 Hide(숨김), Delete(파일삭제)"/>
+    <aura:attribute name="modalDesc" type="String" default="" description="모달창 비고 내용"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.fnInit}" />
+
+    <aura:html tag="style">
+        .slds-modal__header_empty{
+            display:none;
+        }
+        .slds-modal__container{
+        min-width: 40% !important;
+        max-width: fit-content !important;
+        padding: 0 20px;
+        }
+        .cuf-content {
+        padding: 0 0rem !important;
+        }
+        .slds-p-around--medium {
+        padding: 0rem !important;
+        }
+        .slds-modal__content {
+        overflow-y: hidden !important;
+        height: unset !important;
+        max-height: unset !important;
+        }
+    </aura:html>
+  
+  
+    <div aura:id="modalContainer">       
+        <aura:if isTrue="{!v.showSpinner}">
+            <lightning:spinner variant="brand" size="medium" />
+        </aura:if>
+
+        <!-- Header -->
+        <header class="modal-header slds-modal__header">
+            <h2 class="slds-text-heading_medium" id="modal-heading-id">고객사 문서 업로드</h2>
+        </header>
+
+        <!-- Content -->
+        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+            <lightning:layout multipleRows="true" class="slds-p-left--small slds-p-right--small">
+                <lightning:layoutItem padding="around-small" size="12">
+                    <lightning:card variant="Narrow" title="유형" iconName="doctype:link" footer="">
+                        <aura:set attribute="actions">
+                            <lightning:fileUpload
+                                name="fileUploader"
+                                variant="label-hidden"
+                                multiple="false"
+                                recordId="{!v.recordId}"
+                                class="custom-fileUpload"
+                                onuploadfinished="{!c.fnHandleUploadFinished}"
+                                disabled="{!if(v.strType == null, true, false)}"
+                            />
+                        </aura:set>
+                        <p class="slds-p-horizontal_small" style="height:450px;overflow-y:auto;">
+                            <lightning:accordion aura:id="accordion" activeSectionName="{!v.strType}" onsectiontoggle="{!c.handleSectionToggle}">
+                                <aura:iteration items="{!v.listSelectType}" var="option"  >                                            
+                                    <lightning:accordionSection name="{!option.value}" label="{!option.label}">
+                                        <aura:set attribute="body">
+                                            <lightning:layout multipleRows="true" class="slds-p-left--small slds-p-right--small">
+                                                <aura:if isTrue="{!if(v.listFileWrapper.length > 0, true, false)}">
+                                                <aura:iteration items="{!v.listFileWrapper}" var="obj" indexVar="idx">                                                            
+                                                    <lightning:layoutItem size="12" padding="around-small">
+                                                        <div style="display: inline-block;">
+                                                            <lightning:icon iconName="{!obj.iconName}" alternativeText="" title="" />
+                                                        </div>
+                                                        <div style="display: inline-block;line-height:20px;">    
+                                                            &nbsp; {!obj.fileName}
+                                                        </div>
+                                                        <div style="display: inline-block;line-height:20px;">         
+                                                            &nbsp; <lightning:button title="{!idx}" iconName="utility:delete" iconPosition="left" variant="Neutral" name="Delete" label="삭제" onclick="{!c.fnDeleteConfirm}"/>
+                                                        </div>
+                                                    </lightning:layoutItem>
+                                                </aura:iteration>
+                                                <aura:set attribute="else">
+                                                    <lightning:layoutItem size="12" padding="around-small">
+                                                        <div style="text-align:center;">
+                                                            등록된 파일이 존재하지 않습니다.
+                                                        </div>
+                                                    </lightning:layoutItem>
+                                                </aura:set>
+                                                </aura:if>
+                                            </lightning:layout>
+                                        </aura:set>
+                                    </lightning:accordionSection>
+                                </aura:iteration>
+                            </lightning:accordion>
+                        </p>
+                    </lightning:card>
+                </lightning:layoutItem>
+            </lightning:layout>
+        </div>
+
+        <!-- Footer -->
+        <footer class="slds-modal__footer">
+            <lightning:button variant="Neutral" name="Close" label="닫기" onclick="{!c.fnClose}"/>
+        </footer>
+    </div>
+    
+    <aura:if isTrue="{!v.modalStatus == 'Delete'}">
+        <section role="dialog" tabindex="-3" class="slds-modal slds-fade-in-open" style="z-index:9002 !important;">
+            <div class="slds-align_absolute-center slds-modal__container" style="min-width:50% !important">
+                <div style="min-width:70%; width:100%">
+                    <div class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close" size="large" alternativeText="Close" variant="bare-inverse" class="slds-modal__close" onclick="{!c.fnCloseModal}" />
+                        <h2 class="title slds-text-heading--medium">
+                            <label>고객사 문서 삭제</label>
+                        </h2>
+                    </div>
+                    <div class="slds-modal__content scrollable" style="padding:15px; text-align:center">    
+                            <b>{!v.modalDesc}</b> 
+                            <br/> 위 파일을 삭제하시겠습니까?
+                    </div>
+                    <div class="modal-footer slds-modal__footer">
+                        <lightning:button variant="neutral" label="취소" onclick="{!c.fnCloseModal}"/>
+                        <lightning:button variant="destructive" label="삭제" onclick="{!c.fnDeleteFile}"/>    
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" style="z-index:9001 !important;"></div>
+    </aura:if>
+</aura:component>

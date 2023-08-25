@@ -1,0 +1,18 @@
+.p10 {
+    /* padding: 10px; */
+}
+
+.fw_bolder{
+    font-weight: bolder;
+}
+
+
+.cjfwtable {
+    border-left: var(--lwc-borderWidthThin,1px) solid var(--slds-g-color-border-base-1, var(--lwc-colorBorder,rgb(229, 229, 229)));
+    border-right: var(--lwc-borderWidthThin,1px) solid var(--slds-g-color-border-base-1, var(--lwc-colorBorder,rgb(229, 229, 229)));
+    table-layout: fixed
+}
+
+.textRight {
+    text-align: right;
+}

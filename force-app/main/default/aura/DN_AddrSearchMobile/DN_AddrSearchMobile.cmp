@@ -1,0 +1,244 @@
+<!--
+* ==================================================================================
+*   File Name   : DN_AddrSearch.cmp
+*   Author      : Minje.Kim
+*   Date        : 2022.10.25
+*   Description : 도로명 주소 찾기 모달 팝업 창 (Mobile 전용)
+                (https://www.juso.go.kr/CommonPageLink.do?link=/addrlink/devAddrLinkRequestSample)
+*   Modification Log
+* ==================================================================================
+*   Ver     Date            Author          Modification
+* ==================================================================================
+*   1.0     2022.10.25      Minje.Kim       Create
+* ==================================================================================
+-->
+
+
+<aura:component implements="force:appHostable,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes,force:hasRecordId" controller="DN_AddrSearchController"> 
+    
+    <!-- Parameter Attribute -->
+    <aura:attribute name="iconName" type="String" default="standard:address" description="빌더에서 입력받는 아이콘 명" />
+    <aura:attribute name="title" type="String" default="주소 검색" description="빌더에서 입력받는 타이틀" />
+    <aura:attribute name="objName" type="String" description="빌더에서 입력받는 오브젝트 명" />
+    <aura:attribute name="labelPostalCode" type="String" description="빌더에서 입력받는 우편번호 라벨명" />
+    <aura:attribute name="zipCodeField" type="String" description="빌더에서 입력받는 우편번호 API명" />
+    <aura:attribute name="labelAddress" type="String" description="빌더에서 입력받는 주소 라벨명" />
+    <aura:attribute name="addressField" type="String" description="빌더에서 입력받는 주소 API명" />
+    <aura:attribute name="labelAddressDetail" type="String" description="빌더에서 입력받는 주소 상세 라벨명" />
+    <aura:attribute name="addressDetailField" type="String" description="빌더에서 입력받는 주소 상세 API명" />
+    <aura:attribute name="bolAddrDetailCheckBox" type="Boolean" default="false" />
+    
+    <!-- Attribute -->
+    <aura:attribute name="objAddress" type="DN_AddrSearchController.WrapperAddress" description="주소정보Object"/>
+    <aura:attribute name="sZipNo" type="String" default="" description="우편번호"/>
+    <aura:attribute name="sRoadAddr" type="String" default="" description="주소"/>
+    <aura:attribute name="sAddrDetail" type="String" default="" description="상세주소"/>
+    <aura:attribute name="screenMode" type="String" default="View" description="View / SearchFull / EditFull / EditDeatil 구분자"/>
+    <aura:attribute name="showSpinner" type="Boolean" default="false" description="로딩바 활성화 여부"/>
+    <aura:attribute name="isMobile" type="Boolean" default="false" description="모바일여부"/>
+    
+    <!-- Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.fnInit}" />
+    <aura:handler name="RoadAddrSearchEvt" event="c:DN_AddrSearch_evt" action="{!c.fnGetEvent}" />
+
+    <!-- Component Attribute -->
+    <aura:attribute name="bIsSearchAddr" type="Boolean" default="true" description="주소검색여부"/>
+    <aura:attribute name="sErrorCode" type="String"  description="주소조회 오류코드"/>
+    <aura:attribute name="intTotalCount" type="Integer" description="주소조회 전체건수"/>
+    <aura:attribute name="intTotalPage" type="Integer" description="주소조회 페이징 전체 건수"/>
+    <aura:attribute name="intCntPerPage" type="Integer" default="5" description="주소조회 한 페이지의 검색 수" />
+    <aura:attribute name="intCurrentPage" type="Integer" default="1"  description="주소조회 현재 페이징번호"/>
+    <aura:attribute name="intPageIdx" type="Integer" default="1" description="주소조회 현재 페이징 Index" />
+    <aura:attribute name="listAddress" type="DN_AddrSearchController.WrapperAddress[]" description="검색된 주소리스트"/>
+
+	<!--추가-->
+    <aura:attribute name="AddrInputDiv" type="Boolean" default="false" description="주소입력폼여부"/>
+    <aura:attribute name="searchForm" type="Boolean" default="true" description="주소 조회 여부"/>
+	<aura:attribute name="recordId" type="String"  description="레코드 Id"/>
+
+    <aura:attribute name="dupConfirmStatus" type="String" default="N" description="중복레코드 판단 상태값"/>
+    <aura:attribute name="alertType"    type="String"    default="" description="알림타입"/>
+    <aura:attribute name="alertMessage"    type="String"    default="" description="알림메시지"/>
+    <aura:attribute name="isShowWarning"    type="Boolean"    default="false" description="주의 활성화 여부"/>
+
+    <!-- Contents -->
+    <article class="slds-card slds-card_boundary related_list_card_border_top forceRelatedListCardDesktop">
+        <aura:if isTrue="{!v.showSpinner}">
+            <lightning:spinner aura:id="spinner" alternativeText="Loading" variant="brand" size="small" />
+        </aura:if>
+
+        <div class="related_list_themed_border_top forceRelatedListCardHeader"></div>
+        <div class="slds-card__header slds-grid">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="slds-media__figure">
+                    <lightning:icon iconName="{!v.iconName}" size="small" />
+                </div>
+                <div class="slds-media__body">
+                    <h2 class="slds-card__header-title">
+                        <a href="javascript:void(0);" class="slds-card__header-link slds-truncate">
+                            <span>{!v.title}</span>
+                        </a>
+                    </h2>
+                </div>
+                <div class="slds-no-flex">
+                    <aura:if isTrue="{!v.screenMode == 'View'}">
+                        <lightning:button label="주소 등록" onclick="{!c.fnEditFull}" />
+                    </aura:if>
+                    <aura:if isTrue="{!v.screenMode == 'EditDetail'}">
+                        <lightning:buttonGroup>
+                            <lightning:button label="취소" onclick="{!c.fnCancel}" />
+                            <lightning:button label="저장" variant="brand" onclick="{!c.fnSaveDetail}" />
+                        </lightning:buttonGroup>
+                    </aura:if>
+                    <aura:if isTrue="{!v.screenMode == 'SearchFull'}">
+                        <lightning:buttonGroup>
+                            <lightning:button label="취소" onclick="{!c.fnCancel}" />
+                        </lightning:buttonGroup>
+                    </aura:if>
+                    <aura:if isTrue="{!v.screenMode == 'EditFull'}">
+                        <lightning:buttonGroup>
+                            <lightning:button label="이전" onclick="{!c.fnBack}" />
+                            <lightning:button label="저장" variant="brand" onclick="{!c.fnSaveFull}" />
+                        </lightning:buttonGroup>
+                    </aura:if>
+                </div>
+            </header>
+        </div>
+        
+        <aura:if isTrue="{!and(v.screenMode != 'EditFull', v.screenMode != 'SearchFull')}">
+            <div class="slds-card__body slds-card__body_inner">
+                <div class="slds-form" role="list">
+                    <div class="slds-form__row">
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_horizontal slds-hint-parent">
+                                <span class="slds-form-element__label">{!v.labelPostalCode}</span>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-form-element__static">{!v.objAddress.sZipNo}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-form__item" role="listitem">
+                        </div>
+                    </div>
+
+                    <div class="slds-form__row">
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_horizontal slds-hint-parent slds-form-element_1-col">
+                                <span class="slds-form-element__label">{!v.labelAddress}</span>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-form-element__static">{!v.objAddress.sRoadAddr}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="slds-form__row">
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_horizontal slds-hint-parent slds-form-element_1-col">
+                                <span class="slds-form-element__label">{!v.labelAddressDetail}</span>
+                                <div class="slds-form-element__control" ondblclick="{!c.fnEditDetail}">
+                                    <aura:if isTrue="{!v.screenMode == 'EditDetail'}">
+                                        <lightning:input variant="label-hidden" value="{!v.objAddress.sAddrDetail}" />      
+                                        <aura:set attribute="else">
+                                            <div class="slds-form-element__static">{!v.objAddress.sAddrDetail}</div>
+                                            <lightning:buttonIcon iconName="utility:edit" variant="container" size="x-small" alternativeText="edit"
+                                                                class="slds-shrink-none inline-edit-trigger" onclick="{!c.fnEditDetail}" />
+                                        </aura:set>
+                                    </aura:if>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aura:if>
+        <aura:if isTrue="{!v.screenMode == 'SearchFull'}">
+            <div class="slds-card__body slds-card__body_inner" style="{! v.isMobile ? 'padding:0px; margin:0px' : ''}">
+                <!-- Content -->
+                <div class="slds-modal__content slds-p-around_medium" style="{! v.isMobile ? 'padding:0px; margin:0px' : ''}" id="modal-content-id">
+                    <!-- 도로명주소 검색 -->
+                    <aura:if isTrue="{!v.searchForm}">
+                        <div style="width:100%" onkeyup="{!c.fnHandleKeyup}" id="testkey">
+                            <lightning:input    type="search" aura:id="searchKey" 
+                                                label="검색어 입력" variant="label-hidden"
+                                                placeholder="도로명주소, 건물명 또는 지번 입력"
+                                                class="searchKey" />
+                        </div>
+                        <br/>
+					</aura:if>
+                    <aura:if isTrue="{!and(v.AddrInputDiv == false, v.sErrorCode == '0')}">
+                        <div class="custom_resultCnt">
+                            <b> &nbsp;도로명주소 검색 결과 ({!v.intTotalCount})</b>
+                        </div>
+                        <div class="slds-scrollable_x custom_resultTable">
+                            <table class="slds-table slds-table_bordered" style="width:100%; padding:0;margin:0">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" width="85%">
+                                            <div class="slds-truncate" title="도로명주소">{!v.labelAddress} </div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.listAddress}" var="objAddress" indexVar="idx">
+                                        <tr>
+                                            <td data-idx="{!idx}" onclick="{!c.fnClickRoadAddr}" style="cursor: pointer;">
+                                                <div class="slds-truncate" title="{!objAddress.sRoadAddr}">
+                                                    <small>
+                                                        <b>{!objAddress.sRoadAddr} [{!objAddress.sZipNo}]</b><br/>
+                                                        [지번] {!objAddress.sJibunAddr}
+                                                    </small>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Paging -->
+                        <div class="custom_paging slds-float_right">
+                            <aura:if isTrue="{!v.intCurrentPage != 1}">
+                                <lightning:buttonIcon iconName="utility:chevronleft" variant="bare" onclick="{!c.fnPrevPage}" />
+                            </aura:if>
+
+                            &nbsp;{!v.intCurrentPage}&nbsp;
+
+                            <aura:if isTrue="{!and(v.intTotalPage != 0, v.intCurrentPage != v.intTotalPage)}">
+                                <lightning:buttonIcon iconName="utility:chevronright" variant="bare" onclick="{!c.fnNextPage}" />
+                            </aura:if>
+                        </div>
+                    </aura:if>
+
+                </div>
+            </div>
+        </aura:if>
+        <!-- 주소 수정 화면 -->
+        <aura:if isTrue="{!v.screenMode == 'EditFull'}">
+            <lightning:layout multipleRows="true" >
+                <aura:if isTrue="{!v.isShowWarning}">
+                    <lightning:layoutItem padding="top-small" size="12">
+                        <br/>
+                        <c:DN_Alert sType="{!v.alertType}" sMessage="{!v.alertMessage}" showAlert="{!v.isShowWarning}" />
+                    </lightning:layoutItem>
+                </aura:if>
+                <lightning:layoutItem padding="horizontal-small" size="6">
+                    <!-- 우편번호 (ZipCode__c) -->
+                    <lightning:input label="{!v.labelPostalCode}" value="{!v.objAddress.sZipNo}" title="{!v.objAddress.sZipNo}" disabled="true" /> 
+                </lightning:layoutItem>
+                <lightning:layoutItem padding="horizontal-small" size="6">
+
+                </lightning:layoutItem>
+                <lightning:layoutItem padding="horizontal-small" size="12">
+                    <!-- 도로명주소 (AddressFull__c) -->
+                    <lightning:input label="{!v.labelAddress}" value="{!v.objAddress.sRoadAddr}" title="{!v.objAddress.sRoadAddr}" disabled="true" /> 
+                </lightning:layoutItem>
+                <lightning:layoutItem padding="horizontal-small" size="12">
+                    <!-- 상세주소 (AddressDetail__c) -->
+                    <lightning:input label="{!v.labelAddressDetail}" value="{!v.objAddress.sAddrDetail}" />
+                </lightning:layoutItem>
+            
+            </lightning:layout>
+            <br/>
+        </aura:if>
+    </article>  
+</aura:component>

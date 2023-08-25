@@ -1,0 +1,136 @@
+<!--
+* ==================================================================================
+*   File Name   : ActivityReportFuelNotice.cmp
+*   Author      : Minje.Kim
+*   Date        : 2023.04.12
+*   Description : 활동별 주유비 관리
+*   Modification Log
+* ==================================================================================
+*   Ver     Date          Author          Modification
+* ==================================================================================
+*   1.0     2023.04.12    Minje.Kim       Create
+* ==================================================================================
+-->
+
+<aura:component controller="ActivityReportFuelMgmtController" implements="forceCommunity:availableForAllPageTypes,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName">
+
+    <!-- Design Attribute --> 
+    <aura:attribute name="activityDate" type="String"/>
+    <aura:attribute name="activityDateMonth" type="String"/>
+    <aura:attribute name="isActiveDefault" type="Boolean" default="false"/>
+    <aura:attribute name="NDay" type="String"/>
+    <aura:attribute name="NDayValidDate" type="String"/>
+    <aura:attribute name="dueWeekValidDate" type="String"/>
+    <aura:attribute name="totalValidDate" type="String"/>
+    <aura:attribute name="today" type="String"/>
+
+    <aura:attribute name="minDateTime" type="String"/>
+    <aura:attribute name="StartDateTime" type="String"/>
+    <aura:attribute name="EndDateTime" type="String"/>
+    <aura:attribute name="isExceptionDateExist" type="Boolean" default="false"/>
+    <aura:attribute name="isActiveException" type="Boolean" default="false"/>
+
+    
+    
+    <!-- Attribute -->
+    <aura:attribute name="showSpinner" type="Boolean" default="false" />
+    <!-- Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.fnInit}" />
+
+    <!-- Content -->
+    <article class="slds-card slds-card_boundary related_list_card_border_top forceRelatedListCardDesktop">
+        <div class="related_list_themed_border_top forceRelatedListCardHeader">
+            <aura:if isTrue="{!v.showSpinner}">
+                <lightning:spinner variant="brand" alternativeText="Loading" size="medium"/>
+            </aura:if>
+        </div>
+        <div class="slds-card__header slds-grid">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="slds-media__figure">
+                    <lightning:icon iconName="standard:service_appointment" size="small" class="custom_headerIcon" />
+                </div>
+                <div class="slds-media__body">
+                    <h2 class="slds-card__header-title">
+                            <span><big>해당 활동보고 주유비 신청 가능한 기간</big></span>
+                    </h2>
+                </div>
+            </header>
+        </div>
+        <div class="slds-card__body slds-card__body_inner">
+            <lightning:layout multipleRows="true">
+                <lightning:layoutItem size="12">
+                    <span> 
+                        <big> 
+                            <b>
+                                <aura:if isTrue="{!AND(v.isActiveException, v.isActiveDefault)}">
+                                    <span>&nbsp; &nbsp; &nbsp; &nbsp; - '{!v.activityDate} ~ '{!v.totalValidDate} </span>
+                                    <span class="slds-badge slds-theme_success">입력가능</span>
+                                </aura:if>
+                                <aura:if isTrue="{!AND(NOT(v.isActiveException), v.isActiveDefault)}">
+                                    <span>&nbsp; &nbsp; &nbsp; &nbsp; - '{!v.activityDate} ~ '{!v.totalValidDate} </span>
+                                    <span class="slds-badge slds-theme_success">입력가능</span>
+                                </aura:if>
+                                <aura:if isTrue="{!AND(v.isActiveException, NOT(v.isActiveDefault))}">
+                                    <span>&nbsp; &nbsp; &nbsp; &nbsp; - '{!v.activityDate} ~ '{!v.totalValidDate} </span>
+                                    <span class="slds-badge slds-theme_success">예외 입력가능</span>
+                                </aura:if>
+                                <aura:if isTrue="{!AND(NOT(v.isActiveException), NOT(v.isActiveDefault))}">
+                                    <span>&nbsp; &nbsp; &nbsp; &nbsp; - '{!v.activityDate} ~ '{!v.totalValidDate} </span>
+                                    <span class="slds-badge slds-theme_error">입력불가</span>
+                                </aura:if>
+                            </b>
+                        </big>
+                        <br/>
+                    </span>
+                    <br/>
+                </lightning:layoutItem>
+                <lightning:layoutItem size="12">
+
+                </lightning:layoutItem>
+                <lightning:layoutItem size="12">
+                    &nbsp; &nbsp; &nbsp; &nbsp; 
+                    <span style="color:darkslategray"> 
+                        <b>  
+                            1&#41; {!v.activityDateMonth}월 주유비 마감 기한 :  '{!v.dueWeekValidDate} 
+                        </b> 
+                    </span>
+                </lightning:layoutItem>
+                <lightning:layoutItem size="12">
+                    &nbsp; &nbsp; &nbsp; &nbsp; 
+                    <span style="color:darkslategray"> 
+                        <b>  
+                            2&#41; 오늘 기준 주유비 신청 가능 일자 : -{!v.NDay}일
+                        </b>
+                    </span>
+                    <br/><br/>
+                    <aura:if isTrue="{!AND(NOT(v.isActiveException), NOT(v.isActiveDefault))}">
+                        <div class="slds-text-body_regular">
+                            &nbsp; &nbsp; &nbsp; &nbsp;<span class="slds-badge slds-theme_warning">안내</span> 활동 내용 입력 및 주유비 신청 기한(7일 이내) 초과로 예외입력 신청하시는 경우, 소속 부서 리더분들께 안내됩니다.
+                        </div>
+                    </aura:if>
+                </lightning:layoutItem>
+            </lightning:layout>
+            <aura:if isTrue="{!AND(v.isActiveException, NOT(v.isActiveDefault))}">
+                <lightning:layout multipleRows="true">
+                    <lightning:layoutItem size="12">
+                        <div class="slds-notify slds-notify_alert slds-alert_warning" style="background-color: orange;" role="alert">
+                            <h2> 
+                                <b>
+                                    현재 주유비 예외처리가 설정 되어있습니다. 아래 기간동안 주유비 설정이 가능합니다. <br/> 
+                                </b>
+                            </h2>
+                        </div>
+                        <div class="slds-notify slds-notify_alert slds-alert_warning" style="background-color: wheat; text-align:left" role="alert">
+                            <h2> 
+                                <b>
+                                    1&#41; &nbsp; 주유비 예외입력이 가능한 활동보고 일자 범위 :  '{!v.minDateTime} ~ 오늘 <br/>
+                                    2&#41; &nbsp; 예외입력 마감기한 : {!v.EndDateTime}
+                                </b>
+                            </h2>
+                        </div>
+                    </lightning:layoutItem>
+                </lightning:layout>
+            </aura:if>
+        </div>
+    </article>
+</aura:component>

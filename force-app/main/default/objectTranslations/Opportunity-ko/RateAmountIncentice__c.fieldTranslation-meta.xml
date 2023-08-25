@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>요율 / 금액(장려금)</label>
+    <name>RateAmountIncentice__c</name>
+    <picklistValues>
+        <masterLabel>금액</masterLabel>
+        <translation></translation>
+    </picklistValues>
+    <picklistValues>
+        <masterLabel>요율</masterLabel>
+        <translation></translation>
+    </picklistValues>
+</CustomFieldTranslation>

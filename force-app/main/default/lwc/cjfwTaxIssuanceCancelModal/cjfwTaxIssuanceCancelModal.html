@@ -1,0 +1,32 @@
+<!--
+  @description       : 세금계산서 발행 Tab Main > 선택취소 Btn 화면
+  @author            : joohyeon.jang@dkbmc.com
+  @group             : 
+  @last modified on  : 08-09-2023
+  @last modified by  : joohyeon.jang@dkbmc.com
+  Modifications Log
+  Ver   Date         Author                    Modification
+  1.0   08-09-2023   joohyeon.jang@dkbmc.com   Initial Version
+-->
+<template>
+    <Template if:true={showModal}>
+        <!-- #Header -->
+        <lightning-modal-header label="발행 취소">
+        </lightning-modal-header>
+        
+        <!-- #Body -->
+        <lightning-modal-body>
+            <div class="slds-text-body_small slds-text-align_center main">발행을 취소하시겠습니까?</div>
+        </lightning-modal-body>
+
+        <!-- #Footer -->
+        <lightning-modal-footer>
+            <div class="slds-clearfix">
+                <div class="slds-float_right">
+                    <lightning-button variant="neutral" label="취소" onclick={handleClose} class="slds-m-left_x-small"></lightning-button>
+                    <lightning-button variant="brand" label="발행 취소" onclick={handleNext} class="slds-m-left_x-small"></lightning-button>
+                </div>
+              </div>
+        </lightning-modal-footer>
+    </Template>
+</template>

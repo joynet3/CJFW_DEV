@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ApplicationPossibleValidCheck</fullName>
+    <active>true</active>
+    <errorConditionFormula>Validation__c = TRUE</errorConditionFormula>
+    <errorMessage>강사의 일정과 중복되어 신청 불가하는 시간대입니다. 다른 일정 잡아주세요</errorMessage>
+</ValidationRule>
