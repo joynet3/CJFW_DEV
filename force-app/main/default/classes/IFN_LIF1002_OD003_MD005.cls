@@ -112,7 +112,7 @@ global with sharing class IFN_LIF1002_OD003_MD005 {
                         ,ServiceContent__r.Instructor__r.Name
                         ,ServiceContent__r.Instructor2__r.Name
                         ,ServiceContent__r.Instructor3__r.Name
-                        , Status__c
+                        ,Status__c
                         ,Customer__r.Name
                         ,Manager__c
                         ,CustomerPhone__c
