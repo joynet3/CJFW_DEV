@@ -14,6 +14,7 @@ private class IFN_CalloutResult_TEST {
         result.setResult('response');
         result.setResult('S', 'S', 'response');
         result.setResult('S', 'S', 'response', new IFN_CommonLog.LogWrap('SD0501' , 'Real'));
+        result.setResult('S', 'S', 100, 'response', new IFN_CommonLog.LogWrap('SD0501' , 'Real'));
         Test.stopTest();
     }
 }
