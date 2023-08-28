@@ -162,7 +162,7 @@ public with sharing class IFN_ApiGateWay {
                 request.setMethod('POST');
                 request.setBody(requestBody);
 
-            }else if(objIFMaster.Method__c == 'GET' && (requestBody <> null && requestBody != '')) {
+            }else if(objIFMaster.Method__c == 'GET' ) {
 
 
                 endPointUrl = String.isNotBlank(requestBody) ?  endPointUrl+'?'+requestBody : endPointUrl;

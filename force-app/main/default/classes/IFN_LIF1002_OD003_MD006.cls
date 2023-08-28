@@ -145,6 +145,8 @@ global with sharing class IFN_LIF1002_OD003_MD006 {
                         upsert clsreq;
 
 
+                        objOutput.svcRcdId = clsreq.id;
+
                     } catch (Exception e) {
                         strCode = IFN_Util.STATUS_EXCEPT.split(':')[0];
                         strMessage = IFN_Util.STATUS_EXCEPT.split(':')[1];

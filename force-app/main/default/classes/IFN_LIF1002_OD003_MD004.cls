@@ -150,11 +150,12 @@ global with sharing class IFN_LIF1002_OD003_MD004 {
                         oitm.opDt	= IFN_Util.converDateTimeToStrFormat(itm.ServiceContent__r.OpenDate__c);
                         oitm.cttId	= itm.ServiceContent__r.Id;
                         // 전달된 MDM 코드와 같은 경우만 상태값 전송
+
                         if('N'.equals(chkMdmCd)) {
                             oitm.stts	= '-';
                         } else {
                             oitm.stts	= chkMdmCd.equals(itm.MDMCode__c) ?  
-                                        (String.isBlank(itm.Status__c) ? '-' : plClassServiceStatus.get(itm.Status__c)) : '';
+                                        (String.isBlank(itm.Status__c) ? '-' : plClassServiceStatus.get(itm.Status__c)) : '-';
 
                         }
                         

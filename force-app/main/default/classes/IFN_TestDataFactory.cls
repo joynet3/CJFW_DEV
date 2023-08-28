@@ -16,5 +16,12 @@ public class IFN_TestDataFactory {
             ifKeyId__c = 'test'
         );
         insert ifmst;
+
+
+        IF_RELAY_INFO__c objRelayInfo = new IF_RELAY_INFO__c();
+        objRelayInfo.Interface_id__c = 'test';
+        objRelayInfo.Interface_auth_key__c = 'test';
+        insert objRelayInfo;
+                
     }
 }

@@ -103,6 +103,148 @@ public with sharing class CJFW_MDMManagementController {
 
         return result;
     }
+
+        /**
+     * 주소정보 API 조회
+     * 
+     * @params sSearchKey : 조회 키워드
+     * @params intCntPerPage : 현재 페이지
+     * @params intCurrentPage : 페이지당 출력할 결과 Row 수
+     * @return WrapperResponse : 조회된 결과
+     *
+    **/
+   @AuraEnabled
+   public static WrapperResponse doSearchAddress(String sSearchKey, Integer intCntPerPage, Integer intCurrentPage) {
+       WrapperResponse objResponse = new WrapperResponse();
+
+       IF_RELAY_INFO__c objRelayInfo = IF_RELAY_INFO__c.getOrgDefaults();
+
+       // Interface parameter 생성
+       DN_AddrSearch_wb.Input objInput = new DN_AddrSearch_wb.Input();
+       objInput.confmKey       = objRelayInfo.AddressConfirmKey__c;
+       objInput.keyword        = sSearchKey;
+       objInput.resultType     = 'json';
+       objInput.currentPage    = intCurrentPage;
+       objInput.countPerPage   = intCntPerPage;
+
+       // 생성 된 Interface parameter로 메소드 실행하고 인터페이스 결과 값 저장
+       DN_AddrSearch_wb.Output objOutput = new DN_AddrSearch_wb.Output();
+       objOutput = DN_AddrSearch_wb.getInstance().execute(objInput);
+       System.debug('objOutput : ' + objOutput);
+
+       // Lightning component에서 사용하기 위해 인터페이스 클래스와 AuraEnabled 클래스를 매핑하여 새로운 리스트 생성
+       if(objOutput.results != null) {
+           DN_AddrSearch_wb.Common objCommon = objOutput.results.common;
+
+           objResponse.sErrorCode         = objCommon.errorCode;
+           objResponse.sErrorMessage      = objCommon.errorMessage;
+           objResponse.sTotalCount        = objCommon.totalCount;
+           objResponse.intCurrentPage     = objCommon.currentPage;
+
+           if(objCommon.errorCode == '0') {
+               List<WrapperAddress> listWrapperAddress = new List<WrapperAddress>();
+               for(DN_AddrSearch_wb.Address objAddress : objOutput.results.juso) {
+                   listWrapperAddress.add(new WrapperAddress(objAddress));
+               }
+
+               objResponse.listWrapperAddress = listWrapperAddress; 
+           }
+       }
+
+       return objResponse;
+   }
+
+  /**
+   * Save 버튼을 클릭 했을 때 호출
+   * 
+   * @params objCustomer : 화면 objCustomer 데이터
+   * @params contacts :화면 contacts (List)데이터 > 왜 리스트가 나올까? 데이터가 다건인가?
+   * @params banks : 화면 banks (List) 데이터 
+   * 
+   * CRM 오브젝트 = wrapper class다 
+   * contact < 스탠다드 오브젝트 
+   */
+    @AuraEnabled
+    public static SaveResult doSave(MDMRequest objCustomer, List<CustomContacts> contacts, List<Banks> banks)
+    {
+        // JSON.deserialize(objCustomer, ObjCustomer.class);
+        SaveResult saveResult = new SaveResult();
+
+        // aura  String 으로 넘어와서 JSON.des
+        // ObjCustomer obj =  JSON.deserialize(objCustomer, 래퍼클래스명.class);
+        
+        try {
+            if(objCustomer != null)
+            {    
+                MDMRegRequestCustomer__c mdmdRequest = new MDMRegRequestCustomer__c();
+                mdmdRequest.PV_OLDCD__c              = objCustomer.PV_OLDCD;
+                mdmdRequest.PV_KEYYN__c              = Boolean.valueOf(objCustomer.PV_KEYYN);
+                mdmdRequest.PV_KXOTD__c              = Boolean.valueOf(objCustomer.PV_KXOTD);
+                mdmdRequest.PV_FDINFO__c             = Boolean.valueOf(objCustomer.PV_FDINFO);
+                mdmdRequest.PV_KTOKD__c              = objCustomer.PV_KTOKD;
+                mdmdRequest.PV_CUSTTYPE__c           = objCustomer.PV_CUSTTYPE;
+                mdmdRequest.PVRA_VKGRP__c            = Date.valueOf(objCustomer?.PVRA_VKGRP);
+                mdmdRequest.PVRA_PERNR__c            = Date.valueOf(objCustomer?.PVRA_PERNR);
+                mdmdRequest.PVRA_LOGISCENTER__c      = Date.valueOf(objCustomer?.PVRA_LOGISCENTER);
+                mdmdRequest.PV_LAND1__c              = objCustomer.PV_LAND1;
+                mdmdRequest.PV_WAERS__c              = objCustomer.PV_WAERS;
+                mdmdRequest.PVRA_CUHR1__c            = Date.valueOf(objCustomer?.PVRA_CUHR1);
+                mdmdRequest.PVRA_KONDA__c            = Date.valueOf(objCustomer?.PVRA_KONDA);
+                mdmdRequest.PVRA_KVGR1__c            = Date.valueOf(objCustomer?.PVRA_KVGR1);
+                mdmdRequest.PVRA_OLD_BIZPLACE_NEW__c = Date.valueOf(objCustomer?.PVRA_OLD_BIZPLACE_NEW);
+                mdmdRequest.PV_DELIGROUP__c          = objCustomer.PV_DELIGROUP;
+                mdmdRequest.PV_BUSAB__c              = objCustomer.PV_BUSAB;
+                mdmdRequest.PV_CESSION_KZ__c         = objCustomer.PV_CESSION_KZ;
+                mdmdRequest.PV_ZUAWA__c              = objCustomer.PV_ZUAWA;
+                mdmdRequest.PV_AKONT__c              = objCustomer.PV_AKONT;
+                mdmdRequest.PV_FDGRV__c              = objCustomer.PV_FDGRV;
+                mdmdRequest.PV_TAXKDD__c             = objCustomer.PV_TAXKDD;
+                mdmdRequest.PV_KATR5__c              = objCustomer.PV_KATR5;
+                mdmdRequest.PV_SHIPTYPE__c           = objCustomer.PV_SHIPTYPE;
+                mdmdRequest.requestType__c           = objCustomer.requestType;
+                mdmdRequest.PV_NAME1__c              = objCustomer.PV_NAME1;
+                mdmdRequest.RecordTypeId             = objCustomer.RecordTypeId;
+
+
+                insert mdmdRequest;
+            }
+
+        } catch (Exception e) {
+            saveResult = new SaveResult('F', e.getMessage() + e.getLineNumber());
+        }
+
+        return saveResult;
+    } 
+
+    public class SaveResult
+    {
+        @AuraEnabled public String status{get;set;}
+        @AuraEnabled public String massage{get;set;}
+
+        // 생성자의 역할은 기본적으로
+        // 전역변수(인스턴스변수) 초기화 해주는 역할을함
+        public SaveResult()
+        {
+            this.status = 'S';
+            this.massage = '성공 하였습니다.';
+        }
+
+        public SaveResult(String status, String massage)
+        {
+            this.status  = status;
+            this.massage = massage;
+        }
+
+    }
+
+
+    public class CustomContacts{
+
+    }
+    public class Banks{
+
+    }
+
     /**
      * @description 로딩시 뿌려줘야할 데이터 Wrapper
      */
@@ -134,7 +276,7 @@ public with sharing class CJFW_MDMManagementController {
      */
     public class AccountDataWrapper { 
         //판매처에서 가져오는 기본정보
-        @AuraEnabled public String PV_NAME1{get;set;}                       // 고객명(영문명포함                 
+        @AuraEnabled public String PV_NAME1{get;set;}                   // 고객명(영문명포함                 
         @AuraEnabled public String PV_NAME2{get;set;}                   // 고객약칭명(변경
         @AuraEnabled public String PV_CUSTTYPE{get;set;}                // 고객유형
         @AuraEnabled public String PV_GFORM{get;set;}                   // 법적상태
@@ -160,6 +302,31 @@ public with sharing class CJFW_MDMManagementController {
         @AuraEnabled public String PV_KVGR3_BOT{get;set;}               // 납품서 하단유형
         @AuraEnabled public String PV_DSTRHISTREGYN{get;set;}           // 유통이력 신고대상 유형
         @AuraEnabled public String PV_DELIGROUP{get;set;}               // 배송그룹
+
+        // Default
+        @AuraEnabled public String PV_OLDCD {get;set;}
+        @AuraEnabled public String PV_KEYYN {get;set;}
+        @AuraEnabled public String PV_KXOTD {get;set;}
+        @AuraEnabled public String PV_FDINFO {get;set;}
+        @AuraEnabled public String PVRA_VKGRP {get;set;}
+        @AuraEnabled public String PVRA_PERNR {get;set;}
+        @AuraEnabled public String PVRA_LOGISCENTER {get;set;}
+        @AuraEnabled public String PV_LAND1 {get;set;}
+        @AuraEnabled public String PV_WAERS {get;set;}
+        @AuraEnabled public String PVRA_CUHR1 {get;set;}
+        @AuraEnabled public String PVRA_KONDA {get;set;}
+        @AuraEnabled public String PVRA_KVGR1 {get;set;}
+        @AuraEnabled public String PVRA_OLD_BIZPLACE_NEW {get;set;}
+        @AuraEnabled public String PV_BUSAB {get;set;}
+        @AuraEnabled public String PV_CESSION_KZ {get;set;}
+        @AuraEnabled public String PV_ZUAWA {get;set;}
+        @AuraEnabled public String PV_AKONT {get;set;}
+        @AuraEnabled public String PV_FDGRV {get;set;}
+        @AuraEnabled public String PV_TAXKDD {get;set;}
+        @AuraEnabled public String PV_KATR5 {get;set;}
+        @AuraEnabled public String PV_SHIPTYPE {get;set;}
+        @AuraEnabled public String requestType {get;set;}
+        @AuraEnabled public String RecordTypeId {get;set;}
 
 
         public AccountDataWrapper(){}
@@ -189,8 +356,100 @@ public with sharing class CJFW_MDMManagementController {
             this.PV_KVGR3                             = acc.StatementOfDeliveryType__c;                                                   
             this.PV_KVGR3_BOT                         = acc.StatementOfDeliveryType2__c;                                                   
             this.PV_DSTRHISTREGYN                     = acc.DisHisRegType__c;                                                   
-            this.PV_DELIGROUP                         = acc.DeliveryGroup__c;                                                         
-                                    
+            this.PV_DELIGROUP                         = acc.DeliveryGroup__c;
+
+            //default
+            this.PV_OLDCD = '';
+            this.PV_KEYYN = '';
+            this.PV_KXOTD = '';
+            this.PV_FDINFO = '';
+            this.PVRA_VKGRP = '';
+            this.PVRA_PERNR = '';
+            this.PVRA_LOGISCENTER = '';
+            this.PV_LAND1 = '';
+            this.PV_WAERS = '';
+            this.PVRA_CUHR1 = '';
+            this.PVRA_KONDA = '';
+            this.PVRA_KVGR1 = '';
+            this.PVRA_OLD_BIZPLACE_NEW = '';
+            this.PV_BUSAB = '';
+            this.PV_CESSION_KZ = '';
+            this.PV_ZUAWA = '';
+            this.PV_AKONT = '';
+            this.PV_FDGRV = '';
+            this.PV_TAXKDD = '';
+            this.PV_KATR5 = '';
+            this.PV_SHIPTYPE = '';
+            this.requestType = '';
+            this.RecordTypeId = '';
+
+            
+        }
+    }
+
+    /**
+     * MDMRequest 공통
+     */
+    public class MDMRequest{
+        @AuraEnabled public String PV_OLDCD {get;set;}
+        @AuraEnabled public String PV_KEYYN {get;set;}
+        @AuraEnabled public String PV_KXOTD {get;set;}
+        @AuraEnabled public String PV_FDINFO {get;set;}
+        @AuraEnabled public String PV_KTOKD {get;set;}
+        @AuraEnabled public String PV_CUSTTYPE {get;set;}
+        @AuraEnabled public String PVRA_VKGRP {get;set;}
+        @AuraEnabled public String PVRA_PERNR {get;set;}
+        @AuraEnabled public String PVRA_LOGISCENTER {get;set;}
+        @AuraEnabled public String PV_LAND1 {get;set;}
+        @AuraEnabled public String PV_WAERS {get;set;}
+        @AuraEnabled public String PVRA_CUHR1 {get;set;}
+        @AuraEnabled public String PVRA_KONDA {get;set;}
+        @AuraEnabled public String PVRA_KVGR1 {get;set;}
+        @AuraEnabled public String PVRA_OLD_BIZPLACE_NEW {get;set;}
+        @AuraEnabled public String PV_DELIGROUP {get;set;}
+        @AuraEnabled public String PV_BUSAB {get;set;}
+        @AuraEnabled public String PV_CESSION_KZ {get;set;}
+        @AuraEnabled public String PV_ZUAWA {get;set;}
+        @AuraEnabled public String PV_AKONT {get;set;}
+        @AuraEnabled public String PV_FDGRV {get;set;}
+        @AuraEnabled public String PV_TAXKDD {get;set;}
+        @AuraEnabled public String PV_KATR5 {get;set;}
+        @AuraEnabled public String PV_SHIPTYPE {get;set;}
+        @AuraEnabled public String requestType {get;set;}
+        @AuraEnabled public String PV_NAME1 {get;set;}
+        @AuraEnabled public String RecordTypeId {get;set;}
+    }
+
+
+
+    public class WrapperResponse {
+        @AuraEnabled public String  sErrorCode      {get; set;} // 에러 코드
+        @AuraEnabled public String  sErrorMessage   {get; set;} // 에러 메시지
+        @AuraEnabled public String  sTotalCount     {get; set;} // 총 검색 데이터수
+        @AuraEnabled public Integer intCurrentPage  {get; set;} // 페이지 번호
+
+        @AuraEnabled public List<WrapperAddress> listWrapperAddress {get; set;}
+    }
+
+    public class WrapperAddress {
+        @AuraEnabled public String sRoadAddr    {get; set;} // 전체 도로명 주소
+        @AuraEnabled public String sJibunAddr   {get; set;} // 지번 주소
+        @AuraEnabled public String sZipNo       {get; set;} // 우편 번호
+        @AuraEnabled public String sSiName      {get; set;} // 시도 명
+        @AuraEnabled public String sSggName     {get; set;} // 시군구 명
+        @AuraEnabled public String sEmdName     {get; set;} // 읍면동 명
+        @AuraEnabled public String sAddrDetail  {get; set;} // 상세주소
+        @AuraEnabled public String sAddr        {get; set;} // 주소
+
+        public WrapperAddress(DN_AddrSearch_wb.Address objAddress) {
+            sRoadAddr  = objAddress.roadAddr;   
+            sJibunAddr = objAddress.jibunAddr;
+            sZipNo     = objAddress.zipNo;
+            sSiName    = objAddress.siNm;
+            sSggName   = objAddress.sggNm;
+            sEmdName   = objAddress.emdNm;
+          
+            
         }
     }
 }

@@ -3,19 +3,9 @@ public  class IFN_LIF1002_SE001_Callout_TEST {
 
     @TestSetup
     static void setup(){
-        IFMaster__c ifmst = new IFMaster__c();
-        ifmst.Name = 'IFN_LIF1002_SE001_MD001';
-        ifmst.InterfaceId__c = 'IFN_LIF1002_SE001_MD001';
-        ifmst.Endpoint__c = 'test';
-        ifmst.Method__c = 'POST';
-        ifmst.ContentType__c = 'application/json';
-        ifmst.ifKeyId__c = 'test';
-        ifmst.Header__c = '';
-        ifmst.Param1__c = 'test';
-        ifmst.Param2__c = 'test';
-        ifmst.Param3__c = 'test';
-        ifmst.Param4__c = 'test';    
-        insert ifmst;
+
+        IFN_TestDataFactory.createIfPrograms();
+
     }
 
     @isTest
@@ -31,6 +21,28 @@ public  class IFN_LIF1002_SE001_Callout_TEST {
         params.offset = '';
         params.limitCnt = '3';
         callout.getResponse(interfaceId, params);
+        IFN_LIF1002_SE001_Callout.SearchLst searchitm = new IFN_LIF1002_SE001_Callout.SearchLst();
+        searchitm.upd_dt = '';
+        searchitm.sale_unit_cd = '';
+        searchitm.co_id = '';
+        searchitm.brd_nm = '';        
+        searchitm.migr_orinat_cd_nm = '';
+        searchitm.gd_cls_id3 = '';
+        searchitm.migr_orinat_cd = '';
+        searchitm.gd_cls_id2 = '';
+        searchitm.gd_cls_id4 = '';
+        searchitm.gd_cls_nm3 = '';
+        searchitm.gd_cls_nm2 = '';
+        searchitm.gd_cls_id1 = '';
+        searchitm.gd_cls_nm4 = '';
+        searchitm.gd_cls_nm1 = '';
+        searchitm.taxt_cl_cd = '';
+        searchitm.gd_cls_id = '';
+        searchitm.gd_no = '';
+        searchitm.id = '';
+        searchitm.gd_bd = '';
+        searchitm.gd_bd_kw = '';
+        searchitm.taxt_cl_cd_nm = '';
 
         Test.stopTest();
     }
