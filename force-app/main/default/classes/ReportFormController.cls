@@ -11,7 +11,7 @@
 
  * @author            : eunyoung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 08-25-2023
+ * @last modified on  : 08-28-2023
  * @last modified by  : eunyoung.choi@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -42,8 +42,8 @@ public with sharing class ReportFormController {
         , UnitPriceGroup__c 
         , FWReleaseCenter__c
         FROM Account 
-        //WHERE searchKey__c ='[25109]이로운나라의앨리스'
-        LIMIT 1
+        WHERE searchKey__c ='[25109]이로운나라의앨리스'
+        //LIMIT 1
         ];
 
     }

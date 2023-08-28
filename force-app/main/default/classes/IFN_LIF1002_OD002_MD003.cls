@@ -99,8 +99,8 @@ global with sharing class IFN_LIF1002_OD002_MD003 {
                         return objOutput; 
                     }          
 
-                    qry = 'Select Status__c,       RequestDate__c,     ResponseTitle__c, '
-                        + '       Manager__r.Name, ResponseMessage__c, ReqRecordId__c, Id'
+                    qry = 'Select Status__c,       ResponseDate__c,     ResponseTitle__c, '
+                        + '       Manager__r.Name, ResponseMessage__c, ReqRecordId__c, Id '
                         + '  From OrderServiceRequest__c '
                         + ' Where ReqRecordId__c = :reqRecordId ';
                     

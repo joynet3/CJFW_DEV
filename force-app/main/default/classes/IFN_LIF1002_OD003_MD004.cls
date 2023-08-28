@@ -111,9 +111,7 @@ global with sharing class IFN_LIF1002_OD003_MD004 {
                     'where ServiceContent__r.Name like  :titleLike ' +
                     'and ServiceContent__r.OpenDate__c >= :seatchStDt ' +
                     'and ServiceContent__r.OpenDate__c <= :seatchEdDt ';
-                    System.debug('>>>>>>>>>>>>> ' + query_total);
                     Integer totalSize = Database.countQuery(query_total);
-                    System.debug(totalSize);
 
                     Integer limitSize = Integer.valueOf(input.dataCnt);
                     Integer pageNo = Integer.valueOf(input.pgNo) -1;

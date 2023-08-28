@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 08-25-2023
+ * @last modified on  : 08-28-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -172,41 +172,122 @@ public with sharing class CJFW_MDMManagementController {
 
         // aura  String 으로 넘어와서 JSON.des
         // ObjCustomer obj =  JSON.deserialize(objCustomer, 래퍼클래스명.class);
-        
+        system.debug('>>>doSave # objCustomer ' + JSON.serialize(objCustomer));
         try {
-            if(objCustomer != null)
-            {    
-                MDMRegRequestCustomer__c mdmdRequest = new MDMRegRequestCustomer__c();
-                mdmdRequest.PV_OLDCD__c              = objCustomer.PV_OLDCD;
-                mdmdRequest.PV_KEYYN__c              = Boolean.valueOf(objCustomer.PV_KEYYN);
-                mdmdRequest.PV_KXOTD__c              = Boolean.valueOf(objCustomer.PV_KXOTD);
-                mdmdRequest.PV_FDINFO__c             = Boolean.valueOf(objCustomer.PV_FDINFO);
-                mdmdRequest.PV_KTOKD__c              = objCustomer.PV_KTOKD;
-                mdmdRequest.PV_CUSTTYPE__c           = objCustomer.PV_CUSTTYPE;
-                mdmdRequest.PVRA_VKGRP__c            = Date.valueOf(objCustomer?.PVRA_VKGRP);
-                mdmdRequest.PVRA_PERNR__c            = Date.valueOf(objCustomer?.PVRA_PERNR);
-                mdmdRequest.PVRA_LOGISCENTER__c      = Date.valueOf(objCustomer?.PVRA_LOGISCENTER);
-                mdmdRequest.PV_LAND1__c              = objCustomer.PV_LAND1;
-                mdmdRequest.PV_WAERS__c              = objCustomer.PV_WAERS;
-                mdmdRequest.PVRA_CUHR1__c            = Date.valueOf(objCustomer?.PVRA_CUHR1);
-                mdmdRequest.PVRA_KONDA__c            = Date.valueOf(objCustomer?.PVRA_KONDA);
-                mdmdRequest.PVRA_KVGR1__c            = Date.valueOf(objCustomer?.PVRA_KVGR1);
-                mdmdRequest.PVRA_OLD_BIZPLACE_NEW__c = Date.valueOf(objCustomer?.PVRA_OLD_BIZPLACE_NEW);
-                mdmdRequest.PV_DELIGROUP__c          = objCustomer.PV_DELIGROUP;
-                mdmdRequest.PV_BUSAB__c              = objCustomer.PV_BUSAB;
-                mdmdRequest.PV_CESSION_KZ__c         = objCustomer.PV_CESSION_KZ;
-                mdmdRequest.PV_ZUAWA__c              = objCustomer.PV_ZUAWA;
-                mdmdRequest.PV_AKONT__c              = objCustomer.PV_AKONT;
-                mdmdRequest.PV_FDGRV__c              = objCustomer.PV_FDGRV;
-                mdmdRequest.PV_TAXKDD__c             = objCustomer.PV_TAXKDD;
-                mdmdRequest.PV_KATR5__c              = objCustomer.PV_KATR5;
-                mdmdRequest.PV_SHIPTYPE__c           = objCustomer.PV_SHIPTYPE;
-                mdmdRequest.requestType__c           = objCustomer.requestType;
-                mdmdRequest.PV_NAME1__c              = objCustomer.PV_NAME1;
-                mdmdRequest.RecordTypeId             = objCustomer.RecordTypeId;
+            if(objCustomer != null){    
+                MDMRegRequestCustomer__c mdmRequest = new MDMRegRequestCustomer__c();
+                // mdmdRequest.PV_OLDCD__c              = objCustomer.PV_OLDCD;
+                // mdmdRequest.PV_KEYYN__c              = Boolean.valueOf(objCustomer.PV_KEYYN);
+                // mdmdRequest.PV_KXOTD__c              = Boolean.valueOf(objCustomer.PV_KXOTD);
+                // mdmdRequest.PV_FDINFO__c             = Boolean.valueOf(objCustomer.PV_FDINFO);
+                // mdmdRequest.PV_KTOKD__c              = objCustomer.PV_KTOKD;
+                // mdmdRequest.PV_CUSTTYPE__c           = objCustomer.PV_CUSTTYPE;
+                // mdmdRequest.PVRA_VKGRP__c            = Date.valueOf(objCustomer?.PVRA_VKGRP);
+                // mdmdRequest.PVRA_PERNR__c            = Date.valueOf(objCustomer?.PVRA_PERNR);
+                // mdmdRequest.PVRA_LOGISCENTER__c      = Date.valueOf(objCustomer?.PVRA_LOGISCENTER);
+                // mdmdRequest.PV_LAND1__c              = objCustomer.PV_LAND1;
+                // mdmdRequest.PV_WAERS__c              = objCustomer.PV_WAERS;
+                // mdmdRequest.PVRA_CUHR1__c            = Date.valueOf(objCustomer?.PVRA_CUHR1);
+                // mdmdRequest.PVRA_KONDA__c            = Date.valueOf(objCustomer?.PVRA_KONDA);
+                // mdmdRequest.PVRA_KVGR1__c            = Date.valueOf(objCustomer?.PVRA_KVGR1);
+                // mdmdRequest.PVRA_OLD_BIZPLACE_NEW__c = Date.valueOf(objCustomer?.PVRA_OLD_BIZPLACE_NEW);
+                // mdmdRequest.PV_DELIGROUP__c          = objCustomer.PV_DELIGROUP;
+                // mdmdRequest.PV_BUSAB__c              = objCustomer.PV_BUSAB;
+                // mdmdRequest.PV_CESSION_KZ__c         = objCustomer.PV_CESSION_KZ;
+                // mdmdRequest.PV_ZUAWA__c              = objCustomer.PV_ZUAWA;
+                // mdmdRequest.PV_AKONT__c              = objCustomer.PV_AKONT;
+                // mdmdRequest.PV_FDGRV__c              = objCustomer.PV_FDGRV;
+                // mdmdRequest.PV_TAXKDD__c             = objCustomer.PV_TAXKDD;
+                // mdmdRequest.PV_KATR5__c              = objCustomer.PV_KATR5;
+                // mdmdRequest.PV_SHIPTYPE__c           = objCustomer.PV_SHIPTYPE;
+                // mdmdRequest.requestType__c           = objCustomer.requestType;
+                // mdmdRequest.PV_NAME1__c              = objCustomer.PV_NAME1;
+                // mdmdRequest.RecordTypeId             = objCustomer.RecordTypeId;
+                // mdmdRequest.PV_J_1KFREPRE__c         = objCustomer.PV_J_1KFREPRE;
+               mdmRequest.RecordTypeId             = objCustomer.RecordTypeId;
+               mdmRequest.requestType__c           = objCustomer.requestType;
+               mdmRequest.PVRA_VKGRP__c                                        = Date.valueOf(objCustomer?.PVRA_VKGRP);
+               mdmRequest.PVRA_PERNR__c                                        = Date.valueOf(objCustomer?.PVRA_PERNR);
+               mdmRequest.PVRA_LOGISCENTER__c                                  = Date.valueOf(objCustomer?.PVRA_LOGISCENTER);               
+               mdmRequest.PV_NAME1__c                                          = objCustomer?.PV_NAME1;
+               mdmRequest.PV_NAME2__c                                          = objCustomer?.PV_NAME2;
+               mdmRequest.PV_STCD3__c                                          = objCustomer?.PV_STCD3;
+               mdmRequest.PV_GFORM__c                                          = objCustomer?.PV_GFORM;
+               mdmRequest.PV_STCD1__c                                          = objCustomer?.PV_STCD1;
+               mdmRequest.PV_J_1KFTIND__c                                      = objCustomer?.PV_J_1KFTIND;
+               mdmRequest.PV_TELFX__c                                          = objCustomer?.PV_TELFX;
+               mdmRequest.PV_VKGRP__c                                          = objCustomer?.PV_VKGRP; // 참조코드 Id 넣어줘야함
+               //mdmRequest.PV_PERNR_lu__c                                       = objCustomer?.PV_PERNR_lu; // user lookup
+               //mdmRequest.PV_ADMINMA_lu__c                                     = objCustomer?.PV_ADMINMA_lu; 
+               mdmRequest.PV_LOGISCENTER__c                                    = objCustomer?.PV_LOGISCENTER; // 참조코드 Id 넣어줘야함
+               mdmRequest.PV_STCDT__c                                          = objCustomer?.PV_STCDT; // 참조코드 Id 넣어줘야함
+               //mdmRequest.PV_HDOFFICEYN__c                                     = Boolean.valueOf(objCustomer?.PV_HDOFFICEYN);
+               //mdmRequest.PV_HKUNNR_lu__c                                      = objCustomer?.PV_HKUNNR_lu; // user lookup
+               //mdmRequest.PV_CLOSEDT__c                                        = Date.valueOf(objCustomer?.PV_CLOSEDT);
+               mdmRequest.PV_ADRES_ZIPCODE__c                                  = objCustomer?.PV_ADRES_ZIPCODE;
+               mdmRequest.PV_ADRES_ROADADDR1__c                                = objCustomer?.PV_ADRES_ROADADDR1;
+               mdmRequest.PV_OLDCD__c                                          = objCustomer?.PV_OLDCD;
+               mdmRequest.PV_NAME_G__c                                         = objCustomer?.PV_NAME_G;
+               mdmRequest.PV_STCD2__c                                          = objCustomer?.PV_STCD2;
+               mdmRequest.PV_STCD4__c                                          = objCustomer?.PV_STCD4;
+               mdmRequest.PV_J_1KFREPRE__c                                     = objCustomer?.PV_J_1KFREPRE;
+               mdmRequest.PV_J_1KFTBUS__c                                      = objCustomer?.PV_J_1KFTBUS;
+               mdmRequest.PV_TELF1__c                                          = objCustomer?.PV_TELF1;
+               mdmRequest.PV_FITYP__c                                          = objCustomer?.PV_FITYP;
+               //mdmRequest.PV_HKUNNR_lu__c                                      = objCustomer?.PV_HKUNNR_lu; // Account lookup
+               mdmRequest.PV_VBUND__c                                          = objCustomer?.PV_VBUND; // 참조코드 Id 넣어줘야함
+               mdmRequest.PV_KNVKTYPE__c                                       = objCustomer?.PV_KNVKTYPE;
+               mdmRequest.PV_REGIO__c                                          = objCustomer?.PV_REGIO;
+               mdmRequest.PV_BIZPLCODE__c                                      = objCustomer?.PV_BIZPLCODE;
+               mdmRequest.PV_BUSAB__c                                          = objCustomer?.PV_BUSAB;
+               mdmRequest.PV_CESSION_KZ__c                                     = objCustomer?.PV_CESSION_KZ;
+               mdmRequest.PV_ZUAWA__c                                          = objCustomer?.PV_ZUAWA; // 참조코드 Id 넣어줘야함
+               mdmRequest.PV_AKONT__c                                          = objCustomer?.PV_AKONT;
+               mdmRequest.PV_FDGRV__c                                          = objCustomer?.PV_FDGRV;
+               mdmRequest.PV_TAXKDD__c                                         = objCustomer?.PV_TAXKDD;
+               mdmRequest.PV_KATR5__c                                          = objCustomer?.PV_KATR5;
+               mdmRequest.PV_WAERS__c                                          = objCustomer?.PV_WAERS;
+               mdmRequest.PV_SHIPTYPE__c                                       = objCustomer?.PV_SHIPTYPE;
+               mdmRequest.PVRA_CUHR1__c                                        = Date.valueOf(objCustomer?.PVRA_CUHR1);
+               mdmRequest.PV_KONDA__c                                          = objCustomer?.PV_KONDA;
+               mdmRequest.PVRA_KVGR1__c                                        = Date.valueOf(objCustomer?.PVRA_KVGR1);
+               mdmRequest.PVRA_OLD_BIZPLACE_NEW__c                             = Date.valueOf(objCustomer?.PVRA_OLD_BIZPLACE_NEW);
+               mdmRequest.PV_DELIGROUP__c                                      = objCustomer?.PV_DELIGROUP;
+               mdmRequest.PV_CUHR1__c                                          = objCustomer?.PV_CUHR1;
+               mdmRequest.PV_KONDA__c                                          = objCustomer?.PV_KONDA;
+               mdmRequest.PV_KVGR1__c                                          = objCustomer?.PV_KVGR1;
+               mdmRequest.PV_KVGR2__c                                          = objCustomer?.PV_KVGR2;
+               mdmRequest.PV_ODCLOSEGB__c                                      = objCustomer?.PV_ODCLOSEGB;
+               mdmRequest.PV_ZTERM_VV__c                                       = objCustomer?.PV_ZTERM_VV;
+               mdmRequest.PV_OLD_BIZPLACE_NEW__c                               = objCustomer?.PV_OLD_BIZPLACE_NEW;
+               //mdmRequest.PV_EXAMYN__c                                         = Boolean.valueOf(objCustomer?.PV_EXAMYN);
+               mdmRequest.PV_PRODLOADCOND__c                                   = objCustomer?.PV_PRODLOADCOND;
+               mdmRequest.PV_ENTERCOND1__c                                     = objCustomer?.PV_ENTERCOND1;
+               mdmRequest.PV_UNLOADCOND2__c                                    = objCustomer?.PV_UNLOADCOND2;
+               mdmRequest.PV_KATR10__c                                         = objCustomer?.PV_KATR10;
+               mdmRequest.PV_KEYINFO__c                                        = objCustomer?.PV_KEYINFO;
+               mdmRequest.PV_KXOTD__c                                          = Boolean.valueOf(objCustomer?.PV_KXOTD);
+               mdmRequest.PV_FDINFO__c                                         = Boolean.valueOf(objCustomer?.PV_FDINFO);
+               mdmRequest.PV_FDREQT__c                                         = objCustomer?.PV_FDREQT;
+               mdmRequest.PV_FDCTINFO__c                                       = objCustomer?.PV_FDCTINFO;
+               mdmRequest.PV_FDNOTICE__c                                       = objCustomer?.PV_FDNOTICE;
+               mdmRequest.PV_KVGR3__c                                          = objCustomer?.PV_KVGR3;
+               mdmRequest.PV_KVGR3_BOT__c                                      = objCustomer?.PV_KVGR3_BOT;
+               //mdmRequest.PV_VACCPRTEXCYN__c                                   = Boolean.valueOf(objCustomer?.PV_VACCPRTEXCYN);
+               mdmRequest.PV_DSTRHISTREGYN__c                                  = objCustomer?.PV_DSTRHISTREGYN;
+               mdmRequest.PV_SHIPREQTIME__c                                    = objCustomer?.PV_SHIPREQTIME;
+               mdmRequest.PV_RETURNLOC__c                                      = objCustomer?.PV_RETURNLOC;
+               mdmRequest.PV_UNLOADCOND1__c                                    = objCustomer?.PV_UNLOADCOND1;
+               mdmRequest.PV_KEYYN__c                                          = Boolean.valueOf(objCustomer?.PV_KEYYN);
+               mdmRequest.PV_KXOTDTIME__c                                      = objCustomer?.PV_KXOTDTIME;
+               //mdmRequest.PV_FDREQD__c                                         = Date.valueOf(objCustomer?.PV_FDREQD);
+               //mdmRequest.PV_ISFDFTF__c                                        = Boolean.valueOf(objCustomer?.PV_ISFDFTF);
+               mdmRequest.PV_TEMPTARGET__c                                     = objCustomer?.PV_TEMPTARGET;
+
+                        
 
 
-                insert mdmdRequest;
+                insert mdmRequest;
             }
 
         } catch (Exception e) {
@@ -216,21 +297,18 @@ public with sharing class CJFW_MDMManagementController {
         return saveResult;
     } 
 
-    public class SaveResult
-    {
+    public class SaveResult{
         @AuraEnabled public String status{get;set;}
         @AuraEnabled public String massage{get;set;}
 
         // 생성자의 역할은 기본적으로
         // 전역변수(인스턴스변수) 초기화 해주는 역할을함
-        public SaveResult()
-        {
+        public SaveResult(){
             this.status = 'S';
             this.massage = '성공 하였습니다.';
         }
 
-        public SaveResult(String status, String massage)
-        {
+        public SaveResult(String status, String massage){
             this.status  = status;
             this.massage = massage;
         }
@@ -391,22 +469,69 @@ public with sharing class CJFW_MDMManagementController {
      * MDMRequest 공통
      */
     public class MDMRequest{
-        @AuraEnabled public String PV_OLDCD {get;set;}
-        @AuraEnabled public String PV_KEYYN {get;set;}
-        @AuraEnabled public String PV_KXOTD {get;set;}
-        @AuraEnabled public String PV_FDINFO {get;set;}
-        @AuraEnabled public String PV_KTOKD {get;set;}
-        @AuraEnabled public String PV_CUSTTYPE {get;set;}
+        // @AuraEnabled public String PV_OLDCD {get;set;}
+        // @AuraEnabled public String PV_KEYYN {get;set;}
+        // @AuraEnabled public String PV_KXOTD {get;set;}
+        // @AuraEnabled public String PV_FDINFO {get;set;}
+        // @AuraEnabled public String PV_KTOKD {get;set;}
+        // @AuraEnabled public String PV_CUSTTYPE {get;set;}
+        // @AuraEnabled public String PVRA_VKGRP {get;set;}
+        // @AuraEnabled public String PVRA_PERNR {get;set;}
+        // @AuraEnabled public String PVRA_LOGISCENTER {get;set;}
+        // @AuraEnabled public String PV_LAND1 {get;set;}
+        // @AuraEnabled public String PV_WAERS {get;set;}
+        // @AuraEnabled public String PVRA_CUHR1 {get;set;}
+        // @AuraEnabled public String PVRA_KONDA {get;set;}
+        // @AuraEnabled public String PVRA_KVGR1 {get;set;}
+        // @AuraEnabled public String PVRA_OLD_BIZPLACE_NEW {get;set;}
+        // @AuraEnabled public String PV_DELIGROUP {get;set;}
+        // @AuraEnabled public String PV_BUSAB {get;set;}
+        // @AuraEnabled public String PV_CESSION_KZ {get;set;}
+        // @AuraEnabled public String PV_ZUAWA {get;set;}
+        // @AuraEnabled public String PV_AKONT {get;set;}
+        // @AuraEnabled public String PV_FDGRV {get;set;}
+        // @AuraEnabled public String PV_TAXKDD {get;set;}
+        // @AuraEnabled public String PV_KATR5 {get;set;}
+        // @AuraEnabled public String PV_SHIPTYPE {get;set;}
+        // @AuraEnabled public String requestType {get;set;}
+        // @AuraEnabled public String PV_NAME1 {get;set;}
+        // @AuraEnabled public String RecordTypeId {get;set;}
+        // @AuraEnabled public String PV_J_1KFREPRE {get;set;}
+        @AuraEnabled public String RecordTypeId {get;set;}
+        @AuraEnabled public String requestType {get;set;}
         @AuraEnabled public String PVRA_VKGRP {get;set;}
         @AuraEnabled public String PVRA_PERNR {get;set;}
         @AuraEnabled public String PVRA_LOGISCENTER {get;set;}
-        @AuraEnabled public String PV_LAND1 {get;set;}
-        @AuraEnabled public String PV_WAERS {get;set;}
-        @AuraEnabled public String PVRA_CUHR1 {get;set;}
-        @AuraEnabled public String PVRA_KONDA {get;set;}
-        @AuraEnabled public String PVRA_KVGR1 {get;set;}
-        @AuraEnabled public String PVRA_OLD_BIZPLACE_NEW {get;set;}
-        @AuraEnabled public String PV_DELIGROUP {get;set;}
+        @AuraEnabled public String PV_NAME1 {get;set;}
+        @AuraEnabled public String PV_NAME2 {get;set;}
+        @AuraEnabled public String PV_STCD3 {get;set;}
+        @AuraEnabled public String PV_GFORM {get;set;}
+        @AuraEnabled public String PV_STCD1 {get;set;}
+        @AuraEnabled public String PV_J_1KFTIND {get;set;}
+        @AuraEnabled public String PV_TELFX {get;set;}
+        @AuraEnabled public String PV_VKGRP {get;set;}
+        @AuraEnabled public String PV_PERNR_lu {get;set;}
+        @AuraEnabled public String PV_ADMINMA_lu {get;set;}
+        @AuraEnabled public String PV_LOGISCENTER {get;set;}
+        @AuraEnabled public String PV_STCDT {get;set;}
+        @AuraEnabled public String PV_HDOFFICEYN {get;set;}
+        @AuraEnabled public String PV_HKUNNR_lu {get;set;}
+        @AuraEnabled public String PV_CLOSEDT {get;set;}
+        @AuraEnabled public String PV_ADRES_ZIPCODE {get;set;}
+        @AuraEnabled public String PV_ADRES_ROADADDR1 {get;set;}
+        @AuraEnabled public String PV_OLDCD {get;set;}
+        @AuraEnabled public String PV_NAME_G {get;set;}
+        @AuraEnabled public String PV_STCD2 {get;set;}
+        @AuraEnabled public String PV_STCD4 {get;set;}
+        @AuraEnabled public String PV_J_1KFREPRE {get;set;}
+        @AuraEnabled public String PV_J_1KFTBUS {get;set;}
+        @AuraEnabled public String PV_TELF1 {get;set;}
+        @AuraEnabled public String PV_FITYP {get;set;}
+        // @AuraEnabled public String PV_HKUNNR_lu {get;set;}
+        @AuraEnabled public String PV_VBUND {get;set;}
+        @AuraEnabled public String PV_KNVKTYPE {get;set;}
+        @AuraEnabled public String PV_REGIO {get;set;}
+        @AuraEnabled public String PV_BIZPLCODE {get;set;}
         @AuraEnabled public String PV_BUSAB {get;set;}
         @AuraEnabled public String PV_CESSION_KZ {get;set;}
         @AuraEnabled public String PV_ZUAWA {get;set;}
@@ -414,10 +539,44 @@ public with sharing class CJFW_MDMManagementController {
         @AuraEnabled public String PV_FDGRV {get;set;}
         @AuraEnabled public String PV_TAXKDD {get;set;}
         @AuraEnabled public String PV_KATR5 {get;set;}
+        @AuraEnabled public String PV_WAERS {get;set;}
         @AuraEnabled public String PV_SHIPTYPE {get;set;}
-        @AuraEnabled public String requestType {get;set;}
-        @AuraEnabled public String PV_NAME1 {get;set;}
-        @AuraEnabled public String RecordTypeId {get;set;}
+        @AuraEnabled public String PVRA_CUHR1 {get;set;}
+        @AuraEnabled public String PV_KONDA {get;set;}
+        @AuraEnabled public String PVRA_KVGR1 {get;set;}
+        @AuraEnabled public String PVRA_OLD_BIZPLACE_NEW {get;set;}
+        @AuraEnabled public String PV_DELIGROUP {get;set;}
+        @AuraEnabled public String PV_CUHR1 {get;set;}
+        // @AuraEnabled public String PV_KONDA {get;set;}
+        @AuraEnabled public String PV_KVGR1 {get;set;}
+        @AuraEnabled public String PV_KVGR2 {get;set;}
+        @AuraEnabled public String PV_ODCLOSEGB {get;set;}
+        @AuraEnabled public String PV_ZTERM_VV {get;set;}
+        @AuraEnabled public String PV_OLD_BIZPLACE_NEW {get;set;}
+        @AuraEnabled public String PV_EXAMYN {get;set;}
+        @AuraEnabled public String PV_PRODLOADCOND {get;set;}
+        @AuraEnabled public String PV_ENTERCOND1 {get;set;}
+        @AuraEnabled public String PV_UNLOADCOND2 {get;set;}
+        @AuraEnabled public String PV_KATR10 {get;set;}
+        @AuraEnabled public String PV_KEYINFO {get;set;}
+        @AuraEnabled public String PV_KXOTD {get;set;}
+        @AuraEnabled public String PV_FDINFO {get;set;}
+        @AuraEnabled public String PV_FDREQT {get;set;}
+        @AuraEnabled public String PV_FDCTINFO {get;set;}
+        @AuraEnabled public String PV_FDNOTICE {get;set;}
+        @AuraEnabled public String PV_KVGR3 {get;set;}
+        @AuraEnabled public String PV_KVGR3_BOT {get;set;}
+        @AuraEnabled public String PV_VACCPRTEXCYN {get;set;}
+        @AuraEnabled public String PV_DSTRHISTREGYN {get;set;}
+        @AuraEnabled public String PV_SHIPREQTIME {get;set;}
+        @AuraEnabled public String PV_RETURNLOC {get;set;}
+        @AuraEnabled public String PV_UNLOADCOND1 {get;set;}
+        @AuraEnabled public String PV_KEYYN {get;set;}
+        @AuraEnabled public String PV_KXOTDTIME {get;set;}
+        @AuraEnabled public String PV_FDREQD {get;set;}
+        @AuraEnabled public String PV_ISFDFTF {get;set;}
+        @AuraEnabled public String PV_TEMPTARGET {get;set;}
+
     }
 
 

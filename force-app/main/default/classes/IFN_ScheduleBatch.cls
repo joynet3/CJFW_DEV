@@ -51,7 +51,8 @@ global class IFN_ScheduleBatch extends MasterBatchBase implements Database.Allow
     }
     
     public override void execute(Database.BatchableContext bc, List<sObject> scope) {
-        System.debug('IFN_ScheduleBatch execute!!');
+
+        logWrap.LogText.add('IFN_ScheduleBatch execute!!');
 
         Savepoint sp = null;
 
@@ -127,13 +128,11 @@ global class IFN_ScheduleBatch extends MasterBatchBase implements Database.Allow
             logwrap.IFTotalCount  += 1;
             logwrap.IFRequestSize += 1;
             logWrap.LogText.add(JSON.serialize(executeList));
+            logWrap.LogText.add('IFN_ScheduleBatch is End');
         } 
         catch(System.Exception e) 
         {
-            logWrap.ErrorText.add(e.getMessage());
-            logWrap.LogText.add('### Exception.getMessage() = ' + e.getMessage() );
-            logWrap.LogText.add('### Exception.getLineNumber() = ' + e.getLineNumber() );
-            logWrap.LogText.add('### Exception.getStackTraceString() = ' + e.getStackTraceString() );
+            logWrap.ErrorText.add(e.getMessage() + '/' + e.getLineNumber() );
         }
     }
 }
