@@ -1,0 +1,31 @@
+<aura:component controller="IFN_ManagementController">
+    <!--Component parameter-->
+    <aura:attribute name="Param" type="Object" />
+
+    <aura:attribute name="label"             type="String"   default="" />
+    <aura:attribute name="batchClass"        type="String"   default="" />
+    <aura:attribute name="batchORqueueable"  type="String"   default="" />
+    <aura:attribute name="executeCode"       type="String"   default="" />
+    <aura:attribute name="executeResult"       type="String"   default="" />
+    <aura:attribute name="isShowSpinner"	 type="Boolean"  default="false"/>	
+
+    <aura:handler name="init" value="{!this}" action="{!c.fn_doInit}"/>
+
+    <lightning:spinner aura:id="mainSpinner" variant="brand" class="{!((v.isShowSpinner)? '': 'slds-hide')}"/>
+    
+    <lightning:accordionSection name="{!v.label}" label="{!v.label}">
+        <Button type="button" class="slds-button slds-button_outline-brand" onclick="{! c.fn_execute }" data-batchclass="{!v.batchClass}" data-batchorqueueable="{!v.batchORqueueable}">
+            기본 값 배치 실행
+        </Button>
+        
+        <aura:if isTrue="{!not(empty(v.executeCode))}">
+            <lightning:textarea name="executeCode" label="Execute code" value="{! v.executeCode }"/>
+            <Button type="button" class="slds-button slds-button_outline-brand" onclick="{! c.fn_executeCode }" data-batchclass="{!v.batchClass}" data-batchorqueueable="{!v.batchORqueueable}">
+                Execute code 실행
+            </Button>
+            <aura:if isTrue="{!not(empty(v.executeResult))}">
+                <lightning:textarea name="executeResult" label="Execute Result" value="{! v.executeResult }" readonly="true"/>
+            </aura:if>
+        </aura:if>
+    </lightning:accordionSection> 
+</aura:component>

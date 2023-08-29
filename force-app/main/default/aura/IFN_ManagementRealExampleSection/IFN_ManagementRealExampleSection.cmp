@@ -1,0 +1,31 @@
+<aura:component controller="IFN_ManagementController">
+    <!--Component parameter-->
+    <aura:attribute name="Param" type="Object" />
+
+    <aura:attribute name="name"    type="String" default="" />
+    <aura:attribute name="label"   type="String" default="" />
+    <aura:attribute name="example" type="String" default="" />
+    <aura:attribute name="system"  type="String" default="" />
+    <aura:attribute name="division"  type="String" default="" />
+    <aura:attribute name="project"  type="String" default="" />
+
+
+    <aura:attribute name="params" type="String" default="" />
+    <aura:attribute name="result" type="String" default="" />
+    <aura:attribute name="isShowSpinner"	 type="Boolean"  default="false"/>	
+
+    <aura:handler name="init" value="{!this}" action="{!c.fn_doInit}"/>
+
+    <lightning:spinner aura:id="mainSpinner" variant="brand" class="{!((v.isShowSpinner)? '': 'slds-hide')}"/>
+    
+    <lightning:accordionSection name="{!v.name}" label="{!v.label}">
+        <lightning:textarea name="param" label="Parameter (Example)" readonly="true" value="{! v.example }"/>
+        <lightning:textarea name="param" label="Parameter (JSON형식으로 입력)" value="{! v.params }"/>
+        <Button type="button" onclick="{! c.fn_getResponse }" data-targetsystem="{!v.system}" data-interfaceid="{!v.name}" data-division="{!v.division}" class="slds-button slds-button_outline-brand">
+            실행
+        </Button>
+        <aura:if isTrue="{!not(empty(v.result))}" >
+            <lightning:textarea name="result" label="result" value="{! v.result }" readonly="true"/>
+        </aura:if>
+    </lightning:accordionSection> 
+</aura:component>

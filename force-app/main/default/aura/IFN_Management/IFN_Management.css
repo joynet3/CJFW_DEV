@@ -1,0 +1,19 @@
+.THIS {
+}
+
+.THIS .disabledLabel .slds-form-element__label {
+	display:none;
+}
+
+.THIS.custom_tabset {
+	margin-top: 12px;
+}
+
+.THIS .custom_checkbox .slds-checkbox__label {
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.THIS .slds-p-horizontal_small {
+    border: 1px solid rgb(221, 219, 218);
+}
