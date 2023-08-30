@@ -34,6 +34,13 @@
         const project = cmp.get('v.project');
         const params = cmp.get('v.params');
 
+
+        console.log('### targetSystem ' + targetSystem);
+        console.log('### interfaceId ' + interfaceId);
+        console.log('### division ' + division);
+        console.log('### project ' + project);
+        console.log('### params ' + params);
+
         // console.log('### fn_getResponse :: project = ', project);
         //console.log('### fn_getResponse :: interfaceId = ', interfaceId);
         //console.log('### fn_getResponse :: params  = ', params);

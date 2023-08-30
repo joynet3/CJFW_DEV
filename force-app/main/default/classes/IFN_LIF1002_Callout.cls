@@ -1,59 +1,46 @@
 /**
- * @Class : IFN_LIF1002_SE001_Callout.cls
- * @group Framework : 검색엔진 서비스 callout
- * @Author : 조일근
- * @Date : 2023-08-24
+ * @Class : IFN_LIF1002_Callout.cls
+ * @group Framework : 
+ * @Author :  조일근 
+ * @Date : 2023.08.30
  * @Version : 1.0
- * @Description : 
- * @Modified : 
+ * @Description : 영업 시스템 인터페이스 callout
+ * @Modified :
  * ----------------------------------------------
  *  NO | Date       | Modifier       | Description
  * ----------------------------------------------
- *  1. | 2023.08.24 | 조일근 | 최초작성
+ *  1. | 2023.08.30 | 조일근  | 최초작성
  * */
-public class IFN_LIF1002_SE001_Callout {
-
+public class IFN_LIF1002_Callout {
     public IFN_CommonLog.LogWrap logWrap{get;set;}
     public IFN_CommonLog commlog;
-
-    public IFN_LIF1002_SE001_Callout(){
+    
+    public IFN_LIF1002_Callout() {
         this.commlog = new IFN_CommonLog();
     }
 
-    public IFN_LIF1002_SE001_Callout(String interfaceId, String type){
-        this.commlog         = new IFN_CommonLog();
+    public IFN_LIF1002_Callout(String interfaceId, String type) {
+        this.commlog = new IFN_CommonLog();
         this.logWrap = new IFN_CommonLog.LogWrap(interfaceId, type);
     }
 
-
-
-
     public IFN_CalloutResult getResponse(String interfaceId, Object params){
         IFN_CalloutResult result = new IFN_CalloutResult();
-
         
         try {
             switch on interfaceId {
-                //----- 테스트 IF
                 when 'IFN_LIF1002_SE001_MD001'{ 
-                    System.debug(' getResponse >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' + params);
                     result = IFN_LIF1002_SE001_MD001(interfaceId, params);
                 }
-                
+
             }
         } catch(Exception e) {
             result.setResult('E' , e.getMessage() , null); 
         } //end of try~catch
-
-
         return result;
-
     }
 
-    
-
-
-    /**
+ /**
      * 상품 조회(order_product)
      * @param interfaceId IFN_LIF1002_SE001_MD001
      * @param params (searchSp 로 검색 구분함. 검색 종류에 따라 파라메터가 조금씩 상이함 아래 예제 참조)
@@ -192,7 +179,7 @@ public class IFN_LIF1002_SE001_Callout {
         String result_code = 'S';
         String result_message = '';
         
-        SE001_01ResultWrapper infResponse = new SE001_01ResultWrapper();  
+        IFN_LIF1002_SE001_MD001.SE001_01ResultWrapper infResponse = new IFN_LIF1002_SE001_MD001.SE001_01ResultWrapper();  
         
 
         try{
@@ -204,8 +191,8 @@ public class IFN_LIF1002_SE001_Callout {
 
             this.logWrap.LogText.add(Json.serialize(params));
 
-            SE001RequstWrapper reqparam = new SE001RequstWrapper();
-            reqparam = (SE001RequstWrapper)params;
+            IFN_LIF1002_SE001_MD001.SE001RequstWrapper reqparam = new IFN_LIF1002_SE001_MD001.SE001RequstWrapper();
+            reqparam = (IFN_LIF1002_SE001_MD001.SE001RequstWrapper)params;
 
             IFN_ApiGateWay gateway = new IFN_ApiGateWay(interfaceId);
             String requestBody = JSON.serialize(reqparam);
@@ -216,7 +203,7 @@ public class IFN_LIF1002_SE001_Callout {
             if(response.getStatusCode() == 200) {
 
                 responsedata = response.getBody();
-                infResponse =  (SE001_01ResultWrapper)JSON.deserializeStrict((String)responsedata, SE001_01ResultWrapper.class);
+                infResponse =  (IFN_LIF1002_SE001_MD001.SE001_01ResultWrapper)JSON.deserializeStrict((String)responsedata, IFN_LIF1002_SE001_MD001.SE001_01ResultWrapper.class);
                 this.logWrap.LogText.add(JSON.serialize(infResponse.search));
                 this.logWrap.ResponseBody = (String)responsedata;
                 this.logWrap.ResponseTime = Datetime.now();
@@ -253,62 +240,5 @@ public class IFN_LIF1002_SE001_Callout {
         return result;
     }
     
-
-    /**
-     * ==================================== 
-     * 검색엔진 조회 요청 Wrapper
-     * =================================
-     */
-    /**
-     * 요청 파라메터 
-     */
-    public class SE001RequstWrapper{
-        public String searchSp {get;set;}
-        public String keywd    {get;set;}
-        public String limitCnt    {get;set;}
-        public String offset   {get;set;}
-    }
-
-
-    /** 
-     * 조회 결과 
-     */
-    public class SE001_01ResultWrapper {
-        public String total;
-        public List<SearchLst> search;
-        public String code;
-        public String err_cd;
-        public String err_msg_ctt;
-        
-    }
-
-    /** 
-     * 조회 결과 
-     */
-    public class SearchLst {
-        public String upd_dt {get;set;}
-        public String sale_unit_cd {get;set;}
-        public String co_id {get;set;}
-        public String brd_nm {get;set;}        
-        public String migr_orinat_cd_nm {get;set;}
-        public String gd_cls_id3 {get;set;}
-        public String migr_orinat_cd {get;set;}
-        public String gd_cls_id2 {get;set;}
-        public String gd_cls_id4 {get;set;}
-        public String gd_cls_nm3 {get;set;}
-        public String gd_cls_nm2 {get;set;}
-        public String gd_cls_id1 {get;set;}
-        public String gd_cls_nm4 {get;set;}
-        public String gd_cls_nm1 {get;set;}
-        public String taxt_cl_cd {get;set;}
-        public String gd_cls_id {get;set;}
-        public String gd_no {get;set;}
-        public String id {get;set;}
-        public String gd_bd {get;set;}
-        public String gd_bd_kw {get;set;}
-        public String taxt_cl_cd_nm {get;set;}
-                
-    }    
-
 
 }

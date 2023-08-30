@@ -5,14 +5,6 @@
     <aura:attribute name="ActiveSections"       type="List" default="" />
     <aura:attribute name="executeSectionParams1" type="Object" default="{}" />
     <aura:attribute name="executeSectionParams2" type="Object" default="{}" />
-    <aura:attribute name="executeSectionParams3" type="Object" default="{}" />
-    <aura:attribute name="executeSectionParams4" type="Object" default="{}" />
-    <aura:attribute name="executeSectionParams5" type="Object" default="{}" />
-    <aura:attribute name="executeSectionParams6" type="Object" default="{}" />
-    <aura:attribute name="executeSectionParams7" type="Object" default="{}" />
-    <aura:attribute name="executeSectionParams8" type="Object" default="{}" />
-    <aura:attribute name="executeSectionParams9" type="Object" default="{}" />
-    <aura:attribute name="executeSectionParams10" type="Object" default="{}" />
 
     <aura:handler name="init" value="{!this}" action="{!c.fn_doInit}"/>
 
@@ -43,102 +35,6 @@
             </aura:if>
             </lightning:accordion>
         </lightning:tab>
-        <lightning:tab label="확산-Order/Fulfillment" id="3">
-            <lightning:accordion
-                allowMultipleSectionsOpen="false"
-                activeSectionName="{! v.ActiveSections }"
-            >
-            <aura:if isTrue="{!not(empty(v.executeSectionParams3))}" >
-                <aura:iteration items="{!v.executeSectionParams3}" var="data">
-                    <c:IFN_ManagementBatchExecuteSection Param="{!data}" />
-                </aura:iteration>
-            </aura:if>
-            </lightning:accordion>
-        </lightning:tab>
-        <lightning:tab label="확산-Requirement" id="4">
-            <lightning:accordion
-                allowMultipleSectionsOpen="false"
-                activeSectionName="{! v.ActiveSections }"
-            >
-            <aura:if isTrue="{!not(empty(v.executeSectionParams4))}" >
-                <aura:iteration items="{!v.executeSectionParams4}" var="data">
-                    <c:IFN_ManagementBatchExecuteSection Param="{!data}" />
-                </aura:iteration>
-            </aura:if>
-            </lightning:accordion>
-        </lightning:tab>
-        <lightning:tab label="확산-C&amp;C" id="5">
-            <lightning:accordion
-                allowMultipleSectionsOpen="false"
-                activeSectionName="{! v.ActiveSections }"
-            >
-            <aura:if isTrue="{!not(empty(v.executeSectionParams5))}" >
-                <aura:iteration items="{!v.executeSectionParams5}" var="data">
-                    <c:IFN_ManagementBatchExecuteSection Param="{!data}" />
-                </aura:iteration>
-            </aura:if>
-            </lightning:accordion>
-        </lightning:tab>
-        <lightning:tab label="확산-Contents" id="6">
-            <lightning:accordion
-                allowMultipleSectionsOpen="false"
-                activeSectionName="{! v.ActiveSections }"
-            >
-            <aura:if isTrue="{!not(empty(v.executeSectionParams6))}" >
-                <aura:iteration items="{!v.executeSectionParams6}" var="data">
-                    <c:IFN_ManagementBatchExecuteSection Param="{!data}" />
-                </aura:iteration>
-            </aura:if>
-            </lightning:accordion>
-        </lightning:tab>
-        <lightning:tab label="확산-Dashboard" id="7">
-            <lightning:accordion
-                allowMultipleSectionsOpen="false"
-                activeSectionName="{! v.ActiveSections }"
-            >
-            <aura:if isTrue="{!not(empty(v.executeSectionParams7))}" >
-                <aura:iteration items="{!v.executeSectionParams7}" var="data">
-                    <c:IFN_ManagementBatchExecuteSection Param="{!data}" />
-                </aura:iteration>
-            </aura:if>
-            </lightning:accordion>
-        </lightning:tab>
-    
-    <lightning:tab label="RBU" id="8">
-            <lightning:accordion
-                allowMultipleSectionsOpen="false"
-                activeSectionName="{! v.ActiveSections }"
-            >
-            <aura:if isTrue="{!not(empty(v.executeSectionParams8))}" >
-                <aura:iteration items="{!v.executeSectionParams8}" var="data">
-                    <c:IFN_ManagementBatchExecuteSection Param="{!data}" />
-                </aura:iteration>
-            </aura:if>
-            </lightning:accordion>
-        </lightning:tab>
-        <lightning:tab label="Pipeline" id="9">
-            <lightning:accordion
-                allowMultipleSectionsOpen="false"
-                activeSectionName="{! v.ActiveSections }"
-            >
-            <aura:if isTrue="{!not(empty(v.executeSectionParams9))}" >
-                <aura:iteration items="{!v.executeSectionParams9}" var="data">
-                    <c:IFN_ManagementBatchExecuteSection Param="{!data}" />
-                </aura:iteration>
-            </aura:if>
-            </lightning:accordion>
-        </lightning:tab>
-        <lightning:tab label="EM" id="10">
-            <lightning:accordion
-                allowMultipleSectionsOpen="false"
-                activeSectionName="{! v.ActiveSections }"
-            >
-            <aura:if isTrue="{!not(empty(v.executeSectionParams10))}" >
-                <aura:iteration items="{!v.executeSectionParams10}" var="data">
-                    <c:IFN_ManagementBatchExecuteSection Param="{!data}" />
-                </aura:iteration>
-            </aura:if>
-            </lightning:accordion>
-        </lightning:tab>
+
     </lightning:tabset>
 </aura:component>

@@ -1,6 +1,18 @@
-@isTest 
-public  class IFN_LIF1002_SE001_Callout_TEST {
-
+/**
+ * @Class : IFN_LIF1002_Callout_TEST.cls
+ * @group Framework : 
+ * @Author :  조일근 
+ * @Date : 2023.08.30
+ * @Version : 1.0
+ * @Description : 주문 시스템 callout 테스트 클래스
+ * @Modified :
+ * ----------------------------------------------
+ *  NO | Date       | Modifier       | Description
+ * ----------------------------------------------
+ *  1. | 2023.08.30 | 조일근  | 최초작성
+ * */
+@isTest
+public with sharing class IFN_LIF1002_Callout_TEST {
     @TestSetup
     static void setup(){
 
@@ -9,19 +21,20 @@ public  class IFN_LIF1002_SE001_Callout_TEST {
     }
 
     @isTest
-    static void testOne()
+    static void testIFN_LIF1002_SE001_MD001_01()
     {
+
         Test.startTest();
         Test.setMock(HttpCalloutMock.class, new HttpCalloutSuccessMock()); 
-        IFN_LIF1002_SE001_Callout.SE001RequstWrapper params = new IFN_LIF1002_SE001_Callout.SE001RequstWrapper();
+        IFN_LIF1002_SE001_MD001.SE001RequstWrapper params = new IFN_LIF1002_SE001_MD001.SE001RequstWrapper();
         String interfaceId = 'IFN_LIF1002_SE001_MD001';
-        IFN_LIF1002_SE001_Callout callout = new IFN_LIF1002_SE001_Callout(interfaceId,'Realtime');
+        IFN_LIF1002_Callout callout = new IFN_LIF1002_Callout(interfaceId,'Realtime');
         params.searchSp = '05';
         params.keywd = '우유';
         params.offset = '';
         params.limitCnt = '3';
         callout.getResponse(interfaceId, params);
-        IFN_LIF1002_SE001_Callout.SearchLst searchitm = new IFN_LIF1002_SE001_Callout.SearchLst();
+        IFN_LIF1002_SE001_MD001.SearchLst searchitm = new IFN_LIF1002_SE001_MD001.SearchLst();
         searchitm.upd_dt = '';
         searchitm.sale_unit_cd = '';
         searchitm.co_id = '';
@@ -45,12 +58,41 @@ public  class IFN_LIF1002_SE001_Callout_TEST {
         searchitm.taxt_cl_cd_nm = '';
 
         Test.stopTest();
+
     }
 
+    @isTest
+    static void testIFN_LIF1002_SE001_MD001_02()
+    {
+
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, new HttpCalloutErrorMock()); 
+        IFN_LIF1002_SE001_MD001.SE001RequstWrapper params = new IFN_LIF1002_SE001_MD001.SE001RequstWrapper();
+        String interfaceId = 'IFN_LIF1002_SE001_MD001';
+        IFN_LIF1002_Callout callout = new IFN_LIF1002_Callout(interfaceId,'Realtime');
+        params.searchSp = '05';
+        params.keywd = '우유';
+        params.offset = '';
+        params.limitCnt = '3';
+        callout.getResponse(interfaceId, params);
+        Test.stopTest();
+
+    }
+
+
+    
     // Mock3 : ERR_CD":"9999"
     private class HttpCalloutSuccessMock implements HttpCalloutMock {
         public HTTPResponse respond(HTTPRequest request) {
             HttpResponse response = newResponse(200);
+            return response;
+        }
+    }
+
+
+    private class HttpCalloutErrorMock implements HttpCalloutMock {
+        public HTTPResponse respond(HTTPRequest request) {
+            HttpResponse response = newResponse(500);
             return response;
         }
     }
@@ -84,5 +126,6 @@ public  class IFN_LIF1002_SE001_Callout_TEST {
                     ']}');
         return response;
     }
+
 
 }

@@ -8,20 +8,11 @@
     <aura:attribute name="ActiveSections"       type="List" default="" />
     <aura:attribute name="exampleSectionParams1" type="Object" default="{}" />
     <aura:attribute name="exampleSectionParams2" type="Object" default="{}" />
-    <aura:attribute name="exampleSectionParams3" type="Object" default="{}" />
-    <aura:attribute name="exampleSectionParams4" type="Object" default="{}" />
-    <aura:attribute name="exampleSectionParams5" type="Object" default="{}" />
-    <aura:attribute name="exampleSectionParams6" type="Object" default="{}" />
-    <aura:attribute name="exampleSectionParams7" type="Object" default="{}" />
-    <aura:attribute name="exampleSectionParams8" type="Object" default="{}" />
-    <aura:attribute name="exampleSectionParams9" type="Object" default="{}" />
-    <aura:attribute name="exampleSectionParams10" type="Object" default="{}" />
-    <aura:attribute name="exampleSectionParams11" type="Object" default="{}" />
 
     <aura:handler name="init" value="{!this}" action="{!c.fn_doInit}"/>
 
     <lightning:tabset selectedTabId="1">
-        <lightning:tab label="ABS" id="1">
+        <lightning:tab label="1차" id="1">
             <lightning:accordion
                 allowMultipleSectionsOpen="false"
                 activeSectionName="{! v.ActiveSections }"
@@ -33,7 +24,7 @@
             </aura:if>
             </lightning:accordion>
         </lightning:tab>
-        <lightning:tab label="확산-Account" id="2">
+        <lightning:tab label="고도화" id="2">
             <lightning:accordion
                 allowMultipleSectionsOpen="false"
                 activeSectionName="{! v.ActiveSections }"
@@ -45,117 +36,6 @@
             </aura:if>
             </lightning:accordion>
         </lightning:tab>
-        <lightning:tab label="확산-Order/Fulfillment" id="3">
-            <lightning:accordion
-                allowMultipleSectionsOpen="false"
-                activeSectionName="{! v.ActiveSections }"
-            >
-            <aura:if isTrue="{!not(empty(v.exampleSectionParams3))}" >
-                <aura:iteration items="{!v.exampleSectionParams3}" var="data">
-                    <c:IFN_ManagementRealExampleSection Param="{!data}" />
-                </aura:iteration>
-            </aura:if>
-            </lightning:accordion>
-        </lightning:tab>
-        <lightning:tab label="확산-Requirement" id="4">
-            <lightning:accordion
-                allowMultipleSectionsOpen="false"
-                activeSectionName="{! v.ActiveSections }"
-            >
-            <aura:if isTrue="{!not(empty(v.exampleSectionParams4))}" >
-                <aura:iteration items="{!v.exampleSectionParams4}" var="data">
-                    <c:IFN_ManagementRealExampleSection Param="{!data}" />
-                </aura:iteration>
-            </aura:if>
-            </lightning:accordion>
-        </lightning:tab>
-        <lightning:tab label="확산-C&amp;C" id="5">
-            <lightning:accordion
-                allowMultipleSectionsOpen="false"
-                activeSectionName="{! v.ActiveSections }"
-            >
-            <aura:if isTrue="{!not(empty(v.exampleSectionParams5))}" >
-                <aura:iteration items="{!v.exampleSectionParams5}" var="data">
-                    <c:IFN_ManagementRealExampleSection Param="{!data}" />
-                </aura:iteration>
-            </aura:if>
-            </lightning:accordion>
-        </lightning:tab>
-        <lightning:tab label="확산-Contents" id="6">
-            <lightning:accordion
-                allowMultipleSectionsOpen="false"
-                activeSectionName="{! v.ActiveSections }"
-            >
-            <aura:if isTrue="{!not(empty(v.exampleSectionParams6))}" >
-                <aura:iteration items="{!v.exampleSectionParams6}" var="data">
-                    <c:IFN_ManagementRealExampleSection Param="{!data}" />
-                </aura:iteration>
-            </aura:if>
-            </lightning:accordion>
-        </lightning:tab>
-        <lightning:tab label="확산-Dashboard" id="7">
-            <lightning:accordion
-                allowMultipleSectionsOpen="false"
-                activeSectionName="{! v.ActiveSections }"
-            >
-            <aura:if isTrue="{!not(empty(v.exampleSectionParams7))}" >
-                <aura:iteration items="{!v.exampleSectionParams7}" var="data">
-                    <c:IFN_ManagementRealExampleSection Param="{!data}" />
-                </aura:iteration>
-            </aura:if>
-            </lightning:accordion>
-        </lightning:tab>
-        <lightning:tab label="RBU" id="8">
-            <lightning:accordion
-                allowMultipleSectionsOpen="false"
-                activeSectionName="{! v.ActiveSections }"
-            >
-            <aura:if isTrue="{!not(empty(v.exampleSectionParams8))}" >
-                <aura:iteration items="{!v.exampleSectionParams8}" var="data">
-                    <c:IFN_ManagementRealExampleSection Param="{!data}" />
-                </aura:iteration>
-            </aura:if>
-            </lightning:accordion>
-        </lightning:tab>
-        <lightning:tab label="Pipeline" id="9">
-            <lightning:accordion
-                allowMultipleSectionsOpen="false"
-                activeSectionName="{! v.ActiveSections }"
-            >
-            <aura:if isTrue="{!not(empty(v.exampleSectionParams9))}" >
-                <aura:iteration items="{!v.exampleSectionParams9}" var="data">
-                    <c:IFN_ManagementRealExampleSection Param="{!data}" />
-                </aura:iteration>
-            </aura:if>
-            </lightning:accordion>
-        </lightning:tab>
-        <lightning:tab label="EM" id="10">
-            <lightning:accordion
-                allowMultipleSectionsOpen="false"
-                activeSectionName="{! v.ActiveSections }"
-            >
-            <aura:if isTrue="{!not(empty(v.exampleSectionParams10))}" >
-                <aura:iteration items="{!v.exampleSectionParams10}" var="data">
-                    <c:IFN_ManagementRealExampleSection Param="{!data}" />
-                </aura:iteration>
-            </aura:if>
-            </lightning:accordion>
-        </lightning:tab>
-
-        <!-- GSI프로젝트 확인용 인터페이스 탭 추가 2022.10.13 Suan, Lee-->
-        <lightning:tab label="GSI" id="11">
-            <lightning:accordion
-                allowMultipleSectionsOpen="false"
-                activeSectionName="{! v.ActiveSections }"
-            >
-            <aura:if isTrue="{!not(empty(v.exampleSectionParams11))}" >
-                <aura:iteration items="{!v.exampleSectionParams11}" var="data">
-                    <c:IFN_ManagementRealExampleSection Param="{!data}" />
-                </aura:iteration>
-            </aura:if>
-            </lightning:accordion>
-        </lightning:tab>
-
     </lightning:tabset>
 
 </aura:component>

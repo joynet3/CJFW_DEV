@@ -2,17 +2,9 @@
 public with sharing class IFN_EIF1001_EC002_MD003_TEST {
     @TestSetup
     static void makeData(){
-        IFMaster__c ifMaster = new IFMaster__c(
-            Name = 'IFN_EIF1001_EC002_MD003',
-            Type__c = 'Outbound',
-            WebserviceType__c = 'REST',
-            Method__c = 'POST',
-            ContentType__c = 'application/json',
-            Endpoint__c = 'http://localhost:8060/gwms/crm/rest/EIF1001/EC002/MD003'
-        );
+        IFN_TestDataFactory.createIfPrograms();
 
-        insert ifMaster;
-
+        
         ContentVersion cv = new ContentVersion(
             Description  = 'test description',
             PathOnClient ='test_file.txt',

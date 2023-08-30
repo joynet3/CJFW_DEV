@@ -190,6 +190,11 @@ public with sharing class IFN_ApiGateWay {
                         :  endPointUrl + '?' +paramdmap.HeaderLab__c + '=' + paramdmap.HeaderKey__c;
                     }
                 }
+
+
+
+            }else if(objIFMaster.Method__c == 'REST' ) {
+                endPointUrl = String.isNotBlank(requestBody) ?  endPointUrl+'/'+requestBody : endPointUrl;
             }
 
 

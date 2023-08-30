@@ -47,9 +47,10 @@ public class IFN_ManagementController {
                 Map<String, List<Example>> examPleMap = new Map<String, List<Example>>();  //Real Interface example map
                 Map<String, List<BatchItem>> batchItemMap = new Map<String,List<BatchItem>>(); //Batch Interface map
                 
-                
                 for(IFMaster__c program : ifProgramList)
                 {
+
+                    // 좌측 시스템 구분 생성 
                     if(examPleMap.containsKey(program.TargetSystem__c))
                     {
                         List<Example> exampleList = examPleMap.get(program.TargetSystem__c);
@@ -60,6 +61,7 @@ public class IFN_ManagementController {
                     {
                         examPleMap.put(program.TargetSystem__c, new List<Example>{new Example(program)});
                     }
+
 
                     if(String.isNotBlank(program.BatchClass__c))
                     {
@@ -74,7 +76,7 @@ public class IFN_ManagementController {
                             batchItemMap.put(program.TargetSystem__c, new List<BatchItem>{new BatchItem(program)});
                         }
                     }
-                    
+
                 }
 
                 if(!examPleMap.isEmpty())
@@ -87,6 +89,7 @@ public class IFN_ManagementController {
                     }
                 }
 
+
                 if(!batchItemMap.isEmpty())
                 {
                     Set<String> batchItemMapKeys = batchItemMap.keySet();
@@ -96,6 +99,7 @@ public class IFN_ManagementController {
                         batchDataList.add(new BatchData(key, batchItemMap.get(key)));
                     }
                 }
+
             }
         }// try end
         catch(Exception e)
@@ -115,12 +119,29 @@ public class IFN_ManagementController {
     @AuraEnabled
     public static Object getResponse(IFMgmt param){
         Object res;
-        IFN_ApiGateWay result = new IFN_ApiGateWay(param.interfaceId);
+        IFN_CalloutResult result = new IFN_CalloutResult();
+
         try {
 
             System.debug('=========================================');
             System.debug(param.project);
             System.debug(param.targetSystem);
+            switch on param.targetSystem {
+                when 'LIF1002'{
+                    
+                    result = new IFN_LIF1002_SE001_Callout().getResponse(param.interfaceId, param.params);
+                    res = result;
+                }
+                when 'EIF1001'{
+                    
+                    result = new IFN_EIF1001_Callout().getResponse(param.interfaceId, param.params);
+                    res = result;
+                }                
+                when else {
+                    result.setResult('E', 'Method parameter check', null);
+                    res = result;
+                }
+            }
 
 
         } catch (Exception e) {
@@ -279,8 +300,8 @@ public class IFN_ManagementController {
         @AuraEnabled public String example{get;set;}
         @AuraEnabled public String targetSystem{get;set;}
         @AuraEnabled public String project{get;set;}
-        // @AuraEnabled public String division{get;set;}
-        // @AuraEnabled public String divLabel{get;set;}
+        @AuraEnabled public String division{get;set;}
+        @AuraEnabled public String divLabel{get;set;}
 
         public Example(){}
 
@@ -291,8 +312,8 @@ public class IFN_ManagementController {
             this.example      = program.ExampleBody__c;
             this.targetSystem = program.TargetSystem__c;
             this.project      = program.project__c;
-            // this.division     = program.TargetSystem__c;
-            // this.divLabel     = program.project__c + '-' + program.TargetSystem__c;
+            this.division     = program.TargetSystem__c;
+            this.divLabel     = program.project__c + '-' + program.TargetSystem__c;
         }
     }
 
