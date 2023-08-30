@@ -1,10 +1,10 @@
 /**
  * @Class : IFN_LIF1002_SE001_Callout.cls
- * @group Framework : 검색엔진 서비스 callout
+ * @group Framework : 
  * @Author : 조일근
  * @Date : 2023-08-24
  * @Version : 1.0
- * @Description : 
+ * @Description : 검색엔진 서비스 callout
  * @Modified : 
  * ----------------------------------------------
  *  NO | Date       | Modifier       | Description

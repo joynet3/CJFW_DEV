@@ -1,4 +1,4 @@
-<aura:component controller="IF_ManagementController" implements="force:appHostable,flexipage:availableForAllPageTypes" access="global">
+<aura:component controller="IFN_ManagementController" implements="force:appHostable,flexipage:availableForAllPageTypes" access="global">
     <aura:attribute name="interfaceData" type="Object"/>
     <aura:attribute name="batchData" type="Object"/>
     <aura:attribute name="logDeleteSettings" type="Object"/>
@@ -35,8 +35,7 @@
                     <aura:if isTrue="{!not(empty(v.interfaceData))}" >
                         <aura:iteration items="{!v.interfaceData}" var="data">
                             <lightning:tab label="{!data.label}">
-                                <c:IF_ManagementRealSystemSection Param="{!data}" />
-                                <!--<c:IF_ManagementRealSystemDivision Param="{!data}" />-->
+                                <c:IFN_ManagementRealSystemSection Param="{!data}" />
                             </lightning:tab>
                         </aura:iteration>
                     </aura:if>
@@ -48,68 +47,13 @@
                     <aura:if isTrue="{!not(empty(v.batchData))}" >
                         <aura:iteration items="{!v.batchData}" var="data">
                             <lightning:tab label="{!data.name}">
-                                <c:IF_ManagementBatchSystemSection Param="{!data}" />
+                                <c:IFN_ManagementBatchSystemSection Param="{!data}" />
                             </lightning:tab>
                         </aura:iteration>
                     </aura:if>
                 </lightning:tabset>
             </lightning:tab>
 
-            <lightning:tab label="Log 설정" id="3">
-                <lightning:layout>
-                    <lightning:layoutItem size="12" padding="around-small">    
-                        <lightning:card title="">     
-                            <aura:set attribute="actions">
-                                <Button type="button" class="slds-button slds-button_outline-brand" onclick="{! c.fn_saveLogDeleteTerm }" >
-                                    저장
-                                </Button>
-                            </aura:set>                     
-                            <p class="slds-p-horizontal_small">
-                                <lightning:layout>
-                                    <lightning:layoutItem size="12" padding="around-small">    
-                                        <lightning:input aura:id="logDate" label="Log 보관 기간(현재일로부터 몇일전까지 보관할것인지)" value="{!v.logDeleteSettings.Term__c}" required="true" />
-                                    </lightning:layoutItem>
-                                </lightning:layout>                             
-                            </p>
-                        </lightning:card> 
-                        <!-- 2022-01-24 3개월 전 Log delete 설정 -->  
-                        <lightning:card title="">     
-                            <aura:set attribute="actions">
-                                <Button type="button" class="slds-button slds-button_outline-brand" onclick="{! c.executeBatch}" >
-                                    실행
-                                </Button>
-                            </aura:set>                     
-                            <p class="slds-p-horizontal_small">
-                                <lightning:layout>
-                                    <lightning:layoutItem padding="around-small">
-                                        <lightning:layoutItem size="12" padding="around-small">
-                                            <lightning:input aura:id="logDelete" label="Log를 삭제할 Class 입력" placeholder = "Log 삭제할 Class명" required="true"/>
-                                        </lightning:layoutItem>
-                                    </lightning:layoutItem>
-                                </lightning:layout>                             
-                            </p>
-                        </lightning:card>
-                    </lightning:layoutItem>
-                </lightning:layout>
-            </lightning:tab>
-            
-            <lightning:tab label="JSON Size check" id="4">
-                <lightning:layout>
-                    <lightning:layoutItem size="12" padding="around-small">    
-                        <lightning:card title="">                        
-                            <p class="slds-p-horizontal_small">
-                                <lightning:textarea name="param" label="Parameter (JSON형식으로 입력)" value="{! v.JSONInput }"/>
-                                <Button type="button" onclick="{! c.fn_jsonSizeCheck }" class="slds-button slds-button_outline-brand">
-                                    실행
-                                </Button>
-                                <aura:if isTrue="{!not(empty(v.JSONOutput))}" >
-                                    <lightning:textarea name="JSONOutput" label="JSONOutput" value="{! v.JSONOutput }" readonly="true"/>
-                                </aura:if>                          
-                            </p>
-                        </lightning:card>
-                    </lightning:layoutItem>
-                </lightning:layout>
-            </lightning:tab>
         </lightning:tabset>
     </div>
 </aura:component>

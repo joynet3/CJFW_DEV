@@ -4,7 +4,7 @@
  * @Author :  조일근 
  * @Date : 2023.08.29
  * @Version : 1.0
- * @Description :
+ * @Description : 인터페이스 메니져
  * @Modified :
  * ----------------------------------------------
  *  NO | Date       | Modifier       | Description
@@ -39,7 +39,7 @@ public class IFN_ManagementController {
                                                     FROM IFMaster__c 
                                                     WHERE CallORBatch__c != null
                                                     AND TargetSystem__c != null
-                                                    AND EndPoint__c <> ''
+                                                    AND EndPoint__c != ''
                                                     ORDER BY TargetSystem__c, Name];
             
             if(!ifProgramList.isEmpty())
@@ -125,7 +125,6 @@ public class IFN_ManagementController {
 
         } catch (Exception e) {
             res = e.getMessage() + ' / ' + e.getLineNumber();
-            //throw new AuraHandledException(e.getMessage() + ' / ' + e.getLineNumber());
         }
 
         return res;
