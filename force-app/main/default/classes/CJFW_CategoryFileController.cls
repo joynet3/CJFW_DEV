@@ -1,13 +1,11 @@
 /**
- * @description       : 카테고리별로 파일 등록이 가능한 controller
+ * @description       : 
  * @author            : seol.kim@dkbmc.com
- * @since 08-25-2023  내용 작성
  * @group             : 
  * @last modified on  : 08-29-2023
  * @last modified by  : seol.kim@dkbmc.com
 **/
-public with sharing class CategoryFileUploadContorller {
-
+public with sharing class CJFW_CategoryFileController {
     @AuraEnabled(cacheable=true)
     public static List<ContentVersion> getFileList(String category, Id recordId){
         try {
