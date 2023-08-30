@@ -182,6 +182,7 @@ public class IFN_LIF1002_Callout {
         IFN_LIF1002_SE001_MD001.SE001_01ResultWrapper infResponse = new IFN_LIF1002_SE001_MD001.SE001_01ResultWrapper();  
         
 
+
         try{
 
 
@@ -192,7 +193,8 @@ public class IFN_LIF1002_Callout {
             this.logWrap.LogText.add(Json.serialize(params));
 
             IFN_LIF1002_SE001_MD001.SE001RequstWrapper reqparam = new IFN_LIF1002_SE001_MD001.SE001RequstWrapper();
-            reqparam = (IFN_LIF1002_SE001_MD001.SE001RequstWrapper)params;
+            reqparam = (IFN_LIF1002_SE001_MD001.SE001RequstWrapper)JSON.deserializeStrict((String) params, IFN_LIF1002_SE001_MD001.SE001RequstWrapper.class);
+
 
             IFN_ApiGateWay gateway = new IFN_ApiGateWay(interfaceId);
             String requestBody = JSON.serialize(reqparam);

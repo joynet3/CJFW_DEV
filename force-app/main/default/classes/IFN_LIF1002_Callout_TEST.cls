@@ -33,7 +33,7 @@ public with sharing class IFN_LIF1002_Callout_TEST {
         params.keywd = '우유';
         params.offset = '';
         params.limitCnt = '3';
-        callout.getResponse(interfaceId, params);
+        callout.getResponse(interfaceId, JSon.serialize(params));
         IFN_LIF1002_SE001_MD001.SearchLst searchitm = new IFN_LIF1002_SE001_MD001.SearchLst();
         searchitm.upd_dt = '';
         searchitm.sale_unit_cd = '';

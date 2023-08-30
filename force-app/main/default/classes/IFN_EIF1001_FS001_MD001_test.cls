@@ -35,6 +35,8 @@ public with sharing class IFN_EIF1001_FS001_MD001_test {
     static void test_IFN_EIF1001_FS001_MD001_ba() {
         Test.startTest();
         
+        Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator());
+
         IFN_EIF1001_FS001_MD001_ba b = new IFN_EIF1001_FS001_MD001_ba();
         Database.executeBatch(b);
         
@@ -45,8 +47,9 @@ public with sharing class IFN_EIF1001_FS001_MD001_test {
     static void test_IFN_EIF1001_FS001_MD001_sc() {
         Test.startTest();
         
-        SchedulableContext sc = null;
         Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator());
+
+        SchedulableContext sc = null;
         IFN_EIF1001_FS001_MD001_sc scd = new IFN_EIF1001_FS001_MD001_sc();
         scd.execute(sc);
 
@@ -82,7 +85,7 @@ public with sharing class IFN_EIF1001_FS001_MD001_test {
                     + '                "HIENG_LNTRT_DVS_NM": "해당없음",'
                     + '                "PRODUCTION": "아니오",'
                     + '                "PRPOS": ""'
-                    + '            },'
+                    + '            }'
                     + '        ],'
                     + '        "RESULT": {'
                     + '            "MSG": "정상처리되었습니다.",'

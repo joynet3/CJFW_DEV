@@ -30,7 +30,7 @@ public class IFN_LIF1002_SE001_MD001 {
         try {
             
             IFN_LIF1002_Callout callout = new IFN_LIF1002_Callout(this.interfaceId, 'Real');
-            IFN_CalloutResult calloutRes = callout.getResponse(this.interfaceId, params);
+            IFN_CalloutResult calloutRes = callout.getResponse(this.interfaceId, Json.serialize(params));
 
             result = (SE001_01ResultWrapper)calloutRes.response;
 
@@ -43,7 +43,7 @@ public class IFN_LIF1002_SE001_MD001 {
         }
 
 
-        commlog.insertLog(this.logWrap);
+        //commlog.insertLog(this.logWrap);
         return result;
 
 

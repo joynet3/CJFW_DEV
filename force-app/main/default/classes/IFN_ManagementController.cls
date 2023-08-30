@@ -129,12 +129,12 @@ public class IFN_ManagementController {
             switch on param.targetSystem {
                 when 'LIF1002'{
                     
-                    result = new IFN_LIF1002_SE001_Callout().getResponse(param.interfaceId, param.params);
+                    result = new IFN_LIF1002_Callout(param.interfaceId,'Real').getResponse(param.interfaceId, param.params);
                     res = result;
                 }
                 when 'EIF1001'{
                     
-                    result = new IFN_EIF1001_Callout().getResponse(param.interfaceId, param.params);
+                    result = new IFN_EIF1001_Callout(param.interfaceId,'Real').getResponse(param.interfaceId, param.params);
                     res = result;
                 }                
                 when else {
