@@ -5,9 +5,6 @@ public  class IFN_TestDataFactory_TEST {
         Test.startTest();
 
         IFN_TestDataFactory.createIfPrograms();
-
-
-        
         
         Test.stopTest();
     }

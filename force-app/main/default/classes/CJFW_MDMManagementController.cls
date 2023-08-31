@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 08-29-2023
+ * @last modified on  : 08-31-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -129,11 +129,13 @@ public with sharing class CJFW_MDMManagementController {
         // aura  String 으로 넘어와서 JSON.des
         // ObjCustomer obj =  JSON.deserialize(objCustomer, 래퍼클래스명.class);
         system.debug('>>>doSave # objCustomer ' + JSON.serialize(objCustomer));
-        system.debug('>>>doSave # objCustomer ' + JSON.serialize(objCustomer.PV_SELLER_lu));
+        system.debug('>>>doSave # objCustomer ' + JSON.serialize(objCustomer.PV_VKGRP_lu));
+
         try {
             if(objCustomer != null){    
                 MDMRegRequestCustomer__c mdmRequest = new MDMRegRequestCustomer__c();
-                mdmRequest.PV_SELLER_lu__c                                      = objCustomer?.PV_SELLER_lu;
+                mdmRequest.PV_VKGRP_lu__c                                       = objCustomer?.PV_VKGRP_lu;
+                //mdmRequest.PV_SELLER_lu__c                                      = objCustomer?.PV_SELLER_lu;
                 mdmRequest.RecordTypeId                                         = objCustomer?.RecordTypeId;
                 mdmRequest.requestType__c                                       = objCustomer?.requestType;
                 mdmRequest.PVRA_VKGRP__c                                        = Date.valueOf(objCustomer?.PVRA_VKGRP);
@@ -414,6 +416,7 @@ public with sharing class CJFW_MDMManagementController {
      * MDMRequest 공통
      */
     public class MDMRequest{
+        @AuraEnabled public String PV_VKGRP_lu {get;set;}
         @AuraEnabled public String PV_SELLER_lu {get;set;}
         @AuraEnabled public String RecordTypeId {get;set;}
         @AuraEnabled public String requestType {get;set;}
