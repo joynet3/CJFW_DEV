@@ -59,7 +59,8 @@
             const res = result.r;
             const c   = result.c;
             const h   = result.h;
-
+            console.log('222222222222 ::::: ');
+            console.log(result);
             if(res)
             {   
                 //console.log('### fn_getResponse :: res = ' , res);

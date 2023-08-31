@@ -7,6 +7,17 @@
             action.setParams(params);
             action.setCallback(helper, function(response) {
                 if (response.getState() === 'SUCCESS') {
+
+                    console.log('cmp>>>>>>>>>>>>>>>>>>>>>>>>>>');
+                    console.log(cmp);
+                    console.log('helper>>>>>>>>>>>>>>>>>>>>>>>>>>');
+                    console.log(helper);
+                    console.log('response>>>>>>>>>>>>>>>>>>>>>>>>>>');
+                    console.log(response);
+
+                    console.log('response.getReturnValue>>>>>>>>>>>>>>>>>>>>>>>>>>');
+                    console.log(response.getReturnValue());
+
                     resolve({'c':cmp, 'h':helper, 'r':response.getReturnValue(),'state' : response.getState()});
                 } else {
                     let errors = response.getError();

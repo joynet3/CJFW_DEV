@@ -206,7 +206,7 @@ public class IFN_LIF1002_Callout {
 
                 responsedata = response.getBody();
                 infResponse =  (IFN_LIF1002_SE001_MD001.SE001_01ResultWrapper)JSON.deserializeStrict((String)responsedata, IFN_LIF1002_SE001_MD001.SE001_01ResultWrapper.class);
-                this.logWrap.LogText.add(JSON.serialize(infResponse.search));
+                this.logWrap.LogText.add('infResponse.search >>>>>>>>>> ' + JSON.serialize(infResponse.search));
                 this.logWrap.ResponseBody = (String)responsedata;
                 this.logWrap.ResponseTime = Datetime.now();
             } else {
