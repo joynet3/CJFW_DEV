@@ -24,7 +24,7 @@ public virtual without sharing class NotiHandler {
             }
         }
     */
-    @testVisible protected Map<String, Map<String,NotiTemplate>> categoryTemplateMapMap;
+    @testVisible protected Map<String, Map<String,NotiTemplate>> categoryTemplateMapMap;    //채널별 템플릿 마스터 정보
     /*데이터 형식
         {
             
@@ -33,7 +33,7 @@ public virtual without sharing class NotiHandler {
             
         }
     */
-    @testVisible protected Map<String, List<NotiTemplate>> categorySendDataListMap;
+    @testVisible protected Map<String, List<NotiTemplate>> categorySendDataListMap;         //실제 전송할 Template
     @testVisible protected Set<String> recipientIdSet;
     public static Map<String, String> customNotiTypeIdMap;
 
@@ -326,7 +326,7 @@ public virtual without sharing class NotiHandler {
     *
     *@param  datas 
     */
-    @testVisible protected void makePersonalize(List<sObject> datas) {
+    @testVisible protected Map<String, List<NotiTemplate>> makePersonalize(List<sObject> datas) {
         // Field api name : value 매핑 
         // TBD 만약 다언어 추가 될 경우 toLabel 은 현재 사용자 기준이라 PickList value 번역 해주는 기능 추가 
         List<String> targetFields = noti.TargetFields__c.replaceAll(' ','').replaceFirst('(?i)ToLabel','').replace('(','').replace(')','').split(',');
@@ -458,6 +458,8 @@ public virtual without sharing class NotiHandler {
             //TBD 다른 카테고리 추가시
 
         }
+
+        return categorySendDataListMap; //속성
     }
 
 

@@ -135,7 +135,7 @@ public class IFN_ManagementController {
                 when 'EIF1001'{
                     
                     result = new IFN_EIF1001_Callout(param.interfaceId,'Real').getResponse(param.interfaceId, param.params);
-                    res = Json.serialize(result);
+                    res = result;
                 }                
                 when else {
                     result.setResult('E', 'Method parameter check', null);

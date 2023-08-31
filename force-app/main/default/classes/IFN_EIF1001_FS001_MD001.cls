@@ -20,10 +20,6 @@ global with sharing class IFN_EIF1001_FS001_MD001 implements Database.Batchable<
 
     List<String> globalCount = new List<String>();
     
-    /**
-     * IF_SFDC_DATA_REQ_EAT_BID_INFO_ba 를 참고로 함.
-     * but 추가 확장 조회가 없고, 조회 키워드가 없어서 수행 시 인자 받는 기능 제외 함.
-     */
     global IFN_EIF1001_FS001_MD001() {}
 
     IFN_CommonLog.LogWrap logWrap = new IFN_CommonLog.logWrap(interfaceId, 'Real');
@@ -35,7 +31,7 @@ global with sharing class IFN_EIF1001_FS001_MD001 implements Database.Batchable<
     *  내용    : 식품(첨가물)품목제조보고
     ************************************************************************************************************/
     global Iterable<String> start(Database.BatchableContext bc) {
-        globalCount.add(String.valueOf(1));
+        globalCount.add(String.valueOf(1));     // 1회 수행 한다.
         return globalCount;
     }
 
@@ -47,71 +43,85 @@ global with sharing class IFN_EIF1001_FS001_MD001 implements Database.Batchable<
         String errResultCode;
         String errResultMsg;
         try{
-            system.debug('totalpagelist calc start-------------------');
-            Integer totalPage = 0;
-            String getRquest = '';
             
             //  https://openapi.foodsafetykorea.go.kr/api/dfc53a7c97a844899df4/I1250/json/1/1000/PRDLST_NM=%EC%A0%84%EC%9A%A9%EC%9C%A0
-            //  ifMasterObj.Endpoint__c = https://openapi.foodsafetykorea.go.kr/api
-            //  /dfc53a7c97a844899df4/I1250/json/1/1000/PRDLST_NM=%EC%A0%84%EC%9A%A9%EC%9C%A0
             
-            getRquest += '/' + authKey.KeyValue__c;
-            getRquest += '/' + 'I1250';                 //서비스명
-            getRquest += '/' + 'json';                  //json or xml
-            getRquest += '/1/1000';                     //from~to
-            
-            //1.전용유 픽스
-            getRquest += '/' + 'PRDLST_NM=%EC%A0%84%EC%9A%A9%EC%9C%A0'; //전용유 
-            //String encodedString = EncodingUtil.urlEncode('전용유', 'UTF-8');
-            //getRquest += '/' + 'PRDLST_NM=' + encodedString; //전용유 
+            // --- 2023.08.30 : IFMaster Endpoint 에 전체 URL 저장 한다. ApiGateWay 방식으로 하려면, 파라메터를 넘기는 식으로 하려면, 혼선이 있을 수 있다.
+            //                  현재 업무는 단일 고정이며, 유니크한 url 이기에 Endpoint에 고정하기로 한다.
 
             // *** http ***
-            Http http = new Http();
-            HttpRequest request = new HttpRequest();
-            request.setEndpoint(ifMasterObj.Endpoint__c + getRquest);
-            request.setHeader('content-type', ifMasterObj.ContentType__c);
-            request.setMethod(ifMasterObj.Method__c);
-            request.setTimeout(110000);
-            HttpResponse res = http.send(request);
-            Integer totalCount = 0;
-            Integer numOfRow = 0;
+            // Http http = new Http();
+            // HttpRequest request = new HttpRequest();
+            // request.setEndpoint(ifMasterObj.Endpoint__c + getRquest);
+            // request.setHeader('content-type', ifMasterObj.ContentType__c);
+            // request.setMethod(ifMasterObj.Method__c);
+            // request.setTimeout(110000);
+            // HttpResponse res = http.send(request);
+            // Integer totalCount = 0;
+            // Integer numOfRow = 0;
 
-            if (res.getStatusCode() == 200) {
+
+            
+            IFN_CalloutResult ifRes = new IFN_CalloutResult();
+            Output param = new Output();
+
+            try {
+                IFN_EIF1001_Callout callout = new IFN_EIF1001_Callout(this.interfaceId, 'Real');
+                ifRes = callout.getResponse(this.interfaceId, param);                                   //  <-------------- callout
+
+                // To - Be ...
+                /*
+    @AuraEnabled public String result{get;set;}
+    @AuraEnabled public String message{get;set;}
+    @AuraEnabled public Object response{get;set;}
+    @AuraEnabled public Integer totalCount{get;set;}    
+    public IFN_CommonLog.LogWrap log{get;set;}
+                */
+                //if (ifRes.getStatusCode() == 200) {
+                if(ifRes.result.equals('S')){
                 
-                List<CJFW_FoodAdditives__c> insList = new List<CJFW_FoodAdditives__c>();
-                CJFW_FoodAdditives__c  insObj = new CJFW_FoodAdditives__c();
-                
-                Output outObj = (Output) JSON.deserialize(res.getBody(), Output.class);
-                
-                //System.debug('outObj.i1250.Result:' + outObj.i1250.Result);
-                System.debug('outObj.i1250.total_count:' + outObj.i1250.total_count);
-                for(row nowrow : outObj.i1250.row){
-                    insObj = Converter(nowrow);
-                    insList.add(insObj);
+                    List<CJFW_FoodAdditives__c>     insList     = new List<CJFW_FoodAdditives__c>();
+                    CJFW_FoodAdditives__c           insObj      = new CJFW_FoodAdditives__c();
+                    
+                    //Output outObj = (Output) JSON.deserialize(ifRes.getBody(), Output.class); //callout 에서 Output 형으로 만들어 response 에 넣어 뒀다.
+                    Output outObj = (Output)ifRes.response;
+                    for(row nowrow : outObj.i1250.row){
+                        insObj = Converter(nowrow);
+                        insList.add(insObj);
+                    }
+    
+                    if(insList != null && insList.size() >= 1){
+                        List<CJFW_FoodAdditives__c> delList = [Select Id From CJFW_FoodAdditives__c];
+                        if(delList != null) delete delList;
+                    }
+    
+                    insert insList;
+    
+                    logWrap.LogText.add(outObj.i1250.Result.CODE + '/' + outObj.i1250.Result.MSG);
+                    
+                    //Input input = (Input)JSON.deserialize(requestBody,  Input.class);
+                    //global static CJFW_FoodAdditives__c Converter(row row){
+                }else{
+                    
+                    errResultCode   = ifRes.result;
+                    errResultMsg    = ifRes.message + '\n' + (String)ifRes.response;
+   
                 }
 
-                if(insList != null && insList.size() >= 1){
-                    List<CJFW_FoodAdditives__c> delList = [Select Id From CJFW_FoodAdditives__c];
-                    if(delList != null) delete delList;
-                }
 
-                insert insList;
-
-                
-                logWrap.LogText.add(outObj.i1250.Result.CODE + '/' + outObj.i1250.Result.MSG);
-                errResultCode = outObj.i1250.Result.CODE;
-                errResultMsg = outObj.i1250.Result.MSG;
-
-                //Input input = (Input)JSON.deserialize(requestBody,  Input.class);
-                //global static CJFW_FoodAdditives__c Converter(row row){
-
+            } catch (Exception e) {
+                this.logWrap.ErrorCode = '-1';
+                this.logWrap.ErrorText.add(e.getLineNumber()+e.getMessage() + e.getStackTraceString()); 
+                this.logWrap.Status = 'ERROR';
             }
+
+            
         } catch(Exception e) {
             
             logWrap.ErrorCode = errResultCode;
             logWrap.ErrorText.add(errResultMsg + '\n');
-            logWrap.ErrorText.add(e.getLineNumber() + '\n');
-            logWrap.ErrorText.add('/' + e.getMessage() + '\n');
+            logWrap.ErrorText.add('[' + e.getLineNumber() + ']' + '\n');
+            logWrap.ErrorText.add(e.getMessage() + '\n');
         }
 
         
@@ -173,7 +183,7 @@ global with sharing class IFN_EIF1001_FS001_MD001 implements Database.Batchable<
                     "HIENG_LNTRT_DVS_NM": "해당없음",
                     "PRODUCTION": "아니오",
                     "PRPOS": ""
-                },
+                }
             ],
             "RESULT": {
                 "MSG": "정상처리되었습니다.",
@@ -213,8 +223,12 @@ global with sharing class IFN_EIF1001_FS001_MD001 implements Database.Batchable<
         public String CODE						{get;set;}
     }
 
+    // from callout  전달용
+    public class ResObject {
+        public Object response					{get;set;}
+    }
 
-
+    
 
     
 }

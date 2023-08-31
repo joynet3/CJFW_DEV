@@ -21,8 +21,6 @@ public without sharing class EmailAlert implements NotiAlert{
                                             Id
                                             , Address
                                             , DisplayName
-                                            , IsAllowAllProfiles
-                                            , Purpose
                                         from OrgWideEmailAddress  
                                         //조건문 추가 필요
             ];

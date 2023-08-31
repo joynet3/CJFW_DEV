@@ -31,6 +31,10 @@ public with sharing class IFN_sancho_test {
         system.schedule('IF_SFDC_DATA_REQ_EAT_BID_INFO_sc 학교급식 NEAT 02시00분', '0 10 16 * * ?', sch);
         system.schedule('IF_SFDC_DATA_REQ_EAT_BID_INFO_sc 학교급식 NEAT 02시00분', '0 0 02 * * ?', sch);
 
+
+        IFN_EIF1001_FS001_MD001 b = new IFN_EIF1001_FS001_MD001();
+        Database.executeBatch(b, 1);
+
     }
 
     public void restRun(){
