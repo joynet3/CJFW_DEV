@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 08-24-2023
+ * @last modified on  : 08-31-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -15,11 +15,15 @@ public with sharing class CJFW_MDMReferenceCreateController {
      * @return      `String`
      */ 
     @AuraEnabled
-    public static List<DataWrapper> doInit(){
-        system.debug('doInit!!!');
+    public static List<DataWrapper> doInit(Integer pageNumber, Integer pageSize){
+        system.debug('### CJFW_MDMReferenceCreateController > doInit(pageNumber, pageSize)');
+        system.debug('>>> pageNumber ' + pageNumber);
+        system.debug('>>> pageSize ' + pageSize);
         List<DataWrapper> result = new List<DataWrapper>();
 
         List<Account> accList = doSelect(null, null, null);
+        system.debug('>>> accList ' + JSON.serialize(accList));
+
 
         if(!AccList.isEmpty()) {
             for(Account acc : accList){

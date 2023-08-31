@@ -101,7 +101,6 @@ public virtual without sharing class NotiHandler {
                     notiTemplate = new NotiEmailTemplate();
                     notiTemplate.setLang(template.Language__c);
                     notiTemplate.setTemplateId(template.EmailDeveloperName__c);
-                    if(noti.IsDynamic__c) ((NotiEmailTemplate)notiTemplate).setIsCustom(noti.IsDynamic__c);
                     ((NotiEmailTemplate)notiTemplate).setIsSystem(noti.IsSystemEmail__c);
                     ((NotiEmailTemplate)notiTemplate).setIsUseOWE(noti.IsUseOWE__c);
                     ((NotiEmailTemplate)notiTemplate).setIsSaveAsActivity(noti.IsSaveAsActivity__c);

@@ -21,9 +21,14 @@ public with sharing class EmployeeGetInfoController {
         system.debug('#EmployeeGetInfoController #getEmpInfo' );
 
         Map<String,Object> getEmpMap = new Map<String,Object>();
+
+        String searchKeyTerm = '%' + searchKey + '%';
+
+        system.debug('searchKey -> ' + searchKeyTerm );
          
-         String queryString = ' SELECT id, Name, Code__c, NameEN__c, NameZH__c' +
-                              ' FROM CJFW_Employee__c ';
+        String queryString = ' SELECT id, Name, Code__c, NameEN__c, NameZH__c ' +
+                              ' FROM CJFW_Employee__c ' + 
+                              ' WHERE Code__c LIKE :searchKeyTerm ';
          
         List<CJFW_Employee__c> empList = new List<CJFW_Employee__c>();
         System.debug('query ->  ' + queryString);

@@ -46,44 +46,26 @@ global with sharing class IFN_EIF1001_FS001_MD001 implements Database.Batchable<
             
             //  https://openapi.foodsafetykorea.go.kr/api/dfc53a7c97a844899df4/I1250/json/1/1000/PRDLST_NM=%EC%A0%84%EC%9A%A9%EC%9C%A0
             
-            // --- 2023.08.30 : IFMaster Endpoint 에 전체 URL 저장 한다. ApiGateWay 방식으로 하려면, 파라메터를 넘기는 식으로 하려면, 혼선이 있을 수 있다.
-            //                  현재 업무는 단일 고정이며, 유니크한 url 이기에 Endpoint에 고정하기로 한다.
-
-            // *** http ***
-            // Http http = new Http();
-            // HttpRequest request = new HttpRequest();
-            // request.setEndpoint(ifMasterObj.Endpoint__c + getRquest);
-            // request.setHeader('content-type', ifMasterObj.ContentType__c);
-            // request.setMethod(ifMasterObj.Method__c);
-            // request.setTimeout(110000);
-            // HttpResponse res = http.send(request);
-            // Integer totalCount = 0;
-            // Integer numOfRow = 0;
-
-
-            
             IFN_CalloutResult ifRes = new IFN_CalloutResult();
-            Output param = new Output();
+            //Output param = new Output();
+            String getRquest = '';
+
+            getRquest += '/' + authKey.KeyValue__c;
+            getRquest += '/' + 'I1250';                 //서비스명
+            getRquest += '/' + 'json';                  //json or xml
+            getRquest += '/1/1000';                     //from~to
+            getRquest += '/' + 'PRDLST_NM=%EC%A0%84%EC%9A%A9%EC%9C%A0'; //전용유 
 
             try {
                 IFN_EIF1001_Callout callout = new IFN_EIF1001_Callout(this.interfaceId, 'Real');
-                ifRes = callout.getResponse(this.interfaceId, param);                                   //  <-------------- callout
+                ifRes = callout.getResponse(this.interfaceId, getRquest);                                   //  <-------------- callout
 
-                // To - Be ...
-                /*
-    @AuraEnabled public String result{get;set;}
-    @AuraEnabled public String message{get;set;}
-    @AuraEnabled public Object response{get;set;}
-    @AuraEnabled public Integer totalCount{get;set;}    
-    public IFN_CommonLog.LogWrap log{get;set;}
-                */
                 //if (ifRes.getStatusCode() == 200) {
                 if(ifRes.result.equals('S')){
                 
                     List<CJFW_FoodAdditives__c>     insList     = new List<CJFW_FoodAdditives__c>();
                     CJFW_FoodAdditives__c           insObj      = new CJFW_FoodAdditives__c();
                     
-                    //Output outObj = (Output) JSON.deserialize(ifRes.getBody(), Output.class); //callout 에서 Output 형으로 만들어 response 에 넣어 뒀다.
                     Output outObj = (Output)ifRes.response;
                     for(row nowrow : outObj.i1250.row){
                         insObj = Converter(nowrow);
@@ -99,8 +81,6 @@ global with sharing class IFN_EIF1001_FS001_MD001 implements Database.Batchable<
     
                     logWrap.LogText.add(outObj.i1250.Result.CODE + '/' + outObj.i1250.Result.MSG);
                     
-                    //Input input = (Input)JSON.deserialize(requestBody,  Input.class);
-                    //global static CJFW_FoodAdditives__c Converter(row row){
                 }else{
                     
                     errResultCode   = ifRes.result;

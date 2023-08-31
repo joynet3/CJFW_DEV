@@ -138,8 +138,8 @@ public with sharing class IFN_ApiGateWay {
 
             
             String endPointUrl = this.objIFMaster.Endpoint__c;
-
-            request.setMethod(this.objIFMaster.Method__c);
+            String strMethod = this.objIFMaster.Method__c.contains('_') ? this.objIFMaster.Method__c.split('_')[0] : this.objIFMaster.Method__c;
+            request.setMethod(strMethod);
             request.setTimeout(110000);         
 
             
@@ -193,7 +193,14 @@ public with sharing class IFN_ApiGateWay {
 
 
 
-            }else if(objIFMaster.Method__c == 'REST' ) {
+            }else if(objIFMaster.Method__c == 'GET_REST' ) {
+
+                endPointUrl = String.isNotBlank(this.objIFMaster.Param1__c) ? endPointUrl + '/' + this.objIFMaster.Param1__c : endPointUrl;
+                endPointUrl = String.isNotBlank(this.objIFMaster.Param2__c) ? endPointUrl + '/' + this.objIFMaster.Param2__c : endPointUrl;
+                endPointUrl = String.isNotBlank(this.objIFMaster.Param3__c) ? endPointUrl + '/' + this.objIFMaster.Param3__c : endPointUrl;
+                endPointUrl = String.isNotBlank(this.objIFMaster.Param4__c) ? endPointUrl + '/' + this.objIFMaster.Param4__c : endPointUrl;
+
+
                 endPointUrl = String.isNotBlank(requestBody) ?  endPointUrl+'/'+requestBody : endPointUrl;
             }
 

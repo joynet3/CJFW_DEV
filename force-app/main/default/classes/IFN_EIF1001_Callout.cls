@@ -257,7 +257,7 @@ public class IFN_EIF1001_Callout {
         
         try{
             IFN_ApiGateWay gateway = new IFN_ApiGateWay(interfaceId);
-            String requestBody = '';
+            String requestBody = (String)params;
             Map<String,String> hemap = new Map<String,String>();
 
             HttpResponse response = gateway.webCallout(requestBody, hemap, true);

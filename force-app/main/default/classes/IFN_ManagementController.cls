@@ -133,9 +133,23 @@ public class IFN_ManagementController {
                     res = Json.serialize(result);
                 }
                 when 'EIF1001'{
-                    
+                    if('IFN_EIF1001_FS001_MD001'.equals(param.interfaceId)) {
+                        String getRquest = '';
+
+                        API_Authenticationkey__mdt authKey =    [SELECT KeyValue__c, DateRange__c, MasterLabel FROM API_Authenticationkey__mdt WHERE MasterLabel = '식품의약품안전처_Key'];
+
+                        getRquest += '/' + authKey.KeyValue__c;
+                        getRquest += '/' + 'I1250';                 //서비스명
+                        getRquest += '/' + 'json';                  //json or xml
+                        getRquest += '/1/1000';                     //from~to
+                        
+                        //1.전용유 픽스
+                        getRquest += '/' + 'PRDLST_NM=%EC%A0%84%EC%9A%A9%EC%9C%A0'; //전용유 
+
+                        param.params = getRquest;
+                    }
                     result = new IFN_EIF1001_Callout(param.interfaceId,'Real').getResponse(param.interfaceId, param.params);
-                    res = result;
+                    res = Json.serialize(result);
                 }                
                 when else {
                     result.setResult('E', 'Method parameter check', null);
