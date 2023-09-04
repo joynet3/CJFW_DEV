@@ -10,12 +10,18 @@
  *  NO | Date       | Modifier       | Description
  * ----------------------------------------------
  *  1. | 2023.08.16 | 김동영          | 최초작성
+ *  2. | 2023.08.28 | 김동영          | ExtSvcCd 항목 제외
  * */
 @RestResource(urlMapping='/LIF1002/OD002/MD002')
 global with sharing class IFN_LIF1002_OD002_MD002 {
     
     global IFN_LIF1002_OD002_MD002() {}
     
+    /**
+     * 문의 구분 / 코드
+     * 샘플신청   : 01
+     * 부가서비스 : 02
+     */
     global class Input {
         public String ttl{get;set;}         // 접수 제목
         public String reqTp{get;set;}       // 문의 구분
@@ -25,7 +31,7 @@ global with sharing class IFN_LIF1002_OD002_MD002 {
         public String spItmTxt2{get;set;}   // 샘플 상품2
         public String spItmTxt3{get;set;}   // 샘플 상품3
         public String ExtSrvcCtgr{get;set;} // 부가서비스내역
-        public String ExtSvcCd{get;set;}    // 부가서비스내역코드
+        // public String ExtSvcCd{get;set;}    // 부가서비스내역코드
         public String mdmId{get;set;}       // MDM고객번호
         public String reqDt{get;set;}       // 작성일
         public String rcvNm{get;set;}       // 접수자이름
@@ -109,20 +115,43 @@ global with sharing class IFN_LIF1002_OD002_MD002 {
                     } 
                     Date requestDate = IFN_Util.convertDate(input.reqDt);
 
+                    String rcdTpDevName = '';
+                    
+                    switch on input.reqTpCd {
+                        when '01' {
+                            rcdTpDevName = 'RecordType2';
+                        }
+                        when '02' {
+                            rcdTpDevName = 'RecordType1';
+                        }
+                    }
+                    
+                    if(String.isBlank(rcdTpDevName)) {
+                        strCode = IFN_Util.STATUS_PARAMETER_ERROR.split(':')[0];
+                        strMessage = IFN_Util.STATUS_PARAMETER_ERROR.split(':')[1];
+                        logWrap.ErrorCode = strCode;
+                        logWrap.ErrorText.add(strMessage);
+                        return objOutput;
+                    }
+
+                    // 문의유형에 따른 RecordTypeId
+                    Id osrRcdTp = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName().get(rcdTpDevName).getRecordTypeId();
+
                     OrderServiceRequest__c orderServiceReq = new OrderServiceRequest__c(
                             Title__c = input.ttl
-                        , ReqType__c = input.reqTp
-                        , ReqTypeCode__c = input.reqTpCd // 별도필드 존재하지 않음
+                        , ReqType__c = input.reqTpCd
+                        , ReqTypeCode__c = input.reqTpCd 
                         , RequestMessage__c = input.reqMsg
                         , SampleitemText1__c = input.spItmTxt1
                         , SampleitemText2__c = input.spItmTxt2
                         , SampleitemText3__c = input.spItmTxt3
                         , ExtraServiceCategory__c = input.ExtSrvcCtgr
-                        , ExtraServiceCategoryCode__c = input.ExtSvcCd // 별도필드 존재하지 않음
+                        // , ExtraServiceCategoryCode__c = input.ExtSvcCd
                         , CustomerID__c = input.mdmId
                         , RequestDate__c = requestDate
                         , Finder__c = input.rcvNm
                         , ReqRecordId__c = reqRecordId
+                        , RecordTypeId = osrRcdTp
                     );
 
                     Database.SaveResult result = Database.insert(orderServiceReq);

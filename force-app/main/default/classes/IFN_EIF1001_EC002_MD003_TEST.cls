@@ -15,7 +15,7 @@ public with sharing class IFN_EIF1001_EC002_MD003_TEST {
 
         ContentVersion cv = new ContentVersion(
             Description  = 'test description',
-            PathOnClient ='test_file.txt',
+            PathOnClient ='test_file.jpg',
             Title = 'test file '+DateTime.now(),
             versiondata=Blob.valueOf('test file body')
         );
@@ -29,7 +29,7 @@ public with sharing class IFN_EIF1001_EC002_MD003_TEST {
         
         IFN_EIF1001_EC002_MD003 upload = new IFN_EIF1001_EC002_MD003();
         // Callout Interface
-        upload.versionId = '';
+        upload.contDocId = '';
         IFN_CalloutResult calloutResult = upload.callout();
         
         String resultCode = calloutResult.result;

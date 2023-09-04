@@ -13,7 +13,7 @@
  * */
 public class IFN_EIF1001_EC002_MD003 {
     public String interfaceId = 'IFN_EIF1001_EC002_MD003';
-    public String versionId;
+    public String contDocId;
     public IFN_CommonLog.LogWrap logWrap{get;set;}
     public IFN_CommonLog commlog;
 
@@ -23,7 +23,9 @@ public class IFN_EIF1001_EC002_MD003 {
 
         ContentVersion content = [select id, versiondata 
                                     from ContentVersion
-                                   where id = :versionId limit 1];
+                                   where ContentDocumentId = :contDocId 
+                                     and isLatest = true
+                                    limit 1];
 
         Blob fileData = content.VersionData;
         param.image = EncodingUtil.base64Encode(fileData);

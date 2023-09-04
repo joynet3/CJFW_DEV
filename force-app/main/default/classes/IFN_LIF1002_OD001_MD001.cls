@@ -10,12 +10,19 @@
  *  NO | Date       | Modifier       | Description
  * ----------------------------------------------
  *  1. | 2023.08.16 | 김동영          | 최초작성
+ *  
  * */
 @RestResource(urlMapping='/LIF1002/OD001/MD001')
 global with sharing class IFN_LIF1002_OD001_MD001 {
     
     global IFN_LIF1002_OD001_MD001() {}
     
+    /** 
+     * 고객 유형 / 코드
+     * 외식사업자 : 01
+     * 급식사업자 : 02
+     * 유통사업자 : 03
+     */
     global class Input {
         public String cstTp{get;set;}   //고객유형
         public String cstTpCd{get;set;} //고객유형코드
@@ -66,8 +73,7 @@ global with sharing class IFN_LIF1002_OD001_MD001 {
                 logWrap.ErrorCode = strCode;
                 logWrap.ErrorText.add(strMessage);
             } else {
-                Map<String, String> plCustomType = CommonUtil.getMapPickListLabel('Lead', 'CustomType__c');
-                
+                //Map<String, String> plCustomType = CommonUtil.getMapPickListLabel('Lead', 'CustomType__c');
                 Input input = (Input)JSON.deserialize(requestBody, Input.class);
 
                 // 필수 파라미터 체크
@@ -86,22 +92,44 @@ global with sharing class IFN_LIF1002_OD001_MD001 {
                     strMessage = String.isBlank(input.sect) ? strMessage + ',[sect]' : strMessage;
                     strMessage = String.isBlank(input.addr) ? strMessage + ',[addr]' : strMessage;
                     strMessage = String.isBlank(input.agrYn) ? strMessage + ',[agrYn]' : strMessage;
-
+                    
                     logWrap.ErrorCode = strCode;
                     logWrap.ErrorText.add(strMessage);
                 } else {
                     String companyRegNum = IFN_Util.replaceText(input.bsnsNo);
-
+                    
                     // 기존 Account 존재 여부
                     String qry = 'select count() from account Where CompanyRegisterNumber__c = :companyRegNum';
                     integer isExistAccount = database.countQuery(qry);
                     
+                    String rcdTpDevName = '';
+                    
+                    switch on input.cstTpCd {
+                        when '01' {
+                            rcdTpDevName = 'food_service_business';
+                        }
+                        when '02' {
+                            rcdTpDevName = 'catering_business';
+                        }
+                        when '03' {
+                            rcdTpDevName = 'distributor';
+                        }
+                    }
+                    
+                    if(String.isBlank(rcdTpDevName)) {
+                        strCode = IFN_Util.STATUS_PARAMETER_ERROR.split(':')[0];
+                        strMessage = IFN_Util.STATUS_PARAMETER_ERROR.split(':')[1];
+                        logWrap.ErrorCode = strCode;
+                        logWrap.ErrorText.add(strMessage);
+                        return objOutput;
+                    }
+
                     // 고객유형에 따른 RecordTypeId
-                    Id leadRcdTp = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName().get(input.cstTpCd).getRecordTypeId();
+                    Id leadRcdTp = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName().get(rcdTpDevName).getRecordTypeId();
                     
                     try {
                         Lead newLead = new Lead(
-                            CustomType__c = input.cstTp
+                            CustomType__c = input.cstTpCd
                             , LastName = input.cstNm
                             , Phone = input.callNo
                             , CompanyRegisterNumber__c = companyRegNum

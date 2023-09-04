@@ -96,7 +96,7 @@ global with sharing class IFN_LIF1002_OD003_MD005 {
                 } else {
 
                     Map<String, String> plClassServiceStatus = CommonUtil.getMapPickListLabel('ClassService__c', 'Status__c');
-                    Map<String, String> plClassTargetGroup = CommonUtil.getMapPickListLabel('ClassService__c', 'TargetGroup__c');                
+                    Map<String, String> plClassTargetGroup = CommonUtil.getMapPickListLabel('ClassService__c', 'TargetGroup__c');
                     Map<String, String> plServiceContentRegion = CommonUtil.getMapPickListLabel('ServiceContents__c', 'Region__c');
     
                     ClassService__c classInfo = new ClassService__c();
@@ -142,7 +142,7 @@ global with sharing class IFN_LIF1002_OD003_MD005 {
                         resData.accNm      = classInfo.Customer__r.Name;
                         resData.mngNm      = classInfo.Manager__c;
                         resData.accCall    = classInfo.CustomerPhone__c;
-                        resData.svcTgtNm   = classInfo.TargetGroup__c;
+                        resData.svcTgtNm   = String.isEmpty(classInfo.TargetGroup__c) ? '': plClassTargetGroup.get(classInfo.TargetGroup__c);
                         resData.svcTgtCd   = classInfo.TargetGroup__c;
                         resData.reqMemCnt  = classInfo.ApplicantsNumber__c;
                         resData.avgAge     = classInfo.GroupMealAge__c;
