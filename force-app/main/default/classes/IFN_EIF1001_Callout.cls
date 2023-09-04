@@ -29,6 +29,10 @@ public class IFN_EIF1001_Callout {
         
         try {
             switch on interfaceId {
+                when 'IFN_EIF1001_EC001_MD001'{ 
+                    System.debug(' getResponse >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' + params);
+                    result = IFN_EIF1001_EC001_MD001(interfaceId, params);
+                }
                 // MMS Image Upload
                 when 'IFN_EIF1001_EC002_MD003'{ 
                     System.debug(' getResponse >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' + params);
@@ -39,9 +43,9 @@ public class IFN_EIF1001_Callout {
                     System.debug(' getResponse >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' + params);
                     result = IFN_EIF1001_EC002_MD004(interfaceId, params);
                 }
-                //식품(첨가물)품목제조보고-전용유 조회 (식품의약품안전처) 
-                when 'IFN_EIF1001_FS001_MD001'{ 
-                    result = IFN_EIF1001_FS001_MD001(interfaceId, params);
+                when 'IFN_EIF1001_EC003_MD005'{ 
+                    System.debug(' getResponse >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' + params);
+                    result = IFN_EIF1001_EC003_MD005(interfaceId, params);
                 }
             }
         } catch(Exception e) {
@@ -49,6 +53,83 @@ public class IFN_EIF1001_Callout {
         } //end of try~catch
         return result;
     }
+
+    /**
+     * @Description MMS 메세지 발송
+     * @param interfaceId IFN_EIF1001_EC001_MD001
+     * @param params 
+     * @return IFN_CalloutResult
+     * @request
+        {  
+            "msg_type": "MMS", 
+            "msg_data": [ 
+                            { 
+                                "msg_key": "1234567890", 
+                                "sub_id": "SS000000", 
+                                "sender_number": "01012340000", 
+                                "receiver_number": "01012340000", 
+                                "msg": "문자 메시지 1 입니다.", 
+                                "image_key": "20200721141516123_mms_jpg_app1_135790" 
+                            }, 
+                            {...}
+                        ]
+        }
+       @response
+        { 
+            "results": [ 
+                            { 
+                                "msg_key": "1234567890", 
+                                "code": "C100", 
+                                "desc": "Success" 
+                            }, 
+                            {...}
+                        ] 
+        }
+    */
+    public IFN_CalloutResult IFN_EIF1001_EC001_MD001(String interfaceId, Object params){
+        IFN_CalloutResult result = new IFN_CalloutResult();
+
+        String responsedata = '';
+        String result_code = 'S';
+        String result_message = 'Callout Success';
+        
+        IFN_EIF1001_EC001_MD001.EC001ResultWrapper infResponse = new IFN_EIF1001_EC001_MD001.EC001ResultWrapper();  
+        
+        try{
+            System.debug('params >>>>>>>>>>>>>>>>>>>>>>>>>' + params);
+            IFN_EIF1001_EC001_MD001.EC001RequstWrapper reqparam = new IFN_EIF1001_EC001_MD001.EC001RequstWrapper();
+            reqparam = (IFN_EIF1001_EC001_MD001.EC001RequstWrapper)params;
+
+            IFN_ApiGateWay gateway = new IFN_ApiGateWay(interfaceId);
+            String requestBody = JSON.serialize(reqparam);
+            Map<String,String> hemap = new Map<String,String>();
+            hemap.put('Interface_req_dt',String.valueOf(Datetime.now().format('yyyyMMdd')));
+            hemap.put('Interface_tracekey',String.valueOf(Datetime.now().format('yyyyMMddHHmmss')));
+
+            HttpResponse response = gateway.webCallout(requestBody, hemap, true);
+
+            responsedata = response.getBody();
+            if(response.getStatusCode() == 200) {
+                infResponse = (IFN_EIF1001_EC001_MD001.EC001ResultWrapper)JSON.deserializeStrict((String)responsedata, IFN_EIF1001_EC001_MD001.EC001ResultWrapper.class);
+            } else {
+                result_code = 'F';
+                result_message = 'Callout Fail';
+            }
+
+        } catch(Exception e) {
+            result_code = 'E';
+            result_message = 'Interface Exception';
+        }  
+
+        result.setResult(
+            result_code
+            , result_message
+            , infResponse
+        );
+
+        return result;
+    }
+
 
     /**
      * @Description MMS 이미지 업로드
@@ -84,7 +165,6 @@ public class IFN_EIF1001_Callout {
         IFN_EIF1001_EC002_MD003.EC002ResultWrapper infResponse = new IFN_EIF1001_EC002_MD003.EC002ResultWrapper();  
         
         try{
-            Date dateToday = Date.today();
             System.debug('params >>>>>>>>>>>>>>>>>>>>>>>>>' + params);
 
             IFN_EIF1001_EC002_MD003.EC002RequstWrapper reqparam = new IFN_EIF1001_EC002_MD003.EC002RequstWrapper();
@@ -112,7 +192,7 @@ public class IFN_EIF1001_Callout {
 
         } catch(Exception e) {
             result_code = 'E';
-            result_message = 'Interface Error';
+            result_message = 'Interface Exception';
         }  
 
         result.setResult(
@@ -159,7 +239,6 @@ public class IFN_EIF1001_Callout {
         IFN_EIF1001_EC002_MD004.EC002ResultWrapper infResponse = new IFN_EIF1001_EC002_MD004.EC002ResultWrapper();  
         
         try{
-            Date dateToday = Date.today();
             System.debug('params >>>>>>>>>>>>>>>>>>>>>>>>>' + params);
 
             IFN_EIF1001_EC002_MD004.EC002RequstWrapper reqparam = new IFN_EIF1001_EC002_MD004.EC002RequstWrapper();
@@ -194,7 +273,7 @@ public class IFN_EIF1001_Callout {
 
         } catch(Exception e) {
             result_code = 'E';
-            result_message = 'Interface Error';
+            result_message = 'Interface Exception';
         }  
 
         result.setResult(
@@ -207,86 +286,78 @@ public class IFN_EIF1001_Callout {
     }
 
     /**
-     *  메소드 설명 작성
-     * 
-     * @param  없음
-     * @return  리턴값 설명 (있는경우)
-     *     {
-                "I1250": {
-                    "total_count": "1000",
-                    "row": [
-                        {
-                            "PRDLST_REPORT_NO": "19630364001121",
-                            "PRMS_DT": "19920822",
-                            "LAST_UPDT_DTM": "20160706",
-                            "LCNS_NO": "19630364001",
-                            "PRDLST_NM": "허벌엣센스케이",
-                            "QLITY_MNTNC_TMLMT_DAYCNT": "",
-                            "BSSH_NM": "(주)보락",
-                            "PRDLST_DCNM": "혼합제제",
-                            "CHILD_CRTFC_YN": "",
-                            "INDUTY_CD_NM": "식품첨가물제조업",
-                            "USAGE": "착향료",
-                            "POG_DAYCNT": "유통기간미등록",
-                            "HIENG_LNTRT_DVS_NM": "해당없음",
-                            "PRODUCTION": "아니오",
-                            "PRPOS": ""
-                        }
-                    ],
-                    "RESULT": {
-                        "MSG": "정상처리되었습니다.",
-                        "CODE": "INFO-000"
-                    }
-                }
-            }
-     * @exception  메소드가 발생시키는 예외에 대한 설명 또는 목록
-     * @example 
-     * */
-    public IFN_CalloutResult IFN_EIF1001_FS001_MD001(String interfaceId, Object params){
+     * @Description KaKao AT 발송
+     * @param interfaceId IFN_EIF1001_EC003_MD005
+     * @param params 
+     * @return IFN_CalloutResult
+     * @request
+        {  
+            "msg_type": "MMS", 
+            "msg_data": [ 
+                            { 
+                                "msg_key": "1234567890", 
+                                "sub_id": "SS000000", 
+                                "sender_number": "01012340000", 
+                                "receiver_number": "01012340000", 
+                                "msg": "문자 메시지 1 입니다.", 
+                                "image_key": "20200721141516123_mms_jpg_app1_135790" 
+                            }, 
+                            {...}
+                        ]
+        }
+       @response
+        { 
+            "results": [ 
+                            { 
+                                "msg_key": "1234567890", 
+                                "code": "C100", 
+                                "desc": "Success" 
+                            }, 
+                            {...}
+                        ] 
+        }
+    */
+    public IFN_CalloutResult IFN_EIF1001_EC003_MD005(String interfaceId, Object params){
         IFN_CalloutResult result = new IFN_CalloutResult();
 
         String responsedata = '';
         String result_code = 'S';
-        String result_message = 'Success';
+        String result_message = 'Callout Success';
         
-        //IFN_EIF1001_FS001_MD001.Output infResponse = new IFN_EIF1001_FS001_MD001.Output();
-        //IFN_EIF1001_FS001_MD001.ResObject infResponse = new IFN_EIF1001_FS001_MD001.ResObject();    //resObject
-        //IFN_CalloutResult.response infResponse = new IFN_CalloutResult.response();
-
-        Object resObject;
+        IFN_EIF1001_EC003_MD005.EC003ResultWrapper infResponse = new IFN_EIF1001_EC003_MD005.EC003ResultWrapper();  
         
         try{
+            System.debug('params >>>>>>>>>>>>>>>>>>>>>>>>>' + params);
+            IFN_EIF1001_EC003_MD005.EC003RequstWrapper reqparam = new IFN_EIF1001_EC003_MD005.EC003RequstWrapper();
+            reqparam = (IFN_EIF1001_EC003_MD005.EC003RequstWrapper)params;
+
             IFN_ApiGateWay gateway = new IFN_ApiGateWay(interfaceId);
-            String requestBody = (String)params;
+            String requestBody = JSON.serialize(reqparam);
             Map<String,String> hemap = new Map<String,String>();
+            hemap.put('Interface_req_dt',String.valueOf(Datetime.now().format('yyyyMMdd')));
+            hemap.put('Interface_tracekey',String.valueOf(Datetime.now().format('yyyyMMddHHmmss')));
 
             HttpResponse response = gateway.webCallout(requestBody, hemap, true);
 
             responsedata = response.getBody();
             if(response.getStatusCode() == 200) {
-                IFN_EIF1001_FS001_MD001.Output resData = (IFN_EIF1001_FS001_MD001.Output)JSON.deserializeStrict((String)responsedata, IFN_EIF1001_FS001_MD001.Output.class);
-                resObject = (Object)resData;
+                infResponse = (IFN_EIF1001_EC003_MD005.EC003ResultWrapper)JSON.deserializeStrict((String)responsedata, IFN_EIF1001_EC001_MD001.EC003ResultWrapper.class);
             } else {
-                //200 외 의 경우 json form으로 오지 안는다.
                 result_code = 'F';
-                result_message = 'Error';
-                resObject = (Object)responsedata;
+                result_message = 'Callout Fail';
             }
 
         } catch(Exception e) {
             result_code = 'E';
-            result_message = 'Interface Error';
+            result_message = 'Interface Exception';
         }  
 
         result.setResult(
             result_code
             , result_message
-            , resObject
+            , infResponse
         );
 
         return result;
     }
-
-
-
 }

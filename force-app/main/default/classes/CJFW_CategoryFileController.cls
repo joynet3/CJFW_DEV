@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : seol.kim@dkbmc.com
  * @group             : 
- * @last modified on  : 08-29-2023
+ * @last modified on  : 09-01-2023
  * @last modified by  : seol.kim@dkbmc.com
 **/
 public with sharing class CJFW_CategoryFileController {
@@ -35,14 +35,16 @@ public with sharing class CJFW_CategoryFileController {
             // }
     
             return  [SELECT Id, 
+                            VersionData, 
+                            FileType, 
                             Title, 
-                            Category__c,
-                            FileType,
+                            FileExtension,
+                            ContentDocumentId, 
                             CreatedDate,
-                            ContentDocumentId,
-                            ContentSize,
-                            LastModifiedDate,
-                            Owner.Name
+                            ContentSize, 
+                            ContentDocument.CreatedBy.Name, 
+                            ContentDocument.ContentSize,
+                            ContentDocument.FileType
                     FROM ContentVersion
                     WHERE Category__c =: category 
                     AND ContentDocumentId IN: ContentDocumentIds

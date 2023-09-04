@@ -9,29 +9,29 @@
  * 1.0   08-24-2023   joohyeon.jang@dkbmc.com   Initial Version
 **/
 public with sharing class CJFW_MDMReferenceCreateController {
-    /**
-     * @description 참조생성 모달 로딩 시, Default 데이터 (Account데이터 10개)
-     * 
-     * @return      `String`
-     */ 
-    @AuraEnabled
-    public static List<DataWrapper> doInit(Integer pageNumber, Integer pageSize){
-        system.debug('### CJFW_MDMReferenceCreateController > doInit(pageNumber, pageSize)');
-        system.debug('>>> pageNumber ' + pageNumber);
-        system.debug('>>> pageSize ' + pageSize);
-        List<DataWrapper> result = new List<DataWrapper>();
+    
+    // /** 
+    //  * @description 참조생성 모달 로딩 시, Default 데이터 (Account데이터 10개)
+    //  * 
+    //  * @return      `String`
+    //  */ 
+    // @AuraEnabled
+    // public static List<DataWrapper> doInit(){
+    //     system.debug('### CJFW_MDMReferenceCreateController > doInit(pageNumber, pageSize)');
+    //     List<DataWrapper> result = new List<DataWrapper>();
 
-        List<Account> accList = doSelect(null, null, null);
-        system.debug('>>> accList ' + JSON.serialize(accList));
+    //     List<Account> accList = doSelect(null, null, null);
+    //     system.debug('>>> accList ' + JSON.serialize(accList));
 
 
-        if(!AccList.isEmpty()) {
-            for(Account acc : accList){
-                result.add(new DataWrapper(acc));
-            }
-        }
-        return result;
-    }
+    //     if(!AccList.isEmpty()) {
+    //         for(Account acc : accList){
+    //             result.add(new DataWrapper(acc));
+    //         }
+    //     }
+    //     return result;
+    // }
+
      /**
      * @description 참조생성 모달 > 검색어 입력 후 검색 > 검색어로 Like 
      * 
@@ -91,7 +91,7 @@ public with sharing class CJFW_MDMReferenceCreateController {
 
         //String S_ORDER  = ' ORDER BY NAME ASC '; //나중에 검색 조건이 생기면 그때 추가 할 예정임
         
-        String S_LIMITS = ' LIMIT 10';
+        String S_LIMITS = ' ';
                                         // S_ORDER +
         system.debug(S_SELECT + S_WHERE +  S_LIMITS);
                                                 // S_ORDER +
@@ -129,64 +129,6 @@ public with sharing class CJFW_MDMReferenceCreateController {
             this.createdDate            = Date.valueOf(acc.CreatedDate);
             this.fWReleaseCenter        = acc.FWReleaseCenter__c;
             this.disHisRegType          = acc.DisHisRegType__c;
-        }
-    }
-
-    /** 
-     * @description 참조생성 모달에서 선택한 Account Data Wrapper
-     */
-    public class AccountDataWrapper { 
-        @AuraEnabled public String id{get;set;}                                   // 판매처 
-        @AuraEnabled public String name{get;set;}                                 // 고객명(영문명포함)
-        @AuraEnabled public String nameKor{get;set;}                              // 고객명(G)/자국명 
-        @AuraEnabled public String nameAlias{get;set;}                            // 고객약칭명(변경)
-        @AuraEnabled public String accountGroup{get;set;}                         // 고객계정그룹
-        @AuraEnabled public String type{get;set;}                                 // 고객유형
-        @AuraEnabled public String companyRegisterNumber{get;set;}                // 사업자등록번호
-        @AuraEnabled public String legalStatus{get;set;}                          // 법적상태
-        @AuraEnabled public String representativeName{get;set;}                   // 대표자이름 
-        @AuraEnabled public String representativeBirthDate{get;set;}              // 대표자생년월일
-        @AuraEnabled public String industry{get;set;}                             // 업태
-        @AuraEnabled public String businessConditions{get;set;}                   // 업종
-        @AuraEnabled public String phone{get;set;}                                // 업태 
-        @AuraEnabled public Date   pVVF_VKGRP{get;set;}                           // 전화번호
-        @AuraEnabled public Date   pVVF_PERNR{get;set;}                           // 영업그룹유효일자 
-        @AuraEnabled public String taxInvoiceType{get;set;}                       // 담당MA유효일자
-        @AuraEnabled public String taxationType{get;set;}                         // 세금계산서발행유형
-        @AuraEnabled public String headOfficeCode{get;set;}                       // 과세유형
-        @AuraEnabled public String countryKeyCode{get;set;}                       // 본점코드
-        @AuraEnabled public String locationState{get;set;}                        // 국가
-        @AuraEnabled public String postalCode{get;set;}                           // 지역 
-        @AuraEnabled public String address{get;set;}                              // 우편번호
-        @AuraEnabled public String address2{get;set;}                             // 도로명주소
-        @AuraEnabled public String addressDetails2{get;set;}                      // 지번주소
-
-        public AccountDataWrapper(){}
-        public AccountDataWrapper(Account acc) {
-            this.id                                   = acc.Id;
-            this.name                                 = acc.Name;
-            this.nameKor                              = acc.NameKor__c;
-            this.nameAlias                            = acc.NameAlias__c;
-            this.accountGroup                         = acc.AccountGroup__c;
-            this.type                                 = acc.Type;
-            this.companyRegisterNumber                = acc.CompanyRegisterNumber__c;
-            this.legalStatus                          = acc.LegalStatus__c;
-            //this.representativeName                   = acc.RepresentativeName__c;
-            this.representativeBirthDate              = acc.RepresentativeBirthDate__c;
-            this.industry                             = acc.Industry;
-            this.businessConditions                   = acc.BusinessConditions__c;
-            this.phone                                = acc.Phone;
-            this.pVVF_VKGRP                           = Date.valueOf(acc.PVVF_VKGRP__c);
-            this.pVVF_PERNR                           = Date.valueOf(acc.PVVF_PERNR__c);
-            this.taxInvoiceType                       = acc.TaxInvoiceType__c;
-            this.taxationType                         = acc.TaxationType__c;
-            this.headOfficeCode                       = acc.HeadOfficeCode__c;
-            this.countryKeyCode                       = acc.CountryKeyCode__c;
-            this.locationState                        = acc.LocationState__c;
-            //this.postalCode                           = acc.PostalCode__c;
-            this.address                              = acc.Address__c;
-            this.address2                             = acc.Address2__c;
-            this.addressDetails2                      = acc.AddressDetails2__c;
         }
     }
 }

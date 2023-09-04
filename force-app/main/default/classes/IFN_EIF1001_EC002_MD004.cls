@@ -13,7 +13,7 @@
  * */
 public class IFN_EIF1001_EC002_MD004 {
     public String interfaceId = 'IFN_EIF1001_EC002_MD003';
-
+    public String versionId;
     public IFN_CommonLog.LogWrap logWrap{get;set;}
     public IFN_CommonLog commlog;
 
@@ -24,8 +24,8 @@ public class IFN_EIF1001_EC002_MD004 {
         'FailedToUploadImageException' =>'카카오 시스템 오류'
     };
         
-    public IFN_CalloutResult callout(String versionId) {
-        IFN_CalloutResult ifRes = new IFN_CalloutResult();
+    public IFN_CalloutResult callout() {
+        IFN_CalloutResult calloutResult = new IFN_CalloutResult();
         EC002RequstWrapper param = new EC002RequstWrapper();
 
         ContentVersion content = [select id, versiondata 
@@ -41,7 +41,7 @@ public class IFN_EIF1001_EC002_MD004 {
       
         try {
             IFN_EIF1001_Callout callout = new IFN_EIF1001_Callout(this.interfaceId, 'Real');
-            ifRes = callout.getResponse(this.interfaceId, param);
+            calloutResult = callout.getResponse(this.interfaceId, param);
         } catch (Exception e) {
             this.logWrap.ErrorCode = '-1';
             this.logWrap.ErrorText.add(e.getLineNumber()+e.getMessage() + e.getStackTraceString()); 
@@ -49,7 +49,7 @@ public class IFN_EIF1001_EC002_MD004 {
         }
 
         commlog.insertLog(this.logWrap);
-        return ifRes;
+        return calloutResult;
     }
 
     // Request

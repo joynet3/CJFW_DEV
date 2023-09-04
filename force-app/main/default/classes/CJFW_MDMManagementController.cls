@@ -129,30 +129,32 @@ public with sharing class CJFW_MDMManagementController {
         // aura  String 으로 넘어와서 JSON.des
         // ObjCustomer obj =  JSON.deserialize(objCustomer, 래퍼클래스명.class);
         system.debug('>>>doSave # objCustomer ' + JSON.serialize(objCustomer));
-        system.debug('>>>doSave # objCustomer ' + JSON.serialize(objCustomer.PV_VKGRP_lu));
-
+        system.debug('>>>doSave # objCustomer ' + JSON.serialize(objCustomer.PV_SELLER_lu));
+        //값을 나눠서 값이 없으면 안되는친구들
+        //값이 없어도 되는친구들 
         try {
             if(objCustomer != null){    
                 MDMRegRequestCustomer__c mdmRequest = new MDMRegRequestCustomer__c();
-                mdmRequest.PV_VKGRP_lu__c                                       = objCustomer?.PV_VKGRP_lu;
-                //mdmRequest.PV_SELLER_lu__c                                      = objCustomer?.PV_SELLER_lu;
-                mdmRequest.RecordTypeId                                         = objCustomer?.RecordTypeId;
-                mdmRequest.requestType__c                                       = objCustomer?.requestType;
+                mdmRequest.PV_LOGISCENTER_lu__c	                                = String.isBlank(objCustomer?.PV_LOGISCENTER_lu) ? null : objCustomer.PV_LOGISCENTER_lu;
+                mdmRequest.PV_VKGRP_lu__c                                       = String.isBlank(objCustomer?.PV_VKGRP_lu) ? null : objCustomer.PV_VKGRP_lu;
+                mdmRequest.PV_SELLER_lu__c                                      = String.isBlank(objCustomer?.PV_SELLER_lu) ? null : objCustomer.PV_SELLER_lu;                
+                mdmRequest.RecordTypeId                                         = String.isBlank(objCustomer?.RecordTypeId) ? null : objCustomer.RecordTypeId;
+                mdmRequest.requestType__c                                       = String.isBlank(objCustomer?.requestType) ? null : objCustomer.requestType;
                 mdmRequest.PVRA_VKGRP__c                                        = Date.valueOf(objCustomer?.PVRA_VKGRP);
                 mdmRequest.PVRA_PERNR__c                                        = Date.valueOf(objCustomer?.PVRA_PERNR);
                 mdmRequest.PVRA_LOGISCENTER__c                                  = Date.valueOf(objCustomer?.PVRA_LOGISCENTER);               
-                mdmRequest.PV_NAME1__c                                          = objCustomer?.PV_NAME1;
-                mdmRequest.PV_NAME2__c                                          = objCustomer?.PV_NAME2;
-                mdmRequest.PV_STCD3__c                                          = objCustomer?.PV_STCD3;
-                mdmRequest.PV_GFORM__c                                          = objCustomer?.PV_GFORM;
-                mdmRequest.PV_STCD1__c                                          = objCustomer?.PV_STCD1;
-                mdmRequest.PV_J_1KFTIND__c                                      = objCustomer?.PV_J_1KFTIND;
-                mdmRequest.PV_TELFX__c                                          = objCustomer?.PV_TELFX;
-                mdmRequest.PV_VKGRP__c                                          = objCustomer?.PV_VKGRP; // 참조코드 Id 넣어줘야함
+                mdmRequest.PV_NAME1__c                                          = String.isBlank(objCustomer?.PV_NAME1) ? null : objCustomer.PV_NAME1;
+                mdmRequest.PV_NAME2__c                                          = String.isBlank(objCustomer?.PV_NAME2) ? null : objCustomer.PV_NAME2;
+                mdmRequest.PV_STCD3__c                                          = String.isBlank(objCustomer?.PV_STCD3) ? null : objCustomer.PV_STCD3;
+                mdmRequest.PV_GFORM__c                                          = String.isBlank(objCustomer?.PV_GFORM) ? null : objCustomer.PV_GFORM;
+                mdmRequest.PV_STCD1__c                                          = String.isBlank(objCustomer?.PV_STCD1) ? null : objCustomer.PV_STCD1;
+                mdmRequest.PV_J_1KFTIND__c                                      = String.isBlank(objCustomer?.PV_J_1KFTIND) ? null : objCustomer.PV_J_1KFTIND;
+                mdmRequest.PV_TELFX__c                                          = String.isBlank(objCustomer?.PV_TELFX) ? null : objCustomer.PV_TELFX;
+                mdmRequest.PV_VKGRP__c                                          = String.isBlank(objCustomer?.PV_VKGRP) ? null : objCustomer.PV_VKGRP; // 참조코드 Id 넣어줘야함
                 //mdmRequest.PV_PERNR_lu__c                                       = objCustomer?.PV_PERNR_lu; // user lookup
                 //mdmRequest.PV_ADMINMA_lu__c                                     = objCustomer?.PV_ADMINMA_lu; 
-                mdmRequest.PV_LOGISCENTER__c                                    = objCustomer?.PV_LOGISCENTER; // 참조코드 Id 넣어줘야함
-                mdmRequest.PV_STCDT__c                                          = objCustomer?.PV_STCDT; // 참조코드 Id 넣어줘야함
+                mdmRequest.PV_LOGISCENTER__c                                    = String.isBlank(objCustomer?.PV_LOGISCENTER) ? null : objCustomer.PV_LOGISCENTER; // 참조코드 Id 넣어줘야함
+                mdmRequest.PV_STCDT__c                                          = String.isBlank(objCustomer?.PV_STCDT) ? null : objCustomer.PV_STCDT;             // 참조코드 Id 넣어줘야함
                 //mdmRequest.PV_HDOFFICEYN__c                                     = Boolean.valueOf(objCustomer?.PV_HDOFFICEYN);
                 //mdmRequest.PV_HKUNNR_lu__c                                      = objCustomer?.PV_HKUNNR_lu; // user lookup
                 //mdmRequest.PV_CLOSEDT__c                                        = Date.valueOf(objCustomer?.PV_CLOSEDT);
@@ -215,7 +217,7 @@ public with sharing class CJFW_MDMManagementController {
                 //mdmRequest.PV_FDREQD__c                                         = Date.valueOf(objCustomer?.PV_FDREQD);
                 //mdmRequest.PV_ISFDFTF__c                                        = Boolean.valueOf(objCustomer?.PV_ISFDFTF);
                 mdmRequest.PV_TEMPTARGET__c                                     = objCustomer?.PV_TEMPTARGET;
-
+                system.debug('>>> 찍혀요? 1');
                 insert mdmRequest;
             }
 
@@ -416,8 +418,10 @@ public with sharing class CJFW_MDMManagementController {
      * MDMRequest 공통
      */
     public class MDMRequest{
+        @AuraEnabled public String PV_LOGISCENTER_lu {get;set;}
         @AuraEnabled public String PV_VKGRP_lu {get;set;}
         @AuraEnabled public String PV_SELLER_lu {get;set;}
+        //기존
         @AuraEnabled public String RecordTypeId {get;set;}
         @AuraEnabled public String requestType {get;set;}
         @AuraEnabled public String PVRA_VKGRP {get;set;}

@@ -2,9 +2,17 @@
 public with sharing class IFN_EIF1001_EC002_MD003_TEST {
     @TestSetup
     static void makeData(){
-        IFN_TestDataFactory.createIfPrograms();
+        IFMaster__c ifMaster = new IFMaster__c(
+            Name = 'IFN_EIF1001_EC002_MD003',
+            Type__c = 'Outbound',
+            WebserviceType__c = 'REST',
+            Method__c = 'POST',
+            ContentType__c = 'application/json',
+            Endpoint__c = 'http://localhost:8060/gwms/crm/rest/EIF1001/EC002/MD003'
+        );
 
-        
+        insert ifMaster;
+
         ContentVersion cv = new ContentVersion(
             Description  = 'test description',
             PathOnClient ='test_file.txt',
@@ -18,11 +26,11 @@ public with sharing class IFN_EIF1001_EC002_MD003_TEST {
     @isTest
     static void IFN_EIF1001_EC002_MD003_TEST(){
         Test.startTest();
-        String versionId = '';
-
+        
         IFN_EIF1001_EC002_MD003 upload = new IFN_EIF1001_EC002_MD003();
         // Callout Interface
-        IFN_CalloutResult calloutResult = upload.callout(versionId);
+        upload.versionId = '';
+        IFN_CalloutResult calloutResult = upload.callout();
         
         String resultCode = calloutResult.result;
         Map<String, String> response = (Map<String, String>)calloutResult.response;
