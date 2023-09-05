@@ -16,19 +16,20 @@ public class IFN_EIF1001_EC001_MD001 {
 
     public IFN_CommonLog.LogWrap logWrap{get;set;}
     public IFN_CommonLog commlog;
-    
+    public IFN_EIF1001_EC001_MD001.EC001RequstWrapper param;
+
     public IFN_CalloutResult callout() {
         IFN_CalloutResult calloutResult = new IFN_CalloutResult();
         
-        EC001RequstWrapper param = new EC001RequstWrapper();
-        EC001RequstData reqData = new EC001RequstData();
+        // EC001RequstWrapper param = new EC001RequstWrapper();
+        // EC001RequstData reqData = new EC001RequstData();
 
         this.logWrap = new IFN_CommonLog.logWrap(this.interfaceId, 'Real');
         this.commlog = new IFN_CommonLog();
       
         try {
             IFN_EIF1001_Callout callout = new IFN_EIF1001_Callout(this.interfaceId, 'Real');
-            calloutResult = callout.getResponse(this.interfaceId, param);
+            calloutResult = callout.getResponse(this.interfaceId, this.param);
 
             if('S'.equals(calloutResult.result)) {
 
@@ -57,8 +58,10 @@ public class IFN_EIF1001_EC001_MD001 {
         public String sub_id {get;set;}
         public String sender_number {get;set;}
         public String receiver_number {get;set;}
+        public String title {get;set;}
         public String msg {get;set;}
         public String image_key {get;set;}
+        public String origin_cid {get;set;}
     }
 
     // result

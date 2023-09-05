@@ -2,7 +2,7 @@
  * @description       : 매출/채권 메뉴탭 마다 다른 , header 정보 list 정보에 뿌려질 데이터를 모아놓은 object 를 조회하는 용도
  * @author            : eunyoung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 08-18-2023
+ * @last modified on  : 09-05-2023
  * @last modified by  : eunyoung.choi@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -90,7 +90,6 @@ public with sharing class CommSearchDataController {
                 String condition='';
 
                 if (fieldType == 'date') {
-                    system.debug('어디타니1 ');
                     if (datePointData == 'start') {
                         condition = apiName + '>=' + searchKey;
                     }
@@ -99,27 +98,22 @@ public with sharing class CommSearchDataController {
                         if(condition !=null) whereQuery  += ' AND ' ;
                         whereQuery += apiName + '<=' + searchKey;
                     }
-                    system.debug('DATE -> ' + whereQuery);
                 }else{
                 
                     if(condition !='' && condition !=null && fieldType != 'date'){
-                        system.debug('어디타니1-1 '+ whereQuery );
                         whereQuery += ' AND ';
                     }
-                    system.debug('어디타니2 '+ whereQuery );
                     whereQuery +=  apiName + ' LIKE \'%' + searchKey + '%\'';
                     addWhereClause = false;
                 }
 
             }else{
                 if(fieldType != 'date'){
-                    system.debug('어디타니3 '+ whereQuery );
                     whereQuery += ' AND ' + apiName + ' LIKE \'%' + searchKey + '%\'';
                 }
             }
         }
 
-        system.debug(' Final whereQuery -> ' + whereQuery );
         return whereQuery;
    }
 

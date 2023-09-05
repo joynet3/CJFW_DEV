@@ -135,7 +135,7 @@ global with sharing class IFN_LIF1002_OD002_MD002 {
                     }
 
                     // 문의유형에 따른 RecordTypeId
-                    Id osrRcdTp = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName().get(rcdTpDevName).getRecordTypeId();
+                    Id osrRcdTp = Schema.SObjectType.OrderServiceRequest__c.getRecordTypeInfosByDeveloperName().get(rcdTpDevName).getRecordTypeId();
 
                     OrderServiceRequest__c orderServiceReq = new OrderServiceRequest__c(
                             Title__c = input.ttl

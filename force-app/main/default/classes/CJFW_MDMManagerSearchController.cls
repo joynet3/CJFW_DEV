@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 08-29-2023
+ * @last modified on  : 09-05-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -25,13 +25,13 @@ public with sharing class CJFW_MDMManagerSearchController {
         //                           FROM Account 
         //                           WHERE Id = :selectedId 
         //                           LIMIT 1];
-        List<Contact> contactList = [SELECT Id, LastName, Firstname, Email, Phone, MobilePhone, Department, PV_PAFKT_VK__c, PV_TALKT_VK__c, PV_KNVKGB__c
+        List<Contact> conList = [SELECT Id, LastName, Firstname, Email, Phone, MobilePhone, Department, PV_PAFKT_VK__c, PV_TALKT_VK__c, PV_KNVKGB__c
                                      FROM Contact
                                      WHERE AccountId = :selectedId];
 
-        system.debug('contactList ' + JSON.serialize(contactList));
-         if(!contactList.isEmpty()){
-            for(Contact con : contactList){
+        system.debug('conList ' + JSON.serialize(conList));
+         if(!conList.isEmpty()){
+            for(Contact con : conList){
                 Map<String, Object> contactData = new Map<String, Object>();
                 integer i = 1;
                 contactData.put('No', i);
@@ -70,4 +70,85 @@ public with sharing class CJFW_MDMManagerSearchController {
         system.debug('result ' + JSON.serialize(result));
         return result;
     }
+
+     /**
+    * @description 선택한 recordId를 이용해 Account정보/ Contact정보 가져와 MDM 고객 등록 요청(관리처)에 보내주기
+    * 
+    * @return      `String`
+    */ 
+    @AuraEnabled
+    public static  List<Contact> searchContactInfo(String searchWord){
+        system.debug('### CJFW_MDMManagerSearchController.searchContactInfo(String searchWord) 모달 ### ');
+        system.debug('>>> 검색어 : ' + searchWord);
+        List<Map<String, Object>> result = new List<Map<String, Object>>();
+        
+        //여기서부터시작.
+        List<Contact> listSearchResult = new List<Contact>();
+
+        String strQuery = 'SELECT Id,';
+        strQuery += '   Name, LastName, Firstname, Email, Phone, MobilePhone, Department, PV_PAFKT_VK__c, PV_TALKT_VK__c, PV_KNVKGB__c ';
+        strQuery += '   FROM    Contact ';
+        strQuery += '   WHERE   LastName != null ';
+        if(searchWord <> null) {
+            strQuery += '   AND     (LastName LIKE \'%'+searchWord+'%\')';
+        }
+        listSearchResult = Database.query(strQuery);
+        integer listSearchResultSize = listSearchResult.size();
+     
+        system.debug('result ' + JSON.serialize(result));
+        return listSearchResult;
+    }
+
+     /**
+    * @description 선택한 recordId를 이용해 Account정보/ Contact정보 가져와 MDM 고객 등록 요청(관리처)에 보내주기
+    * 
+    * @return      `String`
+    */ 
+   @AuraEnabled
+   public static  List<ConatactDataWrapper> getSingleContactInfo(String clickedAccId){
+       system.debug('### CJFW_MDMManagerSearchController.searchContactInfo(String searchWord) 모달 ### ');
+       system.debug('>>> contactId : ' + clickedAccId);
+       
+       List<ConatactDataWrapper> result = new List<ConatactDataWrapper>();
+       //여기서부터시작.
+
+        List<Contact> conList = [SELECT Id, Name, LastName, Firstname, Email, Phone, MobilePhone, Department, PV_PAFKT_VK__c, PV_TALKT_VK__c, PV_KNVKGB__c
+        FROM Contact
+        WHERE id = :clickedAccId];
+
+        system.debug('>>> accList ' + json.serialize(conList));
+        system.debug('>>> accList.size() ' + conList.size());
+
+        if(!conList.isEmpty()){
+            for(Contact con : conList){
+                result.add(new ConatactDataWrapper(con));
+            }
+        }
+        system.debug('>>> result.Name ' + json.serialize(result));
+       return result;
+   }
+
+   public class ConatactDataWrapper { 
+        //판매처에서 가져오는 기본정보
+        @AuraEnabled public String Name{get;set;}                   // 고객명(영문명포함                 
+        @AuraEnabled public String Email{get;set;}                   // 고객약칭명(변경
+        @AuraEnabled public String MobilePhone{get;set;}                // 고객유형
+        @AuraEnabled public String Department{get;set;}                   // 법적상태
+        @AuraEnabled public String PV_PAFKT_VK{get;set;}               // 업종
+        @AuraEnabled public String PV_KNVKGB{get;set;}                   // 세금계산서발행유형
+        @AuraEnabled public String PV_TALKT_VK{get;set;}           // 우편번호
+
+
+        public ConatactDataWrapper(){}
+        public ConatactDataWrapper(Contact con) {
+            this.Name                                 = con.Name;                                               
+            this.Email                                = con.Email;                                                   
+            this.MobilePhone                          = con.MobilePhone;                                                       
+            this.Department                           = con.Department;                                                   
+            this.PV_PAFKT_VK                          = con.PV_PAFKT_VK__c;                                                       
+            this.PV_KNVKGB                            = con.PV_KNVKGB__c;                                                   
+            this.PV_TALKT_VK                          = con.PV_TALKT_VK__c;                                                           
+        }
+    }
+
 }
