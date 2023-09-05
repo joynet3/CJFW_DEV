@@ -17,28 +17,42 @@ public class IFN_Scheduler_TEST {
     @TestSetup
     static void setup()
     {
-        IFN_Scheduler_TEST.createIfPrograms(); 
+        IFMaster__c ifmst = new IFMaster__c(Name='IFN_ScheduleBatch',
+            InterfaceId__c = 'IFN_ScheduleBatch',
+            ClassName__c = 'IFN_ScheduleBatch',
+            Endpoint__c = '',
+            Method__c = 'POST',
+            ContentType__c = 'application/json',
+            ifKeyId__c = 'IFN_ScheduleBatch',
+            CallORBatch__c='Batch',
+            BatchClass__c='Batch'
+        );
+        insert ifmst;
+
+        IFMaster__c ifmst1 = new IFMaster__c(Name='IFN_DUMMY_Queueable',
+            InterfaceId__c = 'IFN_DUMMY_Queueable',
+            ClassName__c = 'IFN_DUMMY_Queueable',
+            Endpoint__c = '',
+            Method__c = 'POST',
+            ContentType__c = 'application/json',
+            ifKeyId__c = 'IFN_DUMMY_Queueable',
+            CallORBatch__c='Batch',
+            BatchClass__c='Queueable'
+        );
+        insert ifmst1;
+
     }
 
-
-    public static void createIfPrograms() {
-        List<IF_Program__c> ifPorgObj = new List<IF_Program__c>();
-        ifPorgObj.add(new IF_Program__c(Name='IF_ERP_GradeInformationSearchQueueable', EndPoint__c = 'https://test.test'));
-        ifPorgObj.add(new IF_Program__c(Name='Dummy', EndPoint__c = ''));
-
-        INSERT ifPorgObj;
-
-    } //end of createIfProgramObj()
 
     @isTest
     static void testOne()
     {
         Test.startTest();
         
-        IFN_Scheduler sch = new IFN_Scheduler('IF_ERP_GradeInformationSearchQueueable','200');
+        IFN_Scheduler sch = new IFN_Scheduler('IFN_ScheduleBatch','200');
         system.schedule('test1', '0 0 0 * * ?', sch);
-        IFN_Scheduler sch2 = new IFN_Scheduler('IF_ERP_GradeInformationSearchBatch','200');
-        system.schedule('test2', '0 0 0 * * ?', sch2);
+         IFN_Scheduler sch2 = new IFN_Scheduler('IFN_DUMMY_Queueable','200');
+         system.schedule('test2', '0 0 0 * * ?', sch2);
         
         Test.stopTest();
     }

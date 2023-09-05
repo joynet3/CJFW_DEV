@@ -13,10 +13,11 @@ public class IFN_TestDataFactory {
             Endpoint__c = '',
             Method__c = 'POST',
             ContentType__c = 'application/json',
-            ifKeyId__c = 'test'
+            ifKeyId__c = 'test1',
+            CallORBatch__c='Call'
         );
         insert ifmst;
-
+        
 
         IF_RELAY_INFO__c objRelayInfo = new IF_RELAY_INFO__c();
         objRelayInfo.Interface_id__c = 'test';

@@ -27,12 +27,12 @@ public class IFN_Scheduler implements Schedulable {
 
         Type tp = Type.forName(this.scheduleClass.trim());
         
-        if(this.scheduleClass.contains('Queueable'))
+        if(this.scheduleClass.contains('Queueable') || this.scheduleClass.contains('_que'))
         {
             Queueable job = (Queueable)tp.newInstance();
             System.enqueueJob(job);
         }
-        else if(this.scheduleClass.contains('Batch'))
+        else if(this.scheduleClass.contains('Batch') || this.scheduleClass.contains('_ba'))
         {
             Database.Batchable<sObject> job = (Database.Batchable<sObject>)tp.newInstance();
             Database.executeBatch(job,this.scopSize);
