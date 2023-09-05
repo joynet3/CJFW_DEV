@@ -25,8 +25,6 @@ public with sharing class IFN_Util {
     public static String STATUS_DUPLICATION_INPUT_ERROR = '9906:중복된 데이터 입력입니다.';    
 
     public static String STATUS_EXCEPT = '9999:SERVER ERROR';
-
- 
         
 
     /**

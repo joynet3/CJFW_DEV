@@ -97,7 +97,7 @@ global with sharing class IFN_LIF1002_OD002_MD003 {
                         objOutput.err_msg_ctt = strMessage;
                         commlog.insertLog(logWrap);
                         return objOutput; 
-                    }          
+                    }
 
                     qry = 'Select Status__c,       ResponseDate__c,     ResponseTitle__c, '
                         + '       Manager__r.Name, ResponseMessage__c, ReqRecordId__c, Id '
