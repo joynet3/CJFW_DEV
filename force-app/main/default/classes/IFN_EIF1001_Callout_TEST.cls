@@ -127,9 +127,11 @@ public class IFN_EIF1001_Callout_TEST {
 
         IFN_EIF1001_FS001_MD001.Output resData = new IFN_EIF1001_FS001_MD001.Output();
         IFN_EIF1001_FS001_MD001.I1250 I1250 = new IFN_EIF1001_FS001_MD001.I1250();
+        List<IFN_EIF1001_FS001_MD001.row> datarowlst = new List<IFN_EIF1001_FS001_MD001.row>();
         IFN_EIF1001_FS001_MD001.row datarow = new IFN_EIF1001_FS001_MD001.row();
         IFN_EIF1001_FS001_MD001.RESULT resultData = new  IFN_EIF1001_FS001_MD001.RESULT();
-        I1250.row.add(datarow);
+        datarowlst.add(datarow);
+        I1250.row = datarowlst;
         I1250.Result = resultData;
         resData.i1250 = I1250;
 

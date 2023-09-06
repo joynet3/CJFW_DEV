@@ -130,6 +130,7 @@ public with sharing class CJFW_MDMManagerSearchController {
 
    public class ConatactDataWrapper { 
         //판매처에서 가져오는 기본정보
+        @AuraEnabled public String Id{get;set;}                   // 고객명(영문명포함                 
         @AuraEnabled public String Name{get;set;}                   // 고객명(영문명포함                 
         @AuraEnabled public String Email{get;set;}                   // 고객약칭명(변경
         @AuraEnabled public String MobilePhone{get;set;}                // 고객유형
@@ -141,7 +142,9 @@ public with sharing class CJFW_MDMManagerSearchController {
 
         public ConatactDataWrapper(){}
         public ConatactDataWrapper(Contact con) {
-            this.Name                                 = con.Name;                                               
+            
+            this.Id                                   = con.Id;                                               
+            this.Name                                 = con.LastName;                                               
             this.Email                                = con.Email;                                                   
             this.MobilePhone                          = con.MobilePhone;                                                       
             this.Department                           = con.Department;                                                   

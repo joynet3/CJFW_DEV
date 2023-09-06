@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 08-31-2023
+ * @last modified on  : 09-05-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -129,7 +129,7 @@ public with sharing class CJFW_MDMManagementController {
         // aura  String 으로 넘어와서 JSON.des
         // ObjCustomer obj =  JSON.deserialize(objCustomer, 래퍼클래스명.class);
         system.debug('>>>doSave # objCustomer ' + JSON.serialize(objCustomer));
-        system.debug('>>>doSave # objCustomer ' + JSON.serialize(objCustomer.PV_SELLER_lu));
+        system.debug('>>>doSave # contacts ' + contacts.size());
         //값을 나눠서 값이 없으면 안되는친구들
         //값이 없어도 되는친구들 
         try {
@@ -219,7 +219,36 @@ public with sharing class CJFW_MDMManagementController {
                 mdmRequest.PV_TEMPTARGET__c                                     = objCustomer?.PV_TEMPTARGET;
                 system.debug('>>> 찍혀요? 1');
                 insert mdmRequest;
+
+                //Account도 추가
+                Account accRequest = new Account();
+                accRequest.Name                                                     = String.isBlank(objCustomer?.PV_NAME1) ? null : objCustomer.PV_NAME1;
+                insert accRequest;
+
+                for (CustomContacts contact : contacts) {
+                    if (String.isBlank(contact.id)) {
+                        System.debug('contact ' + JSON.serialize(contact));
+
+                        Contact conRequest = new Contact();
+                        conRequest.LastName = String.isBlank(contact.Name) ? null : contact.Name;
+                        conRequest.AccountId = accRequest.id;
+                        conRequest.Email                               =  String.isBlank(contact.Email) ? null : contact.Email; 
+                        conRequest.Phone                               =  String.isBlank(contact.Phone) ? null : contact.Phone; 
+
+
+                        insert conRequest;
+                    }else{
+                        System.debug('contact ' + JSON.serialize(contact));
+                    }
+                }
+                //MDMRegRequestContact__c mdmConRequest = new MDMRegRequestContact__c();
             }
+            
+
+
+            //가져온 selectedItems여부 따져서, 
+            //Id O Contact 추가
+            //Id X Contact && MDMContact 추가
 
         } catch (Exception e) {
             saveResult = new SaveResult('F', e.getMessage() + e.getLineNumber());
@@ -248,6 +277,19 @@ public with sharing class CJFW_MDMManagementController {
 
 
     public class CustomContacts{
+        @AuraEnabled public String id {get;set;}
+        @AuraEnabled public String Name {get;set;}
+        @AuraEnabled public String AccountId {get;set;}
+        @AuraEnabled public String Email {get;set;}
+        @AuraEnabled public String Phone {get;set;}
+        @AuraEnabled public String MobilePhone {get;set;}
+        @AuraEnabled public String Department {get;set;}
+        @AuraEnabled public String PV_PAFKT_VK {get;set;}
+        @AuraEnabled public String Gender {get;set;}
+        @AuraEnabled public String Fax {get;set;}
+        @AuraEnabled public String OtherInfo {get;set;}
+        @AuraEnabled public String OwnerId {get;set;}
+        @AuraEnabled public String PV_TALKT_VK {get;set;}
 
     }
     public class Banks{

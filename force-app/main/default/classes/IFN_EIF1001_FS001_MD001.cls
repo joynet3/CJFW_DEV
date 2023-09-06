@@ -71,7 +71,7 @@ global with sharing class IFN_EIF1001_FS001_MD001 implements Database.Batchable<
                         insObj = Converter(nowrow);
                         insList.add(insObj);
                     }
-    
+
                     if(insList != null && insList.size() >= 1){
                         List<CJFW_FoodAdditives__c> delList = [Select Id From CJFW_FoodAdditives__c];
                         if(delList != null) delete delList;

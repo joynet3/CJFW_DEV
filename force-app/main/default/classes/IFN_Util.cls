@@ -96,7 +96,7 @@ public with sharing class IFN_Util {
             System.debug(describes[0].fieldSets);
             System.debug(describes[0].fieldSets.getMap());
             Schema.FieldSet fs = describes[0].fieldSets.getMap().get(fieldSetName);
-            System.debug(fs.getFields());
+            //System.debug(fs.getFields());
             return fs.getFields();
         } else {
             return null;

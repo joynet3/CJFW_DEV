@@ -29,11 +29,13 @@ public with sharing class CJFW_SurveyController {
             if(UserInfo.getUserId() == Id.valueOf('0050w000005XKvNAAW')) {
                 // recordIdSet.add('a1U0w000001cA9AEAU');
                 // recordIdSet.add('a1U0w000001cHsbEAE');
+                recordIdSet.add('a1U0w000001casYEAQ');
             }
             //'a1U0w000001cA9AEAU' Sample 스무고개 설문 - 개발
             //'a1U0w000001cHsbEAE' 주문목적 유형(TEST) - 개발
             //'a1U0w000001cJd4EAE' //주문정보
             //'a1U0w000001cJd9EAE' //확인사항
+            //'a1U0w000001casYEAQ' //[Test 유형]
             List<CJFW_Survey__c> surveyList =[
                 select
                     Id
