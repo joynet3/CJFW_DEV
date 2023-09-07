@@ -5,7 +5,7 @@ public with sharing class IFN_EIF1001_EC001_MD001_TEST {
         IFMaster__c ifMaster = new IFMaster__c(
             Name = 'IFN_EIF1001_EC001_MD001',
             Type__c = 'Outbound',
-            WebserviceType__c = 'REST',
+            WebserviceType__c = 'Callout',
             Method__c = 'POST',
             ContentType__c = 'application/json',
             Endpoint__c = 'http://localhost:8060/gwms/crm/rest/EIF1001/EC001/MD001'
@@ -25,6 +25,9 @@ public with sharing class IFN_EIF1001_EC001_MD001_TEST {
         requestData.receiver_number = '"01071707086';
         requestData.title = 'MMS Test';
         requestData.msg = 'MMS Test 1';
+        requestData.sub_id = '1';
+        requestData.image_key = '1';
+        requestData.origin_cid = '1';
         
         requestMsgList.add(requestData);
 
