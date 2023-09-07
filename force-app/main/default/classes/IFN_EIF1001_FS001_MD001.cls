@@ -61,7 +61,9 @@ global with sharing class IFN_EIF1001_FS001_MD001 implements Database.Batchable<
                 ifRes = callout.getResponse(this.interfaceId, getRquest);                                   //  <-------------- callout
 
                 //if (ifRes.getStatusCode() == 200) {
-                if(ifRes.result.equals('S')){
+                //if(ifRes.result.equals('S')){
+                if('S'.equals(ifRes.result)){
+                    System.debug('pass --- ifRes.result');
                 
                     List<CJFW_FoodAdditives__c>     insList     = new List<CJFW_FoodAdditives__c>();
                     CJFW_FoodAdditives__c           insObj      = new CJFW_FoodAdditives__c();

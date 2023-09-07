@@ -15,6 +15,7 @@
 public with sharing class IFN_EIF1001_FS001_MD001_test {
     @TestSetup
     static void makeData(){
+        
         List<IFMaster__c> listIFMaster = new List<IFMaster__c>();
 
         IFMaster__c objIFMaster = new IFMaster__c();
@@ -37,7 +38,7 @@ public with sharing class IFN_EIF1001_FS001_MD001_test {
         
         Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator());
 
-        IFN_EIF1001_FS001_MD001_ba b = new IFN_EIF1001_FS001_MD001_ba();
+        IFN_EIF1001_FS001_MD001 b = new IFN_EIF1001_FS001_MD001();
         Database.executeBatch(b);
         
         Test.stopTest();

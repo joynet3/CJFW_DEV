@@ -15,7 +15,7 @@ global with sharing class IFN_EIF1001_FS001_MD001_sc implements Schedulable {
     global IFN_EIF1001_FS001_MD001_sc() {}
 
     global void execute(SchedulableContext sc) {
-        IFN_EIF1001_FS001_MD001_ba ba = new IFN_EIF1001_FS001_MD001_ba();
+        IFN_EIF1001_FS001_MD001 ba = new IFN_EIF1001_FS001_MD001();
         Database.executeBatch(ba, 1);
     }
 }

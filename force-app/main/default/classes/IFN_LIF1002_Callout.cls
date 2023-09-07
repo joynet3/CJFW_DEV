@@ -180,6 +180,8 @@ public class IFN_LIF1002_Callout {
         String result_message = '';
         
         IFN_LIF1002_SE001_MD001.SE001_01ResultWrapper infResponse = new IFN_LIF1002_SE001_MD001.SE001_01ResultWrapper();  
+        
+
 
         try{
 
