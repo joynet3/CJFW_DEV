@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 09-05-2023
+ * @last modified on  : 09-07-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -227,21 +227,61 @@ public with sharing class CJFW_MDMManagementController {
 
                 for (CustomContacts contact : contacts) {
                     if (String.isBlank(contact.id)) {
+                        System.debug('ContactId 없을 때 탄다 ' + JSON.serialize(contact));
                         System.debug('contact ' + JSON.serialize(contact));
-                        System.debug('contact.id 빈값 ' + JSON.serialize(contact.id));
+                        System.debug('여기타니?1  ' + JSON.serialize(contact.id));
 
                         Contact conRequest = new Contact();
+                        conRequest.MDMRegRequestCustomer__c                  = String.isBlank(mdmRequest.Id) ? null : mdmRequest.Id;
                         conRequest.LastName                                  = String.isBlank(contact.Name) ? null : contact.Name;
                         conRequest.Email                                     = String.isBlank(contact.Email) ? null : contact.Email; 
                         conRequest.MobilePhone                               = String.isBlank(contact.MobilePhone) ? null : contact.MobilePhone; 
                         
-
                         insert conRequest;
+                        
+                        // MDMRegRequestContact__c mdmConRequest = new MDMRegRequestContact__c();
+                        // mdmConRequest.LastName                                  = String.isBlank(contact.Name) ? null : contact.Name;
+                        // mdmConRequest.Email                                     = String.isBlank(contact.Email) ? null : contact.Email; 
+                        // mdmConRequest.MobilePhone                               = String.isBlank(contact.MobilePhone) ? null : contact.MobilePhone; 
+                        // mdmConRequest.MobilePhone                               = String.isBlank(contact.MobilePhone) ? null : contact.MobilePhone; 
+                        
+                        // insert mdmConRequest;
+                        
+
                     }else{
-                        System.debug('contact ' + JSON.serialize(contact));
-                        System.debug('contact.id ????? ' + JSON.serialize(contact.id));
+                        System.debug('ContactId 있을 때 탄다 ' + JSON.serialize(contact));
+                        System.debug('여기타니?2 ' + JSON.serialize(contact.id));
+                        Contact conRequest = new Contact();
+                        //이건 한 contact에 account가 단건인지, 다건인지 알 수 없기때문에 주석처리
+                        //conRequest.MDMRegRequestCustomer__c                  = String.isBlank(mdmRequest.Id) ? null : mdmRequest.Id;
+                        conRequest.LastName                                  = String.isBlank(contact.Name) ? null : contact.Name;
+                        conRequest.Email                                     = String.isBlank(contact.Email) ? null : contact.Email; 
+                        conRequest.MobilePhone                               = String.isBlank(contact.MobilePhone) ? null : contact.MobilePhone; 
+                        
+                        upsert conRequest;
+                        
                     }
                 }
+
+                // for (CustomContacts contact : contacts) {
+                //     if (String.isBlank(contact.id)) {
+                //         System.debug('contact ' + JSON.serialize(contact));
+                //         System.debug('contact.id 빈값 ' + JSON.serialize(contact.id));
+
+                //         MDMRegRequestContact__c mdmConRequest = new Contact();
+                        
+                //         mdmConRequest.Contact__c                                = String.isBlank(contact.Name) ? null : contact.Name;
+                //         mdmConRequest.LastName                                  = String.isBlank(contact.Name) ? null : contact.Name;
+                //         mdmConRequest.Email                                     = String.isBlank(contact.Email) ? null : contact.Email; 
+                //         mdmConRequest.MobilePhone                               = String.isBlank(contact.MobilePhone) ? null : contact.MobilePhone; 
+                        
+                            
+                //         insert conRequest;
+                //     }else{
+                //         System.debug('contact ' + JSON.serialize(contact));
+                //         System.debug('contact.id ????? ' + JSON.serialize(contact.id));
+                //     }
+                // }
                 
                 //MDMRegRequestContact__c mdmConRequest = new MDMRegRequestContact__c();
             }
