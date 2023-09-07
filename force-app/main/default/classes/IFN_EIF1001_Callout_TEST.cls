@@ -119,6 +119,40 @@ public class IFN_EIF1001_Callout_TEST {
     }    
 
 
+    
+    @isTest
+    static void testIFN_EIF1001_EC003_MD005Succ()
+    {
+
+        Test.startTest();
+
+        
+        IFN_EIF1001_EC003_MD005.EC003ResultWrapper resSucc = new IFN_EIF1001_EC003_MD005.EC003ResultWrapper();
+        List<Map<String, Object>> resultMapLst = new List<Map<String, Object>>();
+        Map<String, Object> resMap = new Map<String, Object>();
+        resMap.put('1','1');
+        resultMapLst.add(resMap);
+        resSucc.results = resultMapLst;
+
+        
+        String resbody = JSON.serialize(resSucc);
+
+        Test.setMock(HttpCalloutMock.class, new IF_HttpCalloutMock(resbody,200)); 
+        IFN_EIF1001_Callout callout = new IFN_EIF1001_Callout('tIFN_EIF1001_EC003_MD005','Rseal');
+
+        // req
+        IFN_EIF1001_EC003_MD005.EC003RequstWrapper reqparam = new IFN_EIF1001_EC003_MD005.EC003RequstWrapper();
+        List<IFN_EIF1001_EC003_MD005.EC003RequstData> reqdatalst = new List<IFN_EIF1001_EC003_MD005.EC003RequstData>();
+        IFN_EIF1001_EC003_MD005.EC003RequstData reqdata = new IFN_EIF1001_EC003_MD005.EC003RequstData();
+        reqdatalst.add(reqdata);
+        reqparam.msg_type = '1';
+
+        callout.getResponse('IFN_EIF1001_EC002_MD004', reqparam);
+        
+        Test.stopTest();
+    } 
+
+
     @isTest
     static void testIFN_EIF1001_FS001_MD001Succ()
     {

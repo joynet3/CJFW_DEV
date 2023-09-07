@@ -221,31 +221,31 @@ public with sharing class CJFW_MDMManagementController {
                 insert mdmRequest;
 
                 //Account도 추가
-                Account accRequest = new Account();
-                accRequest.Name                                                     = String.isBlank(objCustomer?.PV_NAME1) ? null : objCustomer.PV_NAME1;
-                insert accRequest;
+                // Account accRequest = new Account();
+                // accRequest.Name                                                     = String.isBlank(objCustomer?.PV_NAME1) ? null : objCustomer.PV_NAME1;
+                // insert accRequest;
 
                 for (CustomContacts contact : contacts) {
                     if (String.isBlank(contact.id)) {
                         System.debug('contact ' + JSON.serialize(contact));
+                        System.debug('contact.id 빈값 ' + JSON.serialize(contact.id));
 
                         Contact conRequest = new Contact();
-                        conRequest.LastName = String.isBlank(contact.Name) ? null : contact.Name;
-                        conRequest.AccountId = accRequest.id;
-                        conRequest.Email                               =  String.isBlank(contact.Email) ? null : contact.Email; 
-                        conRequest.Phone                               =  String.isBlank(contact.Phone) ? null : contact.Phone; 
-
+                        conRequest.LastName                                  = String.isBlank(contact.Name) ? null : contact.Name;
+                        conRequest.Email                                     = String.isBlank(contact.Email) ? null : contact.Email; 
+                        conRequest.MobilePhone                               = String.isBlank(contact.MobilePhone) ? null : contact.MobilePhone; 
+                        
 
                         insert conRequest;
                     }else{
                         System.debug('contact ' + JSON.serialize(contact));
+                        System.debug('contact.id ????? ' + JSON.serialize(contact.id));
                     }
                 }
+                
                 //MDMRegRequestContact__c mdmConRequest = new MDMRegRequestContact__c();
             }
             
-
-
             //가져온 selectedItems여부 따져서, 
             //Id O Contact 추가
             //Id X Contact && MDMContact 추가

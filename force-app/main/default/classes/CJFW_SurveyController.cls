@@ -4,6 +4,10 @@
 *@group  Survey
 *@author 진현욱
 *@since 2023-08-01  최초작성
+
+*@group  Survey
+*@author 최선경
+*@since 2023-09-06  샘플 코드 삭제
 */
 public with sharing class CJFW_SurveyController {
     public CJFW_SurveyController() {
@@ -21,28 +25,37 @@ public with sharing class CJFW_SurveyController {
             Map<String,Object> result = new Map<String,Object>();
             List<selectOption> optionList = new List<selectOption>();
 
-            //Sample 용
-            Set<String> recordIdSet = new Set<String>{
-                'a1U0w000001cJd4EAE',  'a1U0w000001cJd9EAE'
-            };
+            // //Sample 용
+            // Set<String> recordIdSet = new Set<String>{
+            //     'a1U0w000001cJd4EAE',  'a1U0w000001cJd9EAE'
+                
+            // };
 
-            if(UserInfo.getUserId() == Id.valueOf('0050w000005XKvNAAW')) {
-                // recordIdSet.add('a1U0w000001cA9AEAU');
-                // recordIdSet.add('a1U0w000001cHsbEAE');
-                recordIdSet.add('a1U0w000001casYEAQ');
-            }
-            //'a1U0w000001cA9AEAU' Sample 스무고개 설문 - 개발
-            //'a1U0w000001cHsbEAE' 주문목적 유형(TEST) - 개발
-            //'a1U0w000001cJd4EAE' //주문정보
-            //'a1U0w000001cJd9EAE' //확인사항
-            //'a1U0w000001casYEAQ' //[Test 유형]
+            // if(UserInfo.getUserId() == Id.valueOf('0050w000005XKvNAAW' || id.valueOf('0050w000005hLr4AAE'))) {
+            //     // recordIdSet.add('a1U0w000001cA9AEAU');
+            //     // recordIdSet.add('a1U0w000001cHsbEAE');
+            //     // recordIdSet.add('a1U0w000001casYEAQ');
+            //     recordIdSet.add('a1U0w000001casdEAA');
+            //     recordIdSet.add('a1U0w000001casxEAA');
+            //     recordIdSet.add('a1U0w000001cat2EAA');
+            //     recordIdSet.add('a1U0w000001casiEAA');
+            // }
+            // //'a1U0w000001cA9AEAU' Sample 스무고개 설문 - 개발
+            // //'a1U0w000001cHsbEAE' 주문목적 유형(TEST) - 개발
+            // //'a1U0w000001cJd4EAE' //주문정보
+            // //'a1U0w000001cJd9EAE' //확인사항
+            // //'a1U0w000001casYEAQ' //[Test 유형]
+            // // 'a1U0w000001casdEAA' //아이누리
+            // // 'a1U0w000001casxEAA' //헬씨누리
+            // // 'a1U0w000001cat2EAA' //원료 솔루션
+            // // 'a1U0w000001casiEAA' //급식 솔루션
             List<CJFW_Survey__c> surveyList =[
                 select
                     Id
                     , Name
                     , Description__c
                 from CJFW_Survey__c 
-                where Id IN :recordIdSet //테스트시..
+                // where Id IN :recordIdSet //테스트시..
             ];
 
             for(CJFW_Survey__c survey : surveyList) {
