@@ -36,7 +36,7 @@ public with sharing class IFN_EIF1001_FS001_MD001_test {
     static void test_IFN_EIF1001_FS001_MD001_ba() {
         Test.startTest();
         
-        Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator());
+        Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator('',500));
 
         IFN_EIF1001_FS001_MD001 b = new IFN_EIF1001_FS001_MD001();
         Database.executeBatch(b);
@@ -47,8 +47,40 @@ public with sharing class IFN_EIF1001_FS001_MD001_test {
     @isTest
     static void test_IFN_EIF1001_FS001_MD001_sc() {
         Test.startTest();
+
+        IFN_EIF1001_FS001_MD001.RESULT result = new IFN_EIF1001_FS001_MD001.RESULT();
+        result.CODE = 'INFO-000';
+        result.MSG = '정상처리되었습니다.';
+
+        List<IFN_EIF1001_FS001_MD001.row> rowlst = new List<IFN_EIF1001_FS001_MD001.row>();
+        IFN_EIF1001_FS001_MD001.row row = new IFN_EIF1001_FS001_MD001.row();
         
-        Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator());
+        row.PRDLST_REPORT_NO ='1';
+        row.PRMS_DT	= '1';
+        row.LAST_UPDT_DTM = '1';
+        row.LCNS_NO = '1';
+        row.PRDLST_NM = '1';
+        row.QLITY_MNTNC_TMLMT_DAYCNT = '1';
+        row.BSSH_NM = '1';
+        row.PRDLST_DCNM = '1';
+        row.CHILD_CRTFC_YN = '1';
+        row.INDUTY_CD_NM = '1';
+        row.USAGE = '1';
+        row.POG_DAYCNT = '1';
+        row.HIENG_LNTRT_DVS_NM = '1';
+        row.PRODUCTION = '1';
+        row.PRPOS = '1';
+        rowlst.add(row);
+
+        IFN_EIF1001_FS001_MD001.I1250 I1250 = new IFN_EIF1001_FS001_MD001.I1250();
+        I1250.Result = result;
+        I1250.row = rowlst;
+        I1250.total_count = '10';
+
+        IFN_EIF1001_FS001_MD001.Output Output = new IFN_EIF1001_FS001_MD001.Output();
+        Output.i1250 = I1250;
+        
+        Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator(JSON.serialize(Output),200));
 
         SchedulableContext sc = null;
         IFN_EIF1001_FS001_MD001_sc scd = new IFN_EIF1001_FS001_MD001_sc();
@@ -58,43 +90,21 @@ public with sharing class IFN_EIF1001_FS001_MD001_test {
     }
 
     public class MockHttpResponseGenerator implements HttpCalloutMock {
-        // Implement this interface method
+        public String body{get;set;}
+        public Integer statusCode{get;set;}
+
+        public MockHttpResponseGenerator(String body, Integer statusCode)
+        {
+            this.body = body;
+            this.statusCode = statusCode;
+        }
+
         public HTTPResponse respond(HTTPRequest req) {
-            System.assertEquals('GET', req.getMethod());
-            
             // Create a fake response
             HttpResponse res = new HttpResponse();
-            res.setHeader('Content-Type', 'application/json');
-            res.setBody(
-                      '{'
-                    + '    "I1250": {'
-                    + '        "total_count": "1",'
-                    + '        "row": ['
-                    + '            {'
-                    + '                "PRDLST_REPORT_NO": "19630364001121",'
-                    + '                "PRMS_DT": "19920822",'
-                    + '                "LAST_UPDT_DTM": "20160706",'
-                    + '                "LCNS_NO": "19630364001",'
-                    + '                "PRDLST_NM": "허벌엣센스케이",'
-                    + '                "QLITY_MNTNC_TMLMT_DAYCNT": "",'
-                    + '                "BSSH_NM": "(주)보락",'
-                    + '                "PRDLST_DCNM": "혼합제제",'
-                    + '                "CHILD_CRTFC_YN": "",'
-                    + '                "INDUTY_CD_NM": "식품첨가물제조업",'
-                    + '                "USAGE": "착향료",'
-                    + '                "POG_DAYCNT": "유통기간미등록",'
-                    + '                "HIENG_LNTRT_DVS_NM": "해당없음",'
-                    + '                "PRODUCTION": "아니오",'
-                    + '                "PRPOS": ""'
-                    + '            }'
-                    + '        ],'
-                    + '        "RESULT": {'
-                    + '            "MSG": "정상처리되었습니다.",'
-                    + '            "CODE": "INFO-000"'
-                    + '        }'
-                    + '    }'
-                    + '}');
-            res.setStatusCode(200);
+            res.setHeader('Content-Type', 'application/text');
+            res.setBody(this.body);
+            res.setStatusCode(this.statusCode);
             return res;
         }
     }

@@ -96,9 +96,9 @@ public with sharing class IFN_ApiGateWay {
             IF_RELAY_INFO__c objRelayInfo = IF_RELAY_INFO__c.getOrgDefaults();
             String contentType = this.objIFMaster.ContentType__c;
 
-            request.setHeader('Interface_id', this.ifKeyId);
-            request.setHeader('Interface_auth_key', objRelayInfo.Interface_auth_key__c);
-            request.setHeader('Content-Type', contentType);
+            if(String.isNotBlank(this.ifKeyId)) request.setHeader('Interface_id', this.ifKeyId);
+            if(String.isNotBlank(objRelayInfo.Interface_auth_key__c)) request.setHeader('Interface_auth_key', objRelayInfo.Interface_auth_key__c);
+            if(String.isNotBlank(contentType)) request.setHeader('Content-Type', contentType);
 
 
             // if 정보 메타 데이터 정보상의 헤더값 리스트가 있는 경우 헤더 세팅
