@@ -32,7 +32,7 @@ public with sharing class IFN_CLOVA {
         String language = 'ko-KR';
         //completion optional, sync/async
 //    String completion = "sync";4444
-        String completion = 'async';
+        String completion = 'sync';
         //optional, used to receive the analyzed results
         String callback = 'https://cj-fresh-test-8be160f3f998.herokuapp.com/callback';
 //    String callback;
@@ -64,12 +64,12 @@ public with sharing class IFN_CLOVA {
         String message { get; set; }
         String token { get; set; }
         String version { get; set; }
-        Map<String, Object> params { get; set; }
+        Object params { get; set; }
         Integer progress { get; set; }
         List<Map<String, Object>> segments { get; set; }
         String text { get; set; }
         Double confidence { get; set; }
-        List<Map<String, Object>> speakers { get; set; }
+        List<Object> speakers { get; set; }
 
     }
 }

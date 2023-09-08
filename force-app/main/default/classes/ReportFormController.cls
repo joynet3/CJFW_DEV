@@ -11,7 +11,7 @@
 
  * @author            : eunyoung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 08-28-2023
+ * @last modified on  : 09-07-2023
  * @last modified by  : eunyoung.choi@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -22,15 +22,44 @@ public with sharing class ReportFormController {
 
     public String accountName { get; set; }
     public String savedAccountName { get; set; }
-    
+
+    /* picklist 값 가져오기 위한 선언 */
+    public String selectedType { get; set; }
+    public List<SelectOption> typeOptions { get; set; }
+
+    /* 계산로직 test */
+    public Decimal input1 { get; set; }
+    public Decimal input2 { get; set; }
+    public Decimal result { get; set; }
+
     public void saveAccount() {
         savedAccountName = accountName;
     }
+
+    public void multiply() {
+        result = input1 * input2;
+    }
     
     public ReportFormController() {
+
+
+        // Pick list Type 필드의 옵션 값
+        Schema.DescribeFieldResult fieldResult = CJFW_ExpectedIncomeExpenses__c.CollateralType__c.getDescribe();
+        List<Schema.PicklistEntry> picklistValues = fieldResult.getPicklistValues();
+
+        // Type 필드의 옵션 값을 SelectOption으로 변환
+        typeOptions = new List<SelectOption>();
+        for (Schema.PicklistEntry picklistValue : picklistValues) {
+            typeOptions.add(new SelectOption(picklistValue.getLabel(), picklistValue.getValue()));
+        }
+
+        System.debug('# ReportFormController picklist ->' + typeOptions );
+
+
         // 거래처 현황 테이블 - 고객사정보 (개발테스트용으로 값 1개만 출력되게함, 추후수정예정)
         accountInfo = [SELECT id 
         , searchKey__c 
+        , Type
         , RepresentativeName__c 
         , BusinessPath__c 
         , PV_CSHAPE__c

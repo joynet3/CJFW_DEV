@@ -4,12 +4,22 @@
  * @group             : 
  * @last modified on  : 03-08-2023
  * @last modified by  : admin
-**/
+ * 
+ * 변경사항: 입찰공고의 별도 분리
+ * ----------------------------------------------
+ *  NO | Date       | Modifier       | Description
+ * ----------------------------------------------
+ *  1. | 2023.09.06 | sancho         | Lead -> CJFW_BiddingInformation__c 입찰 공고 테이블 분리
+ **/
 global with sharing class IF_SFDC_DATA_REQ_D2BBID_INFO_DETAIL_ba implements Database.batchable<IF_SFDC_DATA_REQ_D2BBID_INFO_sc.Items>, Database.Stateful, Database.AllowsCallouts{
     
     IFMaster__c ifMasterObj = [SELECT Id, Name, ContentType__c, Endpoint__c, Method__c FROM IFMaster__c WHERE Name = 'IF_SFDC_DATA_REQ_D2BBID_INFO_DETAIL'];
     List<NaramarketKeyword__mdt> subKeywordList = [SELECT Keyword__c, keyword_seq__c FROM NaramarketKeyword__mdt WHERE Keyword_lv__c = 2 ORDER BY keyword_seq__c ASC];
-    Id recordId = Schema.SObjectType.LEAD.getRecordTypeInfosByDeveloperName().get('MilitaryLead').getRecordTypeId();
+    
+    //Id recordId = Schema.SObjectType.LEAD.getRecordTypeInfosByDeveloperName().get('MilitaryLead').getRecordTypeId();
+    //2023.09.07 - sancho
+    Id recordId = Schema.SObjectType.LEAD.getRecordTypeInfosByDeveloperName().get('Military').getRecordTypeId();        //Military,Local,NaraMarket
+    
     
     AssignmentRule AR = [select id from AssignmentRule where SobjectType = 'Lead' and Active = true limit 1];
     Database.DMLOptions dmlOpts = new Database.DMLOptions();
@@ -74,7 +84,9 @@ global with sharing class IF_SFDC_DATA_REQ_D2BBID_INFO_DETAIL_ba implements Data
                 System.debug('==================================getBody:::' + strJSON);
                 IF_SFDC_DATA_REQ_D2BBID_INFO_sc.Input input = (IF_SFDC_DATA_REQ_D2BBID_INFO_sc.Input) JSON.deserialize(strJSON, IF_SFDC_DATA_REQ_D2BBID_INFO_sc.Input.class);
                 String bidNo = '';
-                Map<String,Lead> uptLeadMap = new Map<String,Lead>();
+                //2023.09.06
+                //Map<String,Lead> uptLeadMap = new Map<String,Lead>();
+                Map<String,CJFW_BiddingInformation__c> uptLeadMap = new Map<String,CJFW_BiddingInformation__c>();   //2023.090.06
                 
                 if (Integer.valueOf(input.response.body.item.g2bPblancOdr) < 10) {
                     Integer ord = Integer.valueOf(input.response.body.item.g2bPblancOdr);
@@ -82,25 +94,31 @@ global with sharing class IF_SFDC_DATA_REQ_D2BBID_INFO_DETAIL_ba implements Data
                 }else {
                     bidNo = (scope[0].demandYear+input.response.body.item.g2bPblancNo+'-'+input.response.body.item.g2bPblancOdr);
                 }
-                for (Lead obj : [SELECT Id, BidNoticeNumber__c 
-                                        FROM Lead 
-                                        WHERE BidNoticeNumber__c =: bidNo]) {
-                        uptLeadMap.put(obj.BidNoticeNumber__c, obj);
-                    }
+                //2023.09.06
+                // for (Lead obj : [SELECT Id, BidNoticeNumber__c FROM Lead WHERE BidNoticeNumber__c =: bidNo]) {
+                //         uptLeadMap.put(obj.BidNoticeNumber__c, obj);
+                // }
+                for (CJFW_BiddingInformation__c obj : [SELECT Id, BidNoticeNumber__c FROM CJFW_BiddingInformation__c WHERE BidNoticeNumber__c =: bidNo]) {
+                    uptLeadMap.put(obj.BidNoticeNumber__c, obj);
+                }
                 
                 if (uptLeadMap.get(bidNo) <> null) {
-                    Lead uptLead = uptLeadMap.get(bidNo);
-                    uptLead.LastName = input.response.body.item.chargerNm;
-                    uptLead.Status = 'New';
-                    uptLead.MobilePhone = input.response.body.item.chargerCttpc;
-                    uptLead.Company = input.response.body.item.ornt;
+                    //2023.09.06
+                    //Lead uptLead = uptLeadMap.get(bidNo);
+                    CJFW_BiddingInformation__c uptLead = uptLeadMap.get(bidNo);
+
+                    uptLead.PIC__c                   = input.response.body.item.chargerNm;
+                    //uptLead.Status = 'New';
+                    uptLead.Phone__c                 = input.response.body.item.chargerCttpc;
+                    uptLead.Company__c               = input.response.body.item.ornt;
+                    uptLead.BidNoticeStatus__c       = input.response.body.item.pblancSe;   //공고구분
+                    uptLead.BidNoticeName__c         = input.response.body.item.bidNm;      //공고명
+                    uptLead.BidMethod__c             = input.response.body.item.bidMth;     //입찰방식
+                    uptLead.ContractSignMethod__c    = input.response.body.item.cntrctMth;  //계약방법
+                    uptLead.BidStatus__c             = input.response.body.item.bidStle;    //입찰형태
+                    uptLead.ContractType__c          = input.response.body.item.cntrctKnd;  //계약종류
+
                     // uptLead.BidNoticeNumber__c = input.response.body.item.pblancNo;
-                    uptLead.BidNoticeStatus__c = input.response.body.item.pblancSe;
-                    uptLead.BidNoticeName__c = input.response.body.item.bidNm;
-                    uptLead.BidMethod__c = input.response.body.item.bidMth;
-                    uptLead.ContractSignMethod__c = input.response.body.item.cntrctMth;
-                    uptLead.BidStatus__c = input.response.body.item.bidStle;
-                    uptLead.ContractType__c = input.response.body.item.cntrctKnd;
                     //판단요구년도 공고번호 판단번호와 나라장터기준 차수를 조합하여 외부키값인 나라장터공고번호를 생성 및 적재
                     if (Integer.valueOf(input.response.body.item.g2bPblancOdr) < 10) {
                         Integer ord = Integer.valueOf(input.response.body.item.g2bPblancOdr);
@@ -115,8 +133,9 @@ global with sharing class IF_SFDC_DATA_REQ_D2BBID_INFO_DETAIL_ba implements Data
                         ,Integer.valueOf(input.response.body.item.bidPartcptRegistClosDt.substring(5,7))
                         ,Integer.valueOf(input.response.body.item.bidPartcptRegistClosDt.substring(6,8))
                         , 0
-                        );
-                    uptLead.BidQualifyRegistCloseDateTime__c = dt;
+                    );
+                    uptLead.BidRegistCloseDateTime__c       = dt;       //입찰참가등록 마감일시
+
                     dt = Datetime.newInstance(
                         Integer.valueOf(input.response.body.item.biddocPresentnClosDt.substring(0,4))
                         ,Integer.valueOf(input.response.body.item.biddocPresentnClosDt.substring(3,5))
@@ -124,8 +143,9 @@ global with sharing class IF_SFDC_DATA_REQ_D2BBID_INFO_DETAIL_ba implements Data
                         ,Integer.valueOf(input.response.body.item.biddocPresentnClosDt.substring(5,7))
                         ,Integer.valueOf(input.response.body.item.biddocPresentnClosDt.substring(6,8))
                         , 0
-                        );
-                    uptLead.BidLetterSubmitCloseDateTime__c = dt;
+                    );
+                    uptLead.BidLetterSubmitCloseDateTime__c = dt;       //입찰서 제출 마감일시
+                    
                     dt = Datetime.newInstance(
                         Integer.valueOf(input.response.body.item.opengDt.substring(0,4))
                         ,Integer.valueOf(input.response.body.item.opengDt.substring(3,5))
@@ -133,8 +153,9 @@ global with sharing class IF_SFDC_DATA_REQ_D2BBID_INFO_DETAIL_ba implements Data
                         ,Integer.valueOf(input.response.body.item.opengDt.substring(5,7))
                         ,Integer.valueOf(input.response.body.item.opengDt.substring(6,8))
                         , 0
-                        );
-                    uptLead.BidOpenDateTime__c = dt;
+                    );
+                    uptLead.BidOpenDateTime__c = dt;                    //개찰일시
+                    
                     if (input.response.body.item.pblancDate <> null && input.response.body.item.pblancDate <> '') {
                         Date d = Date.newInstance(
                             Integer.valueOf(input.response.body.item.pblancDate.substring(0,4))
@@ -142,37 +163,45 @@ global with sharing class IF_SFDC_DATA_REQ_D2BBID_INFO_DETAIL_ba implements Data
                             , Integer.valueOf(input.response.body.item.pblancDate.substring(4,6))
                             );
 
-                        uptLead.pblancDate__c = d;
+                        uptLead.pblancDate__c = d;                      //공고 일자
                     }
-                    uptLead.LeadSource = 'Military';
-                    uptLead.BudgetAmount__c = input.response.body.item.budgetAmount <> null ? Decimal.valueOf(input.response.body.item.budgetAmount) : null;
-                    uptLead.BidDeterminMethod__c = input.response.body.item.sucbidrDecsnMth;
-                    uptLead.excutTy__c = input.response.body.item.excutTy;
-                    uptLead.bsisPrdprcApplcAt__c = input.response.body.item.bsisPrdprcApplcAt;
-                    uptLead.bsicExpt__c = scope[0].bsicExpt <> null ? Decimal.valueOf(scope[0].bsicExpt) : null;
-                    uptLead.bsisPrdprcOthbcAt__c = scope[0].bsisPrdprcOthbcAt;
-                    uptLead.Keyword__c = scope[0].keyword;
-                    uptLead.RecordtypeId = recordId;
+                    //uptLead.LeadSource = 'Military';                  //아래 RecordtypeId 로 구분 하느듯?
+                    uptLead.BudgetAmount__c          = input.response.body.item.budgetAmount <> null ? Decimal.valueOf(input.response.body.item.budgetAmount) : null;   //예산금액
+                    uptLead.BidDeterminMethod__c     = input.response.body.item.sucbidrDecsnMth;        //낙찰자 결정방법
+                    uptLead.excutTy__c               = input.response.body.item.excutTy;                //집행유형
+                    uptLead.bsisPrdprcApplcAt__c     = input.response.body.item.bsisPrdprcApplcAt;      //기초예가적용여부
+                    uptLead.bsicExpt__c              = scope[0].bsicExpt <> null ? Decimal.valueOf(scope[0].bsicExpt) : null;    //기초예비가격
+                    uptLead.bsisPrdprcOthbcAt__c     = scope[0].bsisPrdprcOthbcAt;                      //기초예가공개여부
+
+                    uptLead.Keyword__c               = scope[0].keyword;
+                    
+                    uptLead.RecordTypeId             = recordId;
                     for (NaramarketKeyword__mdt keyword : subKeywordList) {
                         if (input.response.body.item.bidNm.contains(keyword.Keyword__c)) {
-                            uptLead.KeywordSub__c = keyword.Keyword__c;
+                            uptLead.KeywordSub__c    = keyword.Keyword__c;
                             break;
                         }
                     }
                     update uptLead;
                 }else {
-                    Lead objLead = new Lead();
-                    objLead.setOptions(dmlOpts);
-                    objLead.LastName = input.response.body.item.chargerNm;
-                    objLead.Status = 'New';
-                    objLead.MobilePhone = input.response.body.item.chargerCttpc;
-                    objLead.Company = input.response.body.item.ornt;
-                    objLead.BidNoticeStatus__c = input.response.body.item.pblancSe;
-                    objLead.BidNoticeName__c = input.response.body.item.bidNm;
-                    objLead.BidMethod__c = input.response.body.item.bidMth;
-                    objLead.ContractSignMethod__c = input.response.body.item.cntrctMth;
-                    objLead.BidStatus__c = input.response.body.item.bidStle;
-                    objLead.ContractType__c = input.response.body.item.cntrctKnd;
+                    //Lead objLead = new Lead();
+                    CJFW_BiddingInformation__c objLead = new CJFW_BiddingInformation__c();
+
+                    //2023.09.07
+                    //AssignmentRule - 사용하는가?
+                    //Lead 에서 분리, 단순 테이블로 사용하는지 아니면 Lead 처럼 AssignmentRule 이 필요한지 업무에서 결정이 필요하다.
+                    //objLead.setOptions(dmlOpts);
+
+                    objLead.PIC__c               = input.response.body.item.chargerNm;
+                    //objLead.Status = 'New';
+                    objLead.Phone__c             = input.response.body.item.chargerCttpc;
+                    objLead.Company__c           = input.response.body.item.ornt;
+                    objLead.BidNoticeStatus__c   = input.response.body.item.pblancSe;
+                    objLead.BidNoticeName__c     = input.response.body.item.bidNm;
+                    objLead.BidMethod__c         = input.response.body.item.bidMth;
+                    objLead.ContractSignMethod__c= input.response.body.item.cntrctMth;
+                    objLead.BidStatus__c         = input.response.body.item.bidStle;
+                    objLead.ContractType__c      = input.response.body.item.cntrctKnd;
                     //판단요구년도 공고번호 판단번호와 나라장터기준 차수를 조합하여 외부키값인 나라장터공고번호를 생성 및 적재
                     if (Integer.valueOf(input.response.body.item.g2bPblancOdr) < 10) {
                         Integer ord = Integer.valueOf(input.response.body.item.g2bPblancOdr);
@@ -187,8 +216,9 @@ global with sharing class IF_SFDC_DATA_REQ_D2BBID_INFO_DETAIL_ba implements Data
                         ,Integer.valueOf(input.response.body.item.bidPartcptRegistClosDt.substring(5,7))
                         ,Integer.valueOf(input.response.body.item.bidPartcptRegistClosDt.substring(6,8))
                         , 0
-                        );
-                    objLead.BidQualifyRegistCloseDateTime__c = dt;
+                    );
+                    objLead.BidRegistCloseDateTime__c       = dt;       //입찰참가등록 마감일시
+
                     dt = Datetime.newInstance(
                         Integer.valueOf(input.response.body.item.biddocPresentnClosDt.substring(0,4))
                         ,Integer.valueOf(input.response.body.item.biddocPresentnClosDt.substring(3,5))
@@ -196,8 +226,9 @@ global with sharing class IF_SFDC_DATA_REQ_D2BBID_INFO_DETAIL_ba implements Data
                         ,Integer.valueOf(input.response.body.item.biddocPresentnClosDt.substring(5,7))
                         ,Integer.valueOf(input.response.body.item.biddocPresentnClosDt.substring(6,8))
                         , 0
-                        );
-                    objLead.BidLetterSubmitCloseDateTime__c = dt;
+                    );
+                    objLead.BidLetterSubmitCloseDateTime__c = dt;       //입찰서 제출 마감일시
+
                     dt = Datetime.newInstance(
                         Integer.valueOf(input.response.body.item.opengDt.substring(0,4))
                         ,Integer.valueOf(input.response.body.item.opengDt.substring(3,5))
@@ -205,26 +236,26 @@ global with sharing class IF_SFDC_DATA_REQ_D2BBID_INFO_DETAIL_ba implements Data
                         ,Integer.valueOf(input.response.body.item.opengDt.substring(5,7))
                         ,Integer.valueOf(input.response.body.item.opengDt.substring(6,8))
                         , 0
-                        );
-                    objLead.BidOpenDateTime__c = dt;
+                    );
+                    objLead.BidOpenDateTime__c = dt;                    //개찰일시
+
                     if (input.response.body.item.pblancDate <> null && input.response.body.item.pblancDate <> '') {
                         Date d = Date.newInstance(
                             Integer.valueOf(input.response.body.item.pblancDate.substring(0,4))
                             , Integer.valueOf(input.response.body.item.pblancDate.substring(3,5))
                             , Integer.valueOf(input.response.body.item.pblancDate.substring(4,6))
-                            );
-    
+                        );
                         objLead.pblancDate__c = d;
                     }
-                    objLead.LeadSource = 'Military';
-                    objLead.BudgetAmount__c = input.response.body.item.budgetAmount <> null ? Decimal.valueOf(input.response.body.item.budgetAmount) : null;
-                    objLead.BidDeterminMethod__c = input.response.body.item.sucbidrDecsnMth;
-                    objLead.excutTy__c = input.response.body.item.excutTy;
-                    objLead.bsisPrdprcApplcAt__c = input.response.body.item.bsisPrdprcApplcAt;
-                    objLead.bsicExpt__c = scope[0].bsicExpt <> null ? Decimal.valueOf(scope[0].bsicExpt) : null;
-                    objLead.bsisPrdprcOthbcAt__c = scope[0].bsisPrdprcOthbcAt;
-                    objLead.Keyword__c = scope[0].keyword;
-                    objLead.RecordtypeId = recordId;
+                    //objLead.LeadSource = 'Military';
+                    objLead.BudgetAmount__c         = input.response.body.item.budgetAmount <> null ? Decimal.valueOf(input.response.body.item.budgetAmount) : null;
+                    objLead.BidDeterminMethod__c    = input.response.body.item.sucbidrDecsnMth;
+                    objLead.excutTy__c              = input.response.body.item.excutTy;
+                    objLead.bsisPrdprcApplcAt__c    = input.response.body.item.bsisPrdprcApplcAt;
+                    objLead.bsicExpt__c             = scope[0].bsicExpt <> null ? Decimal.valueOf(scope[0].bsicExpt) : null;
+                    objLead.bsisPrdprcOthbcAt__c    = scope[0].bsisPrdprcOthbcAt;
+                    objLead.Keyword__c              = scope[0].keyword;
+                    objLead.RecordTypeId = recordId;
                     for (NaramarketKeyword__mdt keyword : subKeywordList) {
                         if (input.response.body.item.bidNm.contains(keyword.Keyword__c)) {
                             objLead.KeywordSub__c = keyword.Keyword__c;
