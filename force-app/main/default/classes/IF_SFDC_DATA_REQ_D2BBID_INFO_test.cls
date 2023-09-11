@@ -17,25 +17,23 @@ public class IF_SFDC_DATA_REQ_D2BBID_INFO_test {
             IFMaster__c objIFMaster = new IFMaster__c();
 
             objIFMaster.Name = str;
+            objIFMaster.ifKeyId__c = 'IF_SFDC_DATA_REQ_D2BBID_INFO_DETAIL'.equals(str) ? 'IF0004_IF_SFDC_DATA_REQ_D2BBID_INFO_DETAIL' : 'IF0004_IF_SFDC_DATA_REQ_D2BBID_INFO';
+
+            objIFMaster.OwnerId = '0050w000004LJL5AAO';
+            
             objIFMaster.Type__c = 'Outbound';
             objIFMaster.WebserviceType__c = 'REST';
             objIFMaster.Method__c = 'GET';
             objIFMaster.ContentType__c = 'application/xml';
             objIFMaster.Endpoint__c = 'http://openapi.d2b.go.kr/openapi/service/BidPblancInfoService';
-            
+            //ifkey id  필수 값으로 추가 함.
+
             listIFMaster.add(objIFMaster);
         }
 
         insert listIFMaster;
     }
-    // @isTest
-    // static void testIF_SFDC_DATA_REQ_D2BBID_INFO_qu() {
-    //     Test.startTest();
-    //     Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator());
-    //     System.Queueable job = new IF_SFDC_DATA_REQ_D2BBID_INFO_qu();
-    //     System.enqueueJob(job);
-    //     Test.stopTest();
-    // }
+
 
     @isTest
     static void testIF_SFDC_DATA_REQ_D2BBID_INFO_DETAIL_ba() {
@@ -56,12 +54,16 @@ public class IF_SFDC_DATA_REQ_D2BBID_INFO_test {
 
     @isTest
     static void testIF_SFDC_DATA_REQ_D2BBID_INFO_DETAIL_ba2() {
-        Lead obj = new Lead();
-        obj.Company = 'test';
-        obj.Status = 'New';
-        obj.LastName = 'test';
+        
+        //update test 용 
+        CJFW_BiddingInformation__c obj = new CJFW_BiddingInformation__c();
+        obj.Company__c = 'test';
+        //obj.Status = 'New';
+        //obj.LastName = 'test';
+        obj.PIC__c = 'test';
         obj.BidNoticeNumber__c = '2022LGD001651524-01';
         insert obj;
+
         Test.startTest();
         List<IF_SFDC_DATA_REQ_D2BBID_INFO_sc.Items> inputItemsList = new List<IF_SFDC_DATA_REQ_D2BBID_INFO_sc.Items> ();
         IF_SFDC_DATA_REQ_D2BBID_INFO_sc.Items inputItems = new IF_SFDC_DATA_REQ_D2BBID_INFO_sc.Items();

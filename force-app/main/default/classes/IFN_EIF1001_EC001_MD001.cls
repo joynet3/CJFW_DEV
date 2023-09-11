@@ -29,7 +29,7 @@ public class IFN_EIF1001_EC001_MD001 {
       
         try {
             IFN_EIF1001_Callout callout = new IFN_EIF1001_Callout(this.interfaceId, 'Real');
-            calloutResult = callout.getResponse(this.interfaceId, this.param);
+            calloutResult = callout.getResponse(this.interfaceId, JSon.serialize(this.param));
 
             if('S'.equals(calloutResult.result)) {
 

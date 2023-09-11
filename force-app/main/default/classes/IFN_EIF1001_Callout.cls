@@ -103,8 +103,8 @@ public class IFN_EIF1001_Callout {
         try{
             System.debug('params >>>>>>>>>>>>>>>>>>>>>>>>>' + params);
             IFN_EIF1001_EC001_MD001.EC001RequstWrapper reqparam = new IFN_EIF1001_EC001_MD001.EC001RequstWrapper();
-            reqparam = (IFN_EIF1001_EC001_MD001.EC001RequstWrapper)params;
-
+            reqparam = (IFN_EIF1001_EC001_MD001.EC001RequstWrapper)JSON.deserializeStrict((String) params, IFN_EIF1001_EC001_MD001.EC001RequstWrapper.class);
+            
             IFN_ApiGateWay gateway = new IFN_ApiGateWay(interfaceId);
             String requestBody = JSON.serialize(reqparam);
             Map<String,String> hemap = new Map<String,String>();

@@ -15,22 +15,21 @@ global with sharing class IF_SFDC_DATA_REQ_D2BBID_INFO_DETAIL_ba implements Data
     
     IFMaster__c ifMasterObj = [SELECT Id, Name, ContentType__c, Endpoint__c, Method__c FROM IFMaster__c WHERE Name = 'IF_SFDC_DATA_REQ_D2BBID_INFO_DETAIL'];
     List<NaramarketKeyword__mdt> subKeywordList = [SELECT Keyword__c, keyword_seq__c FROM NaramarketKeyword__mdt WHERE Keyword_lv__c = 2 ORDER BY keyword_seq__c ASC];
-    
-    //Id recordId = Schema.SObjectType.LEAD.getRecordTypeInfosByDeveloperName().get('MilitaryLead').getRecordTypeId();
+
     //2023.09.07 - sancho
-    Id recordId = Schema.SObjectType.LEAD.getRecordTypeInfosByDeveloperName().get('Military').getRecordTypeId();        //Military,Local,NaraMarket
+    //Id recordId = Schema.SObjectType.LEAD.getRecordTypeInfosByDeveloperName().get('MilitaryLead').getRecordTypeId();
+    Id recordId = Schema.SObjectType.CJFW_BiddingInformation__c.getRecordTypeInfosByDeveloperName().get('Military').getRecordTypeId();        //Military,Local,NaraMarket
     
-    
-    AssignmentRule AR = [select id from AssignmentRule where SobjectType = 'Lead' and Active = true limit 1];
-    Database.DMLOptions dmlOpts = new Database.DMLOptions();
+    //AssignmentRule AR = [select id from AssignmentRule where SobjectType = 'Lead' and Active = true limit 1];
+    //Database.DMLOptions dmlOpts = new Database.DMLOptions();
 
     List<IF_SFDC_DATA_REQ_D2BBID_INFO_sc.Items> inputItemsList = new List<IF_SFDC_DATA_REQ_D2BBID_INFO_sc.Items>();
     Set<String> bidNoticeNumSet = new Set<String>();
 
-
     global IF_SFDC_DATA_REQ_D2BBID_INFO_DETAIL_ba(List<IF_SFDC_DATA_REQ_D2BBID_INFO_sc.Items> inputItemsList) {
         this.inputItemsList = inputItemsList;
     }
+
     /***********************************************************************************************************
     *  Bacth   : start
     *  내용    : 국방부 전자조달 마스터 리턴
@@ -38,16 +37,20 @@ global with sharing class IF_SFDC_DATA_REQ_D2BBID_INFO_DETAIL_ba implements Data
     global Iterable<IF_SFDC_DATA_REQ_D2BBID_INFO_sc.Items> start(Database.BatchableContext bc) {
         return inputItemsList;
     }
+
     /***********************************************************************************************************
     *  Bacth   : execute
     *  내용    : 국방부 전자조달정보 상세조회 API 호출 및 Lead 생성 
     ************************************************************************************************************/
     global void execute(Database.BatchableContext BC, List<IF_SFDC_DATA_REQ_D2BBID_INFO_sc.Items> scope) {
 
+        System.debug('=============================:::sancho execute');
+
         IFUtil objIf = new IFUtil('IF_SFDC_DATA_REQ_D2BBID_INFO_DETAIL');
         LogWrapper objWrapper = new LogWrapper();
-        dmlOpts.assignmentRuleHeader.assignmentRuleId= AR.id;
-        // dmlOpts.EmailHeader.TriggerUserEmail = true;
+
+        // dmlOpts.assignmentRuleHeader.assignmentRuleId= AR.id;
+        // // dmlOpts.EmailHeader.TriggerUserEmail = true;
 
         String strStatus = 'SUCCESS';
         String strCode = '0000';

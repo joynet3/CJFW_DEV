@@ -36,10 +36,12 @@ public without sharing class Opportunity_tr extends TriggerHandler {
         doSetAutoRecordType();
         doSetName();
         doCheckClone();
-    }
+        doCheckOne();
+    }   
 
     public override void beforeUpdate() {
         doSetAutoRecordType();
+        doCheckOne();
     }
 
     public override void afterUpdate() {
@@ -158,4 +160,52 @@ public without sharing class Opportunity_tr extends TriggerHandler {
             }
         }
     }
+
+    /**
+    * 
+    *
+    *@group  프로젝트 내부에서 사용하는 업무 그룹 작성
+    *@author 이지은
+    *@last modified on  : 09-07-2023
+    *@last modified by  : jieun.lee3@dkbmc.com
+    */
+     /***********************************************************************************************************
+    *  Trigger : Before Update
+    *  내용    : 예상손익 품의지정 1개만 등록되게 처리
+    ************************************************************************************************************/ 
+    private void doCheckOne(){
+        Set<Id> opportunityIds = new Set<Id>();
+
+        for(Opportunity objOppty : listNew) {
+            opportunityIds.add(objOppty.Id);
+        }
+
+        // Map<Id, CJFW_ExpectedIncomeExpenses__c> mapExpenses = new Map<Id, CJFW_ExpectedIncomeExpenses__c>([
+        //     SELECT Id, Name, Opportunity__c, IsReportCheck__c
+        //     FROM CJFW_ExpectedIncomeExpenses__c
+        //     WHERE Opportunity__c IN :opportunityIds
+        // ]);
+
+        List<CJFW_ExpectedIncomeExpenses__c> existingExpenses = [
+            SELECT Id, Name, Opportunity__c, IsReportCheck__c
+            FROM CJFW_ExpectedIncomeExpenses__c
+            WHERE Opportunity__c IN :opportunityIds
+        ];
+
+        Map<Id, CJFW_ExpectedIncomeExpenses__c> opportunityToExpenseMap = new Map<Id, CJFW_ExpectedIncomeExpenses__c>();
+        for(CJFW_ExpectedIncomeExpenses__c expense : existingExpenses) {
+            opportunityToExpenseMap.put(expense.Opportunity__c, expense);
+        }
+        
+        for(Opportunity obj : listNew){
+            CJFW_ExpectedIncomeExpenses__c expense = opportunityToExpenseMap.get(obj.Id);
+                if(expense != null && expense.IsReportCheck__c == true){
+                    obj.addError('품의지정은 하나만 지정 가능합니다.');
+                }
+            
+        }
+
+
+    }
+
 }

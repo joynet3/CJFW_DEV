@@ -148,6 +148,33 @@ public class IFN_ManagementController {
 
                         param.params = getRquest;
                     }
+                    if('IFN_EIF1001_EC002_MD003'.equals(param.interfaceId)) {
+                        String contDocId = (String)param.params;
+                        ContentVersion content = [select id, versiondata 
+                            from ContentVersion
+                            where ContentDocumentId = :contDocId 
+                            and isLatest = true
+                        limit 1];
+
+                        IFN_EIF1001_EC002_MD003.EC002RequstWrapper reqParam = new IFN_EIF1001_EC002_MD003.EC002RequstWrapper();
+                        Blob fileData = content.VersionData;
+                        reqParam.image = EncodingUtil.base64Encode(fileData);
+                        param.params = (IFN_EIF1001_EC002_MD003.EC002RequstWrapper)reqParam;
+                    }
+
+
+                    if('IFN_EIF1001_EC002_MD004'.equals(param.interfaceId)) {
+                        String versionId = (String)param.params;
+                        ContentVersion content = [select id, versiondata 
+                            from ContentVersion
+                        where id = :versionId limit 1];
+
+                        IFN_EIF1001_EC002_MD004.EC002RequstWrapper reqParam = new IFN_EIF1001_EC002_MD004.EC002RequstWrapper();
+                        Blob fileData = content.VersionData;
+                        reqParam.image = EncodingUtil.base64Encode(fileData);
+                        param.params = (IFN_EIF1001_EC002_MD004.EC002RequstWrapper)reqParam;
+                    }
+
                     result = new IFN_EIF1001_Callout(param.interfaceId,'Real').getResponse(param.interfaceId, param.params);
                     res = Json.serialize(result);
                 }                
