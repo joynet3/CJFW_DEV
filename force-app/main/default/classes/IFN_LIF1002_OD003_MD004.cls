@@ -65,6 +65,7 @@ global with sharing class IFN_LIF1002_OD003_MD004 {
         Output objOutput = new Output();
         objOutput.interface_id = interfaceId;
         String requestBody = '';
+        IFN_CMM_ERRUTIL.ErrorValueWrapper errWr = new IFN_CMM_ERRUTIL.ErrorValueWrapper();
 
         try {
             RestRequest request = RestContext.request;
@@ -72,8 +73,9 @@ global with sharing class IFN_LIF1002_OD003_MD004 {
             logWrap.requestBody = requestBody;   
 
             if(requestBody == '' || requestBody == null) {
-                strCode = IFN_Util.STATUS_BODYCTT_EMPTY_ERROR.split(':')[0];
-                strMessage = IFN_Util.STATUS_BODYCTT_EMPTY_ERROR.split(':')[1];
+                errWr = IFN_CMM_ERRUTIL.GET_ERRORINFO_BYERRORKEY('COMMON', IFN_CMM_ERRUTIL.ERRKEY_BODYCTT_EMPTY_ERROR);
+                strCode = errWr.err_code;
+                strMessage = errWr.err_msg;
                 logWrap.ErrorCode = strCode;
                 logWrap.ErrorText.add(strMessage);
             }else {
@@ -84,8 +86,9 @@ global with sharing class IFN_LIF1002_OD003_MD004 {
                     || String.isBlank(input.pgNo)|| String.isBlank(input.dataCnt))
                 {
                     // 필수 파라메터 누락
-                    strCode = IFN_Util.STATUS_RQMT_PARAM_ERROR.split(':')[0];
-                    strMessage = IFN_Util.STATUS_RQMT_PARAM_ERROR.split(':')[1];
+                    errWr = IFN_CMM_ERRUTIL.GET_ERRORINFO_BYERRORKEY('COMMON', IFN_CMM_ERRUTIL.ERRKEY_RQMT_PARAM_ERROR);
+                    strCode = errWr.err_code;
+                    strMessage = errWr.err_msg;
                     strMessage = strMessage + ' 누락 항목 : [ ';
                     strMessage = String.isBlank(input.stDt) ? strMessage + 'stDt ,' : strMessage;
                     strMessage = String.isBlank(input.edDt) ? strMessage + 'edDt ,' : strMessage;
@@ -171,8 +174,9 @@ global with sharing class IFN_LIF1002_OD003_MD004 {
 
             }
         } catch(Exception e) {
-            strCode = IFN_Util.STATUS_EXCEPT.split(':')[0];
-            strMessage = IFN_Util.STATUS_EXCEPT.split(':')[1];
+            errWr = IFN_CMM_ERRUTIL.GET_ERRORINFO_BYERRORKEY('COMMON', IFN_CMM_ERRUTIL.ERRKEY_SERVER_ERROR);
+            strCode = errWr.err_code;
+            strMessage = errWr.err_msg;
             strMessage +=  '[' + e.getMessage()+' Line : '+e.getLineNumber() + ']';
             logWrap.ErrorCode = strCode;
             logWrap.ErrorText.add(strMessage);

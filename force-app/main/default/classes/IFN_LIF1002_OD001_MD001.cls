@@ -61,6 +61,7 @@ global with sharing class IFN_LIF1002_OD001_MD001 {
         Output objOutput = new Output();
         
         String requestBody = '';
+        IFN_CMM_ERRUTIL.ErrorValueWrapper errWr = new IFN_CMM_ERRUTIL.ErrorValueWrapper();
 
         try {
             RestRequest request = RestContext.request;
@@ -68,8 +69,9 @@ global with sharing class IFN_LIF1002_OD001_MD001 {
             logWrap.requestBody = requestBody;   
 
             if(requestBody == '' || requestBody == null) {
-                strCode = IFN_Util.STATUS_BODYCTT_EMPTY_ERROR.split(':')[0];
-                strMessage = IFN_Util.STATUS_BODYCTT_EMPTY_ERROR.split(':')[1];
+                errWr = IFN_CMM_ERRUTIL.GET_ERRORINFO_BYERRORKEY('COMMON', IFN_CMM_ERRUTIL.ERRKEY_BODYCTT_EMPTY_ERROR);
+                strCode = errWr.err_code;
+                strMessage = errWr.err_msg;
                 logWrap.ErrorCode = strCode;
                 logWrap.ErrorText.add(strMessage);
             } else {
@@ -80,9 +82,11 @@ global with sharing class IFN_LIF1002_OD001_MD001 {
                 if (String.isBlank(input.cstTp) || String.isBlank(input.cstTpCd) || String.isBlank(input.cstNm) || String.isBlank(input.callNo)
                     || String.isBlank(input.bsnsNo) || String.isBlank(input.cpnNm) || String.isBlank(input.sect) || String.isBlank(input.addr)
                     || String.isBlank(input.agrYn)) {
-                    strCode = IFN_Util.STATUS_RQMT_PARAM_ERROR.split(':')[0];
-                    strMessage = IFN_Util.STATUS_RQMT_PARAM_ERROR.split(':')[1];
-    
+
+                    errWr = IFN_CMM_ERRUTIL.GET_ERRORINFO_BYERRORKEY('COMMON', IFN_CMM_ERRUTIL.ERRKEY_RQMT_PARAM_ERROR);
+                    strCode = errWr.err_code;
+                    strMessage = errWr.err_msg;
+
                     strMessage = String.isBlank(input.cstTp) ? strMessage + ',[cstTp]' : strMessage;
                     strMessage = String.isBlank(input.cstTpCd) ? strMessage + ',[cstTpCd]' : strMessage;
                     strMessage = String.isBlank(input.cstNm) ? strMessage + ',[cstNm]' : strMessage;
@@ -117,8 +121,10 @@ global with sharing class IFN_LIF1002_OD001_MD001 {
                     }
                     
                     if(String.isBlank(rcdTpDevName)) {
-                        strCode = IFN_Util.STATUS_PARAMETER_ERROR.split(':')[0];
-                        strMessage = IFN_Util.STATUS_PARAMETER_ERROR.split(':')[1];
+                        errWr = IFN_CMM_ERRUTIL.GET_ERRORINFO_BYERRORKEY('COMMON', IFN_CMM_ERRUTIL.ERRKEY_PARAMETER_ERROR);                        
+                        strCode = errWr.err_code;
+                        strMessage = errWr.err_msg;
+
                         logWrap.ErrorCode = strCode;
                         logWrap.ErrorText.add(strMessage);
                         return objOutput;
@@ -167,8 +173,9 @@ global with sharing class IFN_LIF1002_OD001_MD001 {
                 }
             }
         } catch(Exception e) {
-            strCode = IFN_Util.STATUS_EXCEPT.split(':')[0];
-            strMessage = IFN_Util.STATUS_EXCEPT.split(':')[1];
+            errWr = IFN_CMM_ERRUTIL.GET_ERRORINFO_BYERRORKEY('COMMON', IFN_CMM_ERRUTIL.ERRKEY_SERVER_ERROR);
+            strCode = errWr.err_code;
+            strMessage = errWr.err_msg;
             strMessage +=  '[' + e.getMessage()+' Line : '+e.getLineNumber() + ']';
             logWrap.ErrorCode = strCode;
             logWrap.ErrorText.add(strMessage);

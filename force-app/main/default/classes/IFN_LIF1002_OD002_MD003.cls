@@ -53,14 +53,16 @@ global with sharing class IFN_LIF1002_OD002_MD003 {
 
         String requestBody = '';
 
+        IFN_CMM_ERRUTIL.ErrorValueWrapper errWr = new IFN_CMM_ERRUTIL.ErrorValueWrapper();
         try {
             RestRequest request = RestContext.request;
             requestBody = request.requestBody.toString();
             logWrap.requestBody = requestBody;   
 
             if(requestBody == '' || requestBody == null) {
-                strCode = IFN_Util.STATUS_BODYCTT_EMPTY_ERROR.split(':')[0];
-                strMessage = IFN_Util.STATUS_BODYCTT_EMPTY_ERROR.split(':')[1];
+                errWr = IFN_CMM_ERRUTIL.GET_ERRORINFO_BYERRORKEY('COMMON', IFN_CMM_ERRUTIL.ERRKEY_BODYCTT_EMPTY_ERROR);
+                strCode = errWr.err_code;
+                strMessage = errWr.err_msg;
                 logWrap.ErrorCode = strCode;
                 logWrap.ErrorText.add(strMessage);
             } else {
@@ -71,8 +73,9 @@ global with sharing class IFN_LIF1002_OD002_MD003 {
                 // 필수 파라미터 체크
                 if (String.isBlank(input.reqId)) {
 
-                    strCode = IFN_Util.STATUS_RQMT_PARAM_ERROR.split(':')[0];
-                    strMessage = IFN_Util.STATUS_RQMT_PARAM_ERROR.split(':')[1];
+                    errWr = IFN_CMM_ERRUTIL.GET_ERRORINFO_BYERRORKEY('COMMON', IFN_CMM_ERRUTIL.ERRKEY_RQMT_PARAM_ERROR);
+                    strCode = errWr.err_code;
+                    strMessage = errWr.err_msg;
     
                     strMessage = String.isBlank(input.reqId) ? strMessage + ',[reqId]' : strMessage;
                     // strMessage = String.isBlank(input.resId) ? strMessage + ',[resId]' : strMessage;
@@ -89,8 +92,9 @@ global with sharing class IFN_LIF1002_OD002_MD003 {
                     integer isExist = database.countQuery(qry);
                     
                     if(isExist == 0) {
-                        strCode = IFN_Util.STATUS_DATA_NOTFOUND_ERROR.split(':')[0];
-                        strMessage = '샘플 또는 부가서비스신청이 존재하지 않습니다.';
+                        errWr = IFN_CMM_ERRUTIL.GET_ERRORINFO_BYERRORKEY('LIF1002', IFN_CMM_ERRUTIL.ERRKEY_MSG_LIF1002_0001);
+                        strCode = errWr.err_code;
+                        strMessage = errWr.err_msg;
                         logWrap.ErrorCode = strCode;
                         logWrap.ErrorText.add(strMessage);
                         objOutput.err_cd = strCode;
@@ -128,8 +132,9 @@ global with sharing class IFN_LIF1002_OD002_MD003 {
                 }
             }
         } catch(Exception e) {
-            strCode = IFN_Util.STATUS_EXCEPT.split(':')[0];
-            strMessage = IFN_Util.STATUS_EXCEPT.split(':')[1];
+            errWr = IFN_CMM_ERRUTIL.GET_ERRORINFO_BYERRORKEY('COMMON', IFN_CMM_ERRUTIL.ERRKEY_SERVER_ERROR);
+            strCode = errWr.err_code;
+            strMessage = errWr.err_msg;
             strMessage +=  '[' + e.getMessage()+' Line : '+e.getLineNumber() + ']';
             logWrap.ErrorCode = strCode;
             logWrap.ErrorText.add(strMessage);

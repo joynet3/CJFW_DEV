@@ -65,14 +65,16 @@ global with sharing class IFN_LIF1002_OD002_MD002 {
         objOutput.interface_id = interfaceId;
         String requestBody = '';
 
+        IFN_CMM_ERRUTIL.ErrorValueWrapper errWr = new IFN_CMM_ERRUTIL.ErrorValueWrapper();
         try {
             RestRequest request = RestContext.request;
             requestBody = request.requestBody.toString();
             logWrap.requestBody = requestBody;   
 
             if(requestBody == '' || requestBody == null) {
-                strCode = IFN_Util.STATUS_BODYCTT_EMPTY_ERROR.split(':')[0];
-                strMessage = IFN_Util.STATUS_BODYCTT_EMPTY_ERROR.split(':')[1];
+                errWr = IFN_CMM_ERRUTIL.GET_ERRORINFO_BYERRORKEY('COMMON', IFN_CMM_ERRUTIL.ERRKEY_BODYCTT_EMPTY_ERROR);
+                strCode = errWr.err_code;
+                strMessage = errWr.err_msg;
                 logWrap.ErrorCode = strCode;
                 logWrap.ErrorText.add(strMessage);
             } else {
@@ -84,8 +86,10 @@ global with sharing class IFN_LIF1002_OD002_MD002 {
                 if (String.isBlank(input.ttl) || String.isBlank(input.reqTp) || String.isBlank(input.reqTpCd) || String.isBlank(input.reqMsg)
                     || String.isBlank(input.mdmId) || String.isBlank(input.reqDt) || String.isBlank(input.rcvNm) || String.isBlank(input.reqId)) {
 
-                    strCode = IFN_Util.STATUS_RQMT_PARAM_ERROR.split(':')[0];
-                    strMessage = IFN_Util.STATUS_RQMT_PARAM_ERROR.split(':')[1];
+
+                    errWr = IFN_CMM_ERRUTIL.GET_ERRORINFO_BYERRORKEY('COMMON', IFN_CMM_ERRUTIL.ERRKEY_RQMT_PARAM_ERROR);
+                    strCode = errWr.err_code;
+                    strMessage = errWr.err_msg;
     
                     strMessage = String.isBlank(input.ttl) ? strMessage + ',[ttl]' : strMessage;
                     strMessage = String.isBlank(input.reqTp) ? strMessage + ',[reqTp]' : strMessage;
@@ -104,8 +108,10 @@ global with sharing class IFN_LIF1002_OD002_MD002 {
                     String qry = 'select count() from OrderServiceRequest__c Where ReqRecordId__c =:reqRecordId';
                     integer isExist = database.countQuery(qry);
                     if(isExist > 0) {    
-                        strCode = IFN_Util.STATUS_DUPLICATION_INPUT_ERROR.split(':')[0];
-                        strMessage = '이미 등록된 샘플 또는 부가서비스 신청이 존재합니다.';
+
+                        errWr = IFN_CMM_ERRUTIL.GET_ERRORINFO_BYERRORKEY('LIF1002', IFN_CMM_ERRUTIL.ERRKEY_MSG_LIF1002_0001);
+                        strCode = errWr.err_code;
+                        strMessage = errWr.err_msg;
                         logWrap.ErrorCode = strCode;
                         logWrap.ErrorText.add(strMessage);
                         objOutput.err_cd = strCode;
@@ -127,8 +133,9 @@ global with sharing class IFN_LIF1002_OD002_MD002 {
                     }
                     
                     if(String.isBlank(rcdTpDevName)) {
-                        strCode = IFN_Util.STATUS_PARAMETER_ERROR.split(':')[0];
-                        strMessage = IFN_Util.STATUS_PARAMETER_ERROR.split(':')[1];
+                        errWr = IFN_CMM_ERRUTIL.GET_ERRORINFO_BYERRORKEY('COMMON', IFN_CMM_ERRUTIL.ERRKEY_PARAMETER_ERROR);
+                        strCode = errWr.err_code;
+                        strMessage = errWr.err_msg;
                         logWrap.ErrorCode = strCode;
                         logWrap.ErrorText.add(strMessage);
                         return objOutput;
@@ -175,8 +182,9 @@ global with sharing class IFN_LIF1002_OD002_MD002 {
                 }
             }
         } catch(Exception e) {
-            strCode = IFN_Util.STATUS_EXCEPT.split(':')[0];
-            strMessage = IFN_Util.STATUS_EXCEPT.split(':')[1];
+            errWr = IFN_CMM_ERRUTIL.GET_ERRORINFO_BYERRORKEY('COMMON', IFN_CMM_ERRUTIL.ERRKEY_SERVER_ERROR);
+            strCode = errWr.err_code;
+            strMessage = errWr.err_msg;
             strMessage +=  '[' + e.getMessage()+' Line : '+e.getLineNumber() + ']';
             logWrap.ErrorCode = strCode;
             logWrap.ErrorText.add(strMessage);

@@ -16,16 +16,7 @@ public with sharing class IFN_Util {
 
     public class IFN_UtilException extends Exception{}
     
-    public static String STATUS_SUCCESS = '0000:SUCCESS';
-    public static String STATUS_AUTH_ERROR = '9901:인증키 오류';
-    public static String STATUS_RQMT_PARAM_ERROR = '9902:필수 파라메터 누락 오류';
-    public static String STATUS_PARAMETER_ERROR = '9903:파라메터 밸리데이션 오류';
-    public static String STATUS_BODYCTT_EMPTY_ERROR = '9904:Body Data 누락';    
-    public static String STATUS_DATA_NOTFOUND_ERROR = '9905:조회되는 데이터가 없습니다.';    
-    public static String STATUS_DUPLICATION_INPUT_ERROR = '9906:중복된 데이터 입력입니다.';    
 
-    public static String STATUS_EXCEPT = '9999:SERVER ERROR';
-        
 
     /**
      * 세일즈 포스 알람 전송용 함수
