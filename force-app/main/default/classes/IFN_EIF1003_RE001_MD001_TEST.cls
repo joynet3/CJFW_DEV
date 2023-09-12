@@ -20,6 +20,21 @@ public with sharing class IFN_EIF1003_RE001_MD001_TEST {
 
     @isTest
     static void IFN_EIF1003_RE001_MD001_TEST() {
+        IFMaster__c ifMaster = new IFMaster__c();
+        ifMaster = [SELECT Id, Name,
+                InterfaceId__c, Type__c, WebserviceType__c,Header__c, Endpoint__c, Method__c, ContentType__c
+        FROM IFMaster__c
+        WHERE Name = 'IFN_EIF1003_RE001_MD001'];
+
+        String headerS = ifMaster.Header__c;
+
+        Map<String,String> header = new Map<String,String>();
+        if(String.isNotEmpty(ifMaster.Header__c)) {
+            header =  (Map<String,String>)JSON.deserializeStrict((String)ifMaster.Header__c, Map<String,String>.class);
+        }
+
+        System.debug('HeaderS' + headerS);
+        System.debug('headerMap' + header);
         Test.startTest();
         IFN_EIF1003_RE001_MD001 getRemember = new IFN_EIF1003_RE001_MD001();
 
@@ -31,8 +46,12 @@ public with sharing class IFN_EIF1003_RE001_MD001_TEST {
         getRemember.param = request;
 
         // Callout Interface
-        IFN_CalloutResult calloutResult = getRemember.callout();
 
+        IFN_EIF1003_RE001_MD001.TestCall res = new IFN_EIF1003_RE001_MD001.TestCall();
+
+        System.debug(res.call(request));
+
+        IFN_CalloutResult calloutResult = getRemember.callout();
         String resultCode = calloutResult.result;
 
         IFN_EIF1003_RE001_MD001.RE001ResultWrapper resultResponse = (IFN_EIF1003_RE001_MD001.RE001ResultWrapper) calloutResult.response;

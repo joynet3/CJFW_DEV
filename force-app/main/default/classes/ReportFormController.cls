@@ -11,7 +11,7 @@
 
  * @author            : eunyoung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 09-08-2023
+ * @last modified on  : 09-11-2023
  * @last modified by  : eunyoung.choi@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -19,7 +19,7 @@
 **/
 public with sharing class ReportFormController {
 
-    /* 꼐산값 가져오기 */
+    /* 계산값 가져오기 */
     public Account accountInfo {get;set;}
     public CJFW_ExpectedIncomeExpenses__c IncomeExpensesInfo {get;set;}
 
@@ -34,6 +34,10 @@ public with sharing class ReportFormController {
     public Decimal input1 { get; set; }
     public Decimal input2 { get; set; }
     public Decimal result { get; set; }
+
+    /* 날짜형식변환 */
+    public String CollateralPeriod { get; set; } // 담보 제공 기간
+    public String ContractPaymentDate { get; set; } // 약정결제일
 
     public void saveAccount() {
         savedAccountName = accountName;
@@ -173,6 +177,22 @@ public with sharing class ReportFormController {
         WHERE id ='a1l0w000001MmAMAA0'
         ];
 
-        System.debug('# 손익계산 ' + IncomeExpensesInfo);
+        
+        // Apex 컨트롤러에서 받아온 날짜 값을 JavaScript Date 객체로 파싱
+            
+
+        // ContractPaymentDate__c 필드를 yyyy-MM-dd 형식의 문자열로 변환
+        String ContractPaymentDateString = String.valueOf(IncomeExpensesInfo.ContractPaymentDate__c);
+        String CollateralPeriodString = String.valueOf(IncomeExpensesInfo.CollateralPeriod__c);
+        ContractPaymentDate = ContractPaymentDateString.substring(0, 10);
+        CollateralPeriod = CollateralPeriodString.substring(0, 10);
+
+        // 변환된 문자열을 출력하거나 필요한 곳에 사용할 수 있습니다.
+        System.debug('# 날짜1 ' +ContractPaymentDate);
+        System.debug('# 날짜2 ' +CollateralPeriod);
+
+        System.debug('# 손익계산 ' + IncomeExpensesInfo.ContractPaymentDate__c);
+        //System.debug('# 손익계산 약정 -> ' + format);
+
     }
 }

@@ -5,29 +5,29 @@ public with sharing class IFN_EIF1001_EC001_MD001_TEST {
         IFMaster__c ifMaster = new IFMaster__c(
             Name = 'IFN_EIF1001_EC001_MD001',
             Type__c = 'Outbound',
-            WebserviceType__c = 'Callout',
+            WebserviceType__c = 'REST',
             Method__c = 'POST',
             ContentType__c = 'application/json',
-            Endpoint__c = 'http://localhost:8060/gwms/crm/rest/EIF1001/EC001/MD001'
+            Endpoint__c = 'TEST'
         );
 
         insert ifMaster;
     }
 
     @isTest
-    static void IFN_EIF1001_EC002_MD003_TEST(){
+    static void IFN_EIF1001_EC001_MD001_TEST(){
         Test.startTest();
         IFN_EIF1001_EC001_MD001 sendToMMS = new IFN_EIF1001_EC001_MD001();
         List<IFN_EIF1001_EC001_MD001.EC001RequstData> requestMsgList = new List<IFN_EIF1001_EC001_MD001.EC001RequstData>();
         IFN_EIF1001_EC001_MD001.EC001RequstData requestData = new IFN_EIF1001_EC001_MD001.EC001RequstData();
-        requestData.msg_key = '1234567890';
-        requestData.sender_number = '01071707086';
-        requestData.receiver_number = '"01071707086';
-        requestData.title = 'MMS Test';
-        requestData.msg = 'MMS Test 1';
-        requestData.sub_id = '1';
-        requestData.image_key = '1';
-        requestData.origin_cid = '1';
+        requestData.msg_key = 'dummy-msg-key';
+        requestData.sub_id = 'dummy-sub-id';
+        requestData.sender_number = '01012345678';
+        requestData.receiver_number = '01012345678';
+        requestData.title = 'MMS Tile';
+        requestData.msg = 'MMS Message';
+        requestData.image_key = 'dummy-image-key';
+        requestData.origin_cid = 'dummy-cid';
         
         requestMsgList.add(requestData);
 
@@ -36,6 +36,9 @@ public with sharing class IFN_EIF1001_EC001_MD001_TEST {
         requestBody.msg_data = requestMsgList;
         
 		sendToMMS.param = requestBody;
+
+        Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator());
+
         // Callout Interface
         IFN_CalloutResult calloutResult = sendToMMS.callout();
                 
@@ -62,5 +65,15 @@ public with sharing class IFN_EIF1001_EC001_MD001_TEST {
             }
         }
         Test.stopTest();
+    }
+
+    public class MockHttpResponseGenerator implements HttpCalloutMock {
+        public HTTPResponse respond(HTTPRequest req) {
+            HttpResponse res = new HttpResponse();
+            res.setHeader('Content-Type', 'application/json');
+            res.setBody('{ "results": [ { "msg_key": "1234567890", "code": "C100", "desc": "Success" }, { "msg_key": "1234567891", "code": "C307", "desc": "Sender_numberIsEmpty" } ] }');
+            res.setStatusCode(200);
+            return res;
+        }
     }
 }

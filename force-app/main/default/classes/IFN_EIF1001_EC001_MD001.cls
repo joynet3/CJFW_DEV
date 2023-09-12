@@ -36,10 +36,12 @@ public class IFN_EIF1001_EC001_MD001 {
             } else {
 
             }
+            
         } catch (Exception e) {
             this.logWrap.ErrorCode = '-1';
             this.logWrap.ErrorText.add(e.getLineNumber()+e.getMessage() + e.getStackTraceString()); 
             this.logWrap.Status = 'ERROR';
+            
         }
 
         commlog.insertLog(this.logWrap);

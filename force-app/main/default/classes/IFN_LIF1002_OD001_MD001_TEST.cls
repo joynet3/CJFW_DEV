@@ -20,12 +20,42 @@ public with sharing class IFN_LIF1002_OD001_MD001_TEST {
 
         RestRequest req = new RestRequest();
         RestResponse res = new RestResponse();
+
+        // Success Test 1
         String strBody = '{"cstTp": "외식사업자","cstTpCd": "01","cstNm": "김동영","callNo": "010-1234-5678","bsnsNo": "000-11-22222","cpnNm": "CJ프레시웨이","sect": "식자재유통","addr": "서울특별시 마포구 상암동 상암산로 76","agrYn": "Y"}';
         req.requestBody = Blob.valueof(strBody);
         RestContext.request = req;
         RestContext.response = res;
         IFN_LIF1002_OD001_MD001.doPost();
         
+        // Success Test 2
+        strBody = '{"cstTp": "외식사업자","cstTpCd": "02","cstNm": "김동영","callNo": "010-1234-5678","bsnsNo": "000-11-22222","cpnNm": "CJ프레시웨이","sect": "식자재유통","addr": "서울특별시 마포구 상암동 상암산로 76","agrYn": "Y"}';
+        req.requestBody = Blob.valueof(strBody);
+        RestContext.request = req;
+        RestContext.response = res;
+        IFN_LIF1002_OD001_MD001.doPost();
+
+        // Error Test 1
+        strBody = '';
+        req.requestBody = Blob.valueof(strBody);
+        RestContext.request = req;
+        RestContext.response = res;
+        IFN_LIF1002_OD001_MD001.doPost();
+
+        // Error Test 2
+        strBody = '{"dummy1": "외식사업자","dummy2": "01","dummy3": "김동영","dummy4": "010-1234-5678","dummy5": "000-11-22222","dummy6": "CJ프레시웨이","dummy7": "식자재유통","dummy8": "서울특별시 마포구 상암동 상암산로 76","dummy9": "Y"}';
+        req.requestBody = Blob.valueof(strBody);
+        RestContext.request = req;
+        RestContext.response = res;
+        IFN_LIF1002_OD001_MD001.doPost();
+
+        // Error Test 3
+        strBody = '{"cstTp": "외식사업자","cstTpCd": "04","cstNm": "김동영","callNo": "010-1234-5678","bsnsNo": "000-11-22222","cpnNm": "CJ프레시웨이","sect": "식자재유통","addr": "서울특별시 마포구 상암동 상암산로 76","agrYn": "Y"}';
+        req.requestBody = Blob.valueof(strBody);
+        RestContext.request = req;
+        RestContext.response = res;
+        IFN_LIF1002_OD001_MD001.doPost();
+
         Test.stopTest();
     }
 }

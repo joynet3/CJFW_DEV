@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 09-11-2023
+ * @last modified on  : 09-12-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -128,8 +128,9 @@ public with sharing class CJFW_MDMManagementController {
         SaveResult saveResult = new SaveResult();
         // aura  String 으로 넘어와서 JSON.des
         // ObjCustomer obj =  JSON.deserialize(objCustomer, 래퍼클래스명.class);
-        system.debug('>>>doSave # objCustomer ' + JSON.serialize(objCustomer));
+        system.debug('>>>doSave # objCustomer.PV_ZUAWA ' + JSON.serialize(objCustomer.PV_ZUAWA));
         system.debug('>>>doSave # contacts ' + contacts.size());
+
         //값을 나눠서 값이 없으면 안되는친구들
         //값이 없어도 되는친구들 
         try {
@@ -139,135 +140,118 @@ public with sharing class CJFW_MDMManagementController {
                 mdmRequest.RecordTypeId                                         = String.isBlank(objCustomer?.RecordTypeId) ? null : objCustomer.RecordTypeId;
                 mdmRequest.requestType__c                                       = String.isBlank(objCustomer?.requestType) ? null : objCustomer.requestType;
                 //mdmRequest.PV_KUNNR__c                                            = String.isBlank(objCustomer?.PV_KUNNR) ? null : objCustomer.PV_KUNNR;    이건 나중에 승인받고 추가
-                //기본정보
-                mdmRequest.PV_OLDCD__c                                          = String.isBlank(objCustomer?.PV_OLDCD) ? null : objCustomer.PV_OLDCD;
-                mdmRequest.PV_NAME1__c                                          = String.isBlank(objCustomer?.PV_NAME1) ? null : objCustomer.PV_NAME1;
-                mdmRequest.PV_NAME_G__c                                         = String.isBlank(objCustomer?.PV_NAME_G) ? null : objCustomer.PV_NAME_G ;
-                mdmRequest.PV_NAME2__c                                          = String.isBlank(objCustomer?.PV_NAME2) ? null : objCustomer.PV_NAME2;                                                                                 
-                mdmRequest.PV_KTOKD__c                                          = String.isBlank(objCustomer?.PV_KTOKD) ? null : objCustomer.PV_KTOKD;                                                                                 
-                mdmRequest.PV_CUSTTYPE__c                                       = String.isBlank(objCustomer?.PV_CUSTTYPE) ? null : objCustomer.PV_CUSTTYPE;                                                                                         
-                mdmRequest.PV_STCD2__c                                          = String.isBlank(objCustomer?.PV_STCD2) ? null : objCustomer.PV_STCD2;                                                                                 
-                mdmRequest.PV_STCD3__c                                          = String.isBlank(objCustomer?.PV_STCD3) ? null : objCustomer.PV_STCD3;                                                                                 
-                mdmRequest.PV_STCD4__c                                          = String.isBlank(objCustomer?.PV_STCD4) ? null : objCustomer.PV_STCD4;                                                                                 
-                mdmRequest.PV_GFORM__c                                          = String.isBlank(objCustomer?.PV_GFORM) ? null : objCustomer.PV_GFORM;                                                                                 
-                mdmRequest.PV_J_1KFREPRE__c                                     = String.isBlank(objCustomer?.PV_J_1KFREPRE) ? null : objCustomer.PV_J_1KFREPRE;                                                                                             
-                mdmRequest.PV_STCD1__c                                          = String.isBlank(objCustomer?.PV_STCD1) ? null : objCustomer.PV_STCD1;                                                                                 
-                mdmRequest.PV_J_1KFTBUS__c                                      = String.isBlank(objCustomer?.PV_J_1KFTBUS) ? null : objCustomer.PV_J_1KFTBUS;                                                                                         
-                mdmRequest.PV_J_1KFTIND__c                                      = String.isBlank(objCustomer?.PV_J_1KFTIND) ? null : objCustomer.PV_J_1KFTIND;                                                                                         
-                mdmRequest.PV_TELF1__c                                          = String.isBlank(objCustomer?.PV_TELF1) ? null : objCustomer.PV_TELF1;                                                                                 
-                mdmRequest.PV_TELFX__c                                          = String.isBlank(objCustomer?.PV_TELFX) ? null : objCustomer.PV_TELFX;                                                                                 
-                mdmRequest.PV_VKGRP__c                                          = String.isBlank(objCustomer?.PV_VKGRP) ? null : objCustomer.PV_VKGRP;     
-                mdmRequest.PVRA_VKGRP__c                                        = objCustomer?.PVRA_VKGRP != null ? objCustomer.PVRA_VKGRP : null; //Date.valueOf(objCustomer?.PVRA_VKGRP);
-                mdmRequest.PV_PERNR_lu__c                                       = String.isBlank(objCustomer?.PV_PERNR_lu) ? null : objCustomer.PV_PERNR_lu;   //반영안되네 빈값임
-
-                
-                mdmRequest.PVRA_PERNR__c                                          = Date.valueOf(objCustomer?.PVRA_PERNR);                                                                       
-                mdmRequest.PV_ADMINMA_lu__c                                       = String.isBlank(objCustomer?.PV_ADMINMA_lu) ? null : objCustomer.PV_ADMINMA_lu;                                                                                             
+                //기본정보 42
+                mdmRequest.PV_OLDCD__c                                            = String.isBlank(objCustomer?.PV_OLDCD) ? null : objCustomer.PV_OLDCD;
+                mdmRequest.PV_NAME1__c                                            = String.isBlank(objCustomer?.PV_NAME1) ? null : objCustomer.PV_NAME1;
+                mdmRequest.PV_NAME_G__c                                           = String.isBlank(objCustomer?.PV_NAME_G) ? null : objCustomer.PV_NAME_G ;
+                mdmRequest.PV_NAME2__c                                            = String.isBlank(objCustomer?.PV_NAME2) ? null : objCustomer.PV_NAME2;                                                                                 
+                mdmRequest.PV_KTOKD__c                                            = String.isBlank(objCustomer?.PV_KTOKD) ? null : objCustomer.PV_KTOKD;                                                                                 
+                mdmRequest.PV_CUSTTYPE__c                                         = String.isBlank(objCustomer?.PV_CUSTTYPE) ? null : objCustomer.PV_CUSTTYPE;                                                                                         
+                mdmRequest.PV_STCD2__c                                            = String.isBlank(objCustomer?.PV_STCD2) ? null : objCustomer.PV_STCD2;                                                                                 
+                mdmRequest.PV_STCD3__c                                            = String.isBlank(objCustomer?.PV_STCD3) ? null : objCustomer.PV_STCD3;                                                                                 
+                mdmRequest.PV_STCD4__c                                            = String.isBlank(objCustomer?.PV_STCD4) ? null : objCustomer.PV_STCD4;                                                                                 
+                mdmRequest.PV_GFORM__c                                            = String.isBlank(objCustomer?.PV_GFORM) ? null : objCustomer.PV_GFORM;                                                                                 
+                mdmRequest.PV_J_1KFREPRE__c                                       = String.isBlank(objCustomer?.PV_J_1KFREPRE) ? null : objCustomer.PV_J_1KFREPRE;                                                                                             
+                mdmRequest.PV_STCD1__c                                            = String.isBlank(objCustomer?.PV_STCD1) ? null : objCustomer.PV_STCD1;                                                                                 
+                mdmRequest.PV_J_1KFTBUS__c                                        = String.isBlank(objCustomer?.PV_J_1KFTBUS) ? null : objCustomer.PV_J_1KFTBUS;                                                                                         
+                mdmRequest.PV_J_1KFTIND__c                                        = String.isBlank(objCustomer?.PV_J_1KFTIND) ? null : objCustomer.PV_J_1KFTIND;                                                                                         
+                mdmRequest.PV_TELF1__c                                            = String.isBlank(objCustomer?.PV_TELF1) ? null : objCustomer.PV_TELF1;                                                                                 
+                mdmRequest.PV_TELFX__c                                            = String.isBlank(objCustomer?.PV_TELFX) ? null : objCustomer.PV_TELFX;                                                                                 
+                mdmRequest.PV_VKGRP__c                                            = String.isBlank(objCustomer?.PV_VKGRP) ? null : objCustomer.PV_VKGRP;     
+                mdmRequest.PVRA_VKGRP__c                                          = objCustomer?.PVRA_VKGRP != null ? objCustomer.PVRA_VKGRP : null; //Date.valueOf(objCustomer?.PVRA_VKGRP);
+                mdmRequest.PV_PERNR__c                                            = String.isBlank(objCustomer?.PV_PERNR) ? null : objCustomer.PV_PERNR;   //반영안되네 ma사번
+                mdmRequest.PV_PERNR_lu__c                                         = String.isBlank(objCustomer?.PV_PERNR_lu) ? null : objCustomer.PV_PERNR_lu;   //반영안되네 maid
+                mdmRequest.PVRA_PERNR__c                                          = objCustomer?.PVRA_PERNR != null ? objCustomer.PVRA_PERNR : null; //Date.valueOf(objCustomer?.PVRA_PERNR); 담당MA(유효기간 관리)
+                mdmRequest.PV_ADMINMA__c                                          = String.isBlank(objCustomer?.PV_ADMINMA) ? null : objCustomer.PV_ADMINMA;          
+                mdmRequest.PV_ADMINMA_lu__c                                       = String.isBlank(objCustomer?.PV_ADMINMA_lu) ? null : objCustomer.PV_ADMINMA_lu;
                 mdmRequest.PV_LOGISCENTER__c                                      = String.isBlank(objCustomer?.PV_LOGISCENTER) ? null : objCustomer.PV_LOGISCENTER;                                                                                                 
-                mdmRequest.PVRA_LOGISCENTER__c                                    = Date.valueOf(objCustomer?.PVRA_LOGISCENTER);    
-                //회계정보
+                mdmRequest.PVRA_LOGISCENTER__c                                    = objCustomer?.PVRA_LOGISCENTER != null ? objCustomer.PVRA_LOGISCENTER : null; //Date.valueOf(objCustomer?.PVRA_LOGISCENTER);           
+                mdmRequest.PV_STCDT__c                                            = String.isBlank(objCustomer?.PV_STCDT) ? null : objCustomer.PV_STCDT;                                                                                 
+                mdmRequest.PV_FITYP__c                                            = String.isBlank(objCustomer?.PV_FITYP) ? null : objCustomer.PV_FITYP;              
+                mdmRequest.PV_HDOFFICEYN__c                                       = Boolean.valueOf(objCustomer?.PV_HDOFFICEYN);   
+                mdmRequest.PV_HKUNNR_lu__c                                        = String.isBlank(objCustomer?.PV_HKUNNR_lu) ? null : objCustomer.PV_HKUNNR_lu;                                                                                         
+                mdmRequest.PV_HKUNNR__c                                           = String.isBlank(objCustomer?.PV_HKUNNR) ? null : objCustomer.PV_HKUNNR;                                                                                     
+                mdmRequest.PV_VBUND__c                                            = String.isBlank(objCustomer?.PV_VBUND) ? null : objCustomer.PV_VBUND;                                                                                 
+                mdmRequest.PV_LAND1__c                                            = String.isBlank(objCustomer?.PV_LAND1) ? null : objCustomer.PV_LAND1;
+                mdmRequest.PV_LAND1_lu__c                                         = String.isBlank(objCustomer?.PV_LAND1_lu) ? null : objCustomer.PV_LAND1_lu;
+                mdmRequest.PV_KNVKTYPE__c                                         = String.isBlank(objCustomer?.PV_KNVKTYPE) ? null : objCustomer.PV_KNVKTYPE;     
+                //'' -> Null로 변경
+                mdmRequest.PV_CLOSEDT__c                                          = objCustomer?.PV_CLOSEDT != null ? objCustomer.PV_CLOSEDT : null; //Date.valueOf(objCustomer?.PV_CLOSEDT); 
+                mdmRequest.PV_REGIO__c                                            = String.isBlank(objCustomer?.PV_REGIO) ? null : objCustomer.PV_REGIO;                                                                                 
+                mdmRequest.PV_ADRES_ZIPCODE__c                                    = String.isBlank(objCustomer?.PV_ADRES_ZIPCODE) ? null : objCustomer.PV_ADRES_ZIPCODE;  
+                mdmRequest.PV_ADRES_ROADADDR1__c                                  = String.isBlank(objCustomer?.PV_ADRES_ROADADDR1) ? null : objCustomer.PV_ADRES_ROADADDR1;                                                                                                         
+                mdmRequest.PV_ADRES_ROADADDR2__c                                  = String.isBlank(objCustomer?.PV_ADRES_ROADADDR2) ? null : objCustomer.PV_ADRES_ROADADDR2;                                                                                                         
+                mdmRequest.PV_ADRES_ADDR1__c                                      = String.isBlank(objCustomer?.PV_ADRES_ADDR1) ? null : objCustomer.PV_ADRES_ADDR1;                                                                                                 
+                mdmRequest.PV_ADRES_ADDR2__c                                      = String.isBlank(objCustomer?.PV_ADRES_ADDR2) ? null : objCustomer.PV_ADRES_ADDR2;                                                                                                 
+                mdmRequest.PV_SELLER_lu__c                                        = String.isBlank(objCustomer?.PV_SELLER_lu) ? null : objCustomer.PV_SELLER_lu;                                                                                         
+                mdmRequest.PV_BIZPLCODE__c                                        = String.isBlank(objCustomer?.PV_BIZPLCODE) ? null : objCustomer.PV_BIZPLCODE;
+                //기본정보 완료
 
-                //영업정보
+                //회계정보 7
+                mdmRequest.PV_BUSAB__c                                            = String.isBlank(objCustomer?.PV_BUSAB) ? null : objCustomer.PV_BUSAB;                                                                                 
+                mdmRequest.PV_CESSION_KZ__c                                       = String.isBlank(objCustomer?.PV_CESSION_KZ) ? null : objCustomer.PV_CESSION_KZ;                                                                                             
+                mdmRequest.PV_ZUAWA__c                                            = String.isBlank(objCustomer?.PV_ZUAWA) ? null : objCustomer.PV_ZUAWA;                                                                                 
+                mdmRequest.PV_AKONT__c                                            = String.isBlank(objCustomer?.PV_AKONT) ? null : objCustomer.PV_AKONT;                                                                                 
+                mdmRequest.PV_FDGRV__c                                            = String.isBlank(objCustomer?.PV_FDGRV) ? null : objCustomer.PV_FDGRV;                                                                                 
+                mdmRequest.PV_TAXKDD__c                                           = String.isBlank(objCustomer?.PV_TAXKDD) ? null : objCustomer.PV_TAXKDD;                                                                                     
+                mdmRequest.PV_KATR5__c                                            = String.isBlank(objCustomer?.PV_KATR5) ? null : objCustomer.PV_KATR5; 
+                //회계정보 완료
 
-                /*
-                //여기부터 ~~~~~~~~~~~~~~
-                mdmRequest.PV_CUSTTYPE__c	                                   = String.isBlank(objCustomer?.PV_CUSTTYPE) ? null : objCustomer.PV_CUSTTYPE;
-                mdmRequest.PV_LOGISCENTER_lu__c	                                = String.isBlank(objCustomer?.PV_LOGISCENTER_lu) ? null : objCustomer.PV_LOGISCENTER_lu;
-                mdmRequest.PV_VKGRP_lu__c                                       = String.isBlank(objCustomer?.PV_VKGRP_lu) ? null : objCustomer.PV_VKGRP_lu;
-                mdmRequest.PV_STCDT_lu__c                                       = String.isBlank(objCustomer?.PV_STCDT_lu) ? null : objCustomer.PV_STCDT_lu;
-                mdmRequest.PV_VBUND_lu__c                                       = String.isBlank(objCustomer?.PV_VBUND_lu) ? null : objCustomer.PV_VBUND_lu;
-                
-                mdmRequest.PV_LAND1_lu__c                                       = String.isBlank(objCustomer?.PV_LAND1_lu) ? null : objCustomer.PV_LAND1_lu;
-                mdmRequest.PV_REGIO_lu__c                                       = String.isBlank(objCustomer?.PV_REGIO_lu) ? null : objCustomer.PV_REGIO_lu;
-                mdmRequest.PV_ZUAWA_lu__c                                       = String.isBlank(objCustomer?.PV_ZUAWA_lu) ? null : objCustomer.PV_ZUAWA_lu;
-                mdmRequest.PV_CUHR1_lu__c                                       = String.isBlank(objCustomer?.PV_CUHR1_lu) ? null : objCustomer.PV_CUHR1_lu;
-                mdmRequest.PV_KONDA_lu__c                                       = String.isBlank(objCustomer?.PV_KONDA_lu) ? null : objCustomer.PV_KONDA_lu;
-                mdmRequest.PV_KVGR1_lu__c                                       = String.isBlank(objCustomer?.PV_KVGR1_lu) ? null : objCustomer.PV_KVGR1_lu;
-                mdmRequest.PV_WAERS_lu__c                                       = String.isBlank(objCustomer?.PV_WAERS_lu) ? null : objCustomer.PV_WAERS_lu;
-                mdmRequest.PV_ZTERM_VV_lu__c                                    = String.isBlank(objCustomer?.PV_ZTERM_VV_lu) ? null : objCustomer.PV_ZTERM_VV_lu;
-                mdmRequest.PV_OLD_BIZPLACE_NEW_lu__c                            = String.isBlank(objCustomer?.PV_OLD_BIZPLACE_NEW_lu) ? null : objCustomer.PV_OLD_BIZPLACE_NEW_lu;
-                mdmRequest.PV_DELIGROUP_lu__c                                   = String.isBlank(objCustomer?.PV_DELIGROUP_lu) ? null : objCustomer.PV_DELIGROUP_lu;
-                mdmRequest.PV_KATR10_lu__c                                      = String.isBlank(objCustomer?.PV_KATR10_lu) ? null : objCustomer.PV_KATR10_lu;
-                
-
-                mdmRequest.PV_SELLER_lu__c                                      = String.isBlank(objCustomer?.PV_SELLER_lu) ? null : objCustomer.PV_SELLER_lu;                
-               
-                mdmRequest.PVRA_VKGRP__c                                        = Date.valueOf(objCustomer?.PVRA_VKGRP);
-                mdmRequest.PVRA_PERNR__c                                        = Date.valueOf(objCustomer?.PVRA_PERNR);
-                mdmRequest.PVRA_LOGISCENTER__c                                  = Date.valueOf(objCustomer?.PVRA_LOGISCENTER);               
-                mdmRequest.PV_NAME2__c                                          = String.isBlank(objCustomer?.PV_NAME2) ? null : objCustomer.PV_NAME2;
-                mdmRequest.PV_STCD3__c                                          = String.isBlank(objCustomer?.PV_STCD3) ? null : objCustomer.PV_STCD3;
-                mdmRequest.PV_GFORM__c                                          = String.isBlank(objCustomer?.PV_GFORM) ? null : objCustomer.PV_GFORM;
-                mdmRequest.PV_STCD1__c                                          = String.isBlank(objCustomer?.PV_STCD1) ? null : objCustomer.PV_STCD1;
-                mdmRequest.PV_J_1KFTIND__c                                      = String.isBlank(objCustomer?.PV_J_1KFTIND) ? null : objCustomer.PV_J_1KFTIND;
-                mdmRequest.PV_TELFX__c                                          = String.isBlank(objCustomer?.PV_TELFX) ? null : objCustomer.PV_TELFX;
-                mdmRequest.PV_VKGRP__c                                          = String.isBlank(objCustomer?.PV_VKGRP) ? null : objCustomer.PV_VKGRP; // 참조코드 Id 넣어줘야함
-                
-                mdmRequest.PV_PERNR_lu__c                                       = String.isBlank(objCustomer?.PV_PERNR_lu) ? null : objCustomer.PV_PERNR_lu;     // user lookup
-                //mdmRequest.PV_ADMINMA_lu__c                                     = objCustomer?.PV_ADMINMA_lu; 
-                mdmRequest.PV_LOGISCENTER__c                                    = String.isBlank(objCustomer?.PV_LOGISCENTER) ? null : objCustomer.PV_LOGISCENTER; // 참조코드 Id 넣어줘야함
-                mdmRequest.PV_STCDT__c                                          = String.isBlank(objCustomer?.PV_STCDT) ? null : objCustomer.PV_STCDT;             // 참조코드 Id 넣어줘야함
-                //mdmRequest.PV_HDOFFICEYN__c                                     = Boolean.valueOf(objCustomer?.PV_HDOFFICEYN);
-                //mdmRequest.PV_HKUNNR_lu__c                                      = objCustomer?.PV_HKUNNR_lu; // user lookup
-                //mdmRequest.PV_CLOSEDT__c                                        = Date.valueOf(objCustomer?.PV_CLOSEDT);
-                mdmRequest.PV_ADRES_ZIPCODE__c                                  = objCustomer?.PV_ADRES_ZIPCODE;
-                mdmRequest.PV_ADRES_ROADADDR1__c                                = objCustomer?.PV_ADRES_ROADADDR1;
-                mdmRequest.PV_STCD2__c                                          = objCustomer?.PV_STCD2;
-                mdmRequest.PV_STCD4__c                                          = objCustomer?.PV_STCD4;
-                mdmRequest.PV_J_1KFREPRE__c                                     = objCustomer?.PV_J_1KFREPRE;
-                mdmRequest.PV_J_1KFTBUS__c                                      = objCustomer?.PV_J_1KFTBUS;
-                mdmRequest.PV_TELF1__c                                          = objCustomer?.PV_TELF1;
-                mdmRequest.PV_FITYP__c                                          = objCustomer?.PV_FITYP;
-                //mdmRequest.PV_HKUNNR_lu__c                                      = objCustomer?.PV_HKUNNR_lu; // Account lookup
-                mdmRequest.PV_VBUND__c                                          = objCustomer?.PV_VBUND; // 참조코드 Id 넣어줘야함
-                mdmRequest.PV_KNVKTYPE__c                                       = objCustomer?.PV_KNVKTYPE;
-                mdmRequest.PV_REGIO__c                                          = objCustomer?.PV_REGIO;
-                mdmRequest.PV_BIZPLCODE__c                                      = objCustomer?.PV_BIZPLCODE;
-                mdmRequest.PV_BUSAB__c                                          = objCustomer?.PV_BUSAB;
-                mdmRequest.PV_CESSION_KZ__c                                     = objCustomer?.PV_CESSION_KZ;
-                mdmRequest.PV_ZUAWA__c                                          = objCustomer?.PV_ZUAWA; // 참조코드 Id 넣어줘야함
-                mdmRequest.PV_AKONT__c                                          = objCustomer?.PV_AKONT;
-                mdmRequest.PV_FDGRV__c                                          = objCustomer?.PV_FDGRV;
-                mdmRequest.PV_TAXKDD__c                                         = objCustomer?.PV_TAXKDD;
-                mdmRequest.PV_KATR5__c                                          = objCustomer?.PV_KATR5;
-                mdmRequest.PV_WAERS__c                                          = objCustomer?.PV_WAERS;
-                mdmRequest.PV_SHIPTYPE__c                                       = objCustomer?.PV_SHIPTYPE;
-                mdmRequest.PVRA_CUHR1__c                                        = Date.valueOf(objCustomer?.PVRA_CUHR1);
-                mdmRequest.PV_KONDA__c                                          = objCustomer?.PV_KONDA;
-                mdmRequest.PVRA_KVGR1__c                                        = Date.valueOf(objCustomer?.PVRA_KVGR1);
-                mdmRequest.PVRA_OLD_BIZPLACE_NEW__c                             = Date.valueOf(objCustomer?.PVRA_OLD_BIZPLACE_NEW);
-                mdmRequest.PV_DELIGROUP__c                                      = objCustomer?.PV_DELIGROUP;
-                mdmRequest.PV_CUHR1__c                                          = objCustomer?.PV_CUHR1;
-                mdmRequest.PV_KONDA__c                                          = objCustomer?.PV_KONDA;
-                mdmRequest.PV_KVGR1__c                                          = objCustomer?.PV_KVGR1;
-                mdmRequest.PV_KVGR2__c                                          = objCustomer?.PV_KVGR2;
-                mdmRequest.PV_ODCLOSEGB__c                                      = objCustomer?.PV_ODCLOSEGB;
-                mdmRequest.PV_ZTERM_VV__c                                       = objCustomer?.PV_ZTERM_VV;
-                mdmRequest.PV_OLD_BIZPLACE_NEW__c                               = objCustomer?.PV_OLD_BIZPLACE_NEW;
-                //mdmRequest.PV_EXAMYN__c                                         = Boolean.valueOf(objCustomer?.PV_EXAMYN);
-                mdmRequest.PV_PRODLOADCOND__c                                   = objCustomer?.PV_PRODLOADCOND;
-                mdmRequest.PV_ENTERCOND1__c                                     = objCustomer?.PV_ENTERCOND1;
-                mdmRequest.PV_UNLOADCOND2__c                                    = objCustomer?.PV_UNLOADCOND2;
-                mdmRequest.PV_KATR10__c                                         = objCustomer?.PV_KATR10;
-                mdmRequest.PV_KEYINFO__c                                        = objCustomer?.PV_KEYINFO;
-                mdmRequest.PV_KXOTD__c                                          = Boolean.valueOf(objCustomer?.PV_KXOTD);
-                mdmRequest.PV_FDINFO__c                                         = Boolean.valueOf(objCustomer?.PV_FDINFO);
-                mdmRequest.PV_FDREQT__c                                         = objCustomer?.PV_FDREQT;
-                mdmRequest.PV_FDCTINFO__c                                       = objCustomer?.PV_FDCTINFO;
-                mdmRequest.PV_FDNOTICE__c                                       = objCustomer?.PV_FDNOTICE;
-                mdmRequest.PV_KVGR3__c                                          = objCustomer?.PV_KVGR3;
-                mdmRequest.PV_KVGR3_BOT__c                                      = objCustomer?.PV_KVGR3_BOT;
-                //mdmRequest.PV_VACCPRTEXCYN__c                                   = Boolean.valueOf(objCustomer?.PV_VACCPRTEXCYN);
-                mdmRequest.PV_DSTRHISTREGYN__c                                  = objCustomer?.PV_DSTRHISTREGYN;
-                mdmRequest.PV_SHIPREQTIME__c                                    = objCustomer?.PV_SHIPREQTIME;
-                mdmRequest.PV_RETURNLOC__c                                      = objCustomer?.PV_RETURNLOC;
-                mdmRequest.PV_UNLOADCOND1__c                                    = objCustomer?.PV_UNLOADCOND1;
-                mdmRequest.PV_KEYYN__c                                          = Boolean.valueOf(objCustomer?.PV_KEYYN);
-                mdmRequest.PV_KXOTDTIME__c                                      = objCustomer?.PV_KXOTDTIME;
-                //mdmRequest.PV_FDREQD__c                                         = Date.valueOf(objCustomer?.PV_FDREQD);
-                //mdmRequest.PV_ISFDFTF__c                                        = Boolean.valueOf(objCustomer?.PV_ISFDFTF);
-                mdmRequest.PV_TEMPTARGET__c                                     = objCustomer?.PV_TEMPTARGET;
-                */
+                //영업정보 53
+                mdmRequest.PV_CUHR1__c                                            = String.isBlank(objCustomer?.PV_CUHR1) ? null : objCustomer.PV_CUHR1;                                                                                 
+                mdmRequest.PVRA_CUHR1__c                                          = objCustomer?.PVRA_CUHR1 != null ? objCustomer.PVRA_CUHR1 : null; //Date.valueOf(objCustomer?.PVRA_CUHR1);                                                                                         
+                mdmRequest.PV_KONDA__c                                            = String.isBlank(objCustomer?.PV_KONDA) ? null : objCustomer.PV_KONDA;                                                                                 
+                mdmRequest.PVRA_KONDA__c                                          = objCustomer?.PVRA_KONDA != null ? objCustomer.PVRA_KONDA : null; //Date.valueOf(objCustomer?.PVRA_KONDA);                                                                                         
+                mdmRequest.PV_KVGR1__c                                            = String.isBlank(objCustomer?.PV_KVGR1) ? null : objCustomer.PV_KVGR1;                                                                                 
+                mdmRequest.PVRA_KVGR1__c                                          = objCustomer?.PVRA_KVGR1 != null ? objCustomer.PVRA_KVGR1: null; // Date.valueOf(objCustomer?.PVRA_KVGR1);                                                                                         
+                mdmRequest.PV_WAERS__c                                            = String.isBlank(objCustomer?.PV_WAERS) ? null : objCustomer.PV_WAERS;                                                                                 
+                mdmRequest.PV_KVGR3__c                                            = String.isBlank(objCustomer?.PV_KVGR3) ? null : objCustomer.PV_KVGR3;                                                                                 
+                mdmRequest.PV_KVGR2__c                                            = String.isBlank(objCustomer?.PV_KVGR2) ? null : objCustomer.PV_KVGR2;                                                                                 
+                mdmRequest.PV_KVGR3_BOT__c                                        = String.isBlank(objCustomer?.PV_KVGR3_BOT) ? null : objCustomer.PV_KVGR3_BOT;                                                                                         
+                mdmRequest.PV_ODCLOSEGB__c                                        = String.isBlank(objCustomer?.PV_ODCLOSEGB) ? null : objCustomer.PV_ODCLOSEGB;                                                                                         
+                mdmRequest.PV_VACCPRTEXCYN__c                                     = Boolean.valueOf(objCustomer?.PV_VACCPRTEXCYN);                                                                                                 
+                mdmRequest.PV_ZTERM_VV__c                                         = String.isBlank(objCustomer?.PV_ZTERM_VV) ? null : objCustomer.PV_ZTERM_VV;                                                                                         
+                mdmRequest.PV_DSTRHISTREGYN__c                                    = String.isBlank(objCustomer?.PV_DSTRHISTREGYN) ? null : objCustomer.PV_DSTRHISTREGYN;                                                                                                 
+                mdmRequest.PV_OLD_BIZPLACE_NEW__c                                 = String.isBlank(objCustomer?.PV_OLD_BIZPLACE_NEW) ? null : objCustomer.PV_OLD_BIZPLACE_NEW;                                                                                                         
+                mdmRequest.PVRA_OLD_BIZPLACE_NEW__c                               = objCustomer?.PVRA_OLD_BIZPLACE_NEW != null ? objCustomer.PVRA_OLD_BIZPLACE_NEW: null; //Date.valueOf(objCustomer?.PVRA_OLD_BIZPLACE_NEW);                                                                                                             
+                mdmRequest.PV_EXAMYN__c                                           = Boolean.valueOf(objCustomer?.PV_EXAMYN);                                                                                 
+                mdmRequest.PV_SHIPREQTIME__c                                      = String.isBlank(objCustomer?.PV_SHIPREQTIME) ? null : objCustomer.PV_SHIPREQTIME;                                                                                                 
+                mdmRequest.PV_PRODLOADCOND__c                                     = String.isBlank(objCustomer?.PV_PRODLOADCOND) ? null : objCustomer.PV_PRODLOADCOND;                                                                                                 
+                mdmRequest.PV_RETURNLOC__c                                        = String.isBlank(objCustomer?.PV_RETURNLOC) ? null : objCustomer.PV_RETURNLOC;                                                                                         
+                mdmRequest.PV_ENTERCOND1__c                                       = String.isBlank(objCustomer?.PV_ENTERCOND1) ? null : objCustomer.PV_ENTERCOND1;                                                                                             
+                mdmRequest.PV_UNLOADCOND1__c                                      = String.isBlank(objCustomer?.PV_UNLOADCOND1) ? null : objCustomer.PV_UNLOADCOND1;                                                                                                 
+                mdmRequest.PV_UNLOADCOND2__c                                      = String.isBlank(objCustomer?.PV_UNLOADCOND2) ? null : objCustomer.PV_UNLOADCOND2;                                                                                                 
+                mdmRequest.PV_DELIGROUP__c                                        = String.isBlank(objCustomer?.PV_DELIGROUP) ? null : objCustomer.PV_DELIGROUP;                                                                                         
+                mdmRequest.PV_KATR10__c                                           = String.isBlank(objCustomer?.PV_KATR10) ? null : objCustomer.PV_KATR10;                                                                                     
+                mdmRequest.PV_KEYYN__c                                            = Boolean.valueOf(objCustomer?.PV_KEYYN);                                                                                 
+                mdmRequest.PV_KEYINFO__c                                          = String.isBlank(objCustomer?.PV_KEYINFO) ? null : objCustomer.PV_KEYINFO;                                                                                         
+                mdmRequest.PV_KXOTD__c                                            = Boolean.valueOf(objCustomer?.PV_KXOTD);                                                                         
+                mdmRequest.PV_KXOTDTIME__c                                        = String.isBlank(objCustomer?.PV_KXOTDTIME) ? null : objCustomer.PV_KXOTDTIME;                                                                                         
+                mdmRequest.PV_FDINFO__c                                           = Boolean.valueOf(objCustomer?.PV_FDINFO);                                                                                     
+                mdmRequest.PV_FDREQD__c                                           = objCustomer?.PV_FDREQD != null ? objCustomer.PV_FDREQD: null;// Date.valueOf(objCustomer?.PV_FDREQD);                                                                                    
+                mdmRequest.PV_FDREQT__c                                           = String.isBlank(objCustomer?.PV_FDREQT) ? null : objCustomer.PV_FDREQT;                                                                                     
+                mdmRequest.PV_ISFDFTF__c                                          = Boolean.valueOf(objCustomer?.PV_ISFDFTF);                                                                    
+                mdmRequest.PV_FDCTINFO__c                                         = String.isBlank(objCustomer?.PV_FDCTINFO) ? null : objCustomer.PV_FDCTINFO;                                                                                         
+                mdmRequest.PV_FDNOTICE__c                                         = String.isBlank(objCustomer?.PV_FDNOTICE) ? null : objCustomer.PV_FDNOTICE;                                                                                         
+                mdmRequest.PV_SHIPTYPE__c                                         = String.isBlank(objCustomer?.PV_SHIPTYPE) ? null : objCustomer.PV_SHIPTYPE;                                                                                         
+                mdmRequest.PV_TEMPTARGET__c                                       = String.isBlank(objCustomer?.PV_TEMPTARGET) ? null : objCustomer.PV_TEMPTARGET;                                                                                             
+                mdmRequest.PV_VKGRP_lu__c                                         = String.isBlank(objCustomer?.PV_VKGRP_lu) ? null : objCustomer.PV_VKGRP_lu;                                                                                         
+                mdmRequest.PV_LOGISCENTER_lu__c                                   = String.isBlank(objCustomer?.PV_LOGISCENTER_lu) ? null : objCustomer.PV_LOGISCENTER_lu;                                                                                                     
+                mdmRequest.PV_STCDT_lu__c                                         = String.isBlank(objCustomer?.PV_STCDT_lu) ? null : objCustomer.PV_STCDT_lu;                                                                                         
+                mdmRequest.PV_VBUND_lu__c                                         = String.isBlank(objCustomer?.PV_VBUND_lu) ? null : objCustomer.PV_VBUND_lu;                                                                                         
+                mdmRequest.PV_LAND1_lu__c                                         = String.isBlank(objCustomer?.PV_LAND1_lu) ? null : objCustomer.PV_LAND1_lu;                                                                                         
+                mdmRequest.PV_REGIO_lu__c                                         = String.isBlank(objCustomer?.PV_REGIO_lu) ? null : objCustomer.PV_REGIO_lu;                                                                                         
+                mdmRequest.PV_ZUAWA_lu__c                                         = String.isBlank(objCustomer?.PV_ZUAWA_lu) ? null : objCustomer.PV_ZUAWA_lu;                                                                                         
+                mdmRequest.PV_AKONT_lu__c                                         = String.isBlank(objCustomer?.PV_AKONT_lu) ? null : objCustomer.PV_AKONT_lu;                                                                                         
+                mdmRequest.PV_CUHR1_lu__c                                         = String.isBlank(objCustomer?.PV_CUHR1_lu) ? null : objCustomer.PV_CUHR1_lu;                                                                                         
+                mdmRequest.PV_KONDA_lu__c                                         = String.isBlank(objCustomer?.PV_KONDA_lu) ? null : objCustomer.PV_KONDA_lu;                                                                                         
+                mdmRequest.PV_KVGR1_lu__c                                         = String.isBlank(objCustomer?.PV_KVGR1_lu) ? null : objCustomer.PV_KVGR1_lu;                                                                                         
+                mdmRequest.PV_WAERS_lu__c                                         = String.isBlank(objCustomer?.PV_WAERS_lu) ? null : objCustomer.PV_WAERS_lu;                                                                                         
+                mdmRequest.PV_ZTERM_VV_lu__c                                      = String.isBlank(objCustomer?.PV_ZTERM_VV_lu) ? null : objCustomer.PV_ZTERM_VV_lu;                                                                                                 
+                mdmRequest.PV_OLD_BIZPLACE_NEW_lu__c                              = String.isBlank(objCustomer?.PV_OLD_BIZPLACE_NEW_lu) ? null : objCustomer.PV_OLD_BIZPLACE_NEW_lu;                                                                                                                 
+                mdmRequest.PV_DELIGROUP_lu__c                                     = String.isBlank(objCustomer?.PV_DELIGROUP_lu) ? null : objCustomer.PV_DELIGROUP_lu;                                                                                                 
+                mdmRequest.PV_KATR10_lu__c                                        = String.isBlank(objCustomer?.PV_KATR10_lu) ? null : objCustomer.PV_KATR10_lu;                                                         
+   
                 system.debug('>>> 찍혀요? 1');
                 insert mdmRequest;
                 //여기까지 ~~~~~~~~~~~~~~
@@ -355,8 +339,7 @@ public with sharing class CJFW_MDMManagementController {
         //기존 2
         @AuraEnabled public String RecordTypeId {get;set;}
         @AuraEnabled public String requestType {get;set;}
-        //기본 41
-        @AuraEnabled public String PV_KUNNR {get;set;}
+        //기본 42
         @AuraEnabled public String PV_OLDCD {get;set;}
         @AuraEnabled public String PV_NAME1 {get;set;}
         @AuraEnabled public String PV_NAME_G {get;set;}
@@ -375,8 +358,10 @@ public with sharing class CJFW_MDMManagementController {
         @AuraEnabled public String PV_TELFX {get;set;}
         @AuraEnabled public String PV_VKGRP {get;set;}
         @AuraEnabled public Date PVRA_VKGRP {get;set;}
+        @AuraEnabled public String PV_PERNR {get;set;}
         @AuraEnabled public String PV_PERNR_lu {get;set;}
         @AuraEnabled public Date PVRA_PERNR {get;set;}
+        @AuraEnabled public String PV_ADMINMA {get;set;}
         @AuraEnabled public String PV_ADMINMA_lu {get;set;}
         @AuraEnabled public String PV_LOGISCENTER {get;set;}
         @AuraEnabled public Date PVRA_LOGISCENTER {get;set;}
@@ -398,6 +383,7 @@ public with sharing class CJFW_MDMManagementController {
         @AuraEnabled public String PV_SELLER_lu {get;set;}
         @AuraEnabled public String PV_BIZPLCODE {get;set;}
 
+
         //회계정보 7
         @AuraEnabled public String PV_BUSAB {get;set;}
         @AuraEnabled public String PV_CESSION_KZ {get;set;}
@@ -409,11 +395,11 @@ public with sharing class CJFW_MDMManagementController {
 
         //영업정보 37
         @AuraEnabled public String PV_CUHR1 {get;set;}
-        @AuraEnabled public String PVRA_CUHR1 {get;set;}
+        @AuraEnabled public Date PVRA_CUHR1 {get;set;}
         @AuraEnabled public String PV_KONDA {get;set;}
-        @AuraEnabled public String PVRA_KONDA {get;set;}
+        @AuraEnabled public Date PVRA_KONDA {get;set;}
         @AuraEnabled public String PV_KVGR1 {get;set;}
-        @AuraEnabled public String PVRA_KVGR1 {get;set;}
+        @AuraEnabled public Date PVRA_KVGR1 {get;set;}
         @AuraEnabled public String PV_WAERS {get;set;}
         @AuraEnabled public String PV_KVGR3 {get;set;}
         @AuraEnabled public String PV_KVGR2 {get;set;}
@@ -423,7 +409,7 @@ public with sharing class CJFW_MDMManagementController {
         @AuraEnabled public String PV_ZTERM_VV {get;set;}
         @AuraEnabled public String PV_DSTRHISTREGYN {get;set;}
         @AuraEnabled public String PV_OLD_BIZPLACE_NEW {get;set;}
-        @AuraEnabled public String PVRA_OLD_BIZPLACE_NEW {get;set;}
+        @AuraEnabled public Date PVRA_OLD_BIZPLACE_NEW {get;set;}
         @AuraEnabled public String PV_EXAMYN {get;set;}
         @AuraEnabled public String PV_SHIPREQTIME {get;set;}
         @AuraEnabled public String PV_PRODLOADCOND {get;set;}
@@ -438,7 +424,7 @@ public with sharing class CJFW_MDMManagementController {
         @AuraEnabled public String PV_KXOTD {get;set;}
         @AuraEnabled public String PV_KXOTDTIME {get;set;}
         @AuraEnabled public String PV_FDINFO {get;set;}
-        @AuraEnabled public String PV_FDREQD {get;set;}
+        @AuraEnabled public Date PV_FDREQD {get;set;}
         @AuraEnabled public String PV_FDREQT {get;set;}
         @AuraEnabled public String PV_ISFDFTF {get;set;}
         @AuraEnabled public String PV_FDCTINFO {get;set;}

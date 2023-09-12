@@ -13,14 +13,26 @@ public with sharing class CJFW_CommRelatedListController {
         // Object 정보
         String objectApiName = Id.valueOf(recordId).getSObjectType().getDescribe().getName();
         String objectLabel = Schema.getGlobalDescribe().get(objectApiName).getDescribe().getLabel();
-        sObject parentRecord = System.Database.query(
-            ' SELECT ' + String.join(COMM_Util.getFieldList(objectApiName), ', ') +
-            ' FROM ' + objectApiName +
-            ' WHERE Id = :recordId' +
-            ' LIMIT 1'
-        );
-
-        result.put('parentRecord', parentRecord);
+        String query =  ' SELECT ' + String.join(COMM_Util.getFieldList(objectApiName), ', ') +
+                        ' FROM ' + objectApiName +
+                        ' WHERE Id = :recordId' +
+                        ' LIMIT 1';
+        
+        result.put('query', query);
+        
+        try {
+            sObject parentRecord = System.Database.query(
+                ' SELECT ' + String.join(COMM_Util.getFieldList(objectApiName), ', ') +
+                ' FROM ' + objectApiName +
+                ' WHERE Id = :recordId' +
+                ' LIMIT 1'
+            );
+            result.put('parentRecord', parentRecord);
+        }
+        catch (Exception e) {
+            
+        }
+        
         result.put('parentObjectLabel', objectLabel);        
         result.put('parentObjectApiName', objectApiName);
 

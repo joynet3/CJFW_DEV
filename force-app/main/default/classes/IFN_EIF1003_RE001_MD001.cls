@@ -43,6 +43,27 @@ public class IFN_EIF1003_RE001_MD001 {
         return calloutResult;
     }
 
+    public class TestCall {
+        public Map<String, Object> call() {
+            HttpRequest requestH = new HttpRequest();
+            HttpResponse response2 = new HttpResponse();
+            Http http = new Http();
+            requestH.setEndpoint('https://open-api-teambook.rememberapp.co.kr/stacks.json?start_at=2023-09-10&per=200');
+            requestH.setMethod('GET');
+            requestH.setHeader('API-CLIENT-ID', '76e500f61681efbf243cc89181bedbfb');
+            requestH.setHeader('API-CLIENT-SECRET', '9d2ae4b0dc2bd85800584bcf7932a3e2');
+            Map<String, Object> res = new Map<String, Object>();
+//        String requestBody = System.JSON.serialize(new Clova_RequestDTO(fileUrl));
+//        requestH.setBody(requestBody);
+
+            response2 = http.send(requestH);
+            if (response2.getStatusCode() == 200) {
+                res = (Map<String, Object>) System.JSON.deserializeUntyped(response2.getBody());
+            }
+            return res;
+        }
+
+    }
 
     public class RE001RequestWrapper {
         public String start_at { get; set; }
@@ -51,6 +72,14 @@ public class IFN_EIF1003_RE001_MD001 {
         public Integer per = 200;
     }
     public class RE001ResultWrapper {
-        public Map<String, Object> result;
+//        public Map<String,Object> stacks;
+        public List<Object> stacks;
+        public Metainfo metainfo;
+    }
+    public class Metainfo {
+        public Integer page{get;set;}
+        public Integer per{get;set;}
+        public Integer total_count{get;set;}
+        public Integer total_pages{get;set;}
     }
 }

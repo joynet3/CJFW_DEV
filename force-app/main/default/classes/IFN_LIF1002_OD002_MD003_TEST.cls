@@ -1,90 +1,78 @@
 @isTest
-public class IFN_LIF1002_OD002_MD003_TEST {
-
+public with sharing class IFN_LIF1002_OD002_MD003_TEST {
     @TestSetup
     static void makeData(){
-        IFN_TestDataFactory.createIfPrograms();
+        IFMaster__c ifMaster = new IFMaster__c(
+            Name = 'IFN_LIF1002_OD002_MD003',
+            InterfaceId__c = 'IFN_LIF1002_OD002_MD003',
+            Type__c = 'Inbound',
+            WebserviceType__c = 'REST',
+            Method__c = 'POST',
+            ContentType__c = 'application/json'
+        );
 
-        MDMReferenceCode__c code = new MDMReferenceCode__c();
-        code.GROUPID__c = 'GROUPID__c';
-        code.CODE__c = '0001';
-        code.NAME_KO__c = 'Test';
-        code.Name = 'Test';
-        insert code;
+        insert ifMaster;
 
-        OrderServiceRequest__c osr = new OrderServiceRequest__c();
-        osr.ReqRecordId__c = '1';
-        osr.Status__c = 'R';
-        osr.ResponseDate__c = Date.today();
-        osr.ResponseTitle__c = '1';
-        osr.Title__c = '1';
-        osr.RequestMessage__c = 'a';
-        osr.RequestDate__c = Date.today();
-        osr.MDMReferenceCode__c = code.id;
-        insert osr;
-        
+        Date requestDate = IFN_Util.convertDate('2023-08-21');
+        Id osrRcdTp = Schema.SObjectType.OrderServiceRequest__c.getRecordTypeInfosByDeveloperName().get('01').getRecordTypeId();
+
+        OrderServiceRequest__c orderServiceReq = new OrderServiceRequest__c(
+                            Title__c = '식료품신청'
+                        , ReqType__c = '01'
+                        , ReqTypeCode__c = '01' 
+                        , RequestMessage__c = '식료품신청'
+                        , SampleitemText1__c = '샘플상품1'
+                        , SampleitemText2__c = '샘플상품2'
+                        , SampleitemText3__c = '샘플상품3'
+                        , ExtraServiceCategory__c = '가공류'
+                        // , ExtraServiceCategoryCode__c = input.ExtSvcCd
+                        , CustomerID__c = 'AAA'
+                        , RequestDate__c = requestDate
+                        , Finder__c = '[36110]세종시'
+                        , ReqRecordId__c = '1223334'
+                        , RecordTypeId = osrRcdTp
+        );
+
+        insert orderServiceReq;
     }
 
     @isTest
-    static void test01() {
+    static void IFN_LIF1002_OD002_MD003_TEST(){
         Test.startTest();
-        OrderServiceRequest__c osr = [select id from OrderServiceRequest__c  Limit 1];
 
         RestRequest req = new RestRequest();
         RestResponse res = new RestResponse();
-        String strBody = '{ '
-                         +'   "reqId": "1", '
-                         +'   "resId": "" '
-                         +'}';
 
-        req.requestBody = Blob.valueOf(strBody);
+        OrderServiceRequest__c orderServiceReq = [select Id from OrderServiceRequest__c Where ReqRecordId__c = '1223334' Limit 1];
+
+        // Success Test 1
+        String strBody = '{"reqId": "1223334","resId": '+ orderServiceReq.Id +'}';
+        req.requestBody = Blob.valueof(strBody);
         RestContext.request = req;
         RestContext.response = res;
         IFN_LIF1002_OD002_MD003.doPost();
         
-        Test.stopTest();
-    }
-
-
-    @isTest
-    static void test02() {
-        Test.startTest();
-        OrderServiceRequest__c osr = [select id from OrderServiceRequest__c  Limit 1];
-
-        RestRequest req = new RestRequest();
-        RestResponse res = new RestResponse();
-        String strBody = '{ '
-                         +'   "reqId": "2", '
-                         +'   "resId": "" '
-                         +'}';
-
-        req.requestBody = Blob.valueOf(strBody);
+        // Success Test 2
+        strBody = '{"reqId": "1223334"}';
+        req.requestBody = Blob.valueof(strBody);
         RestContext.request = req;
         RestContext.response = res;
         IFN_LIF1002_OD002_MD003.doPost();
-        
-        Test.stopTest();
-    }
 
-
-    @isTest
-    static void test03() {
-        Test.startTest();
-        OrderServiceRequest__c osr = [select id from OrderServiceRequest__c  Limit 1];
-
-        RestRequest req = new RestRequest();
-        RestResponse res = new RestResponse();
-        String strBody = '{ '
-                         +'   "reqId": "", '
-                         +'   "resId": "" '
-                         +'}';
-
-        req.requestBody = Blob.valueOf(strBody);
+        // Error Test 1
+        strBody = '';
+        req.requestBody = Blob.valueof(strBody);
         RestContext.request = req;
         RestContext.response = res;
         IFN_LIF1002_OD002_MD003.doPost();
-        
-        Test.stopTest();
-    }    
 
+        // Error Test 2
+        strBody = '{"dummy1": "1223334","dummy2": '+ orderServiceReq.Id +'}';
+        req.requestBody = Blob.valueof(strBody);
+        RestContext.request = req;
+        RestContext.response = res;
+        IFN_LIF1002_OD002_MD003.doPost();
+
+        Test.stopTest();
+    }
 }

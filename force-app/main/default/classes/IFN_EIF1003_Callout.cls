@@ -41,6 +41,29 @@ public with sharing class IFN_EIF1003_Callout {
         } //end of try~catch
         return result;
     }
+
+    /**
+     * @Description Remember 명함첩 데이터 가져오기
+     * @param interfaceId IFN_EIF1003_RE001_MD001
+     * @param params
+    * @return IFN_CalloutResult
+    * @request
+        {
+            "start_at" : "2023-09-11"
+
+        }
+       @response
+        {
+            "results": [
+                            {
+                                "msg_key": "1234567890",
+                                "code": "C100",
+                                "desc": "Success"
+                            },
+                            {...}
+                        ]
+        }
+    */
     public IFN_CalloutResult IFN_EIF1003_RE001_MD001(String interfaceId, Object params) {
         IFN_CalloutResult result = new IFN_CalloutResult();
 
@@ -49,21 +72,26 @@ public with sharing class IFN_EIF1003_Callout {
         String result_message = 'Callout Success';
 
         IFN_EIF1003_RE001_MD001.RE001ResultWrapper infResponse = new IFN_EIF1003_RE001_MD001.RE001ResultWrapper();
+//        Map<String,Object> infResponse = new Map<String,Object>();
+
         try {
             System.debug('params >>>>>>>>>>>>>>>>>>>>>>>>>' + params);
             IFN_EIF1003_RE001_MD001.RE001RequestWrapper reqparam = new IFN_EIF1003_RE001_MD001.RE001RequestWrapper();
             reqparam = (IFN_EIF1003_RE001_MD001.RE001RequestWrapper) JSON.deserializeStrict((String) params, IFN_EIF1003_RE001_MD001.RE001RequestWrapper.class) ;
 
             IFN_ApiGateWay gateway = new IFN_ApiGateWay(interfaceId);
-            String requestBody = JSON.serialize(reqparam);
+            String requestBody = fromDTO(reqparam);
 
             HttpResponse response = gateway.webCallout(requestBody, null, true);
 
             responsedata = response.getBody();
+
             if (response.getStatusCode() == 200) {
-                infResponse = (IFN_EIF1003_RE001_MD001.RE001ResultWrapper) JSON.deserializeStrict((String) responsedata, IFN_EIF1003_RE001_MD001.RE001ResultWrapper.class);
+//                infResponse = (Map<String, Object>) JSON.deserializeUntyped((String) responsedata);
+                infResponse = (IFN_EIF1003_RE001_MD001.RE001ResultWrapper) JSON.deserialize((String) responsedata, IFN_EIF1003_RE001_MD001.RE001ResultWrapper.class);
             } else {
-                infResponse = (IFN_EIF1003_RE001_MD001.RE001ResultWrapper) JSON.deserializeStrict((String) responsedata, IFN_EIF1003_RE001_MD001.RE001ResultWrapper.class);
+//                infResponse = (Map<String, Object>) JSON.deserializeUntyped((String) responsedata);
+                infResponse = (IFN_EIF1003_RE001_MD001.RE001ResultWrapper) JSON.deserialize((String) responsedata, IFN_EIF1003_RE001_MD001.RE001ResultWrapper.class);
                 result_code = 'F';
                 result_message = 'Callout Fail';
             }
@@ -78,5 +106,18 @@ public with sharing class IFN_EIF1003_Callout {
                 , infResponse
         );
         return result;
+    }
+
+
+    public static String fromDTO(IFN_EIF1003_RE001_MD001.RE001RequestWrapper request) {
+        List<String> params = new List<String>();
+
+        if (String.isNotBlank(request.start_at)) {
+            params.add('start_at=' + EncodingUtil.urlEncode(request.start_at, 'UTF-8'));
+        }
+        if (request.per != null) {
+            params.add('per=' + request.per);
+        }
+        return String.join(params, '&');
     }
 }

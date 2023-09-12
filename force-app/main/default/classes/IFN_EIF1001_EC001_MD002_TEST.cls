@@ -1,71 +1,47 @@
-/**
- * @Class : IFN_EIF1001_EC001_MD002_TEST.cls
- * @group Framework : 
- * @Author :  조일근 
- * @Date : 2023.09.07
- * @Version : 1.0
- * @Description :
- * @Modified :
- * ----------------------------------------------
- *  NO | Date       | Modifier       | Description
- * ----------------------------------------------
- *  1. | 2023.09.07 | 조일근  | 최초작성
- * */
 @isTest
-public class IFN_EIF1001_EC001_MD002_TEST {
-
+public with sharing class IFN_EIF1001_EC001_MD002_TEST {
     @TestSetup
     static void makeData(){
-        IFN_TestDataFactory.createIfPrograms();
-    
+        IFMaster__c ifMaster = new IFMaster__c(
+            Name = 'IFN_EIF1001_EC001_MD002',
+            InterfaceId__c = 'IFN_EIF1001_EC001_MD002',
+            Type__c = 'Inbound',
+            WebserviceType__c = 'REST',
+            Method__c = 'POST',
+            ContentType__c = 'application/json'
+        );
+
+        insert ifMaster;
     }
 
     @isTest
-    static void test01() {
+    static void IFN_EIF1001_EC001_MD002_TEST(){
         Test.startTest();
 
         RestRequest req = new RestRequest();
         RestResponse res = new RestResponse();
 
-        Map<String, Object> resMap = new Map<String, Object>();
-        List<Object> ListMap = new List<Object>();
-        Map<String, Object> dataMap = new Map<String, Object>();
-        dataMap.put('msg_key','1');
-        dataMap.put('code','1');
-        dataMap.put('desc','1');
-        dataMap.put('dest','1');
-        dataMap.put('done_date','1');
-
-        ListMap.add(dataMap);
-        resMap.put('results',ListMap);
-
-        String strBody = JSON.serialize(resMap);
-        req.requestBody = Blob.valueOf(strBody);
+        // Success Test 1
+        String strBody = '{ "results": [ { "msg_key": "1234567890", "code": "0", "desc": "Success", "dest": "SKT", "done_date": "20200716140000" }, { "msg_key": "1234567891", "code": "0", "desc": "Success", "dest": "SKT", "done_date": "20200716140000" }, { "msg_key": "1234567892", "code": "0", "desc": "Success", "dest": "SKT", "done_date": "20200716140000" }, { "msg_key": "1234567893", "code": "0", "desc": "Success", "dest": "SKT", "done_date": "20200716140000" } ] }';
+        req.requestBody = Blob.valueof(strBody);
         RestContext.request = req;
         RestContext.response = res;
         IFN_EIF1001_EC001_MD002.doPost();
-        
-        Test.stopTest();
-    }
 
-
-
-    @isTest
-    static void test02() {
-        Test.startTest();
-
-        RestRequest req = new RestRequest();
-        RestResponse res = new RestResponse();
-
-
-        req.requestBody = null;
+        // Error Test 1
+        strBody = '';
+        req.requestBody = Blob.valueof(strBody);
         RestContext.request = req;
         RestContext.response = res;
         IFN_EIF1001_EC001_MD002.doPost();
-        
+
+        // Error Test 2
+        strBody = '{ "results": [ { "msg_key": "1234567890", "code": "0"';
+        req.requestBody = Blob.valueof(strBody);
+        RestContext.request = req;
+        RestContext.response = res;
+        IFN_EIF1001_EC001_MD002.doPost();
+
         Test.stopTest();
     }
-
- 
-
 }

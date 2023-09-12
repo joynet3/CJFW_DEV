@@ -1,146 +1,61 @@
 @isTest
-public class IFN_LIF1002_OD002_MD002_TEST {
-
+public with sharing class IFN_LIF1002_OD002_MD002_TEST {
     @TestSetup
     static void makeData(){
-        IFN_TestDataFactory.createIfPrograms();
+        IFMaster__c ifMaster = new IFMaster__c(
+            Name = 'IFN_LIF1002_OD002_MD002',
+            InterfaceId__c = 'IFN_LIF1002_OD002_MD002',
+            Type__c = 'Inbound',
+            WebserviceType__c = 'REST',
+            Method__c = 'POST',
+            ContentType__c = 'application/json'
+        );
 
-        MDMReferenceCode__c code = new MDMReferenceCode__c();
-        code.GROUPID__c = 'GROUPID__c';
-        code.CODE__c = '0001';
-        code.NAME_KO__c = 'Test';
-        code.Name = 'Test';
-        insert code;
-
-        OrderServiceRequest__c osr = new OrderServiceRequest__c();
-        osr.ReqRecordId__c = '1';
-        osr.Status__c = 'R';
-        osr.ResponseDate__c = Date.today();
-        osr.ResponseTitle__c = '1';
-        osr.Title__c = '1';
-        osr.RequestMessage__c = 'a';
-        osr.RequestDate__c = Date.today();
-        osr.MDMReferenceCode__c = code.id;
-        insert osr;
-        
+        insert ifMaster;
     }
 
     @isTest
-    static void test01() {
+    static void IFN_LIF1002_OD002_MD002_TEST(){
         Test.startTest();
 
         RestRequest req = new RestRequest();
         RestResponse res = new RestResponse();
-        IFN_LIF1002_OD002_MD002.Input reqdata = new IFN_LIF1002_OD002_MD002.Input();
 
-        reqdata.ttl='2';        
-        reqdata.reqTp='샘플요청';      
-        reqdata.reqTpCd='샘플요청';    
-        reqdata.reqMsg='2';     
-        reqdata.spItmTxt1='2';  
-        reqdata.spItmTxt2='2';  
-        reqdata.spItmTxt3='2';  
-        reqdata.ExtSrvcCtgr='2';
-        reqdata.ExtSvcCd='2';   
-        reqdata.mdmId='2';      
-        reqdata.reqDt='2023-02-02';      
-        reqdata.rcvNm='2';      
-        reqdata.reqId='2';      
-
-
-        String strBody =  Json.serialize(reqdata);
-
-        req.requestBody = Blob.valueOf(strBody);
+        // Success Test 1
+        String strBody = '{"ttl": "식료품신청","reqTp": "샘플신청","reqTpCd": "01","reqMsg": "식료품신청","spItmTxt1": "샘플상품1","spItmTxt2": "샘플상품2","spItmTxt3": "샘플상품3","ExtSrvcCtgr": "가공류","mdmId": "ABC","reqDt": "2023-08-21","rcvNm": "[36110]세종시","reqId": "1223334"}';
+        req.requestBody = Blob.valueof(strBody);
         RestContext.request = req;
         RestContext.response = res;
         IFN_LIF1002_OD002_MD002.doPost();
         
-        Test.stopTest();
-    }
-
-
-    
-    @isTest
-    static void test02() {
-        Test.startTest();
-
-        RestRequest req = new RestRequest();
-        RestResponse res = new RestResponse();
-        IFN_LIF1002_OD002_MD002.Input reqdata = new IFN_LIF1002_OD002_MD002.Input();
-
-        reqdata.ttl='1';        
-        reqdata.reqTp='샘플요청';      
-        reqdata.reqTpCd='샘플요청';  
-        reqdata.reqMsg='1';     
-        reqdata.spItmTxt1='1';  
-        reqdata.spItmTxt2='1';  
-        reqdata.spItmTxt3='1';  
-        reqdata.ExtSrvcCtgr='1';
-        reqdata.ExtSvcCd='1';   
-        reqdata.mdmId='1';      
-        reqdata.reqDt='2023-02-02';      
-        reqdata.rcvNm='1';      
-        reqdata.reqId='1';      
-
-
-        String strBody =  Json.serialize(reqdata);
-
-        req.requestBody = Blob.valueOf(strBody);
+        // Success Test 2
+        strBody = '{"ttl": "식료품신청","reqTp": "샘플신청","reqTpCd": "02","reqMsg": "식료품신청","spItmTxt1": "샘플상품1","spItmTxt2": "샘플상품2","spItmTxt3": "샘플상품3","ExtSrvcCtgr": "가공류","mdmId": "ABC","reqDt": "2023-08-21","rcvNm": "[36110]세종시","reqId": "1223334"}';
+        req.requestBody = Blob.valueof(strBody);
         RestContext.request = req;
         RestContext.response = res;
         IFN_LIF1002_OD002_MD002.doPost();
-        
-        Test.stopTest();
-    }
 
-
-    @isTest
-    static void test03() {
-        Test.startTest();
-
-        RestRequest req = new RestRequest();
-        RestResponse res = new RestResponse();
-        IFN_LIF1002_OD002_MD002.Input reqdata = new IFN_LIF1002_OD002_MD002.Input();
-
-        reqdata.ttl='';        
-        reqdata.reqTp='';      
-        reqdata.reqTpCd='';    
-        reqdata.reqMsg='';     
-        reqdata.spItmTxt1='';  
-        reqdata.spItmTxt2='';  
-        reqdata.spItmTxt3='';  
-        reqdata.ExtSrvcCtgr='';
-        reqdata.ExtSvcCd='1';   
-        reqdata.mdmId='1';      
-        reqdata.reqDt='';      
-        reqdata.rcvNm='1';      
-        reqdata.reqId='1';      
-
-
-        String strBody =  Json.serialize(reqdata);
-
-        req.requestBody = Blob.valueOf(strBody);
+        // Error Test 1
+        strBody = '';
+        req.requestBody = Blob.valueof(strBody);
         RestContext.request = req;
         RestContext.response = res;
         IFN_LIF1002_OD002_MD002.doPost();
-        
-        Test.stopTest();
-    }
 
-
-    @isTest
-    static void test04() {
-        Test.startTest();
-
-        RestRequest req = new RestRequest();
-        RestResponse res = new RestResponse();
-       
-       req.requestBody = null;
+        // Error Test 2
+        strBody = '{"dummy1": "식료품신청","dummy2": "샘플신청","dummy3": "02","dummy4": "식료품신청","dummy5": "샘플상품1","dummy6": "샘플상품2","dummy7": "샘플상품3","dummy8": "가공류","dummy9": "ABC","dummy10": "2023-08-21","dummy11": "[36110]세종시","dummy12": "1223334"}';
+        req.requestBody = Blob.valueof(strBody);
         RestContext.request = req;
         RestContext.response = res;
         IFN_LIF1002_OD002_MD002.doPost();
-        
+
+        // Error Test 3
+        strBody = '{"ttl": "식료품신청","reqTp": "샘플신청","reqTpCd": "04","reqMsg": "식료품신청","spItmTxt1": "샘플상품1","spItmTxt2": "샘플상품2","spItmTxt3": "샘플상품3","ExtSrvcCtgr": "가공류","mdmId": "ABC","reqDt": "2023-08-21","rcvNm": "[36110]세종시","reqId": "1223334"}';
+        req.requestBody = Blob.valueof(strBody);
+        RestContext.request = req;
+        RestContext.response = res;
+        IFN_LIF1002_OD002_MD002.doPost();
+
         Test.stopTest();
     }
-
 }
