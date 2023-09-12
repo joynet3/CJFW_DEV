@@ -109,6 +109,19 @@ public with sharing class CJFW_MDMManagementController {
 
         return result;
     }
+    /**
+     * @description 관리처 화면 본점 자동생성(조건 : 참조생성 한 경우)
+     *
+     * @return      `Date`
+     */
+    @AuraEnabled
+    public static List<Account> getHKUNNR(String selectedId) {
+        List<Account> accList = [SELECT Id, ParentId
+                                FROM Account
+                                WHERE Id =: selectedId
+                                LIMIT 1];
+        return accList;
+    }
 
   /**
    * Save 버튼을 클릭 했을 때 호출
@@ -128,7 +141,7 @@ public with sharing class CJFW_MDMManagementController {
         SaveResult saveResult = new SaveResult();
         // aura  String 으로 넘어와서 JSON.des
         // ObjCustomer obj =  JSON.deserialize(objCustomer, 래퍼클래스명.class);
-        system.debug('>>>doSave # objCustomer.PV_ZUAWA ' + JSON.serialize(objCustomer.PV_ZUAWA));
+        system.debug('>>>doSave # objCustomer.PV_HDOFFICEYN ' + JSON.serialize(objCustomer.PV_HDOFFICEYN));
         system.debug('>>>doSave # contacts ' + contacts.size());
 
         //값을 나눠서 값이 없으면 안되는친구들
@@ -168,7 +181,7 @@ public with sharing class CJFW_MDMManagementController {
                 mdmRequest.PVRA_LOGISCENTER__c                                    = objCustomer?.PVRA_LOGISCENTER != null ? objCustomer.PVRA_LOGISCENTER : null; //Date.valueOf(objCustomer?.PVRA_LOGISCENTER);           
                 mdmRequest.PV_STCDT__c                                            = String.isBlank(objCustomer?.PV_STCDT) ? null : objCustomer.PV_STCDT;                                                                                 
                 mdmRequest.PV_FITYP__c                                            = String.isBlank(objCustomer?.PV_FITYP) ? null : objCustomer.PV_FITYP;              
-                mdmRequest.PV_HDOFFICEYN__c                                       = Boolean.valueOf(objCustomer?.PV_HDOFFICEYN);   
+                mdmRequest.PV_HDOFFICEYN__c                                       = objCustomer?.PV_HDOFFICEYN ? true : false;
                 mdmRequest.PV_HKUNNR_lu__c                                        = String.isBlank(objCustomer?.PV_HKUNNR_lu) ? null : objCustomer.PV_HKUNNR_lu;                                                                                         
                 mdmRequest.PV_HKUNNR__c                                           = String.isBlank(objCustomer?.PV_HKUNNR) ? null : objCustomer.PV_HKUNNR;                                                                                     
                 mdmRequest.PV_VBUND__c                                            = String.isBlank(objCustomer?.PV_VBUND) ? null : objCustomer.PV_VBUND;                                                                                 
@@ -230,6 +243,7 @@ public with sharing class CJFW_MDMManagementController {
                 mdmRequest.PV_FDINFO__c                                           = Boolean.valueOf(objCustomer?.PV_FDINFO);                                                                                     
                 mdmRequest.PV_FDREQD__c                                           = objCustomer?.PV_FDREQD != null ? objCustomer.PV_FDREQD: null;// Date.valueOf(objCustomer?.PV_FDREQD);                                                                                    
                 mdmRequest.PV_FDREQT__c                                           = String.isBlank(objCustomer?.PV_FDREQT) ? null : objCustomer.PV_FDREQT;                                                                                     
+                mdmRequest.PV_ISFDFTF__c                                          = Boolean.valueOf(objCustomer?.PV_ISFDFTF);                                                                    
                 mdmRequest.PV_ISFDFTF__c                                          = Boolean.valueOf(objCustomer?.PV_ISFDFTF);                                                                    
                 mdmRequest.PV_FDCTINFO__c                                         = String.isBlank(objCustomer?.PV_FDCTINFO) ? null : objCustomer.PV_FDCTINFO;                                                                                         
                 mdmRequest.PV_FDNOTICE__c                                         = String.isBlank(objCustomer?.PV_FDNOTICE) ? null : objCustomer.PV_FDNOTICE;                                                                                         
@@ -367,7 +381,7 @@ public with sharing class CJFW_MDMManagementController {
         @AuraEnabled public Date PVRA_LOGISCENTER {get;set;}
         @AuraEnabled public String PV_STCDT {get;set;}
         @AuraEnabled public String PV_FITYP {get;set;}
-        @AuraEnabled public String PV_HDOFFICEYN {get;set;}
+        @AuraEnabled public Boolean PV_HDOFFICEYN {get;set;}
         @AuraEnabled public String PV_HKUNNR_lu {get;set;}
         @AuraEnabled public String PV_HKUNNR {get;set;}
         @AuraEnabled public String PV_VBUND {get;set;}

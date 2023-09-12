@@ -87,15 +87,12 @@ public with sharing class IFN_EIF1003_Callout {
             responsedata = response.getBody();
 
             if (response.getStatusCode() == 200) {
-//                infResponse = (Map<String, Object>) JSON.deserializeUntyped((String) responsedata);
-                infResponse = (IFN_EIF1003_RE001_MD001.RE001ResultWrapper) JSON.deserialize((String) responsedata, IFN_EIF1003_RE001_MD001.RE001ResultWrapper.class);
+                infResponse.result = (IFN_EIF1003_RE001_MD001.RE001SuccessWrapper) JSON.deserialize((String) responsedata.replace('"default"','"defaultVal"'), IFN_EIF1003_RE001_MD001.RE001SuccessWrapper.class);
             } else {
-//                infResponse = (Map<String, Object>) JSON.deserializeUntyped((String) responsedata);
-                infResponse = (IFN_EIF1003_RE001_MD001.RE001ResultWrapper) JSON.deserialize((String) responsedata, IFN_EIF1003_RE001_MD001.RE001ResultWrapper.class);
+                infResponse.result = (IFN_EIF1003_RE001_MD001.RE001ErrorWrapper) JSON.deserialize((String) responsedata, IFN_EIF1003_RE001_MD001.RE001ErrorWrapper.class);
                 result_code = 'F';
                 result_message = 'Callout Fail';
             }
-
         } catch (Exception e) {
             result_code = 'E';
             result_message = 'Interface Exception';

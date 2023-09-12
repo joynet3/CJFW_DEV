@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : yejoo.lee@dkbmc.com
  * @group             : 
- * @last modified on  : 09-11-2023
+ * @last modified on  : 09-12-2023
  * @last modified by  : yejoo.lee@dkbmc.com
 **/
 public with sharing class CJFW_CommRelatedListController {
@@ -13,26 +13,24 @@ public with sharing class CJFW_CommRelatedListController {
         // Object 정보
         String objectApiName = Id.valueOf(recordId).getSObjectType().getDescribe().getName();
         String objectLabel = Schema.getGlobalDescribe().get(objectApiName).getDescribe().getLabel();
-        String query =  ' SELECT ' + String.join(COMM_Util.getFieldList(objectApiName), ', ') +
+        
+        List<Schema.SObjectField> fieldList = COMM_Util.getFieldList(objectApiName);
+        List<String> fieldNameList = new List<String>();
+        
+        for (Schema.SObjectField field : fieldList) {
+            fieldNameList.add(field.getDescribe().getName());
+        }
+        
+        String commaSeparatedString = String.join(fieldNameList, ',');
+
+        String query =  ' SELECT ' + commaSeparatedString +
                         ' FROM ' + objectApiName +
                         ' WHERE Id = :recordId' +
                         ' LIMIT 1';
+        sObject parentRecord = System.Database.query(query);
         
-        result.put('query', query);
-        
-        try {
-            sObject parentRecord = System.Database.query(
-                ' SELECT ' + String.join(COMM_Util.getFieldList(objectApiName), ', ') +
-                ' FROM ' + objectApiName +
-                ' WHERE Id = :recordId' +
-                ' LIMIT 1'
-            );
-            result.put('parentRecord', parentRecord);
-        }
-        catch (Exception e) {
-            
-        }
-        
+        // result.put('query', query);
+        result.put('parentRecord', parentRecord);
         result.put('parentObjectLabel', objectLabel);        
         result.put('parentObjectApiName', objectApiName);
 

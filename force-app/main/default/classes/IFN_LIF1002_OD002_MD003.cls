@@ -92,7 +92,7 @@ global with sharing class IFN_LIF1002_OD002_MD003 {
                     integer isExist = database.countQuery(qry);
                     
                     if(isExist == 0) {
-                        errWr = IFN_CMM_ERRUTIL.GET_ERRORINFO_BYERRORKEY('LIF1002', IFN_CMM_ERRUTIL.ERRKEY_MSG_LIF1002_0001);
+                        errWr = IFN_CMM_ERRUTIL.GET_ERRORINFO_BYERRORKEY('LIF1002', IFN_CMM_ERRUTIL.ERRKEY_MSG_LIF1002_0002);
                         strCode = errWr.err_code;
                         strMessage = errWr.err_msg;
                         logWrap.ErrorCode = strCode;

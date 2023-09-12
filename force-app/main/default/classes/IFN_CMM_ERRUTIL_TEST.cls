@@ -25,7 +25,6 @@ private class IFN_CMM_ERRUTIL_TEST {
 
 
     @isTest
-    
     static void testOne()
     {
         Test.startTest();

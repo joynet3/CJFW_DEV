@@ -2,12 +2,16 @@
  * @description       : 
  * @author            : yeonji.lim@dkbmc.com
  * @group             : 
- * @last modified on  : 09-11-2023
+ * @last modified on  : 09-12-2023
  * @last modified by  : yeonji.lim@dkbmc.com
 **/
 public with sharing class CJFW_ExpectedIncoExpenRelatedController {
 
-    // 영업기회 -> relatedList(예상손익Obj) 가져오기
+    /* 
+     * cjfwRelatedExpectedProfit lwc에서 사용
+     * @param  recordId  oppty record id 
+     * 영업기회 -> relatedList(예상손익Obj) 가져오기
+     */
     @AuraEnabled
     public static List<CJFW_ExpectedIncomeExpenses__c> getList(String Id){
         try {

@@ -11,7 +11,7 @@
 
  * @author            : eunyoung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 09-11-2023
+ * @last modified on  : 09-12-2023
  * @last modified by  : eunyoung.choi@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -134,6 +134,7 @@ public with sharing class ReportFormController {
                     ];
     }
 
+
     /* 
     예산손익 : CJFW_ExpectedIncomeExpenses__c 에서 값 가져오기
     */
@@ -172,24 +173,30 @@ public with sharing class ReportFormController {
             NonFoodSupportExpect__c,
             SalesSupportExpect__c,
             IsReportCheck__c,
-            IncentiveSupport__c
+            IncentiveSupport__c, 
+            ExpectedIncomeManagerId__r.DistributionCost__c, // 예상손익 관리 ↓
+            ExpectedIncomeManagerId__r.LaborCost__c,
+            ExpectedIncomeManagerId__r.GroupCommonCost__c,
+            ExpectedIncomeManagerId__r.CardFee__c, 
+            ExpectedIncomeManagerId__r.CollateralFee__c, 
+            ExpectedIncomeManagerId__r.ChefFee__c, 
+            ExpectedIncomeManagerId__r.OtherFee__c, 
+            ExpectedIncomeManagerId__r.SupportFee__c 
         FROM CJFW_ExpectedIncomeExpenses__c
         WHERE id ='a1l0w000001MmAMAA0'
-        ];
-
-        
-        // Apex 컨트롤러에서 받아온 날짜 값을 JavaScript Date 객체로 파싱
-            
+        ];  
 
         // ContractPaymentDate__c 필드를 yyyy-MM-dd 형식의 문자열로 변환
         String ContractPaymentDateString = String.valueOf(IncomeExpensesInfo.ContractPaymentDate__c);
         String CollateralPeriodString = String.valueOf(IncomeExpensesInfo.CollateralPeriod__c);
+
         ContractPaymentDate = ContractPaymentDateString.substring(0, 10);
         CollateralPeriod = CollateralPeriodString.substring(0, 10);
 
         // 변환된 문자열을 출력하거나 필요한 곳에 사용할 수 있습니다.
-        System.debug('# 날짜1 ' +ContractPaymentDate);
-        System.debug('# 날짜2 ' +CollateralPeriod);
+        // System.debug('# 날짜1 ' +ContractPaymentDate);
+        // System.debug('# 날짜2 ' +CollateralPeriod);
+        System.debug('# 관리값 가져오기 ->  ' + IncomeExpensesInfo.ExpectedIncomeManagerId__r.DistributionCost__c );
 
         System.debug('# 손익계산 ' + IncomeExpensesInfo.ContractPaymentDate__c);
         //System.debug('# 손익계산 약정 -> ' + format);

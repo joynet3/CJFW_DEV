@@ -34,6 +34,8 @@ public class IFN_CMM_ERRUTIL {
         //============================ LIF1002 ===========================
         /** 이미 등록된 샘플 또는 부가서비스 신청이 존재합니다. */  
         public static String ERRKEY_MSG_LIF1002_0001 = 'MSG_LIF10002_0001';
+         /**요청한 샘플 또는 부가서비스 신청이 존재하지 않습니다. */
+    	public static String ERRKEY_MSG_LIF1002_0002 = 'MSG_LIF10002_0002';
 
 
    public class IFN_CommonException extends Exception{}
@@ -62,7 +64,7 @@ public class IFN_CMM_ERRUTIL {
     }
 
     /**
-     *  메소드 설명 작성
+     *  에러 정보를 에러코드 키값으로 가져와 에러코드 및 에러 메세지 세팅
      * 
      * @param  변수명 파라미터 설명 (있는경우)
      * @return  리턴값 설명 (있는경우)
@@ -81,6 +83,33 @@ public class IFN_CMM_ERRUTIL {
         
         retVal.err_code = errInfo.ERROR_CODE__c;
         retVal.err_msg = errInfo.ERROR_MSG__c;
+
+
+        return retVal;
+    }
+
+
+    /**
+     *  에러 정보를 에러코드 키값으로 가져와 에러코드 및 에러 메세지 세팅.
+     *  -  메세지의 경우 파라메터 처리할 경우 사용
+     * 
+     * @param  변수명 파라미터 설명 (있는경우)
+     * @return  리턴값 설명 (있는경우)
+     * @exception  메소드가 발생시키는 예외에 대한 설명 또는 목록
+     * @example 
+     *  예제코드 태그 아래줄에서 예제 작성
+     * */
+    public static ErrorValueWrapper GET_ERRORINFO_BYERRORKEY_FORMAT(String SystemCode,String ErrorKey,List<String> addParam) {
+        ErrorValueWrapper retVal = new ErrorValueWrapper();
+
+        IF_ERROR_CODE_MST__c errInfo =  [Select Id, SYSTEM_CODE__c, ERROR_KEY__c, ERROR_CODE__c, ERROR_MSG__c 
+        From IF_ERROR_CODE_MST__c 
+        where SYSTEM_CODE__c = :SystemCode
+        and ERROR_KEY__c = :ErrorKey
+        Limit 1];
+        
+        retVal.err_code = errInfo.ERROR_CODE__c;
+        retVal.err_msg = String.format(errInfo.ERROR_MSG__c, addParam);
 
 
         return retVal;
