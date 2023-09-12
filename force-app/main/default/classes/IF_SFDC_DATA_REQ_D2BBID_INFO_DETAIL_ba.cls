@@ -16,10 +16,10 @@ global with sharing class IF_SFDC_DATA_REQ_D2BBID_INFO_DETAIL_ba implements Data
     IFMaster__c ifMasterObj = [SELECT Id, Name, ContentType__c, Endpoint__c, Method__c FROM IFMaster__c WHERE Name = 'IF_SFDC_DATA_REQ_D2BBID_INFO_DETAIL'];
     List<NaramarketKeyword__mdt> subKeywordList = [SELECT Keyword__c, keyword_seq__c FROM NaramarketKeyword__mdt WHERE Keyword_lv__c = 2 ORDER BY keyword_seq__c ASC];
 
-    //2023.09.07 - sancho
-    //Id recordId = Schema.SObjectType.LEAD.getRecordTypeInfosByDeveloperName().get('MilitaryLead').getRecordTypeId();
+    //2023.09.07 - sancho : LEAD -> CJFW_BiddingInformation__c
     Id recordId = Schema.SObjectType.CJFW_BiddingInformation__c.getRecordTypeInfosByDeveloperName().get('Military').getRecordTypeId();        //Military,Local,NaraMarket
     
+    //2023.09.11 - sancho : 현재시점에서는 막음. assignmentRule 정해지면 적용.
     //AssignmentRule AR = [select id from AssignmentRule where SobjectType = 'Lead' and Active = true limit 1];
     //Database.DMLOptions dmlOpts = new Database.DMLOptions();
 
@@ -49,6 +49,7 @@ global with sharing class IF_SFDC_DATA_REQ_D2BBID_INFO_DETAIL_ba implements Data
         IFUtil objIf = new IFUtil('IF_SFDC_DATA_REQ_D2BBID_INFO_DETAIL');
         LogWrapper objWrapper = new LogWrapper();
 
+        //2023.09.11 - sancho : 현재시점에서는 막음. assignmentRule 정해지면 적용.
         // dmlOpts.assignmentRuleHeader.assignmentRuleId= AR.id;
         // // dmlOpts.EmailHeader.TriggerUserEmail = true;
 

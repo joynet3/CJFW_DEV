@@ -2,15 +2,29 @@
  * @description       : 
  * @author            : sunkyung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 09-08-2023
+ * @last modified on  : 09-11-2023
  * @last modified by  : sunkyung.choi@dkbmc.com
 **/
 public with sharing class CJFW_SurveyPreviewController {
     public CJFW_SurveyPreviewController() {
 
     }
+    public class SurveyQuestionResponse {
+        @AuraEnabled
+        public String question { get; set; }
+        @AuraEnabled
+        public String answer { get; set; }
+
+        public SurveyQuestionResponse(String question, String answer) {
+            this.question = question;
+            this.answer = answer;
+        }
+    }
+
+
+
     @AuraEnabled
-    public static List<Map<Decimal, String>>  getSurveyReulte(String recordId){
+    public static  List<SurveyQuestionResponse> getSurveyReulte(String recordId){
         System.debug('start>>>>>>>>>>>>>>>>>>>' );
         System.debug('getSurveyReulte' + recordId);
         
@@ -50,27 +64,26 @@ public with sharing class CJFW_SurveyPreviewController {
         System.debug('11111' + resultList);
         
        
-        List<Map<Decimal, String>> totalList = new List<Map<Decimal, String>>();
-       
+        List<SurveyQuestionResponse> totalList = new List<SurveyQuestionResponse>();
+ 
         for (CJFW_SurveyResult__c ru : resultList) {
-        
-        Map<Decimal, String> questionMap = new Map<Decimal, String>(); // CJFW_SurveyResult__c에 질문을 담기위한 map 
-         Map<Decimal, String> answernMap = new Map<Decimal, String>(); // CJFW_SurveyResult__c에 답변을 담기위한 map 
-        
-            questionMap.put(ru.SurveyQuestion__r.Order__c, ru.FM_Question__c);
+            String question = ru.FM_Question__c;
+            String answer;
+
             if (ru.OpenEnded__c != null) {
-                answernMap.put(ru.SurveyQuestion__r.Order__c, ru.OpenEnded__c);
+                answer = ru.OpenEnded__c;
+            } else {
+                answer = ru.SurveyOption__r.Name;
             }
-            else {
-                answernMap.put(ru.SurveyQuestion__r.Order__c, ru.SurveyOption__r.Name);
-            }
-            totalList.add(questionMap); 
-            totalList.add(answernMap); 
+
+            SurveyQuestionResponse response = new SurveyQuestionResponse(question, answer);
+            totalList.add(response);
         }
-        
-      
 
         System.debug('22222' + totalList);
         return totalList;
     }
+    
+    
+        
 }

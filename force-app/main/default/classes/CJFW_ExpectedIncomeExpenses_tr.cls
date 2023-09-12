@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : jieun.lee3@dkbmc.com
  * @group             : 
- * @last modified on  : 09-08-2023
+ * @last modified on  : 09-11-2023
  * @last modified by  : jieun.lee3@dkbmc.com
 **/
 
@@ -55,8 +55,7 @@ public without sharing class CJFW_ExpectedIncomeExpenses_tr extends TriggerHandl
         for(CJFW_ExpectedIncomeExpenses__c newExpense : listNew){
             if (newExpense.IsReportCheck__c) {
                 for (CJFW_ExpectedIncomeExpenses__c existingExpense : existingExpenses) {
-                    if (existingExpense.Id != newExpense.Id  
-                        && existingExpense.IsReportCheck__c) {
+                    if (existingExpense.Id != newExpense.Id && existingExpense.IsReportCheck__c) {
                         newExpense.addError('품의지정은 하나만 지정 가능합니다.');
                         break; 
                     }
