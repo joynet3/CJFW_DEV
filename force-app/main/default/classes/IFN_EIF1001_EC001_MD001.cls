@@ -31,9 +31,12 @@ public class IFN_EIF1001_EC001_MD001 {
             IFN_EIF1001_Callout callout = new IFN_EIF1001_Callout(this.interfaceId, 'Real');
             calloutResult = callout.getResponse(this.interfaceId, JSon.serialize(this.param));
 
+            // Target Object 확정 후 코드 처리 필요
             if('S'.equals(calloutResult.result)) {
+                // 메시지 전송 결과값 정상 수신
 
             } else {
+                // 인터페이스 처리 오류 Or Http 오류 결과 수신
 
             }
             

@@ -28,6 +28,9 @@ public class IFN_CMM_ERRUTIL {
         public static String ERRKEY_DATA_NOTFOUND_ERROR = 'MSG_COMMON_9905';
         /** 중복된 데이터 입력입니다. */      
         public static String ERRKEY_DUPLICATION_INPUT_ERROR = 'MSG_COMMON_9906';
+        /** 인터페이스 처리에러 : {0} -> 파라메터 추가 */      
+        public static String ERRKEY_INTERFACE_STATUS_ERROR = 'MSG_COMMON_9907';
+
         /** SERVER ERROR */  
         public static String ERRKEY_SERVER_ERROR = 'MSG_COMMON_9999';
 

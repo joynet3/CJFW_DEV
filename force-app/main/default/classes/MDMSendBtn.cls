@@ -6,7 +6,7 @@
  * @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
 **/
 public without sharing class MDMSendBtn {
-    /**
+    /** S
      * MDM 전송 버튼 Init
      * 
      * @param recordId MDMRegRequestCustomer Id

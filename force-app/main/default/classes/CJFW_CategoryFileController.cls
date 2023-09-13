@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : seol.kim@dkbmc.com
  * @group             : 
- * @last modified on  : 09-06-2023
+ * @last modified on  : 09-13-2023
  * @last modified by  : seol.kim@dkbmc.com
 **/
 public with sharing class CJFW_CategoryFileController {
@@ -45,8 +45,9 @@ public with sharing class CJFW_CategoryFileController {
                             LastModifiedDate,
                             CreatedBy.Name
                     FROM ContentVersion
-                    WHERE Category__c =: category 
+                    WHERE Category__c =: category
                     AND ContentDocumentId IN: ContentDocumentIds
+                    ORDER BY LastModifiedDate ASC
                     ];
             
         } catch (Exception e) {

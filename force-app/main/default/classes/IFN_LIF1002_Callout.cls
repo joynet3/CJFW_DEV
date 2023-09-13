@@ -182,7 +182,7 @@ public class IFN_LIF1002_Callout {
         IFN_LIF1002_SE001_MD001.SE001_01ResultWrapper infResponse = new IFN_LIF1002_SE001_MD001.SE001_01ResultWrapper();  
         
 
-
+        IFN_CMM_ERRUTIL.ErrorValueWrapper errWr = new IFN_CMM_ERRUTIL.ErrorValueWrapper();
         try{
 
 
@@ -210,8 +210,12 @@ public class IFN_LIF1002_Callout {
                 this.logWrap.ResponseBody = (String)responsedata;
                 this.logWrap.ResponseTime = Datetime.now();
             } else {
-                result_code = 'F';
-                result_message = 'Interface Error';
+
+                List<String> errMsgLst = new List<String>{String.valueOf(response.getStatus())};
+                errWr = IFN_CMM_ERRUTIL.GET_ERRORINFO_BYERRORKEY_FORMAT('COMMON', IFN_CMM_ERRUTIL.ERRKEY_INTERFACE_STATUS_ERROR,errMsgLst);
+                result_code =  errWr.err_code;
+                result_message =  errWr.err_msg;
+                
                 responsedata = '';
                 this.logWrap.LogText.add(response.getStatus());
                 this.logWrap.ErrorText.add(response.getStatus());
@@ -222,8 +226,11 @@ public class IFN_LIF1002_Callout {
             this.logWrap.LogText.add(e.getMessage() + '/' + e.getLineNumber());
             this.logWrap.ErrorText.add(e.getMessage() + '/' + e.getLineNumber());
 
-            result_code = 'F';
-            result_message = 'Interface Error';
+            List<String> errMsgLst = new List<String>{String.valueOf(e.getMessage())};
+            errWr = IFN_CMM_ERRUTIL.GET_ERRORINFO_BYERRORKEY_FORMAT('COMMON', IFN_CMM_ERRUTIL.ERRKEY_INTERFACE_STATUS_ERROR,errMsgLst);
+            result_code =  errWr.err_code;
+            result_message =  errWr.err_msg;
+
         }  
 
         this.logWrap.Status = result_code;

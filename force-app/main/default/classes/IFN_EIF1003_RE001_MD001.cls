@@ -42,29 +42,6 @@ public class IFN_EIF1003_RE001_MD001 {
         commlog.insertLog(this.logWrap);
         return calloutResult;
     }
-
-    public class TestCall {
-        public Map<String, Object> call() {
-            HttpRequest requestH = new HttpRequest();
-            HttpResponse response2 = new HttpResponse();
-            Http http = new Http();
-            requestH.setEndpoint('https://open-api-teambook.rememberapp.co.kr/stacks.json?start_at=2023-09-10&per=200');
-            requestH.setMethod('GET');
-            requestH.setHeader('API-CLIENT-ID', '76e500f61681efbf243cc89181bedbfb');
-            requestH.setHeader('API-CLIENT-SECRET', '9d2ae4b0dc2bd85800584bcf7932a3e2');
-            Map<String, Object> res = new Map<String, Object>();
-//        String requestBody = System.JSON.serialize(new Clova_RequestDTO(fileUrl));
-//        requestH.setBody(requestBody);
-
-            response2 = http.send(requestH);
-            if (response2.getStatusCode() == 200) {
-                res = (Map<String, Object>) System.JSON.deserializeUntyped(response2.getBody());
-            }
-            return res;
-        }
-
-    }
-
     public class RE001RequestWrapper {
         public String start_at { get; set; }
 //        public String end_at { get; set; }
@@ -97,8 +74,8 @@ public class IFN_EIF1003_RE001_MD001 {
         public String created_at{ get; set; }
         public String trashed_at{ get; set; }
         public String deleted_at{ get; set; }
-
     }
+
     public class Card {
         public Integer id{ get; set; }
         public String name{ get; set; }

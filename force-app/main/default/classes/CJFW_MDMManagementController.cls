@@ -2,13 +2,60 @@
  * @description       : 
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 09-12-2023
+ * @last modified on  : 09-13-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
  * 1.0   08-18-2023   joohyeon.jang@dkbmc.com   Initial Version
 **/
 public with sharing class CJFW_MDMManagementController {
+
+    /**
+     * @description 수정 일 경우(AccountId가 존재)
+     *              AccountId로 MDM오브젝트 조회하여 저장되어 있는 필드와 값을 래퍼클래스에 매핑하여 화면에 리턴
+     * 
+     * @return      `EditMDMRequest`
+     */
+    @AuraEnabled 
+    public static EditMDMRequest getAccountToMdm(String accountId){
+        EditMDMRequest result = new EditMDMRequest();
+
+
+        List<Account> accountList = [SELECT CustomerID__c FROM Account WHERE Id =: accountId LIMIT 1];
+
+        if(!accountList.isEmpty()){
+           List<MDMRegRequestCustomer__c> mdmRegRequestList = [
+             SELECT Id, PV_NAME1__c, PV_KUNNR__c 
+             FROM MDMRegRequestCustomer__c
+             WHERE PV_KUNNR__c =: accountList[0].CustomerID__c LIMIT 1];
+
+             // MDM에서 온 친구(MDMRegRequestCustomer__c 추가 되어야 함 requestType:편집으로..)
+            if(mdmRegRequestList.isEmpty()){
+                result.isCRM = false;
+                MDMRequest wrapperRequest = new MDMRequest();
+                wrapperRequest.requestType = 'create';
+                wrapperRequest.PV_NAME1    = '너없어';
+
+
+                result.mdmRequest = wrapperRequest;
+            // 승인으로 온 친구
+            }else{
+                result.isCRM = true;
+                // 래퍼에 말아서 리턴 **말아야됨
+                MDMRequest wrapperRequest = new MDMRequest();
+                wrapperRequest.requestType = 'Edit';
+                wrapperRequest.PV_NAME1    = mdmRegRequestList[0]?.Id;
+                result.mdmRequest = wrapperRequest;
+            }
+        }
+        return result;
+    }
+
+    public class EditMDMRequest{
+        @AuraEnabled public Boolean isCRM{get;set;}
+        @AuraEnabled public MDMRequest mdmRequest{get;set;}
+    }
+
     /**
      * @description D
      * 
@@ -147,9 +194,9 @@ public with sharing class CJFW_MDMManagementController {
         //값을 나눠서 값이 없으면 안되는친구들
         //값이 없어도 되는친구들 
         try {
-            if(objCustomer != null){    
+            if(objCustomer != null){
                 MDMRegRequestCustomer__c mdmRequest = new MDMRegRequestCustomer__c();
-                //변경불가 2
+                //Default 2
                 mdmRequest.RecordTypeId                                         = String.isBlank(objCustomer?.RecordTypeId) ? null : objCustomer.RecordTypeId;
                 mdmRequest.requestType__c                                       = String.isBlank(objCustomer?.requestType) ? null : objCustomer.requestType;
                 //mdmRequest.PV_KUNNR__c                                            = String.isBlank(objCustomer?.PV_KUNNR) ? null : objCustomer.PV_KUNNR;    이건 나중에 승인받고 추가
@@ -744,6 +791,8 @@ public with sharing class CJFW_MDMManagementController {
             
         }
     }
+
+    
     public class ContactWrapper {
         @AuraEnabled public String lastName {get; set;}
         @AuraEnabled public String id {get; set;}
