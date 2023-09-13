@@ -11,7 +11,7 @@
 
  * @author            : eunyoung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 09-12-2023
+ * @last modified on  : 09-13-2023
  * @last modified by  : eunyoung.choi@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -201,5 +201,24 @@ public with sharing class ReportFormController {
         System.debug('# 손익계산 ' + IncomeExpensesInfo.ContractPaymentDate__c);
         //System.debug('# 손익계산 약정 -> ' + format);
 
+    }
+
+    /* 
+    CJFW_NewOpenReport_ProfitReview (VF Page) 에서 입력받은 값 update   
+    */
+    @RemoteAction
+    public static String saveIncomeExpenses(String fieldValue) {
+        try {
+            System.debug('쉐프지원 회수 -> ' + fieldValue);
+            CJFW_ExpectedIncomeExpenses__c record = new CJFW_ExpectedIncomeExpenses__c();
+            record.ChefSupportCnt__c = Integer.valueOf(fieldValue); // 필드 값을 설정
+
+            // 데이터 저장
+            insert record;
+
+            return 'success';
+        } catch (Exception e) {
+            return 'error: ' + e.getMessage();
+        }
     }
 }

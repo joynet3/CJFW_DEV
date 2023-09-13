@@ -2,8 +2,8 @@
  * @description       : 
  * @author            : jieun.lee3@dkbmc.com
  * @group             : 
- * @last modified on  : 09-11-2023
- * @last modified by  : jieun.lee3@dkbmc.com
+ * @last modified on  : 09-13-2023
+ * @last modified by  : joohyeon.jang@dkbmc.com
 **/
 public with sharing class CJFW_MDMSecondaryController {
 

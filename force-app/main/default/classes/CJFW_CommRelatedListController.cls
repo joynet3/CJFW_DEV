@@ -50,22 +50,26 @@ public with sharing class CJFW_CommRelatedListController {
     }
 
     @AuraEnabled
-    public static Map<String, Object> getRecords(String recordId, String targetObjectApiName, String sqlCondition, Integer recordLimit, String sortBy, String sortDirection){
+    public static Map<String, Object> getRecords(String recordId, String targetObjectApiName, String addFieldString, String sqlCondition, Integer recordLimit, String sortBy, String sortDirection){
         System.debug('recordId' + recordId);
         System.debug('recordLimit' + recordLimit);
         Map<String, Object> resultMap =new Map<String, Object>();
 
         String fieldString = getFieldListString(targetObjectApiName);
 
-        List<SObject> dataList = System.Database.query(
-            ' SELECT ' + fieldString +
-            ' FROM ' + targetObjectApiName +
-            ' WHERE ' + sqlCondition +
-            ' ORDER BY ' + sortBy + ' ' + sortDirection +
-            ' NULLS LAST ' +
-            ' LIMIT ' + recordLimit
-            + ' OFFSET 0'
-        );
+        String dataQuery =  ' SELECT ' + fieldString + ', ' + addFieldString +
+                            ' FROM ' + targetObjectApiName +
+                            ' WHERE ' + sqlCondition;
+        
+                            if(sortBy != '' && sortDirection != ''){
+            dataQuery    += ' ORDER BY ' + sortBy + ' ' + sortDirection +
+                            ' NULLS LAST ';
+        }
+        
+        dataQuery   += ' LIMIT ' + recordLimit
+                    + ' OFFSET 0';
+
+        List<SObject> dataList = System.Database.query(dataQuery);
         
         AggregateResult total =System.Database.query(
             ' SELECT COUNT(Id) total' +

@@ -21,30 +21,49 @@ public with sharing class CJFW_MDMManagementController {
         EditMDMRequest result = new EditMDMRequest();
 
 
-        List<Account> accountList = [SELECT CustomerID__c FROM Account WHERE Id =: accountId LIMIT 1];
+        List<Account> accountList = [SELECT Id,  CustomerIDASIS__c,  Name,  NameAlias__c,  CustomerID__c FROM Account WHERE Id =: accountId LIMIT 1];
 
         if(!accountList.isEmpty()){
-           List<MDMRegRequestCustomer__c> mdmRegRequestList = [
-             SELECT Id, PV_NAME1__c, PV_KUNNR__c 
+           List<MDMRegRequestCustomer__c> mdmRegRequestCustomerList = [
+             SELECT Id, RecordTypeId, requestType__c, PV_OLDCD__c, PV_NAME1__c, PV_NAME_G__c, PV_NAME2__c, PV_KTOKD__c, PV_CUSTTYPE__c, PV_STCD2__c, PV_STCD3__c, PV_STCD4__c, PV_GFORM__c, PV_J_1KFREPRE__c, PV_STCD1__c, 
+                    PV_J_1KFTBUS__c, PV_J_1KFTIND__c, PV_TELF1__c, PV_TELFX__c, PV_VKGRP__c, PVRA_VKGRP__c, PV_PERNR__c, PV_PERNR_lu__c, PVRA_PERNR__c, PV_ADMINMA__c, PV_ADMINMA_lu__c, PV_LOGISCENTER__c, PVRA_LOGISCENTER__c, 
+                    PV_STCDT__c, PV_FITYP__c, PV_HDOFFICEYN__c, PV_HKUNNR_lu__c, PV_HKUNNR__c, PV_VBUND__c, PV_LAND1__c, PV_KNVKTYPE__c, PV_CLOSEDT__c, PV_REGIO__c, PV_ADRES_ZIPCODE__c, PV_ADRES_ROADADDR1__c, 
+                    PV_ADRES_ROADADDR2__c, PV_ADRES_ADDR1__c, PV_ADRES_ADDR2__c, PV_SELLER_lu__c, PV_BIZPLCODE__c, PV_BUSAB__c, PV_CESSION_KZ__c, PV_ZUAWA__c, PV_AKONT__c, PV_FDGRV__c, PV_TAXKDD__c, PV_KATR5__c, PV_CUHR1__c, 
+                    PVRA_CUHR1__c, PV_KONDA__c, PVRA_KONDA__c, PV_KVGR1__c, PVRA_KVGR1__c, PV_WAERS__c, PV_KVGR3__c, PV_KVGR2__c, PV_KVGR3_BOT__c, PV_ODCLOSEGB__c, PV_VACCPRTEXCYN__c, PV_ZTERM_VV__c, PV_DSTRHISTREGYN__c, 
+                    PV_OLD_BIZPLACE_NEW__c, PVRA_OLD_BIZPLACE_NEW__c, PV_EXAMYN__c, PV_SHIPREQTIME__c, PV_PRODLOADCOND__c, PV_RETURNLOC__c, PV_ENTERCOND1__c, PV_UNLOADCOND1__c, PV_UNLOADCOND2__c, PV_DELIGROUP__c, PV_KATR10__c, 
+                    PV_KEYYN__c, PV_KEYINFO__c, PV_KXOTD__c, PV_KXOTDTIME__c, PV_FDINFO__c, PV_FDREQD__c, PV_FDREQT__c, PV_ISFDFTF__c, PV_FDCTINFO__c, PV_FDNOTICE__c, PV_SHIPTYPE__c, PV_TEMPTARGET__c, PV_VKGRP_lu__c, 
+                    PV_LOGISCENTER_lu__c, PV_STCDT_lu__c, PV_VBUND_lu__c, PV_LAND1_lu__c, PV_REGIO_lu__c, PV_ZUAWA_lu__c, PV_AKONT_lu__c, PV_CUHR1_lu__c, PV_KONDA_lu__c, PV_KVGR1_lu__c, PV_WAERS_lu__c, PV_ZTERM_VV_lu__c, 
+                    PV_OLD_BIZPLACE_NEW_lu__c, PV_DELIGROUP_lu__c, PV_KATR10_lu__c
              FROM MDMRegRequestCustomer__c
              WHERE PV_KUNNR__c =: accountList[0].CustomerID__c LIMIT 1];
 
-             // MDM에서 온 친구(MDMRegRequestCustomer__c 추가 되어야 함 requestType:편집으로..)
-            if(mdmRegRequestList.isEmpty()){
+             // MDM에서 온 친구(MDMRegRequestCustomer__c 추가 + Account 편집 화면에 Account 값이 떠야 함 되어야 함 requestType:편집으로..)
+            if(mdmRegRequestCustomerList.isEmpty()){
+                system.debug('여기는 값이 있겠지?' + JSON.serialize(AccountList));
+                system.debug('여기는 값이 없겠지?' + JSON.serialize(mdmRegRequestCustomerList));
                 result.isCRM = false;
+                for(Account acc : accountList){
                 MDMRequest wrapperRequest = new MDMRequest();
-                wrapperRequest.requestType = 'create';
-                wrapperRequest.PV_NAME1    = '너없어';
+
+                    //MDMRegRequestCustomer__c에 insert해줘야 함.
+                    wrapperRequest.requestType = 'Edit';
+                    wrapperRequest.PV_NAME1    = acc.Name;
+                    result.mdmRequest = wrapperRequest;
+                }
 
 
-                result.mdmRequest = wrapperRequest;
+                
             // 승인으로 온 친구
             }else{
-                result.isCRM = true;
                 // 래퍼에 말아서 리턴 **말아야됨
+                // wrapperRequest.requestType = 'Edit';
+                // wrapperRequest.PV_NAME1    = mdmRegRequestCustomerList[0]?.Id;
+                result.isCRM = true;
                 MDMRequest wrapperRequest = new MDMRequest();
+                wrapperRequest.RecordTypeId = 'Edit';
                 wrapperRequest.requestType = 'Edit';
-                wrapperRequest.PV_NAME1    = mdmRegRequestList[0]?.Id;
+
+
                 result.mdmRequest = wrapperRequest;
             }
         }
@@ -57,7 +76,7 @@ public with sharing class CJFW_MDMManagementController {
     }
 
     /**
-     * @description D
+     * @description RecordTypeName으로 RecordTypeId Return해주기
      * 
      * @return      `String`
      */
@@ -71,7 +90,7 @@ public with sharing class CJFW_MDMManagementController {
         system.debug('>>> setDefaultInfo ' + recordTypeName);
         
         User objUser =[
-            SELECT Id, LastName, EmployeeNumber FROM User
+            SELECT Id,  LastName,  EmployeeNumber FROM User
             WHERE Id =:UserInfo.getUserId()
             ];
             
@@ -81,7 +100,7 @@ public with sharing class CJFW_MDMManagementController {
         if(strObjectType == 'MDMRegRequestCustomer'){
             MDMRecordTypeId = Schema.SObjectType.MDMRegRequestCustomer__c.getRecordTypeInfosByDeveloperName().get(recordTypeName).getRecordTypeId();
             system.debug('>>> setDefaultInfo ' + MDMRecordTypeId);
-            objWrapper.listCustomerOrderType = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_ODCLOSEGB__c', true);
+            objWrapper.listCustomerOrderType = CommonUtil.getPickListValues('MDMRegRequestCustomer__c',  'PV_ODCLOSEGB__c',  true);
             system.debug('objWrapper.listCustomerOrderType ' + Json.serialize(objWrapper.listCustomerOrderType));
         }
         objWrapper.strStatus = strStatus;
@@ -100,35 +119,35 @@ public with sharing class CJFW_MDMManagementController {
         system.debug('>>> Division Account Id ' + selectedId);
         List<AccountDataWrapper> result = new List<AccountDataWrapper>();
         
-        //SELECT Name, (SELECT LastName FROM Contacts)  FROM Account
-        //List<Account>    accList = getAccountRecord(customerId, customerName, managerMA);
+        //SELECT Name,  (SELECT LastName FROM Contacts)  FROM Account
+        //List<Account>    accList = getAccountRecord(customerId,  customerName,  managerMA);
         List<Account> accList = [SELECT  Id
-                                        ,  Name                            
-                                        , NameAlias__c                    
-                                        , CustomerType__c                 
-                                        , LegalStatus__c                  
-                                        , BusinessCategory__c             
-                                        , TaxInvoiceType__c               
-                                        , PostalCode__c                   
-                                        , Address__c                      
-                                        , NameKor__c                      
-                                        , AccountGroup__c                 
-                                        , CompanyRegisterNumber__c        
-                                        , RepresentativeName__c           
-                                        , BusinessConditions__c           
-                                        , Phone                           
-                                        , HeadOfficeCode__c               
-                                        , LocationState__c                
-                                        , SubsidyType__c                  
-                                        , CustomerOrderDeadlineType__c    
-                                        , TermsOfPayment__c               
-                                        , CustomerPath__c                 
-                                        , ShipmentArea__c                 
-                                        , StatementOfDeliveryType__c      
-                                        , StatementOfDeliveryType2__c     
-                                        , DisHisRegType__c                
-                                        , DeliveryGroup__c                
-                                        , (SELECT Id, Lastname, Firstname, Email, Phone, MobilePhone, Department, PV_PAFKT_VK__c, PV_TALKT_VK__c, PV_KNVKGB__c FROM Contacts) 
+                                        ,   Name                            
+                                        ,  NameAlias__c                    
+                                        ,  CustomerType__c                 
+                                        ,  LegalStatus__c                  
+                                        ,  BusinessCategory__c             
+                                        ,  TaxInvoiceType__c               
+                                        ,  PostalCode__c                   
+                                        ,  Address__c                      
+                                        ,  NameKor__c                      
+                                        ,  AccountGroup__c                 
+                                        ,  CompanyRegisterNumber__c        
+                                        ,  RepresentativeName__c           
+                                        ,  BusinessConditions__c           
+                                        ,  Phone                           
+                                        ,  HeadOfficeCode__c               
+                                        ,  LocationState__c                
+                                        ,  SubsidyType__c                  
+                                        ,  CustomerOrderDeadlineType__c    
+                                        ,  TermsOfPayment__c               
+                                        ,  CustomerPath__c                 
+                                        ,  ShipmentArea__c                 
+                                        ,  StatementOfDeliveryType__c      
+                                        ,  StatementOfDeliveryType2__c     
+                                        ,  DisHisRegType__c                
+                                        ,  DeliveryGroup__c                
+                                        ,  (SELECT Id,  Lastname,  Firstname,  Email,  Phone,  MobilePhone,  Department,  PV_PAFKT_VK__c,  PV_TALKT_VK__c,  PV_KNVKGB__c FROM Contacts) 
                                     FROM Account 
                                     WHERE Id =: selectedId 
                                     LIMIT 1];
@@ -163,7 +182,7 @@ public with sharing class CJFW_MDMManagementController {
      */
     @AuraEnabled
     public static List<Account> getHKUNNR(String selectedId) {
-        List<Account> accList = [SELECT Id, ParentId
+        List<Account> accList = [SELECT Id,  ParentId
                                 FROM Account
                                 WHERE Id =: selectedId
                                 LIMIT 1];
@@ -181,13 +200,13 @@ public with sharing class CJFW_MDMManagementController {
    * contact < 스탠다드 오브젝트 
    */
     @AuraEnabled
-    public static SaveResult doSave(MDMRequest objCustomer, List<CustomContacts> contacts, List<Banks> banks)
+    public static SaveResult doSave(MDMRequest objCustomer,  List<CustomContacts> contacts,  List<Banks> banks)
     {
-        // JSON.deserialize(objCustomer, ObjCustomer.class);
+        // JSON.deserialize(objCustomer,  ObjCustomer.class);
         system.debug('>>>doSave ');
         SaveResult saveResult = new SaveResult();
         // aura  String 으로 넘어와서 JSON.des
-        // ObjCustomer obj =  JSON.deserialize(objCustomer, 래퍼클래스명.class);
+        // ObjCustomer obj =  JSON.deserialize(objCustomer,  래퍼클래스명.class);
         system.debug('>>>doSave # objCustomer.PV_HDOFFICEYN ' + JSON.serialize(objCustomer.PV_HDOFFICEYN));
         system.debug('>>>doSave # contacts ' + contacts.size());
 
@@ -196,10 +215,16 @@ public with sharing class CJFW_MDMManagementController {
         try {
             if(objCustomer != null){
                 MDMRegRequestCustomer__c mdmRequest = new MDMRegRequestCustomer__c();
+                /**
+                Default
+                기본정보
+                회계정보
+                영업정보
+                */
                 //Default 2
                 mdmRequest.RecordTypeId                                         = String.isBlank(objCustomer?.RecordTypeId) ? null : objCustomer.RecordTypeId;
                 mdmRequest.requestType__c                                       = String.isBlank(objCustomer?.requestType) ? null : objCustomer.requestType;
-                //mdmRequest.PV_KUNNR__c                                            = String.isBlank(objCustomer?.PV_KUNNR) ? null : objCustomer.PV_KUNNR;    이건 나중에 승인받고 추가
+                //mdmRequest.PV_KUNNR__c                                            = String.isBlank(objCustomer?.PV_KUNNR) ? null : objCustomer.PV_KUNNR;    이건 나중에 승인받고 추가 될 거 같음..
                 //기본정보 42
                 mdmRequest.PV_OLDCD__c                                            = String.isBlank(objCustomer?.PV_OLDCD) ? null : objCustomer.PV_OLDCD;
                 mdmRequest.PV_NAME1__c                                            = String.isBlank(objCustomer?.PV_NAME1) ? null : objCustomer.PV_NAME1;
@@ -313,15 +338,15 @@ public with sharing class CJFW_MDMManagementController {
                 mdmRequest.PV_DELIGROUP_lu__c                                     = String.isBlank(objCustomer?.PV_DELIGROUP_lu) ? null : objCustomer.PV_DELIGROUP_lu;                                                                                                 
                 mdmRequest.PV_KATR10_lu__c                                        = String.isBlank(objCustomer?.PV_KATR10_lu) ? null : objCustomer.PV_KATR10_lu;                                                         
    
-                system.debug('>>> 찍혀요? 1');
                 insert mdmRequest;
-                //여기까지 ~~~~~~~~~~~~~~
+              
 
-                //Account도 추가
+                //Account도 추가 (승인받으면 추가 할 것임)
                 // Account accRequest = new Account();
                 // accRequest.Name                                                     = String.isBlank(objCustomer?.PV_NAME1) ? null : objCustomer.PV_NAME1;
                 // insert accRequest;
 
+                //담당자 정보 contactId가 있으면 usert/ 없으면 inert
                 for (CustomContacts contact : contacts) {
                     if (String.isBlank(contact.id)) {
                         System.debug('contact ' + JSON.serialize(contact));
@@ -357,18 +382,9 @@ public with sharing class CJFW_MDMManagementController {
 
                     }
                 }
-
-                
-                
-                //MDMRegRequestContact__c mdmConRequest = new MDMRegRequestContact__c();
             }
-            
-            //가져온 selectedItems여부 따져서, 
-            //Id O Contact 추가
-            //Id X Contact && MDMContact 추가
-
         } catch (Exception e) {
-            saveResult = new SaveResult('F', e.getMessage() + e.getLineNumber());
+            saveResult = new SaveResult('F',  e.getMessage() + e.getLineNumber());
         }
 
         return saveResult;
@@ -385,14 +401,13 @@ public with sharing class CJFW_MDMManagementController {
             this.massage = '성공 하였습니다.';
         }
 
-        public SaveResult(String status, String massage){
+        public SaveResult(String status,  String massage){
             this.status  = status;
             this.massage = massage;
         }
-
     }
 
-        /**
+    /**
      * MDMRequest 공통
      */
     public class MDMRequest{
@@ -510,116 +525,7 @@ public with sharing class CJFW_MDMManagementController {
         @AuraEnabled public String PV_OLD_BIZPLACE_NEW_lu {get;set;}
         @AuraEnabled public String PV_DELIGROUP_lu {get;set;}
         @AuraEnabled public String PV_KATR10_lu {get;set;}
-
-
-
-        //작업끝.
-
-
-
-        // @AuraEnabled public String PV_CUSTTYPE {get;set;}
-        // @AuraEnabled public String PV_LOGISCENTER_lu {get;set;}
-        // @AuraEnabled public String PV_VKGRP_lu {get;set;}
-        // @AuraEnabled public String PV_SELLER_lu {get;set;}
-        // @AuraEnabled public String PV_STCDT_lu {get;set;}
-        // @AuraEnabled public String PV_VBUND_lu {get;set;}
-        // @AuraEnabled public String PV_AKONT_lu {get;set;}
-
-        // @AuraEnabled public String PV_LAND1_lu {get;set;}
-        // @AuraEnabled public String PV_REGIO_lu {get;set;}
-        // @AuraEnabled public String PV_ZUAWA_lu {get;set;}
-        // @AuraEnabled public String PV_CUHR1_lu {get;set;}
-        // @AuraEnabled public String PV_KONDA_lu {get;set;}
-        // @AuraEnabled public String PV_KVGR1_lu {get;set;}
-        // @AuraEnabled public String PV_WAERS_lu {get;set;}
-        // @AuraEnabled public String PV_ZTERM_VV_lu {get;set;}
-        // @AuraEnabled public String PV_OLD_BIZPLACE_NEW_lu {get;set;}
-        // @AuraEnabled public String PV_DELIGROUP_lu {get;set;}
-        // @AuraEnabled public String PV_KATR10_lu {get;set;}
-
-        // //기존
-        // @AuraEnabled public String RecordTypeId {get;set;}
-        // @AuraEnabled public String requestType {get;set;}
-        // @AuraEnabled public String PVRA_VKGRP {get;set;}
-        // @AuraEnabled public String PVRA_PERNR {get;set;}
-        // @AuraEnabled public String PVRA_LOGISCENTER {get;set;}
-        // @AuraEnabled public String PV_NAME1 {get;set;}
-        // @AuraEnabled public String PV_NAME2 {get;set;}
-        // @AuraEnabled public String PV_STCD3 {get;set;}
-        // @AuraEnabled public String PV_GFORM {get;set;}
-        // @AuraEnabled public String PV_STCD1 {get;set;}
-        // @AuraEnabled public String PV_J_1KFTIND {get;set;}
-        // @AuraEnabled public String PV_TELFX {get;set;}
-        // @AuraEnabled public String PV_VKGRP {get;set;}
-        // @AuraEnabled public String PV_PERNR_lu {get;set;}
-        // @AuraEnabled public String PV_ADMINMA_lu {get;set;}
-        // @AuraEnabled public String PV_LOGISCENTER {get;set;}
-        // @AuraEnabled public String PV_STCDT {get;set;}
-        // @AuraEnabled public String PV_HDOFFICEYN {get;set;}
-        // @AuraEnabled public String PV_HKUNNR_lu {get;set;}
-        // @AuraEnabled public String PV_CLOSEDT {get;set;}
-        // @AuraEnabled public String PV_ADRES_ZIPCODE {get;set;}
-        // @AuraEnabled public String PV_ADRES_ROADADDR1 {get;set;}
-        // @AuraEnabled public String PV_OLDCD {get;set;}
-        // @AuraEnabled public String PV_NAME_G {get;set;}
-        // @AuraEnabled public String PV_STCD2 {get;set;}
-        // @AuraEnabled public String PV_STCD4 {get;set;}
-        // @AuraEnabled public String PV_J_1KFREPRE {get;set;}
-        // @AuraEnabled public String PV_J_1KFTBUS {get;set;}
-        // @AuraEnabled public String PV_TELF1 {get;set;}
-        // @AuraEnabled public String PV_FITYP {get;set;}
-        // // @AuraEnabled public String PV_HKUNNR_lu {get;set;}
-        // @AuraEnabled public String PV_VBUND {get;set;}
-        // @AuraEnabled public String PV_KNVKTYPE {get;set;}
-        // @AuraEnabled public String PV_REGIO {get;set;}
-        // @AuraEnabled public String PV_BIZPLCODE {get;set;}
-        // @AuraEnabled public String PV_BUSAB {get;set;}
-        // @AuraEnabled public String PV_CESSION_KZ {get;set;}
-        // @AuraEnabled public String PV_ZUAWA {get;set;}
-        // @AuraEnabled public String PV_AKONT {get;set;}
-        // @AuraEnabled public String PV_FDGRV {get;set;}
-        // @AuraEnabled public String PV_TAXKDD {get;set;}
-        // @AuraEnabled public String PV_KATR5 {get;set;}
-        // @AuraEnabled public String PV_WAERS {get;set;}
-        // @AuraEnabled public String PV_SHIPTYPE {get;set;}
-        // @AuraEnabled public String PVRA_CUHR1 {get;set;}
-        // @AuraEnabled public String PV_KONDA {get;set;}
-        // @AuraEnabled public String PVRA_KVGR1 {get;set;}
-        // @AuraEnabled public String PVRA_OLD_BIZPLACE_NEW {get;set;}
-        // @AuraEnabled public String PV_DELIGROUP {get;set;}
-        // @AuraEnabled public String PV_CUHR1 {get;set;}
-        // // @AuraEnabled public String PV_KONDA {get;set;}
-        // @AuraEnabled public String PV_KVGR1 {get;set;}
-        // @AuraEnabled public String PV_KVGR2 {get;set;}
-        // @AuraEnabled public String PV_ODCLOSEGB {get;set;}
-        // @AuraEnabled public String PV_ZTERM_VV {get;set;}
-        // @AuraEnabled public String PV_OLD_BIZPLACE_NEW {get;set;}
-        // @AuraEnabled public String PV_EXAMYN {get;set;}
-        // @AuraEnabled public String PV_PRODLOADCOND {get;set;}
-        // @AuraEnabled public String PV_ENTERCOND1 {get;set;}
-        // @AuraEnabled public String PV_UNLOADCOND2 {get;set;}
-        // @AuraEnabled public String PV_KATR10 {get;set;}
-        // @AuraEnabled public String PV_KEYINFO {get;set;}
-        // @AuraEnabled public String PV_KXOTD {get;set;}
-        // @AuraEnabled public String PV_FDINFO {get;set;}
-        // @AuraEnabled public String PV_FDREQT {get;set;}
-        // @AuraEnabled public String PV_FDCTINFO {get;set;}
-        // @AuraEnabled public String PV_FDNOTICE {get;set;}
-        // @AuraEnabled public String PV_KVGR3 {get;set;}
-        // @AuraEnabled public String PV_KVGR3_BOT {get;set;}
-        // @AuraEnabled public String PV_VACCPRTEXCYN {get;set;}
-        // @AuraEnabled public String PV_DSTRHISTREGYN {get;set;}
-        // @AuraEnabled public String PV_SHIPREQTIME {get;set;}
-        // @AuraEnabled public String PV_RETURNLOC {get;set;}
-        // @AuraEnabled public String PV_UNLOADCOND1 {get;set;}
-        // @AuraEnabled public String PV_KEYYN {get;set;}
-        // @AuraEnabled public String PV_KXOTDTIME {get;set;}
-        // @AuraEnabled public String PV_FDREQD {get;set;}
-        // @AuraEnabled public String PV_ISFDFTF {get;set;}
-        // @AuraEnabled public String PV_TEMPTARGET {get;set;}
     }
-
-
     public class CustomContacts{
         @AuraEnabled public String id {get;set;}
         @AuraEnabled public String Name {get;set;}
@@ -634,10 +540,8 @@ public with sharing class CJFW_MDMManagementController {
         @AuraEnabled public String OtherInfo {get;set;}
         @AuraEnabled public String OwnerId {get;set;}
         @AuraEnabled public String PV_TALKT_VK {get;set;}
-
     }
     public class Banks{
-
     }
 
     /**
@@ -653,7 +557,7 @@ public with sharing class CJFW_MDMManagementController {
          /** @description */
         @AuraEnabled public String MDMRecordTypeId {get;set;}
         /** @description */
-        @AuraEnabled public List<Map<String, String>> listCustomerOrderType {get;set;}
+        @AuraEnabled public List<Map<String,  String>> listCustomerOrderType {get;set;}
         /** @description */
         @AuraEnabled public User objUser {get;set;}
         /** @description */
@@ -755,10 +659,10 @@ public with sharing class CJFW_MDMManagementController {
             this.PV_DSTRHISTREGYN                     = acc.DisHisRegType__c;                                                   
             this.PV_DELIGROUP                         = acc.DeliveryGroup__c;
             this.contactList = new List<ContactWrapper>();
-            //Id, Lastname, Firstname, Email, Phone, MobilePhone, Department, PV_PAFKT_VK__c, PV_TALKT_VK__c, PV_KNVKGB__c
+            //Id,  Lastname,  Firstname,  Email,  Phone,  MobilePhone,  Department,  PV_PAFKT_VK__c,  PV_TALKT_VK__c,  PV_KNVKGB__c
             for(Contact con : acc.Contacts){
                 String LastName = con.LastName;
-                contactList.add(new ContactWrapper(LastName, acc.id));
+                contactList.add(new ContactWrapper(LastName,  acc.id));
                 system.debug('contactList ' + JSON.serialize(contactList));
             }
 
@@ -792,15 +696,123 @@ public with sharing class CJFW_MDMManagementController {
         }
     }
 
-    
     public class ContactWrapper {
         @AuraEnabled public String lastName {get; set;}
         @AuraEnabled public String id {get; set;}
-        public ContactWrapper(String lastName, String id){
+        public ContactWrapper(String lastName,  String id){
             this.lastName = lastName;
             this.id = id;
         }
     }
+
+    /** 관리처 생성 시 저장되는 데이터 API
+     * RecordTypeId
+       requestType__c
+       PV_OLDCD__c
+       PV_NAME1__c
+       PV_NAME_G__c
+       PV_NAME2__c
+       PV_KTOKD__c
+       PV_CUSTTYPE__c
+       PV_STCD2__c
+       PV_STCD3__c
+       PV_STCD4__c
+       PV_GFORM__c
+       PV_J_1KFREPRE__c
+       PV_STCD1__c
+       PV_J_1KFTBUS__c
+       PV_J_1KFTIND__c
+       PV_TELF1__c
+       PV_TELFX__c
+       PV_VKGRP__c
+       PVRA_VKGRP__c
+       PV_PERNR__c
+       PV_PERNR_lu__c
+       PVRA_PERNR__c
+       PV_ADMINMA__c
+       PV_ADMINMA_lu__c
+       PV_LOGISCENTER__c
+       PVRA_LOGISCENTER__c
+       PV_STCDT__c
+       PV_FITYP__c
+       PV_HDOFFICEYN__c
+       PV_HKUNNR_lu__c
+       PV_HKUNNR__c
+       PV_VBUND__c
+       PV_LAND1__c
+       PV_LAND1_lu__c
+       PV_KNVKTYPE__c
+       PV_CLOSEDT__c
+       PV_REGIO__c
+       PV_ADRES_ZIPCODE__c
+       PV_ADRES_ROADADDR1__c
+       PV_ADRES_ROADADDR2__c
+       PV_ADRES_ADDR1__c
+       PV_ADRES_ADDR2__c
+       PV_SELLER_lu__c
+       PV_BIZPLCODE__c
+       PV_BUSAB__c
+       PV_CESSION_KZ__c
+       PV_ZUAWA__c
+       PV_AKONT__c
+       PV_FDGRV__c
+       PV_TAXKDD__c
+       PV_KATR5__c
+       PV_CUHR1__c
+       PVRA_CUHR1__c
+       PV_KONDA__c
+       PVRA_KONDA__c
+       PV_KVGR1__c
+       PVRA_KVGR1__c
+       PV_WAERS__c
+       PV_KVGR3__c
+       PV_KVGR2__c
+       PV_KVGR3_BOT__c
+       PV_ODCLOSEGB__c
+       PV_VACCPRTEXCYN__c
+       PV_ZTERM_VV__c
+       PV_DSTRHISTREGYN__c
+       PV_OLD_BIZPLACE_NEW__c
+       PVRA_OLD_BIZPLACE_NEW__c
+       PV_EXAMYN__c
+       PV_SHIPREQTIME__c
+       PV_PRODLOADCOND__c
+       PV_RETURNLOC__c
+       PV_ENTERCOND1__c
+       PV_UNLOADCOND1__c
+       PV_UNLOADCOND2__c
+       PV_DELIGROUP__c
+       PV_KATR10__c
+       PV_KEYYN__c
+       PV_KEYINFO__c
+       PV_KXOTD__c
+       PV_KXOTDTIME__c
+       PV_FDINFO__c
+       PV_FDREQD__c
+       PV_FDREQT__c
+       PV_ISFDFTF__c
+       PV_ISFDFTF__c
+       PV_FDCTINFO__c
+       PV_FDNOTICE__c
+       PV_SHIPTYPE__c
+       PV_TEMPTARGET__c
+       PV_VKGRP_lu__c
+       PV_LOGISCENTER_lu__c
+       PV_STCDT_lu__c
+       PV_VBUND_lu__c
+       PV_LAND1_lu__c
+       PV_REGIO_lu__c
+       PV_ZUAWA_lu__c
+       PV_AKONT_lu__c
+       PV_CUHR1_lu__c
+       PV_KONDA_lu__c
+       PV_KVGR1_lu__c
+       PV_WAERS_lu__c
+       PV_ZTERM_VV_lu__c
+       PV_OLD_BIZPLACE_NEW_lu__c
+       PV_DELIGROUP_lu__c
+       PV_KATR10_lu__c
+     */
 
 
 }

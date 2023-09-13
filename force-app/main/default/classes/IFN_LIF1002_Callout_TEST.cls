@@ -53,7 +53,7 @@ public with sharing class IFN_LIF1002_Callout_TEST {
         IFN_LIF1002_SE001_MD001.SE001RequstWrapper params = new IFN_LIF1002_SE001_MD001.SE001RequstWrapper();
         String interfaceId = 'IFN_LIF1002_SE001_MD001';
         IFN_LIF1002_Callout callout = new IFN_LIF1002_Callout(interfaceId,'Realtime');
-        params.searchSp = '06';
+        params.searchSp = '05';
         params.keywd = '우유';
         params.offset = '';
         params.limitCnt = '3';
