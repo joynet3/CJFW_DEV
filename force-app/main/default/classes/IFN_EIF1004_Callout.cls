@@ -23,7 +23,7 @@ public class IFN_EIF1004_Callout {
     public IFN_EIF1004_Callout(String interfaceId, String type) {
         this.commlog = new IFN_CommonLog();
         this.logWrap = new IFN_CommonLog.LogWrap(interfaceId, type);
-    }    
+    }
     public IFN_CalloutResult getResponse(String interfaceId, Object params) {
         IFN_CalloutResult result = new IFN_CalloutResult();
 

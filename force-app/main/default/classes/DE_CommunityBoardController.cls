@@ -202,28 +202,6 @@ public without sharing class DE_CommunityBoardController {
         }
     }
 
-    public class CommonWrapper{
-        @AuraEnabled public Boolean isSuccess   {get;set;} 
-        @AuraEnabled public String message      {get;set;} 
-        @AuraEnabled public String result       {get;set;} 
-
-        public CommonWrapper(){
-            this.isSuccess 		= true;
-            this.message 	= '';
-            this.result 	= '';
-        }
-    }
-
-    public class valuesWrapper{
-        @AuraEnabled public String label    {get;set;}
-        @AuraEnabled public String value    {get;set;}
-
-        public valuesWrapper(String label, String value){
-            this.label = label;
-            this.value = value;
-        }
-    }
-
     public class boardWrapper{
         @AuraEnabled public String title            {get;set;}      //제목
         @AuraEnabled public String content          {get;set;}      //내용
@@ -242,6 +220,7 @@ public without sharing class DE_CommunityBoardController {
         //썸네일x
         public boardWrapper(CommunityBoard__c obj){
             this.title = obj.Name;
+            this.content = obj.Content__c;
             this.views = Integer.valueOf(obj.Views__c);
             this.createdDate = obj.CreatedDate.format('yyyy.MM.dd');
             this.recordId = obj.Id;

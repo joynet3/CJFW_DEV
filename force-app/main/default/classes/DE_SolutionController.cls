@@ -103,7 +103,7 @@ public without sharing class DE_SolutionController {
     * 예제코드 태그 아래줄에서 예제 작성
     */
     @AuraEnabled
-    public static FilterResultWrapper getFilterSolutions(String area, String function, List<String> tags, Boolean isAll, String orderBy){
+    public static FilterResultWrapper getFilterSolutions(String area, String function, List<String> tags, Boolean isAll, String orderBy, String siteDivision){
         FilterResultWrapper result = new FilterResultWrapper();
         List<SolutionWrapper> solutionWrappers = new List<SolutionWrapper>();
         List<ServiceTagMapping__c> serviceTagMappings = new List<ServiceTagMapping__c>();
@@ -122,6 +122,7 @@ public without sharing class DE_SolutionController {
                                + '       , Solution__r.Name'
                                + '       , toLabel(Solution__r.FunctionCategory__c) FunctionCategoryLabel'
                                + '       , Solution__r.FunctionCategory__c'
+                               + '       , Solution__r.ExternalURL__c'
                                + '   FROM ServiceTagMapping__c';
 
             String queryWhere = ' WHERE Name != null';
@@ -129,8 +130,20 @@ public without sharing class DE_SolutionController {
             if(String.isNotBlank(area) && !area.equals('ALL')) queryWhere += ' AND Solution__r.AreaCategory__c includes (:area)';
             if(String.isNotBlank(function) && !function.equals('ALL')) queryWhere += ' AND Solution__r.FunctionCategory__c includes (:function)';
             // if(setTag != null && setTag.size() > 0) 
-            if(!isAll) queryWhere += ' AND Solution__r.PartnerCompany__c = null'; //파트너사 매핑O : 파트너사 솔루션, 파트너사 매핑X : CJ프레시웨이 솔루션
+
+            //23.09.07 파트너사 정보에 CJ프레시웨이 레코드 추가(필수 값 요청으로 인한 조치)
+            if(!isAll) {
+                String cjFreshwayId = [SELECT Id
+                                        FROM PartnerCompany__c
+                                        WHERE Name = 'CJ프레시웨이'
+                                        LIMIT 1
+                                        ].Id;
+                queryWhere += ' AND Solution__r.PartnerCompany__c = :cjFreshwayId'; 
+            }
+            
             queryWhere += ' AND ServiceTag__c IN :setTag';
+            queryWhere += ' AND (Solution__r.SiteDivision__c = \'common\''
+                        + ' OR Solution__r.SiteDivision__c = :siteDivision)';
 
             String queryOrder = ' ORDER BY Solution__r.LastModifiedDate DESC';
             if(String.isNotBlank(orderBy)) {
@@ -139,7 +152,8 @@ public without sharing class DE_SolutionController {
                         queryOrder = ' ORDER BY Solution__r.LastModifiedDate DESC';
                     }
                     when 'views'{
-                        queryOrder = ' ORDER BY Solution__r.Views__c DESC';
+                        if(siteDivision.equals('school')) queryOrder = ' ORDER BY Solution__r.SchoolViews__c DESC';
+                        else if(siteDivision.equals('food')) queryOrder = ' ORDER BY Solution__r.FoodViews__c DESC';
                     }
                     when 'alphabet'{
                         queryOrder = ' ORDER BY Solution__r.Name ASC';
@@ -199,7 +213,7 @@ public without sharing class DE_SolutionController {
     * 예제코드 태그 아래줄에서 예제 작성
     */
     @AuraEnabled
-    public static FilterResultWrapper getSolutions(String division, String orderBy){
+    public static FilterResultWrapper getSolutions(String division, String orderBy, String siteDivision){
         FilterResultWrapper result = new FilterResultWrapper();
         List<SolutionWrapper> solutionWrappers = new List<SolutionWrapper>();
         List<ServiceTagMapping__c> serviceTagMappings = new List<ServiceTagMapping__c>();
@@ -219,8 +233,18 @@ public without sharing class DE_SolutionController {
 
             String queryWhere = ' WHERE Name != null';
             queryWhere += ' AND ServiceTag__r.isActive__c = true'; //사용하지 않는 서비스 태그에 대한 솔루션 조회x
+            queryWhere += ' AND (Solution__r.SiteDivision__c = \'common\''
+                        + ' OR Solution__r.SiteDivision__c = :siteDivision)';
 
-            if(division.equals('cjfreshway')) queryWhere += ' AND Solution__r.PartnerCompany__c = null'; //파트너사 매핑O : 파트너사 솔루션, 파트너사 매핑X : CJ프레시웨이 솔루션
+            //23.09.07 파트너사 정보에 CJ프레시웨이 레코드 추가(필수 값 요청으로 인한 조치)
+            if(division.equals('cjfreshway')) {
+                String cjFreshwayId = [SELECT Id
+                                        FROM PartnerCompany__c
+                                        WHERE Name = 'CJ프레시웨이'
+                                        LIMIT 1
+                                        ].Id;
+                queryWhere += ' AND Solution__r.PartnerCompany__c = :cjFreshwayId'; 
+            }
             else if(division.equals('partner')) queryWhere += ' AND Solution__r.PartnerCompany__c != null'; //파트너사 매핑O : 파트너사 솔루션, 파트너사 매핑X : CJ프레시웨이 솔루션
 
             //정렬, 기본 값은 최신 날짜순, 값이 별도로 있을 경우 해당 값으로 정렬
@@ -231,7 +255,8 @@ public without sharing class DE_SolutionController {
                         queryOrder = ' ORDER BY Solution__r.LastModifiedDate DESC';
                     }
                     when 'views'{
-                        queryOrder = ' ORDER BY Solution__r.Views__c DESC';
+                        if(siteDivision.equals('school')) queryOrder = ' ORDER BY Solution__r.SchoolViews__c DESC';
+                        else if(siteDivision.equals('food')) queryOrder = ' ORDER BY Solution__r.FoodViews__c DESC';
                     }
                     when 'alphabet'{
                         queryOrder = ' ORDER BY Solution__r.Name ASC';
@@ -288,9 +313,10 @@ public without sharing class DE_SolutionController {
     * 예제코드 태그 아래줄에서 예제 작성
     */
     @AuraEnabled
-    public static List<SolutionWrapper> getProperSolutions(String orderBy){
+    public static List<SolutionWrapper> getProperSolutions(String orderBy, String siteDivision){
         List<SolutionWrapper> result = new List<SolutionWrapper>();
-        List<Solution__c> Solutions = new List<Solution__c>();
+        List<Solution__c> solutions = new List<Solution__c>();
+        List<Solution__c> visibleSolutions = new List<Solution__c>();
         List<ContentDistribution> contentDistributions = new List<ContentDistribution>();
         Map<String, String> thumbnailUrlMap = new Map<String, String>();
         Map<String, String> synopsisUrlMap = new Map<String, String>();
@@ -300,29 +326,60 @@ public without sharing class DE_SolutionController {
             String querySelect = 'SELECT Id'
                                + '           , Name'
                                + '           , toLabel(FunctionCategory__c) FunctionCategory__c'
+                               + '           , VisibleStartDatetime__c'
+                               + '           , VisibleEndDatetime__c'
+                               + '           , ExternalURL__c'
                                + '   FROM Solution__c';
             
             String queryWhere = ' WHERE isProper__c = true';
+            queryWhere += ' AND (SiteDivision__c = \'common\''
+                        + ' OR SiteDivision__c = :siteDivision)';
 
             //정렬, 기본 값은 최신 날짜순, 값이 별도로 있을 경우 해당 값으로 정렬
             String queryOrder = ' ORDER BY LastModifiedDate DESC';
+            
             if(String.isNotBlank(orderBy)) {
                 switch on orderBy {
                     when 'date'{
                         queryOrder = ' ORDER BY LastModifiedDate DESC';
                     }
                     when 'views'{
-                        queryOrder = ' ORDER BY Views__c DESC';
+                        if(siteDivision.equals('school')) queryOrder = ' ORDER BY Solution__r.SchoolViews__c DESC';
+                        else if(siteDivision.equals('food')) queryOrder = ' ORDER BY Solution__r.FoodViews__c DESC';
                     }
                     when 'alphabet'{
                         queryOrder = ' ORDER BY Name ASC';
                     }
+                    //23.09.05 추천 솔루션의 경우 BO에서 순서를 결정할 수 있도록 변경 요청
+                    when 'position'{
+                        queryOrder = ' ORDER BY ProperPosition__c ASC';   
+                    }
                 }
             }
 
-            Solutions = Database.query(querySelect + queryWhere + queryOrder);
+            solutions = Database.query(querySelect + queryWhere + queryOrder);
 
-            for(Solution__c obj : Solutions){
+            //23.09.06 솔루션 노출 기간 요청으로 인한 추가
+            for(Solution__c obj : solutions){
+                //노출 기간(시작, 종료) 필드가 둘다 null일 경우 add
+                if(obj.VisibleStartDatetime__c == null && obj.VisibleEndDatetime__c == null){
+                    visibleSolutions.add(obj);
+                }
+                //노출 기간(시작) 필드만 있고 조건 충족 시 추가 
+                else if(obj.VisibleStartDatetime__c != null && obj.VisibleEndDatetime__c == null){
+                    if(obj.VisibleStartDatetime__c < System.now()) visibleSolutions.add(obj);
+                }
+                //노출 기간(종료) 필드만 있고 조건 충족 시 추가 
+                else if(obj.VisibleStartDatetime__c == null && obj.VisibleEndDatetime__c != null){
+                    if(obj.VisibleEndDatetime__c > System.now()) visibleSolutions.add(obj);
+                }
+                //노출 기간(시작, 종료) 둘다 있고 조건 충족 시 추가 
+                else if(obj.VisibleStartDatetime__c != null && obj.VisibleEndDatetime__c != null){
+                    if(obj.VisibleStartDatetime__c < System.now() && obj.VisibleEndDatetime__c > System.now()) visibleSolutions.add(obj);
+                }
+            }
+
+            for(Solution__c obj : visibleSolutions){
                 setSolutionId.add(obj.Id);
             }
 
@@ -342,7 +399,7 @@ public without sharing class DE_SolutionController {
                 if(obj.Name.startsWith('synopsis_')) synopsisUrlMap.put(obj.RelatedRecordId, obj.ContentDownloadUrl);
             }
 
-            for(Solution__c obj : Solutions){
+            for(Solution__c obj : visibleSolutions){
                 if(thumbnailUrlMap.containsKey(obj.Id)) result.add(new SolutionWrapper(obj, thumbnailUrlMap.get(obj.Id)));
                 else result.add(new SolutionWrapper(obj, synopsisUrlMap.get(obj.Id)));
             }
@@ -385,6 +442,8 @@ public without sharing class DE_SolutionController {
                          + '         , ServiceTag__r.Name'
                          + '         , Solution__r.ServiceReport__c'
                          + '         , Solution__r.RelatedUrl__c'
+                         + '         , Solution__r.ExternalURL__c'
+                         + '         , toLabel(Solution__r.LocationStateProvince__c)'
                          + ' FROM ServiceTagMapping__c'
                          + ' WHERE Solution__c = :recordId';
 
@@ -437,15 +496,17 @@ public without sharing class DE_SolutionController {
     * 예제코드 태그 아래줄에서 예제 작성
     */
     @AuraEnabled
-    public static void updateSolutionViews(String recordId){
+    public static void updateSolutionViews(String recordId, String siteDivision){
         try{
             Solution__c solution = [SELECT Id
-                                                    , Views__c
+                                            , SchoolViews__c
+                                            , FoodViews__c
                                             FROM Solution__c
                                             WHERE Id = :recordId
                                             ];
         
-            solution.Views__c += 1;
+            if(siteDivision.equals('food')) solution.FoodViews__c += 1;
+            else if(siteDivision.equals('school')) solution.SchoolViews__c += 1;
             
             Update solution;
         }catch(Exception e){
@@ -459,6 +520,7 @@ public without sharing class DE_SolutionController {
         @AuraEnabled public String recordId                 {get; set;} // 솔루션 레코드 Id
         @AuraEnabled public String functionCategory         {get; set;} // 솔루션 기능 영역 값
         @AuraEnabled public String thumbnailUrl              {get; set;} // 썸네일 이미지 url
+        @AuraEnabled public String          externalUrl               {get; set;} // 외부상담 페이지 URL
         
         public SolutionWrapper(){}             
         public SolutionWrapper(ServiceTagMapping__c obj, String imageUrl){
@@ -466,6 +528,8 @@ public without sharing class DE_SolutionController {
             this.recordId             = obj.Solution__c;
             this.functionCategory     = obj.Solution__r.FunctionCategory__c;
             this.thumbnailUrl          = imageUrl;
+            this.externalUrl           = obj.Solution__r.ExternalURL__c;
+            
         }
 
         public SolutionWrapper(Solution__c obj, String imageUrl){
@@ -473,6 +537,7 @@ public without sharing class DE_SolutionController {
             this.recordId             = obj.Id;
             this.functionCategory     = obj.FunctionCategory__c;
             this.thumbnailUrl          = imageUrl;
+            this.externalUrl           = obj.ExternalURL__c;
         }
     }
 
@@ -485,6 +550,8 @@ public without sharing class DE_SolutionController {
         @AuraEnabled public String          ServiceReport            {get; set;} // 요약 설명
         @AuraEnabled public String          content                  {get; set;} // 상세 내용
         @AuraEnabled public String          relatedUrl               {get; set;} // 관련 정보 페이지 URL
+        @AuraEnabled public String          externalUrl               {get; set;} // 외부상담 페이지 URL
+        @AuraEnabled public String          location               {get; set;} // 서비스 가능 지역
         
         public SolutionDetailWrapper(){}             
         public SolutionDetailWrapper(ServiceTagMapping__c obj, String synopsisUrl, String thumbNailUrl, List<String> serviceTags){
@@ -496,6 +563,8 @@ public without sharing class DE_SolutionController {
             this.content              = obj.Solution__r.Content__c;
             this.ServiceReport        = obj.Solution__r.ServiceReport__c;
             this.relatedUrl           = obj.Solution__r.RelatedUrl__c;
+            this.externalUrl           = obj.Solution__r.ExternalURL__c;
+            this.location           = obj.Solution__r.LocationStateProvince__c;
         }
 
         public SolutionDetailWrapper(Solution__c obj, String synopsisUrl, String thumbNailUrl, List<String> serviceTags){
@@ -507,6 +576,8 @@ public without sharing class DE_SolutionController {
             this.content              = obj.Content__c;
             this.ServiceReport        = obj.ServiceReport__c;
             this.relatedUrl           = obj.RelatedUrl__c;
+            this.externalUrl           = obj.ExternalURL__c;
+            this.location           = obj.LocationStateProvince__c;
         }
     }
 

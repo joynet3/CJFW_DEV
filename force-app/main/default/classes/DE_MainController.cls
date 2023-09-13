@@ -8,6 +8,103 @@
 public without sharing class DE_MainController {
 
     /**
+    * 카테고리 url에 해당하는 게시글 정보 가져오기(메인화면용)
+    * 23.09.08 메인 커뮤니티 노출 게시물에 대한 선택과 기간 설정 요구로 인하여 기능 추가
+    *
+    *@param  categoryURL 커뮤니티 페이지 url ex) /success-story
+    *@return  List<boardWrapper>
+    *@exception  메소드가 발생시키는 예외에 대한 설명 또는 목록
+    *@example 
+    * 예제코드 태그 아래줄에서 예제 작성
+    */
+    @AuraEnabled
+    public static DE_CommunityBoardController.FilterResultWrapper getMainBoards(String categoryURL){
+        DE_CommunityBoardController.FilterResultWrapper result= new DE_CommunityBoardController.FilterResultWrapper();
+        List<DE_CommunityBoardController.boardWrapper> boards= new List<DE_CommunityBoardController.boardWrapper>();
+        List<List<SObject>> searchs = new List<List<SObject>>();
+        List<CommunityBoard__c> communityBoards = new List<CommunityBoard__c>();
+        List<CommunityBoard__c> communityVisibleBoards = new List<CommunityBoard__c>();
+        Set<String> setCommunityBoardId = new Set<String>();
+        List<ContentDistribution> contentDistributions = new List<ContentDistribution>();
+        Map<String, String> thumbnailUrlMap = new Map<String, String>();
+
+        try {
+            CommunityGroupDetail__c communityGroupDetail = [SELECT Id
+                                                            FROM CommunityGroupDetail__c
+                                                            WHERE CommunityURL__c =: categoryURL
+                                                            ];
+
+            String querySelect = 'SELECT Id'
+                                +  '    , Name'
+                                +  '    , Content__c'
+                                +  '    , Views__c'
+                                +  '    , CreatedDate'
+                                +  '    , CommunityGroupDetail__r.CommunityURL__c'
+                                +  '    , VisibleStartDatetime__c'
+                                +  '    , VisibleEndDatetime__c'
+                                +  ' FROM CommunityBoard__c';
+            String queryWhere = ' WHERE CommunityGroupDetail__c = \'' + communityGroupDetail.Id + '\''
+                              + ' AND isMainVisible__c = true';
+            String queryOrder = ' ORDER BY CreatedDate DESC';
+
+            communityBoards = Database.query(querySelect + queryWhere + queryOrder);
+
+            if(communityBoards.size() > 0){
+                for(CommunityBoard__c obj : communityBoards){
+                    //노출 기간(시작, 종료) 필드가 둘다 null일 경우 add
+                    if(obj.VisibleStartDatetime__c == null && obj.VisibleEndDatetime__c == null){
+                        communityVisibleBoards.add(obj);
+                    }
+                    //노출 기간(시작) 필드만 있고 조건 충족 시 추가 
+                    else if(obj.VisibleStartDatetime__c != null && obj.VisibleEndDatetime__c == null){
+                        if(obj.VisibleStartDatetime__c < System.now()) communityVisibleBoards.add(obj);
+                    }
+                    //노출 기간(종료) 필드만 있고 조건 충족 시 추가 
+                    else if(obj.VisibleStartDatetime__c == null && obj.VisibleEndDatetime__c != null){
+                        if(obj.VisibleEndDatetime__c > System.now()) communityVisibleBoards.add(obj);
+                    }
+                    //노출 기간(시작, 종료) 둘다 있고 조건 충족 시 추가 
+                    else if(obj.VisibleStartDatetime__c != null && obj.VisibleEndDatetime__c != null){
+                        if(obj.VisibleStartDatetime__c < System.now() && obj.VisibleEndDatetime__c > System.now()) communityVisibleBoards.add(obj);
+                    }
+                }
+
+                if(communityVisibleBoards.size() > 0){
+                    for(CommunityBoard__c obj : communityVisibleBoards){
+                        setCommunityBoardId.add(obj.id);
+                    }
+    
+                    //썸네일 url 가져오기
+                    contentDistributions = [SELECT Id
+                                                    , RelatedRecordId
+                                                    , ContentDownloadUrl
+                                                FROM ContentDistribution
+                                                WHERE RelatedRecordId IN :setCommunityBoardId
+                                                AND Name LIKE 'thumbnail_%'
+                                                ORDER BY CreatedDate DESC
+                                                ];
+    
+                    for(ContentDistribution obj : contentDistributions){
+                        thumbnailUrlMap.put(obj.RelatedRecordId, obj.ContentDownloadUrl);
+                    }
+    
+                    for(CommunityBoard__c obj : communityVisibleBoards){
+                        boards.add(new DE_CommunityBoardController.boardWrapper(obj, thumbnailUrlMap.get(obj.Id)));
+                    }
+    
+                    result.boards = boards;
+                    result.totalCnt = boards.size();
+                }
+            }
+
+        } catch (Exception e) {
+            System.debug('ERROR MESSAGE : ' + e.getMessage());
+            System.debug('STACK TRACE : ' + e.getStackTraceString());
+        }
+
+        return result;
+    }
+    /**
     * 배너 영역에 들어갈 서비스 태그 정보
     *
     *@param  
@@ -68,7 +165,7 @@ public without sharing class DE_MainController {
                 searchs = [FIND :SearchText IN ALL FIELDS
                             RETURNING Solution__c(Id, Name, FunctionCategory__c, PartnerCompany__c//+ imageUrl
                                                 ORDER BY CreatedDate DESC)
-                            , CommunityBoard__c(Id, Name, Views__c, CreatedDate, CommunityGroupDetail__r.communityURL__c
+                            , CommunityBoard__c(Id, Name, Content__c, Views__c, CreatedDate, CommunityGroupDetail__r.communityURL__c
                                                 ORDER BY CreatedDate DESC)
                             ];
             }
@@ -125,7 +222,10 @@ public without sharing class DE_MainController {
             result.cjSolutions = cjSolutionsFilterWrapper;
             result.bizSolutions = bizSolutionsFilterWrapper;
             result.boards = boardsFilterWrapper;
-            result.totalCnt = cjSolutionsFilterWrapper.totalCnt + bizSolutionsFilterWrapper.totalCnt + boardsFilterWrapper.totalCnt;
+            result.totalCnt = 0;
+            if(cjSolutionsFilterWrapper.totalCnt != null) result.totalCnt += cjSolutionsFilterWrapper.totalCnt;
+            if(bizSolutionsFilterWrapper.totalCnt != null) result.totalCnt += bizSolutionsFilterWrapper.totalCnt + boardsFilterWrapper.totalCnt;
+            if(boardsFilterWrapper.totalCnt != null) result.totalCnt += boardsFilterWrapper.totalCnt;
 
         } catch (Exception e) {
             System.debug('ERROR MESSAGE : ' + e.getMessage());
@@ -143,7 +243,7 @@ public without sharing class DE_MainController {
     *@since 2023-08-28  내용 작성
     */
     @AuraEnabled(cacheable=true)
-    public static Map<String, List<MenuItemWrapper>> getMenuItems() {
+    public static Map<String, List<MenuItemWrapper>> getMenuItems(String siteDivision) {
         Map<String, List<MenuItemWrapper>> result = new Map<String, List<MenuItemWrapper>>();
         Map<String, List<MenuItemWrapper>> communityGroupDetailMap = new Map<String, List<MenuItemWrapper>>();
         List<MenuItemWrapper> menuItemWrappers = new List<MenuItemWrapper>();
@@ -161,6 +261,8 @@ public without sharing class DE_MainController {
                                     , CommunityURL__c
                                 FROM SolutionGroup__c
                                 WHERE isActive__c = true
+                                AND (SiteDivision__c = 'common'
+                                OR SiteDivision__c = :siteDivision)
                                 ORDER BY Position__c
                                 ];
             for(SolutionGroup__c obj : solutionGroups){
@@ -179,6 +281,8 @@ public without sharing class DE_MainController {
                                     , CommunityURL__c
                                 FROM BrochureGroup__c
                                 WHERE isActive__c = true
+                                AND (SiteDivision__c = 'common'
+                                OR SiteDivision__c = :siteDivision)
                                 ORDER BY Position__c
                                 ];
             for(BrochureGroup__c obj : brochureGroups){
@@ -198,6 +302,8 @@ public without sharing class DE_MainController {
                                     , CommunityGroup__c
                                 FROM CommunityGroupDetail__c
                                 WHERE isActive__c = true
+                                AND (SiteDivision__c = 'common'
+                                OR SiteDivision__c = :siteDivision)
                                 ORDER BY Position__c
                                 ];
             for(CommunityGroupDetail__c obj : communityGroupDetails){
@@ -216,6 +322,8 @@ public without sharing class DE_MainController {
                                     , CommunityURL__c
                                 FROM CommunityGroup__c
                                 WHERE isActive__c = true
+                                AND (SiteDivision__c = 'common'
+                                OR SiteDivision__c = :siteDivision)
                                 ORDER BY Position__c
                                 ];
             for(CommunityGroup__c obj : communityGroups){
@@ -234,6 +342,8 @@ public without sharing class DE_MainController {
                                     , CommunityURL__c
                                 FROM InqueryGroup__c
                                 WHERE isActive__c = true
+                                AND (SiteDivision__c = 'common'
+                                OR SiteDivision__c = :siteDivision)
                                 ORDER BY Position__c
                                 ];
             for(InqueryGroup__c obj : inqueryGroups){
@@ -251,18 +361,6 @@ public without sharing class DE_MainController {
         }
 
         return result;
-    }
-
-    public class CommonWrapper{
-        @AuraEnabled public Boolean isSuccess   {get;set;} 
-        @AuraEnabled public String message      {get;set;} 
-        @AuraEnabled public String result       {get;set;} 
-
-        public CommonWrapper(){
-            this.isSuccess 		= true;
-            this.message 	= '';
-            this.result 	= '';
-        }
     }
 
     public class valuesWrapper{
@@ -298,13 +396,13 @@ public without sharing class DE_MainController {
             this.pageUrl            = obj.CommunityURL__c;
         }
 
-        public MenuItemWrapper(SolutionGroup__c obj, List<MenuItemWrapper> subMenuItem) {
-            this.Id                 = obj.Id;
-            this.Label              = obj.Name;
-            this.Position           = obj.Position__c;
-            this.pageUrl            = obj.CommunityURL__c;
-            this.subMenuItem        = subMenuItem;
-        }
+        // public MenuItemWrapper(SolutionGroup__c obj, List<MenuItemWrapper> subMenuItem) {
+        //     this.Id                 = obj.Id;
+        //     this.Label              = obj.Name;
+        //     this.Position           = obj.Position__c;
+        //     this.pageUrl            = obj.CommunityURL__c;
+        //     this.subMenuItem        = subMenuItem;
+        // }
         //상품안내
         public MenuItemWrapper(BrochureGroup__c obj) {
             this.Id                 = obj.Id;
@@ -313,13 +411,13 @@ public without sharing class DE_MainController {
             this.pageUrl            = obj.CommunityURL__c;
         }
 
-        public MenuItemWrapper(BrochureGroup__c obj, List<MenuItemWrapper> subMenuItem) {
-            this.Id                 = obj.Id;
-            this.Label              = obj.Name;
-            this.Position           = obj.Position__c;
-            this.pageUrl            = obj.CommunityURL__c;
-            this.subMenuItem        = subMenuItem;
-        }
+        // public MenuItemWrapper(BrochureGroup__c obj, List<MenuItemWrapper> subMenuItem) {
+        //     this.Id                 = obj.Id;
+        //     this.Label              = obj.Name;
+        //     this.Position           = obj.Position__c;
+        //     this.pageUrl            = obj.CommunityURL__c;
+        //     this.subMenuItem        = subMenuItem;
+        // }
         //커뮤니티 중
         public MenuItemWrapper(CommunityGroup__c obj) {
             this.Id                 = obj.Id;
@@ -343,13 +441,13 @@ public without sharing class DE_MainController {
             this.pageUrl            = obj.CommunityURL__c;
         }
 
-        public MenuItemWrapper(CommunityGroupDetail__c obj, List<MenuItemWrapper> subMenuItem) {
-            this.Id                 = obj.Id;
-            this.Label              = obj.Name;
-            this.Position           = obj.Position__c;
-            this.pageUrl            = obj.CommunityURL__c;
-            this.subMenuItem        = subMenuItem;
-        }
+        // public MenuItemWrapper(CommunityGroupDetail__c obj, List<MenuItemWrapper> subMenuItem) {
+        //     this.Id                 = obj.Id;
+        //     this.Label              = obj.Name;
+        //     this.Position           = obj.Position__c;
+        //     this.pageUrl            = obj.CommunityURL__c;
+        //     this.subMenuItem        = subMenuItem;
+        // }
         //상담신청
         public MenuItemWrapper(InqueryGroup__c obj) {
             this.Id                 = obj.Id;
@@ -358,12 +456,12 @@ public without sharing class DE_MainController {
             this.pageUrl            = obj.CommunityURL__c;
         }
 
-        public MenuItemWrapper(InqueryGroup__c obj, List<MenuItemWrapper> subMenuItem) {
-            this.Id                 = obj.Id;
-            this.Label              = obj.Name;
-            this.Position           = obj.Position__c;
-            this.pageUrl            = obj.CommunityURL__c;
-            this.subMenuItem        = subMenuItem;
-        }
+        // public MenuItemWrapper(InqueryGroup__c obj, List<MenuItemWrapper> subMenuItem) {
+        //     this.Id                 = obj.Id;
+        //     this.Label              = obj.Name;
+        //     this.Position           = obj.Position__c;
+        //     this.pageUrl            = obj.CommunityURL__c;
+        //     this.subMenuItem        = subMenuItem;
+        // }
     }
 }

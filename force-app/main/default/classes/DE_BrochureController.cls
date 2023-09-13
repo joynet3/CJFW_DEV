@@ -157,18 +157,6 @@ public without sharing class DE_BrochureController {
         return result;
     }
 
-    public class CommonWrapper{
-        @AuraEnabled public Boolean isSuccess   {get;set;} 
-        @AuraEnabled public String message      {get;set;} 
-        @AuraEnabled public String result       {get;set;} 
-
-        public CommonWrapper(){
-            this.isSuccess 		= true;
-            this.message 	= '';
-            this.result 	= '';
-        }
-    }
-
     public class valuesWrapper{
         @AuraEnabled public String label    {get;set;}
         @AuraEnabled public String value    {get;set;}

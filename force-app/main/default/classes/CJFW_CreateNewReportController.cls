@@ -15,17 +15,17 @@ public class CJFW_CreateNewReportController {
      * Oppty에 연결된 Account 데이터 가져오기 
      */
     @AuraEnabled
-    public static Opportunity getAccountData(String OpptyId){
+    public static List<Opportunity> getAccountData(String OpptyId){
         try {
             System.debug('OpptyId = ' + OpptyId);
 
-            Opportunity accountData = [
+            List<Opportunity> accountData = [
                 SELECT Id, Name, Account.Name, Account.RepresentativeName__c, Account.BusinessPath__c, Account.SalesMonthly__c, Account.OurSales__c, Account.Address__c, Account.PV_EXISTSUP__c
                 FROM Opportunity
                 WHERE Id =:OpptyId
             ];
 
-            return accountData;
+            return accountData.size()>0 ? accountData : new List<Opportunity>();
 
         } catch (Exception e) {
             System.debug('message => ' + e.getMessage());

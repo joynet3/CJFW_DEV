@@ -21,7 +21,8 @@ public with sharing class CJFW_MDMManagementController {
         EditMDMRequest result = new EditMDMRequest();
 
 
-        List<Account> accountList = [SELECT Id,  CustomerIDASIS__c,  Name,  NameAlias__c,  CustomerID__c FROM Account WHERE Id =: accountId LIMIT 1];
+        List<Account> accountList = [SELECT RecordTypeId, CustomerID__c, CustomerIDASIS__c, Name, NameKor__c, NameAlias__c, AccountGroup__c
+                                    FROM Account WHERE Id =: accountId LIMIT 1];
 
         if(!accountList.isEmpty()){
            List<MDMRegRequestCustomer__c> mdmRegRequestCustomerList = [
@@ -45,13 +46,19 @@ public with sharing class CJFW_MDMManagementController {
                 for(Account acc : accountList){
                 MDMRequest wrapperRequest = new MDMRequest();
 
-                    //MDMRegRequestCustomer__c에 insert해줘야 함.
-                    wrapperRequest.requestType = 'Edit';
-                    wrapperRequest.PV_NAME1    = acc.Name;
+                    // objectName : MDMRegRequestCustomer__c 
+                    // requestType : insert
+                    wrapperRequest.requestType                     =    'Edit';
+                    wrapperRequest.RecordTypeId                    =    acc?.RecordTypeId;
+                    wrapperRequest.PV_KUNNR                        = 	acc.CustomerID__c;
+                    wrapperRequest.PV_OLDCD                        = 	acc.CustomerIDASIS__c;
+                    wrapperRequest.PV_NAME1                        = 	acc.Name;
+                    wrapperRequest.PV_NAME_G                       =    acc.NameKor__c;
+                    wrapperRequest.PV_NAME2                        = 	acc.NameAlias__c;
+                    wrapperRequest.PV_KTOKD                        = 	acc.AccountGroup__c;
+
                     result.mdmRequest = wrapperRequest;
                 }
-
-
                 
             // 승인으로 온 친구
             }else{
@@ -60,7 +67,6 @@ public with sharing class CJFW_MDMManagementController {
                 // wrapperRequest.PV_NAME1    = mdmRegRequestCustomerList[0]?.Id;
                 result.isCRM = true;
                 MDMRequest wrapperRequest = new MDMRequest();
-                wrapperRequest.RecordTypeId = 'Edit';
                 wrapperRequest.requestType = 'Edit';
 
 
@@ -209,10 +215,12 @@ public with sharing class CJFW_MDMManagementController {
         // ObjCustomer obj =  JSON.deserialize(objCustomer,  래퍼클래스명.class);
         system.debug('>>>doSave # objCustomer.PV_HDOFFICEYN ' + JSON.serialize(objCustomer.PV_HDOFFICEYN));
         system.debug('>>>doSave # contacts ' + contacts.size());
+        Id recordIdEx = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('ExistingCustomer').getRecordTypeId();
 
         //값을 나눠서 값이 없으면 안되는친구들
         //값이 없어도 되는친구들 
         try {
+            
             if(objCustomer != null){
                 MDMRegRequestCustomer__c mdmRequest = new MDMRegRequestCustomer__c();
                 /**
@@ -222,7 +230,7 @@ public with sharing class CJFW_MDMManagementController {
                 영업정보
                 */
                 //Default 2
-                mdmRequest.RecordTypeId                                         = String.isBlank(objCustomer?.RecordTypeId) ? null : objCustomer.RecordTypeId;
+                mdmRequest.RecordTypeId                                         = recordIdEx;
                 mdmRequest.requestType__c                                       = String.isBlank(objCustomer?.requestType) ? null : objCustomer.requestType;
                 //mdmRequest.PV_KUNNR__c                                            = String.isBlank(objCustomer?.PV_KUNNR) ? null : objCustomer.PV_KUNNR;    이건 나중에 승인받고 추가 될 거 같음..
                 //기본정보 42
@@ -416,6 +424,7 @@ public with sharing class CJFW_MDMManagementController {
         @AuraEnabled public String RecordTypeId {get;set;}
         @AuraEnabled public String requestType {get;set;}
         //기본 42
+        @AuraEnabled public String PV_KUNNR {get;set;}
         @AuraEnabled public String PV_OLDCD {get;set;}
         @AuraEnabled public String PV_NAME1 {get;set;}
         @AuraEnabled public String PV_NAME_G {get;set;}

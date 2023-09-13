@@ -8,8 +8,6 @@
 public without sharing class DE_InquiryRequestController {
     public enum Existence {NEWER, EXISTENCE, STOP}
 
-    public DE_InquiryRequestController(){}
-
     /**
     * 기존 거래 고객 여부 확인 및 고객 정보 리턴
     *
@@ -35,6 +33,7 @@ public without sharing class DE_InquiryRequestController {
                                         , CustomerStatus__c
                                 FROM Account
                                 WHERE CompanyRegisterNumber__c = :CompanyRegisterNumber
+                                ORDER BY CompanyRegisterNumber__c, CustomerID__c, CreatedDate
                                 ];
 
             if(accList.size() > 0){
@@ -345,9 +344,9 @@ public without sharing class DE_InquiryRequestController {
                          +  '    , Name' 
                          +  '    , ServiceReport__c '
                          +  ' FROM Solution__c';
-            String qWhere = '';
+            String qWhere = 'WHERE RelatedUrl__c = null'; //23.09.11 외부 상담 건의 경우 제외
 
-            if(String.isNotBlank(pickValues) && !pickValues.equals('ALL')) qWhere += ' WHERE FunctionCategory__c INCLUDES ' + pickValuesAsString;
+            if(String.isNotBlank(pickValues) && !pickValues.equals('ALL')) qWhere += ' AND FunctionCategory__c INCLUDES ' + pickValuesAsString;
 
             solutions = Database.query(query + qWhere);
 
@@ -402,7 +401,9 @@ public without sharing class DE_InquiryRequestController {
         @AuraEnabled public String email                  {get;set;}//신청자 이메일
         @AuraEnabled public String requesterName          {get;set;}//신청자 명
         @AuraEnabled public String inquiryContent         {get;set;}//상담내용
-        @AuraEnabled public String informationAgreement   {get;set;}//수집 동의 여부 01,02,03
+        @AuraEnabled public String isPersonalInfoUse      {get;set;}//개인정보 수집 동의 여부
+        @AuraEnabled public String isThirdPartyInfoUse    {get;set;}//제3자 정보제공 이용 동의
+        @AuraEnabled public String isMarketingUse         {get;set;}//홍보 및 마케팅 이용 동의
         @AuraEnabled public Integer storeAmount           {get;set;}//운영중인 사업장 수
         @AuraEnabled public Boolean isSeller              {get;set;}//현재 거래중인 식자재 유통업채 유무
         @AuraEnabled public String inquiryStyle           {get;set;}//상담 방식 call, visit, etc
@@ -412,33 +413,33 @@ public without sharing class DE_InquiryRequestController {
         //신규 기존 확인용
         @AuraEnabled public String accountCheck           {get;set;} //EXISTENCE : 기존; STOP : 과거 고객; NEWER : 신규;
 
-        public Lead getLead(String leadRecordTypeId){
-            Lead result = new Lead();
+        // public Lead getLead(String leadRecordTypeId){
+        //     Lead result = new Lead();
 
-            result.RecordTypeId = leadRecordTypeId;
+        //     result.RecordTypeId = leadRecordTypeId;
 
-            result.CompanyRegisterNumber__c     = this.companyRegisterNumber;
-            result.LastName                     = this.name;
-            result.Address__c                   = this.address;
-            result.AddressDetails__c            = this.addressDetails;
-            result.LocationStateProvince__c     = this.locationStateProvince;
-            result.LocationState__c             = this.locationState;
-            result.Phone                        = this.phone;
-            result.Email                        = this.email;
-            result.RequesterName__c             = this.requesterName;
-            result.InquiryContent__c            = this.inquiryContent;
-            result.InformationAgreement__c      = this.informationAgreement;
-            result.StoreAmount__c               = this.storeAmount;
-            result.isSeller__c                  = this.isSeller == null ? false : this.isSeller;
-            result.InquiryStyle__c              = this.inquiryStyle;
-            result.InquiryStyleContent__c       = this.inquiryStyleContent;
-            result.Company                      = this.name;
+        //     result.CompanyRegisterNumber__c     = this.companyRegisterNumber;
+        //     result.LastName                     = this.name;
+        //     result.Address__c                   = this.address;
+        //     result.AddressDetails__c            = this.addressDetails;
+        //     result.LocationStateProvince__c     = this.locationStateProvince;
+        //     result.LocationState__c             = this.locationState;
+        //     result.Phone                        = this.phone;
+        //     result.Email                        = this.email;
+        //     result.RequesterName__c             = this.requesterName;
+        //     result.InquiryContent__c            = this.inquiryContent;
+        //     result.InformationAgreement__c      = this.informationAgreement;
+        //     result.StoreAmount__c               = this.storeAmount;
+        //     result.isSeller__c                  = this.isSeller == null ? false : this.isSeller;
+        //     result.InquiryStyle__c              = this.inquiryStyle;
+        //     result.InquiryStyleContent__c       = this.inquiryStyleContent;
+        //     result.Company                      = this.name;
 
-            //Required
-            result.Company = this.name;
+        //     //Required
+        //     result.Company = this.name;
 
-            return result;
-        }
+        //     return result;
+        // }
 
         public leadWrapper(){}
 
@@ -450,9 +451,9 @@ public without sharing class DE_InquiryRequestController {
             this.locationStateProvince  = acc.LocationStateProvince__c;
             this.locationState          = acc.LocationState__c;
             this.phone                  = acc.Phone;
-            //this.email                  = acc.Email; Account에 값 없음 확인 필요
+            //this.email                  = acc.Email; Account에 값 없음 확인 필요 >> 이메일 값은 무조건 받는걸로.
             this.inquiryContent         = '';
-            this.informationAgreement   = '';
+            // this.informationAgreement   = '';
         }
     }
 
@@ -466,7 +467,9 @@ public without sharing class DE_InquiryRequestController {
        @AuraEnabled public String managerEmail              {get;set;}//담당자 이메일
        @AuraEnabled public String solutionName              {get;set;}//솔루션 명
        @AuraEnabled public String solutionDescription       {get;set;}//솔루션 설명
-       @AuraEnabled public String informationAgreement      {get;set;}//수집 동의 여부 01,02,03
+       @AuraEnabled public Boolean isPersonalInfoUse        {get;set;}//개인정보 수집 동의 여부
+       @AuraEnabled public Boolean isThirdPartyInfoUse      {get;set;}//제3자 정보제공 이용 동의
+       @AuraEnabled public Boolean isMarketingUse           {get;set;}//홍보 및 마케팅 이용 동의
 
        public PartnerCompany__c getPartner(){
             PartnerCompany__c result = new PartnerCompany__c();
@@ -480,7 +483,9 @@ public without sharing class DE_InquiryRequestController {
             result.ManagerEmail__c              = this.managerEmail;
             result.SolutionName__c              = this.solutionName;
             result.SolutionDescription__c       = this.solutionDescription;
-            result.InformationAgreement__c      = this.informationAgreement;
+            result.isPersonalInfoUse__c         = this.isPersonalInfoUse;
+            result.isThirdPartyInfoUse__c       = this.isThirdPartyInfoUse;
+            result.isMarketingUse__c            = this.isMarketingUse;
 
             return result;
        }

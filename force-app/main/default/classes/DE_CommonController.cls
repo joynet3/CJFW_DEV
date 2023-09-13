@@ -46,15 +46,15 @@ public without sharing class DE_CommonController {
         }
     }
 
-    public class CommonWrapper{
-        @AuraEnabled public Boolean isSuccess   {get;set;} 
-        @AuraEnabled public String message      {get;set;} 
-        @AuraEnabled public String result       {get;set;} 
+    // public class CommonWrapper{
+    //     @AuraEnabled public Boolean isSuccess   {get;set;} 
+    //     @AuraEnabled public String message      {get;set;} 
+    //     @AuraEnabled public String result       {get;set;} 
 
-        public CommonWrapper(){
-            this.isSuccess 		= true;
-            this.message 	= '';
-            this.result 	= '';
-        }
-    }
+    //     public CommonWrapper(){
+    //         this.isSuccess 		= true;
+    //         this.message 	= '';
+    //         this.result 	= '';
+    //     }
+    // }
 }

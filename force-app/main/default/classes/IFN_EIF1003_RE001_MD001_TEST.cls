@@ -47,9 +47,9 @@ public with sharing class IFN_EIF1003_RE001_MD001_TEST {
 
         // Callout Interface
 
-        // IFN_EIF1003_RE001_MD001.TestCall res = new IFN_EIF1003_RE001_MD001.TestCall();
+        IFN_EIF1003_RE001_MD001.TestCall res = new IFN_EIF1003_RE001_MD001.TestCall();
 
-        // System.debug(res.call(request));
+        System.debug(res.call(request));
 
         IFN_CalloutResult calloutResult = getRemember.callout();
         String resultCode = calloutResult.result;

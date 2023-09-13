@@ -17,7 +17,7 @@ public without sharing class CommunityBoardController {
     * 예제코드 태그 아래줄에서 예제 작성
     */
     @AuraEnabled
-    public static List<boardWrapper> getBoard(String categoryURL){
+    public static List<boardWrapper> getBoard(String categoryURL, String siteDivision){
         List<boardWrapper> result= new List<boardWrapper>();
         List<CommunityBoard__c> communityBoards = new List<CommunityBoard__c>();
         Set<String> setCommunityBoardId = new Set<String>();
@@ -38,6 +38,8 @@ public without sharing class CommunityBoardController {
                          +  '    , CreatedDate'
                          +  ' FROM CommunityBoard__c';
             String queryWhere = ' WHERE CommunityGroupDetail__c = \'' + communityGroupDetail.Id + '\'';
+            queryWhere += ' AND (SiteDivision__c = \'common\''
+                        + ' OR SiteDivision__c = :siteDivision)';
             String queryOrder = ' ORDER BY CreatedDate DESC';
 
             communityBoards = Database.query(querySelect + queryWhere + queryOrder);

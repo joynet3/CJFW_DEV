@@ -25,7 +25,7 @@ public without sharing class SolutionMappingTriggerHandler extends TriggerHandle
     }
 
     public override void afterInsert() {        
-        sendEmailToPartnerCompany(news);
+        sendEmailToPartnerCompany(newMap);
     }
 
     /**
@@ -73,22 +73,17 @@ public without sharing class SolutionMappingTriggerHandler extends TriggerHandle
     *@example 
     * 예제코드 태그 아래줄에서 예제 작성
     */
-    private void sendEmailToPartnerCompany(List<SolutionMapping__c> news){
+    private void sendEmailToPartnerCompany(Map<Id, SolutionMapping__c> newMap){
         Map<Id, PartnerCompany__c> partnerCompanyMap = new Map<Id, PartnerCompany__c>();
         Set<String> setPartnerCompanyId = new Set<String>();
-
-        // //파트너사 Id 가져오기
-        // for(SolutionMapping__c obj : news){
-        //     setPartnerCompanyId.add(obj.Solution__r.PartnerCompany__c);
-        // }
-
-        // //파트너사 정보 가져오기
-        // partnerCompanyMap = new Map<Id, PartnerCompany__c>([
-        //                                                     SELECT Id
-        //                                                         , ManagerEmail__c
-        //                                                     FROM PartnerCompany__c
-        //                                                     WHERE Id IN :setPartnerCompanyId
-        //                                                     ]);
+        List<SolutionMapping__c> solutionMappings = [SELECT Id
+                                                            ,Solution__r.PartnerCompany__r.Name
+                                                            ,Solution__r.PartnerCompany__r.ManagerEmail__c
+                                                            ,Lead__r.Email
+                                                            ,Account__r.Owner.Email
+                                                    FROM SolutionMapping__c
+                                                    WHERE Id IN :newMap.keySet()
+                                                    ];
 
         Map<String,List<NotiTarget>> notiPartnerMap = new Map<String,List<NotiTarget>>();       //파트너사
         Map<String,List<NotiTarget>> notiRequesterMap = new Map<String,List<NotiTarget>>();     //신청자
@@ -97,7 +92,7 @@ public without sharing class SolutionMappingTriggerHandler extends TriggerHandle
         Map<String,List<NotiTarget>> notiMap = new Map<String,List<NotiTarget>>();            //임시
 
         //이메일 발송 작업
-        for(SolutionMapping__c obj : news){
+        for(SolutionMapping__c obj : solutionMappings){
 
             // List<NotiTarget> tempsPartner = new List<NotiTarget>();
             // List<NotiTarget> tempsRequester = new List<NotiTarget>();
@@ -107,24 +102,29 @@ public without sharing class SolutionMappingTriggerHandler extends TriggerHandle
             // NotiTarget recipientRequesterId = new NotiTarget('Email');
             // NotiTarget recipientMAId = new NotiTarget('Email');
 
-            // if(String.isNotBlank(obj.Solution__r.PartnerCompany__r.ManagerEmail__c)) {
-            //     recipientPartnerId.setToAddresses(new Set<String>{obj.Solution__r.PartnerCompany__r.ManagerEmail__c});
-            //     tempsPartner.add(recipientPartnerId);
-            //     notiPartnerMap.put(obj.Id, tempsPartner);
+            // if(obj.Solution__r.PartnerCompany__r.Name != 'CJ프레시웨이' && String.isNotBlank(obj.Solution__r.PartnerCompany__r.ManagerEmail__c)) {
+                // recipientPartnerId.setToAddresses(new Set<String>{obj.Solution__r.PartnerCompany__r.ManagerEmail__c});
+                // tempsPartner.add(recipientPartnerId);
+                // notiPartnerMap.put(obj.Id, tempsPartner);
             // }
 
             // if(String.isNotBlank(obj.Lead__r.Email)){
-            //     recipientRequesterId.setToAddresses(new Set<String>{obj.Lead__r.Email});
-            //     tempsRequester.add(recipientRequesterId);
-            //     notiRequesterMap.put(obj.Id, tempsRequester);
+                // recipientRequesterId.setToAddresses(new Set<String>{obj.Lead__r.Email});
+                // tempsRequester.add(recipientRequesterId);
+                // notiRequesterMap.put(obj.Id, tempsRequester);
             // }
              
             // if(String.isNotBlank(obj.Account__r.Owner.Email)){
-            //     recipientMAId.setToAddresses(new Set<String>{obj.Account__r.Owner.Email});
-            //     tempsMA.add(recipientMAId);
-            //     notiMAMap.put(obj.Id, tempsMA);
+                // recipientMAId.setToAddresses(new Set<String>{obj.Account__r.Owner.Email});
+                // tempsMA.add(recipientMAId);
+                // notiMAMap.put(obj.Id, tempsMA);
             // }
 
+            System.debug(obj.Solution__r.PartnerCompany__r.Name + ' // ' + obj.Solution__r.PartnerCompany__r.ManagerEmail__c);
+            System.debug(obj.Lead__r.Email);
+            System.debug(obj.Account__r.Owner.Email);
+
+            //테스트용
             List<NotiTarget> temps = new List<NotiTarget>();
             NotiTarget recipientId = new NotiTarget('Email');
 
@@ -132,26 +132,17 @@ public without sharing class SolutionMappingTriggerHandler extends TriggerHandle
 
             temps.add(recipientId);
             notiMap.put(obj.Id, temps);
+            //테스트용
         }
         
-        NotificationManager.getInstance()
-                            .setTargetIdSet(notiMap.keySet())
-                            .setRecipientListMap(notiMap)
-                            .execute('Solution_Inquiry_Partner_Noti');
+        //테스트용
+        NotificationManager.getInstance().setTargetIdSet(notiMap.keySet()).setRecipientListMap(notiMap).execute('Solution_Inquiry_Partner_Noti');
+        //테스트용
 
-        // NotificationManager.getInstance()
-        //                     .setTargetIdSet(notiPartnerMap.keySet())
-        //                     .setRecipientListMap(notiPartnerMap)
-        //                     .execute('Solution_Inquiry_Partner_Noti');
-
-        // NotificationManager.getInstance()
-        //                     .setTargetIdSet(notiRequesterMap.keySet())
-        //                     .setRecipientListMap(notiRequesterMap)
-        //                     .execute('Solution_Inquiry_Requester_Noti');
-
-        // NotificationManager.getInstance()
-        //                     .setTargetIdSet(notiMAMap.keySet())
-        //                     .setRecipientListMap(notiMAMap)
-        //                     .execute('Solution_Inquiry_MA_Noti');
+        // NotificationManager.getInstance().setTargetIdSet(notiPartnerMap.keySet()).setRecipientListMap(notiPartnerMap).execute('Solution_Inquiry_Partner_Noti');
+// 
+        // NotificationManager.getInstance().setTargetIdSet(notiRequesterMap.keySet()).setRecipientListMap(notiRequesterMap).execute('Solution_Inquiry_Requester_Noti');
+// 
+        // NotificationManager.getInstance().setTargetIdSet(notiMAMap.keySet()).setRecipientListMap(notiMAMap).execute('Solution_Inquiry_MA_Noti');
     }
 }
