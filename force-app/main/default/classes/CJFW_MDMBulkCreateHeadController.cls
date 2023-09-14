@@ -33,8 +33,9 @@ public with sharing class CJFW_MDMBulkCreateHeadController {
       try {
           if(mdmCustomer != null){    
               MDMRegRequestBulkCustomer__c mdmRequestbulk = new MDMRegRequestBulkCustomer__c();
+              //bulk 첫번째 => (0번째 Name) + 외 ( )건;
+             // 얘가
               mdmRequestbulk.Name	                                = '저장TEST.';
-              system.debug('>>> 찍혀요? 1');
               insert mdmRequestbulk;
               
               for (MDMRequest mdm : mdmCustomer) {

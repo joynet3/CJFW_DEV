@@ -20,7 +20,7 @@ public class CJFW_CreateNewReportController {
             System.debug('OpptyId = ' + OpptyId);
 
             List<Opportunity> accountData = [
-                SELECT Id, Name, Account.Name, Account.RepresentativeName__c, Account.BusinessPath__c, Account.SalesMonthly__c, Account.OurSales__c, Account.Address__c, Account.PV_EXISTSUP__c
+                SELECT 	Description, Account.Name, Account.RepresentativeName__c, Account.BusinessPath__c, Account.SalesMonthly__c, Account.OurSales__c, Account.Address__c, Account.PV_EXISTSUP__c
                 FROM Opportunity
                 WHERE Id =:OpptyId
             ];
@@ -39,17 +39,17 @@ public class CJFW_CreateNewReportController {
      * User Obj에서 영업경로 가져오기 
      */
     @AuraEnabled
-    public static User getSulLabel(String UserId){
+    public static List<User> getSulLabel(String UserId){
         try {
             System.debug('UserId = ' + UserId);
 
-            User sulLabelData = [
+            List<User> sulLabelData = [
                 select id , SULabel__c 
                 from User 
-                where Id ='0050w000004E8L1AAK'
+                where Id =:UserId
             ];
 
-            return sulLabelData;
+            return sulLabelData.size()>0 ? sulLabelData : new List<User>();
 
         } catch (Exception e) {
             System.debug('message => ' + e.getMessage());

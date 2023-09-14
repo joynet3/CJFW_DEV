@@ -2,15 +2,15 @@
  * @description       : 
  * @author            : seol.kim@dkbmc.com
  * @group             : 
- * @last modified on  : 08-29-2023
+ * @last modified on  : 09-14-2023
  * @last modified by  : seol.kim@dkbmc.com
 **/
 global class CJFW_CategoryFilePickList extends VisualEditor.DynamicPickList{
-
+    
     //선택목록 기본 값
     global override VisualEditor.DataRow getDefaultValue(){
         
-        VisualEditor.DataRow defaultValue = new VisualEditor.DataRow('Category', 'Category');
+        VisualEditor.DataRow defaultValue = new VisualEditor.DataRow('Category 1', 'Category 1');
         return defaultValue;
     }
 

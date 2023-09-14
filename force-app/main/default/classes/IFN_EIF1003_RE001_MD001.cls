@@ -42,14 +42,15 @@ public class IFN_EIF1003_RE001_MD001 {
         commlog.insertLog(this.logWrap);
         return calloutResult;
     }
+
     public class RE001RequestWrapper {
-        public String start_at { get; set; }
-//        public String end_at { get; set; }
-//        public Integer page 1;
+//        public String start_at = String.valueOf(System.today().addDays(-1));
+        public String start_at = '2023-09-10';
+        public Integer page {get;set;}
         public Integer per = 200;
     }
+
     public class RE001ResultWrapper {
-//        public Map<String,Object> stacks;
         public Object result { get; set; }
     }
 
