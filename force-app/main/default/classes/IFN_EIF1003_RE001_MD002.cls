@@ -11,30 +11,23 @@
  * ----------------------------------------------
  *  1. | 2023.09.13 | 박지오         | 최초작성
  * */
-global with sharing class IFN_EIF1003_RE001_MD002 implements Database.Batchable<IFN_EIF1003_RE001_MD001.Stack>, Database.Stateful, Database.AllowsCallouts {
+public with sharing class IFN_EIF1003_RE001_MD002 implements Database.Batchable<IFN_EIF1003_RE001_MD001.Stack>, Database.Stateful, Database.AllowsCallouts {
 
     String interfaceId = 'IFN_EIF1003_RE001_MD002';
+    List<IFN_EIF1003_RE001_MD001.Stack> rememberStacks = new List<IFN_EIF1003_RE001_MD001.Stack>();
 
-    IFMaster__c ifMasterObj = [SELECT Id, Name, ContentType__c, Endpoint__c, Method__c FROM IFMaster__c WHERE Name = :interfaceId];
+//    IFMaster__c ifMasterObj = [SELECT Id, Name, ContentType__c, Endpoint__c, Method__c FROM IFMaster__c WHERE Name = :interfaceId];
 
-    public IFN_CommonLog.LogWrap logWrap { get; set; }
-    public IFN_CommonLog commlog;
-
-    /***********************************************************************************************************
-    *  Bacth   : start
-    *  내용    : 리멤버 명함첩 전체 데이터
-    ************************************************************************************************************/
-    global Iterable<IFN_EIF1003_RE001_MD001.Stack> start(Database.BatchableContext bc) {
+    public IFN_EIF1003_RE001_MD002() {
+        List<IFN_EIF1003_RE001_MD001.Stack> rememberStacks = new List<IFN_EIF1003_RE001_MD001.Stack>();
         IFN_EIF1003_RE001_MD001 RE001 = new IFN_EIF1003_RE001_MD001();
         IFN_EIF1003_RE001_MD001.RE001RequestWrapper request = new IFN_EIF1003_RE001_MD001.RE001RequestWrapper();
-        List<IFN_EIF1003_RE001_MD001.Stack> rememberStacks = new List<IFN_EIF1003_RE001_MD001.Stack>();
-
         request.page = 1;
 
         RE001.param = request;
 
         IFN_CalloutResult getRemember = RE001.callout();
-
+        System.debug('getRemember' + getRemember);
         if ('S'.equals(getRemember.result)) {
             IFN_EIF1003_RE001_MD001.RE001SuccessWrapper response = (IFN_EIF1003_RE001_MD001.RE001SuccessWrapper) getRemember.response;
             rememberStacks.addAll(response.stacks);
@@ -48,12 +41,24 @@ global with sharing class IFN_EIF1003_RE001_MD002 implements Database.Batchable<
                 }
             }
         }
+        this.rememberStacks = rememberStacks;
+    }
+
+    public IFN_CommonLog.LogWrap logWrap { get; set; }
+    public IFN_CommonLog commlog;
+
+
+    /***********************************************************************************************************
+    *  Bacth   : start
+    *  내용    : 리멤버 명함첩 전체 데이터
+    ************************************************************************************************************/
+    public Iterable<IFN_EIF1003_RE001_MD001.Stack> start(Database.BatchableContext bc) {
         return rememberStacks;
     }
     /***********************************************************************************************************
-*  Bacth   : excute
-*  내용    : 리멤버 데이터 리드에 등록
-************************************************************************************************************/
+    *  Bacth   : excute
+    *  내용    : 리멤버 데이터 리드에 등록
+    ************************************************************************************************************/
     public void execute(Database.BatchableContext bc, List<IFN_EIF1003_RE001_MD001.Stack> scope) {
         Map<String, List<IFN_EIF1003_RE001_MD001.Stack>> userStackGroup = new Map<String, List<IFN_EIF1003_RE001_MD001.Stack>>();
         try {
@@ -91,11 +96,11 @@ global with sharing class IFN_EIF1003_RE001_MD002 implements Database.Batchable<
             }
         } catch (Exception e) {
             this.logWrap.ErrorCode = '-1';
-            this.logWrap.ErrorText.add(e.getLineNumber()+e.getMessage() + e.getStackTraceString());
+            this.logWrap.ErrorText.add(e.getLineNumber() + e.getMessage() + e.getStackTraceString());
             this.logWrap.Status = 'ERROR';
         }
     }
-    global void finish(Database.BatchableContext bc) {
+    public void finish(Database.BatchableContext bc) {
         System.debug('batch finish start ====================');
     }
     public static String formatPhoneNumber(String phoneNumber) {

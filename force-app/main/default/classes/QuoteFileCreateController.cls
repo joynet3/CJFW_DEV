@@ -127,7 +127,7 @@ public without sharing class QuoteFileCreateController {
 
                 listTempQuoteLineItem = [SELECT   Id, QuoteId, fm_PriceBookEntryName__c, fm_QuantityUnitOfMeasure__c, ProfitMargin__c,
                                                   CountryOfOriginName__c, TaxTypeName__c, fm_ProductCode__c, Product2Id, UnitPriceWithVAT__c, VAT__c,
-                                                  PricebookEntryId, ListPrice, UnitPrice, ToLabel(LogisticsCenter__c), ToLabel(Month__c), BasePurchasePrice__c
+                                                  PricebookEntryId, ListPrice, UnitPrice, ToLabel(LogisticsCenter__c), ToLabel(Month__c), BasePurchasePrice__c, StorageConditionName__c
                                          FROM     QuoteLineItem
                                          WHERE    QuoteId = :recordId
                                          ORDER BY SortOrder ASC
@@ -149,7 +149,7 @@ public without sharing class QuoteFileCreateController {
                         List<QuoteLineItem> listTempQuoteLineItem2 = new List<QuoteLineItem>();
                         listTempQuoteLineItem2 = [SELECT   Id, QuoteId, fm_PriceBookEntryName__c, fm_QuantityUnitOfMeasure__c, ProfitMargin__c,
                                                            CountryOfOriginName__c, TaxTypeName__c, fm_ProductCode__c, Product2Id, UnitPriceWithVAT__c, VAT__c,
-                                                           PricebookEntryId, ListPrice, UnitPrice, ToLabel(LogisticsCenter__c), ToLabel(Month__c), BasePurchasePrice__c
+                                                           PricebookEntryId, ListPrice, UnitPrice, ToLabel(LogisticsCenter__c), ToLabel(Month__c), BasePurchasePrice__c, StorageConditionName__c
                                                   FROM     QuoteLineItem
                                                   WHERE    QuoteId = :recordId
                                                   AND      SortOrder > 10000
