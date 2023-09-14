@@ -12,6 +12,7 @@ public class IFN_LIF1002_OD003_MD004_TEST {
         svccont.Category__c = 'SH';
         svccont.OpenDate__c = Date.today();
         svccont.Name = '1';
+        svccont.IsUsage__c = true;
         insert svccont;
 
         Account objAccount = TestObjectCreator.objHealthAccount;
@@ -23,7 +24,7 @@ public class IFN_LIF1002_OD003_MD004_TEST {
         cls.Status__c = 'H';
         cls.Manager__c = '1';
         cls.CustomerPhone__c = '02-000-0000';
-        cls.TargetGroup__c = '원장';
+        cls.TargetGroup__c = 'DIRECTOR';
         cls.ApplicantsNumber__c = '1';
         cls.GroupMealAge__c = '1';
         cls.Address__c = '1';
@@ -47,7 +48,7 @@ public class IFN_LIF1002_OD003_MD004_TEST {
         String strBody = '{ '
                          +'   "schttl": "", '
                          +'   "stDt": "2023-01-01", '
-                         +'   "edDt": "2023-08-31", '
+                         +'   "edDt": "2023-12-31", '
                          +'   "dataCnt": "3", '
                          +'   "pgNo": "1", '
                          +'   "mdmCd": "23123" '

@@ -134,6 +134,7 @@ global with sharing class IFN_LIF1002_OD003_MD004 {
                                 where ServiceContent__r.Name like  :titleLike
                                 and ServiceContent__r.OpenDate__c >= :seatchStDt
                                 and ServiceContent__r.OpenDate__c <= :seatchEdDt
+                                and ServiceContent__r.IsUsage__c = true
                                 Limit :limitSize offset :offsetNum
                     ];
 

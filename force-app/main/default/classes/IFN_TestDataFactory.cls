@@ -23,6 +23,12 @@ public class IFN_TestDataFactory {
         objRelayInfo.Interface_id__c = 'test';
         objRelayInfo.Interface_auth_key__c = 'test';
         insert objRelayInfo;
+
+        StaticResource resource2 = [SELECT Id, Name, Body FROM StaticResource WHERE Name = 'IFERRORMST_JSON'];
+        List<IF_ERROR_CODE_MST__c> newList2 = (List<IF_ERROR_CODE_MST__c>) JSON.deserialize(resource2.Body.toString(), List<IF_ERROR_CODE_MST__c>.class);
+        Insert newList2;
+
+
                 
     }
 }
