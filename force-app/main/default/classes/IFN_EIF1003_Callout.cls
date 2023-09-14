@@ -54,15 +54,43 @@ public with sharing class IFN_EIF1003_Callout {
         }
        @response
         {
-            "results": [
-                            {
-                                "msg_key": "1234567890",
-                                "code": "C100",
-                                "desc": "Success"
-                            },
-                            {...}
-                        ]
-        }
+            "result": {
+                        "id": 123,
+                        "name": "홍길동",
+                        "company": "드라마앤컴퍼니",
+                        "department": "사업개발팀",
+                        "position": "과장",
+                        "mobile": {
+                                    "international_code": "82",
+                                    "national_number": "01012345678",
+                                    "normalized_number": "821012345678"
+                                 },
+                        "fax": {
+                                "international_code": "82",
+                                "national_number": "025561234",
+                                "normalized_number": "8225561234"
+                                },
+                        "tel": {
+                                "international_code": "",
+                                "national_number": "",
+                                "normalized_number": ""
+                                },
+                        "email": "gd.hong@dramancompany.com",
+                        "address": {
+                                    "default": "서울시 강남구 언주로85길 24",
+                                    "detail": "2층 (역삼동, 유니팜타워)",
+                                   },
+                        "image_url": {
+                                    "front": "https://...",
+                                    "back": "https://..."
+                                    },
+                        "user": {
+                                "id": 100,
+                                "email": "ss.lee@korea.kr"
+
+                                }
+                       }
+           }
     */
     public IFN_CalloutResult IFN_EIF1003_RE001_MD001(String interfaceId, Object params) {
         IFN_CalloutResult result = new IFN_CalloutResult();

@@ -12,6 +12,8 @@ public with sharing class IFN_LIF1002_OD002_MD002_TEST {
         );
 
         insert ifMaster;
+
+        IFN_TestDataFactory.createIfPrograms();
     }
 
     @isTest
@@ -20,21 +22,8 @@ public with sharing class IFN_LIF1002_OD002_MD002_TEST {
 
         RestRequest req = new RestRequest();
         RestResponse res = new RestResponse();
-
-        // Success Test 1
-        String strBody = '{"ttl": "식료품신청","reqTp": "샘플신청","reqTpCd": "01","reqMsg": "식료품신청","spItmTxt1": "샘플상품1","spItmTxt2": "샘플상품2","spItmTxt3": "샘플상품3","ExtSrvcCtgr": "가공류","mdmId": "ABC","reqDt": "2023-08-21","rcvNm": "[36110]세종시","reqId": "1223334"}';
-        req.requestBody = Blob.valueof(strBody);
-        RestContext.request = req;
-        RestContext.response = res;
-        IFN_LIF1002_OD002_MD002.doPost();
+        String strBody;
         
-        // Success Test 2
-        strBody = '{"ttl": "식료품신청","reqTp": "샘플신청","reqTpCd": "02","reqMsg": "식료품신청","spItmTxt1": "샘플상품1","spItmTxt2": "샘플상품2","spItmTxt3": "샘플상품3","ExtSrvcCtgr": "가공류","mdmId": "ABC","reqDt": "2023-08-21","rcvNm": "[36110]세종시","reqId": "1223334"}';
-        req.requestBody = Blob.valueof(strBody);
-        RestContext.request = req;
-        RestContext.response = res;
-        IFN_LIF1002_OD002_MD002.doPost();
-
         // Error Test 1
         strBody = '';
         req.requestBody = Blob.valueof(strBody);
@@ -51,6 +40,20 @@ public with sharing class IFN_LIF1002_OD002_MD002_TEST {
 
         // Error Test 3
         strBody = '{"ttl": "식료품신청","reqTp": "샘플신청","reqTpCd": "04","reqMsg": "식료품신청","spItmTxt1": "샘플상품1","spItmTxt2": "샘플상품2","spItmTxt3": "샘플상품3","ExtSrvcCtgr": "가공류","mdmId": "ABC","reqDt": "2023-08-21","rcvNm": "[36110]세종시","reqId": "1223334"}';
+        req.requestBody = Blob.valueof(strBody);
+        RestContext.request = req;
+        RestContext.response = res;
+        IFN_LIF1002_OD002_MD002.doPost();
+
+        // Success Test 1
+        strBody = '{"ttl": "식료품신청","reqTp": "샘플신청","reqTpCd": "01","reqMsg": "식료품신청","spItmTxt1": "샘플상품1","spItmTxt2": "샘플상품2","spItmTxt3": "샘플상품3","ExtSrvcCtgr": "가공류","mdmId": "ABC","reqDt": "2023-08-21","rcvNm": "[36110]세종시","reqId": "1223334"}';
+        req.requestBody = Blob.valueof(strBody);
+        RestContext.request = req;
+        RestContext.response = res;
+        IFN_LIF1002_OD002_MD002.doPost();
+        
+        // Success Test 2
+        strBody = '{"ttl": "식료품신청","reqTp": "샘플신청","reqTpCd": "02","reqMsg": "식료품신청","spItmTxt1": "샘플상품1","spItmTxt2": "샘플상품2","spItmTxt3": "샘플상품3","ExtSrvcCtgr": "가공류","mdmId": "ABC","reqDt": "2023-08-21","rcvNm": "[36110]세종시","reqId": "1223334"}';
         req.requestBody = Blob.valueof(strBody);
         RestContext.request = req;
         RestContext.response = res;

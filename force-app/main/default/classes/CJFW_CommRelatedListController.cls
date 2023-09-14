@@ -2,10 +2,17 @@
  * @description       : 
  * @author            : yejoo.lee@dkbmc.com
  * @group             : 
- * @last modified on  : 09-13-2023
+ * @last modified on  : 09-14-2023
  * @last modified by  : yejoo.lee@dkbmc.com
 **/
 public with sharing class CJFW_CommRelatedListController {
+    
+    /**
+    * @description Related Parent Record 의 정보 조회
+    * @author yejoo.lee@dkbmc.com | 09-14-2023 
+    * @param recordId 
+    * @return Map<String, Object> 
+    **/
     @AuraEnabled
     public static Map<String, Object> getRelatedParentInfo(String recordId){
         Map<String, Object> result = new Map<String, Object>();
@@ -30,6 +37,12 @@ public with sharing class CJFW_CommRelatedListController {
         return result;
     }
 
+    /**
+    * @description 사용자의 오브젝트 권한 확인
+    * @author yejoo.lee@dkbmc.com | 09-14-2023 
+    * @param ObjectApiName 
+    * @return Map<String, Object> 
+    **/
     @AuraEnabled
     public static Map<String, Object> hasObejctAccess(String ObjectApiName){
         Map<String, Object> result = new Map<String, Object>();
@@ -49,6 +62,18 @@ public with sharing class CJFW_CommRelatedListController {
         return result;
     }
 
+    /**
+    * @description 해당하는 오브젝트의 리스트 정보 조회
+    * @author yejoo.lee@dkbmc.com | 09-14-2023 
+    * @param recordId 
+    * @param targetObjectApiName 
+    * @param addFieldString 
+    * @param sqlCondition 
+    * @param recordLimit 
+    * @param sortBy 
+    * @param sortDirection 
+    * @return Map<String, Object> 
+    **/
     @AuraEnabled
     public static Map<String, Object> getRecords(String recordId, String targetObjectApiName, String addFieldString, String sqlCondition, Integer recordLimit, String sortBy, String sortDirection){
         System.debug('recordId' + recordId);
@@ -82,6 +107,12 @@ public with sharing class CJFW_CommRelatedListController {
         return resultMap;
     }
 
+    /**
+    * @description 필드 리스트를 스트링으로 반환
+    * @author yejoo.lee@dkbmc.com | 09-14-2023 
+    * @param ObjectApiName 
+    * @return String 
+    **/
     public static String getFieldListString(String ObjectApiName){
         List<Schema.SObjectField> fieldList = COMM_Util.getFieldList(objectApiName);
         List<String> fieldNameList = new List<String>();

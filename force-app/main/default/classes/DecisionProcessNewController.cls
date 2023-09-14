@@ -74,12 +74,15 @@ public without sharing class DecisionProcessNewController {
                 Blob body ;
                 if (!Test.isRunningTest()) {
                     body = file.getContent();
+                    System.debug('[P2 확인] body' + body);
                 }else{
                     body = Blob.valueOf('UNIT.TEST');
                 }
     
                 String strBlob = body.toString();
-                String strResult = CommonUtil.HTMLparse(strBlob, '<div id="getdata"');
+                    System.debug('[P2 확인] strBlob' + strBlob);
+                    String strResult = CommonUtil.HTMLparse(strBlob, '<div id="getdata"');
+                    System.debug('[P2 확인] strResult' + strResult);
     
                 // 유저정보
                 User objUser = [
@@ -98,7 +101,7 @@ public without sharing class DecisionProcessNewController {
                 String strJsonRequestBody = JSON.serialize(mapInput);
                 HttpResponse response = ifutilWrapper.webCallout(strJsonRequestBody, true);
                 system.debug( 'check Output ::: ' + response.getBody() );
-    
+				System.debug('[P2 확인] response' + response);
                 // I/F 성공시
                 if(response.getStatusCode() == 200){
                     Map<String, Object> resultMap = (Map<String, Object>) JSON.deserializeUntyped(response.getBody());  

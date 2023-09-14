@@ -2,8 +2,8 @@
  * @description       : 
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 09-08-2023
- * @last modified by  : joohyeon.jang@dkbmc.com
+ * @last modified on  : 09-14-2023
+ * @last modified by  : hyeeun.song@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
  * 1.0   09-08-2023   joohyeon.jang@dkbmc.com   Initial Version
@@ -35,7 +35,8 @@ public with sharing class CJFW_MDMBulkCreateHeadController {
               MDMRegRequestBulkCustomer__c mdmRequestbulk = new MDMRegRequestBulkCustomer__c();
               //bulk 첫번째 => (0번째 Name) + 외 ( )건;
              // 얘가
-              mdmRequestbulk.Name	                                = '저장TEST.';
+            //   mdmRequestbulk.Name	                                = '저장TEST.';
+              mdmRequestbulk.Name = mdmCustomer[0].Name + ' 외 ' + mdmCustomer.size() + '건';
               insert mdmRequestbulk;
               
               for (MDMRequest mdm : mdmCustomer) {

@@ -11,6 +11,7 @@
  * ----------------------------------------------
  *  1. | 2023.08.16 | 김동영          | 최초작성
  *  2. | 2023.08.28 | 김동영          | ExtSvcCd 항목 제외
+ *  3. | 2023.09.14 | 김동영          | MDMReferenceCode__c 항목 추가
  * */
 @RestResource(urlMapping='/LIF1002/OD002/MD002')
 global with sharing class IFN_LIF1002_OD002_MD002 {
@@ -31,7 +32,7 @@ global with sharing class IFN_LIF1002_OD002_MD002 {
         public String spItmTxt2{get;set;}   // 샘플 상품2
         public String spItmTxt3{get;set;}   // 샘플 상품3
         public String ExtSrvcCtgr{get;set;} // 부가서비스내역
-        // public String ExtSvcCd{get;set;}    // 부가서비스내역코드
+        // public String ExtSvcCd{get;set;} // 부가서비스내역코드
         public String mdmId{get;set;}       // MDM고객번호
         public String reqDt{get;set;}       // 작성일
         public String rcvNm{get;set;}       // 접수자이름
@@ -144,6 +145,13 @@ global with sharing class IFN_LIF1002_OD002_MD002 {
                     // 문의유형에 따른 RecordTypeId
                     Id osrRcdTp = Schema.SObjectType.OrderServiceRequest__c.getRecordTypeInfosByDeveloperName().get(rcdTpDevName).getRecordTypeId();
 
+                    String mdmId = input.mdmId;
+                    String mdmRefCdId = null;
+                    List<MDMReferenceCode__c> mdmReferenceCode = [Select Id From MDMReferenceCode__c Where CODE__c =:mdmId];
+                    if(mdmReferenceCode.size() > 0){
+                        mdmRefCdId = mdmReferenceCode[0].Id;
+                    }
+
                     OrderServiceRequest__c orderServiceReq = new OrderServiceRequest__c(
                             Title__c = input.ttl
                         , ReqType__c = input.reqTpCd
@@ -154,7 +162,8 @@ global with sharing class IFN_LIF1002_OD002_MD002 {
                         , SampleitemText3__c = input.spItmTxt3
                         , ExtraServiceCategory__c = input.ExtSrvcCtgr
                         // , ExtraServiceCategoryCode__c = input.ExtSvcCd
-                        , CustomerID__c = input.mdmId
+                        , CustomerID__c = mdmId
+                        , MDMReferenceCode__c = mdmRefCdId
                         , RequestDate__c = requestDate
                         , Finder__c = input.rcvNm
                         , ReqRecordId__c = reqRecordId

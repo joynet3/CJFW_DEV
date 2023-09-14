@@ -47,7 +47,7 @@ public class IFN_EIF1003_RE001_MD001 {
 //        public String start_at = String.valueOf(System.today().addDays(-1));
         public String start_at = '2023-09-10';
         public Integer page {get;set;}
-        public Integer per = 200;
+        public Integer per = 1;
     }
 
     public class RE001ResultWrapper {
