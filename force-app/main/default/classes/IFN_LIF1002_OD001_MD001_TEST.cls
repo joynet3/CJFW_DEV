@@ -12,6 +12,8 @@ public with sharing class IFN_LIF1002_OD001_MD001_TEST {
         );
 
         insert ifMaster;
+
+        IFN_TestDataFactory.createIfPrograms();
     }
 
     @isTest

@@ -23,7 +23,7 @@ public class IFN_LIF1002_OD003_MD005_TEST {
         cls.Status__c = 'H';
         cls.Manager__c = '1';
         cls.CustomerPhone__c = '02-000-0000';
-        cls.TargetGroup__c = '원장';
+        cls.TargetGroup__c = 'DIRECTOR';
         cls.ApplicantsNumber__c = '1';
         cls.GroupMealAge__c = '1';
         cls.Address__c = '1';
@@ -67,11 +67,28 @@ public class IFN_LIF1002_OD003_MD005_TEST {
         RestRequest req = new RestRequest();
         RestResponse res = new RestResponse();
         String strBody = '{'
-                        +' "cttId":"" ,'
+                        +' "cttId":"12312312" ,'
                         +' "mdmCd":""'
                         +' }';
 
         req.requestBody = Blob.valueOf(strBody);
+        RestContext.request = req;
+        RestContext.response = res;
+        IFN_LIF1002_OD003_MD005.doPost();
+        
+        Test.stopTest();
+    }
+
+
+    @isTest
+    static void test03() {
+        Test.startTest();
+        ServiceContents__c svccont = [select id from ServiceContents__c  Limit 1];
+
+        RestRequest req = new RestRequest();
+        RestResponse res = new RestResponse();
+        
+        req.requestBody = null;
         RestContext.request = req;
         RestContext.response = res;
         IFN_LIF1002_OD003_MD005.doPost();

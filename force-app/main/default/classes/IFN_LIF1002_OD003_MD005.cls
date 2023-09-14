@@ -73,7 +73,7 @@ global with sharing class IFN_LIF1002_OD003_MD005 {
 
         try {
             RestRequest request = RestContext.request;
-            requestBody = request.requestBody.toString();
+            requestBody = request.requestBody == null ? '' : request.requestBody.toString();
             logWrap.requestBody = requestBody;   
 
             if(requestBody == '' || requestBody == null) {
