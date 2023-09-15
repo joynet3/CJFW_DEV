@@ -10,7 +10,14 @@
  *  NO | Date       | Modifier       | Description
  * ----------------------------------------------
  *  1. | 2023.08.09 | 조일근         | 최초작성
+ *  2. | 2023.09.14 | 백영주         | 코드수정
  * */
+/**
+ * 수정한내용 20230914백영주대리
+ * 1. 조회조건에 페이징처리 수정 (ClassService__c -> ServiceContents__c)
+ * 2. 데이터 리스트 오브젝트 수정
+ * 3. 이중반복문으로 classservice에 mdm이랑 컨텐츠아이디가 같을경우만 스테이터스값과 클레스서비스아이디 추가
+ */
 @RestResource(urlMapping='/LIF1002/OD003/MD004')
 global with sharing class IFN_LIF1002_OD003_MD004 {
     global IFN_LIF1002_OD003_MD004() {}
@@ -108,60 +115,77 @@ global with sharing class IFN_LIF1002_OD003_MD004 {
                     Date seatchStDt = IFN_Util.convertDate(input.stDt);
                     Date seatchEdDt = IFN_Util.convertDate(input.edDt);
 
-
+                    //1. 조회조건에 페이징처리 수정 (ClassService__c -> ServiceContents__c)
                     String query_total = 'select Count() ' +
-                    'from ClassService__c ' +
-                    'where ServiceContent__r.Name like  :titleLike ' +
-                    'and ServiceContent__r.OpenDate__c >= :seatchStDt ' +
-                    'and ServiceContent__r.OpenDate__c <= :seatchEdDt ';
+                    'from ServiceContents__c ' +
+                    'where Name like  :titleLike ' +
+                    'and OpenDate__c >= :seatchStDt ' +
+                    'and OpenDate__c <= :seatchEdDt ';
                     Integer totalSize = Database.countQuery(query_total);
 
                     Integer limitSize = Integer.valueOf(input.dataCnt);
                     Integer pageNo = Integer.valueOf(input.pgNo) -1;
                     Integer offsetNum = (limitSize * pageNo);
 
-                    
+                    //2. 데이터 리스트 오브젝트 수정
+                    List<ServiceContents__c> datalist2 = [select id
+                                ,Name
+                                ,Category__c
+                                ,Region__c
+                                ,Instructor__r.Name
+                                ,Instructor2__r.Name
+                                ,OpenDate__c
+                                from ServiceContents__c
+                                where Name like  :titleLike
+                                and OpenDate__c >= :seatchStDt
+                                and OpenDate__c <= :seatchEdDt
+                                and IsUsage__c = true
+                                Limit :limitSize offset :offsetNum
+                    ];
+                    String chkMdmCd = String.isBlank(input.mdmCd) ? 'N' : input.mdmCd; 
                     List<ClassService__c> datalist = [select id, Status__c
-                                ,ServiceContent__r.Id
-                                ,ServiceContent__r.Name
-                                ,ServiceContent__r.Category__c
-                                ,ServiceContent__r.Region__c
-                                ,ServiceContent__r.Instructor__r.Name
-                                ,ServiceContent__r.Instructor2__r.Name
-                                ,ServiceContent__r.OpenDate__c
                                 ,MDMCode__c
+                                ,ServiceContent__c
                                 from ClassService__c
                                 where ServiceContent__r.Name like  :titleLike
                                 and ServiceContent__r.OpenDate__c >= :seatchStDt
                                 and ServiceContent__r.OpenDate__c <= :seatchEdDt
                                 and ServiceContent__r.IsUsage__c = true
-                                Limit :limitSize offset :offsetNum
+                                and MDMCode__c = :chkMdmCd
                     ];
-
+                    //3. 이중반복문으로 classservice에 mdm이랑 컨텐츠아이디가 같을경우만 스테이터스값과 클레스서비스아이디 추가
                     List<DataList> listitem = new List<DataList>();
-                    String chkMdmCd = String.isBlank(input.mdmCd) ? 'N' : input.mdmCd; 
-                    for (ClassService__c itm : datalist) {
-                        System.debug(itm.ServiceContent__r.Name);
+                    for(ServiceContents__c itm2 : datalist2){
+                        System.debug(itm2.Name);
                         DataList oitm = new DataList();
-                        oitm.tp     = itm.ServiceContent__r.Category__c;
-                        oitm.ttl	= itm.ServiceContent__r.Name;
-                        oitm.rgNm	= String.isBlank(itm.ServiceContent__r.Region__c) ? '' : plServiceContentRegion.get(itm.ServiceContent__r.Region__c) ;
-                        oitm.rgCd	= itm.ServiceContent__r.Region__c;
-                        oitm.istrt1	= itm.ServiceContent__r.Instructor__r.Name;
-                        oitm.istrt2	= itm.ServiceContent__r.Instructor2__r.Name;
-                        oitm.opDt	= IFN_Util.converDateTimeToStrFormat(itm.ServiceContent__r.OpenDate__c);
-                        oitm.cttId	= itm.ServiceContent__r.Id;
-                        // 전달된 MDM 코드와 같은 경우만 상태값 전송
-
-                        if('N'.equals(chkMdmCd)) {
-                            oitm.stts	= '-';
-                        } else {
-                            oitm.stts	= chkMdmCd.equals(itm.MDMCode__c) ?  
-                                        (String.isBlank(itm.Status__c) ? '-' : plClassServiceStatus.get(itm.Status__c)) : '-';
-
+                        oitm.tp     = itm2.Category__c;
+                        oitm.ttl	= itm2.Name;
+                        oitm.rgNm	= String.isBlank(itm2.Region__c) ? '' : plServiceContentRegion.get(itm2.Region__c) ;
+                        oitm.rgCd	= itm2.Region__c;
+                        oitm.istrt1	= itm2.Instructor__r.Name;
+                        oitm.istrt2	= itm2.Instructor2__r.Name;
+                        oitm.opDt	= IFN_Util.converDateTimeToStrFormat(itm2.OpenDate__c);
+                        oitm.cttId	= itm2.Id;
+                        oitm.stts	= '-';
+                        oitm.csId	= '';
+                        for (ClassService__c itm : datalist) {
+                            
+                            // 전달된 MDM 코드와 같은 경우만 상태값 전송
+                            // 전달된 contentId와 같은 경우만 상태값 및 classService아이디값 전송
+                            if(itm.ServiceContent__c == itm2.Id){
+                                oitm.stts	= plClassServiceStatus.get(itm.Status__c);
+                                oitm.csId	= itm.Id;
+                            }
+                            /*
+                            if('N'.equals(chkMdmCd)) {
+                                oitm.stts	= '-';
+                            } else {
+                                oitm.stts	= chkMdmCd.equals(itm.MDMCode__c) ?  
+                                            (String.isBlank(itm.Status__c) ? '-' : plClassServiceStatus.get(itm.Status__c)) : '-';
+                                oitm.csId	= itm.Id;
+                            }
+                            */
                         }
-                        
-                        oitm.csId	= itm.Id;
                         listitem.add(oitm);
                     }
 

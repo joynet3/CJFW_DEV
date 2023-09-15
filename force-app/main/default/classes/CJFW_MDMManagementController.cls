@@ -65,6 +65,7 @@ public with sharing class CJFW_MDMManagementController {
                                             ,Address__c
                                             ,AddressDetails__c
                                             ,Address2__c
+                                            ,AffiliatedCompany__c
                                             ,AddressDetails2__c //여기까지 기본정보, AffiliatedCompanyCode__c(주석되어있음)
                                             ,SalesForm__c
                                             ,CustomerStatus__c
@@ -119,7 +120,7 @@ public with sharing class CJFW_MDMManagementController {
         // 이거를 하는 이유는 MDM등록수정obj에 데이터가 있는지 확인하기위해서임 
         if(String.isNotBlank(accountList[0].CustomerId__c)){
            List<MDMRegRequestCustomer__c> mdmRegRequestCustomerList = [
-                SELECT Id, RecordTypeId, requestType__c, PV_OLDCD__c, PV_NAME1__c, PV_NAME_G__c, PV_NAME2__c, PV_KTOKD__c, PV_CUSTTYPE__c, PV_STCD2__c, PV_STCD3__c, PV_STCD4__c, PV_GFORM__c, PV_J_1KFREPRE__c, PV_STCD1__c, 
+                SELECT Id, RecordTypeId, RequestType__c, PV_OLDCD__c, PV_NAME1__c, PV_NAME_G__c, PV_NAME2__c, PV_KTOKD__c, PV_CUSTTYPE__c, PV_STCD2__c, PV_STCD3__c, PV_STCD4__c, PV_GFORM__c, PV_J_1KFREPRE__c, PV_STCD1__c, 
                         PV_J_1KFTBUS__c, PV_J_1KFTIND__c, PV_TELF1__c, PV_TELFX__c, PV_VKGRP__c, PVRA_VKGRP__c, PV_PERNR__c, PV_PERNR_lu__c, PVRA_PERNR__c, PV_ADMINMA__c, PV_ADMINMA_lu__c, PV_LOGISCENTER__c, PVRA_LOGISCENTER__c, 
                         PV_STCDT__c, PV_FITYP__c, PV_HDOFFICEYN__c, PV_HKUNNR_lu__c, PV_HKUNNR__c, PV_VBUND__c, PV_LAND1__c, PV_KNVKTYPE__c, PV_CLOSEDT__c, PV_REGIO__c, PV_ADRES_ZIPCODE__c, PV_ADRES_ROADADDR1__c, 
                         PV_ADRES_ROADADDR2__c, PV_ADRES_ADDR1__c, PV_ADRES_ADDR2__c, PV_SELLER_lu__c, PV_BIZPLCODE__c, PV_BUSAB__c, PV_CESSION_KZ__c, PV_ZUAWA__c, PV_AKONT__c, PV_FDGRV__c, PV_TAXKDD__c, PV_KATR5__c, PV_CUHR1__c, 
@@ -134,7 +135,7 @@ public with sharing class CJFW_MDMManagementController {
             system.debug('mdmRegRequestCustomerList' + json.serialize(mdmRegRequestCustomerList));
             system.debug('mdmRegRequestCustomerList.size()' + mdmRegRequestCustomerList.size());
         
-             // MDM에서 온 친구(MDMRegRequestCustomer__c 추가 + Account 편집 화면에 Account 값이 떠야 함 되어야 함 requestType:편집으로..)
+             // MDM에서 온 친구(MDMRegRequestCustomer__c 추가 + Account 편집 화면에 Account 값이 떠야 함 되어야 함 RequestType:편집으로..)
 
             /**
              * 1. mdmRegRequestCustomerList.isEmpty() = true : MDM등록수정요청에 ID값이 없다. MDM에서 왔다.
@@ -158,7 +159,7 @@ public with sharing class CJFW_MDMManagementController {
                         // requestType : insert
                         wrapperRequest.AccountId                            =       acc?.Id;
                         wrapperRequest.RecordTypeId                         =       recordIdEx;                                          
-                        wrapperRequest.requestType                          =       'Edit';                         
+                        wrapperRequest.RequestType                          =       'Edit';                         
                         //기본정보 [S] : 주석처리 되어있으면 account에 필드 없는것임. 
                         wrapperRequest.PV_KUNNR								=       acc?.CustomerID__c;				
                         wrapperRequest.PV_OLDCD								=       acc?.CustomerIDASIS__c;				
@@ -177,7 +178,7 @@ public with sharing class CJFW_MDMManagementController {
                         wrapperRequest.PV_J_1KFTIND							=       acc?.BusinessCategory__c;					
                         wrapperRequest.PV_TELF1								=       acc?.Phone;				
                         wrapperRequest.PV_TELFX								=       acc?.Fax;				
-                        wrapperRequest.inputpv_vkgrp					    =       acc?.PV_VKGRP__c;				
+                        wrapperRequest.inputpv_vkgrp       					=       acc?.PV_VKGRP__c;	 //Account의 코드를 inputField에 넣어줌
                         //wrapperRequest.PV_VKGRP_lu						=       acc?.X;					
                         wrapperRequest.PVRA_VKGRP							=       acc?.SalesGroupFromDate__c;					
                         wrapperRequest.PV_PERNR								=       acc?.PICCode__c;				
@@ -195,8 +196,8 @@ public with sharing class CJFW_MDMManagementController {
                         wrapperRequest.PV_HKUNNR							=       acc?.HeadOfficeCode__c;					
                         //wrapperRequest.PV_HKUNNR_lu						=       acc?.X;					
                         wrapperRequest.PV_SUBSIDIARYYN						=       acc?.IsAffiliatedcompanyYN__c;						
-                        //wrapperRequest.PV_VBUND							=       acc?.AffiliatedCompanyCode__c;(주석되어있음)				
-                        //wrapperRequest.PV_VBUND							=       acc?.X;				
+                        wrapperRequest.inputpv_vbund		    			=       acc?.AffiliatedCompany__c; //Account의 코드를 inputField에 넣어줌				
+                        //wrapperRequest.PV_VBUND_lu					    =       acc?.X;				
                         wrapperRequest.PV_LAND1								=       acc?.CountryKeyCode__c;				
                         //wrapperRequest.PV_LAND1							=       acc?.X;				
                         wrapperRequest.PV_KNVKTYPE							=       acc?.PV_KNVKTYPE__c;					
@@ -294,7 +295,7 @@ public with sharing class CJFW_MDMManagementController {
                         // requestType : update
                         wrapperRequest.AccountId                            =       acc?.Id;
                         wrapperRequest.RecordTypeId                         =       recordIdEx;                                          
-                        wrapperRequest.requestType                          =       'Edit';                         
+                        wrapperRequest.RequestType                          =       'Edit';                         
                         //기본정보 [S] : 주석처리 되어있으면 account에 필드 없는것임. 
                         wrapperRequest.PV_KUNNR								=       acc?.CustomerID__c;				
                         wrapperRequest.PV_OLDCD								=       acc?.CustomerIDASIS__c;				
@@ -576,7 +577,7 @@ public with sharing class CJFW_MDMManagementController {
                 */
                 //Default 2
                 mdmRequest.RecordTypeId                                         = recordIdEx;
-                mdmRequest.requestType__c                                       = String.isBlank(objCustomer?.requestType) ? null : objCustomer.requestType;
+                mdmRequest.RequestType__c                                       = String.isBlank(objCustomer?.RequestType) ? null : objCustomer.RequestType;
                 //기본정보 42
                 //mdmRequest.PV_KUNNR__c                                            = String.isBlank(objCustomer?.PV_KUNNR) ? null : objCustomer.PV_KUNNR;    이건 나중에 승인받고 추가 될 거 같음..
                 mdmRequest.PV_OLDCD__c                                            = String.isBlank(objCustomer?.PV_OLDCD) ? null : objCustomer.PV_OLDCD;
@@ -785,7 +786,7 @@ public with sharing class CJFW_MDMManagementController {
         //기존 3
         @AuraEnabled public String AccountId {get;set;}
         @AuraEnabled public String RecordTypeId {get;set;}
-        @AuraEnabled public String requestType {get;set;}
+        @AuraEnabled public String RequestType {get;set;}
         //기본 49
         @AuraEnabled public String PV_KUNNR {get;set;}
         @AuraEnabled public String PV_OLDCD {get;set;}
@@ -900,6 +901,7 @@ public with sharing class CJFW_MDMManagementController {
 
         //inputField
         @AuraEnabled public String inputpv_vkgrp {get;set;}
+        @AuraEnabled public String inputpv_vbund {get;set;}
     }
     public class CustomContacts{
         @AuraEnabled public String id {get;set;}
@@ -1008,7 +1010,7 @@ public with sharing class CJFW_MDMManagementController {
         @AuraEnabled public String PV_TAXKDD {get;set;}
         @AuraEnabled public String PV_KATR5 {get;set;}
         @AuraEnabled public String PV_SHIPTYPE {get;set;}
-        @AuraEnabled public String requestType {get;set;}
+        @AuraEnabled public String RequestType {get;set;}
         @AuraEnabled public String RecordTypeId {get;set;}
         @AuraEnabled public List<ContactWrapper> contactList {get;set;}
 
@@ -1073,7 +1075,7 @@ public with sharing class CJFW_MDMManagementController {
             this.PV_TAXKDD = '';
             this.PV_KATR5 = '';
             this.PV_SHIPTYPE = '';
-            this.requestType = '';
+            this.RequestType = '';
             this.RecordTypeId = '';
 
             

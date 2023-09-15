@@ -176,6 +176,7 @@ public without sharing class LineItemMgmtController {
      *         - selectedCategoryL : 선택된 상품분류(대)
      *         - sortStatus  : 조회 정렬 기준
      *         - objUser : 검색을 한 유저정보
+     *         - strSearchInput : 검색을 한 유저정보
      * @return Map<String, Object> mapInitData
      *         - listAllEntry : 조회된 상품 리스트
      * 23.08.03 : mapParam 안에 objUser 정보 추가
@@ -190,8 +191,10 @@ public without sharing class LineItemMgmtController {
         String selectedCategoryL  = String.valueOf(mapParam.get('selectedCategoryL'));
         String sortStatus  = String.valueOf(mapParam.get('sortStatus'));
         String objUser  = String.valueOf(mapParam.get('objUser'));
+        String strSearchInput  = String.valueOf(mapParam.get('strSearchInput'));
 
         System.debug(' objUser ->'+ objUser );
+        System.debug(' mapParam ->'+ mapParam );
         
         datetime qryEnd = datetime.now(); 
         system.debug(logginglevel.WARN, (qryEnd.getTime() - qryStart.getTime()) /1000);
@@ -202,6 +205,15 @@ public without sharing class LineItemMgmtController {
         query += '  FROM    PriceBookEntry ';
         query += ' WHERE    lgs_ctr__c = \'' + selectedCenter + '\' ' ;
         query += '   AND    Product2.isActive = true ' ; 
+
+        /* 속도이슈 개선사항  */
+        // if(strSearchInput == null || strSearchInput =='' ){
+        //     System.debug(' 상품검색  없을때 ' );
+        // }else{
+        //     System.debug(' 상품검색  있을때 ' );
+        //     query += '   AND Product2.Name LIKE \'%' + strSearchInput + '%\''; 
+        // }
+        /* 속도이슈 개선사항  */
 
         if( selectedCategoryL != 'none')
         query += '   AND    Product2.ProductCategory__r.fm_LAR_CLS_ID__c = \'' + selectedCategoryL + '\' ' ;
@@ -224,7 +236,7 @@ public without sharing class LineItemMgmtController {
         else {
             query += ' ORDER BY ' + selectedMonth + '__c ' + 'ASC ';
         }
-        query += ' LIMIT    50000 ' ; 
+        query += ' LIMIT    5 ' ; 
 
         System.debug('# doSearch 최종검색쿼리 -> ' + query);
 
