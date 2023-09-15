@@ -47,6 +47,7 @@ global class IFN_ScheduleBatch extends MasterBatchBase implements Database.Allow
                                                 , CronExpression__c
                                         FROM Batch_Sequence__mdt
                                         WHERE isScheduled__c = true
+                                        AND IsActive__c  = true
                                         ]);
     }
     
