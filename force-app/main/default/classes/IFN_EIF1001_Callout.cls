@@ -124,6 +124,7 @@ public class IFN_EIF1001_Callout {
         } catch(Exception e) {
             result_code = 'E';
             result_message = 'Interface Exception';
+            result_message +=  '[' + e.getMessage()+' Line : '+e.getLineNumber() + ']' ;
         }
 
         result.setResult(
@@ -198,6 +199,7 @@ public class IFN_EIF1001_Callout {
         } catch(Exception e) {
             result_code = 'E';
             result_message = 'Interface Exception';
+            result_message +=  '[' + e.getMessage()+' Line : '+e.getLineNumber() + ']' ;
         }  
 
         result.setResult(
@@ -279,6 +281,7 @@ public class IFN_EIF1001_Callout {
         } catch(Exception e) {
             result_code = 'E';
             result_message = 'Interface Exception';
+            result_message +=  '[' + e.getMessage()+' Line : '+e.getLineNumber() + ']' ;
         }  
 
         result.setResult(
@@ -355,6 +358,7 @@ public class IFN_EIF1001_Callout {
         } catch(Exception e) {
             result_code = 'E';
             result_message = 'Interface Exception';
+            result_message +=  '[' + e.getMessage()+' Line : '+e.getLineNumber() + ']' ;
         }  
 
         result.setResult(

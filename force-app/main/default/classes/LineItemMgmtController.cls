@@ -647,4 +647,27 @@ public without sharing class LineItemMgmtController {
         public String ERR_MSG_CTT {get;set;}
     }
 
+    /**
+     cjfwLineItemMgmtModal 에서 사용  
+    *@param  recordId  Product2  record id 
+    */
+    @AuraEnabled(Cacheable=true)
+    public static List <Product2> getProduct( String rowId ) {
+        System.debug('rowId = ' + rowId);
+        List<Product2> productList = [ SELECT Id
+                                            ,   Name 
+                                            ,   ProductCode
+                                            ,   box_ctcnt_qty__c
+                                            ,   gd_no__c 
+                                            ,   gd_stds_txt__c
+                                            ,   dstr_tlmt_dd_cnt__c 
+                                            ,   strg_cond__c 
+                                            ,   gd_tot_wt__c
+                                            ,   ordr_unit_cd__c
+                                            ,   mcd_dtl_stds_txt__c
+                                   FROM Product2
+                                   WHERE Id =: rowId ];
+        return productList;
+    } 
+
 }

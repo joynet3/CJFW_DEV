@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : sunkyung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 09-11-2023
+ * @last modified on  : 09-16-2023
  * @last modified by  : sunkyung.choi@dkbmc.com
 **/
 public with sharing class CJFW_SurveyPreviewController {
@@ -13,12 +13,16 @@ public with sharing class CJFW_SurveyPreviewController {
         @AuraEnabled
         public String question { get; set; }
         @AuraEnabled
-        public String answer { get; set; }
+        public String  answer { get; set; }
+        // @AuraEnabled
+        // public Boolean  isClicked { get; set; }
 
         public SurveyQuestionResponse(String question, String answer) {
             this.question = question;
             this.answer = answer;
+            // this.isClicked = false;
         }
+        
     }
 
 
@@ -30,7 +34,7 @@ public with sharing class CJFW_SurveyPreviewController {
         
         Set<String> responseId = new Set<String>();// CJFW_SurveyResponse__c ID저장 set
          
-
+      
         List<CJFW_SurveyResponse__c> responseList = [
             SELECT Id,
             OwnerId,
@@ -63,17 +67,23 @@ public with sharing class CJFW_SurveyPreviewController {
         
         System.debug('11111' + resultList);
         
+      
        
         List<SurveyQuestionResponse> totalList = new List<SurveyQuestionResponse>();
  
         for (CJFW_SurveyResult__c ru : resultList) {
             String question = ru.FM_Question__c;
             String answer;
+        
+           
+
 
             if (ru.OpenEnded__c != null) {
                 answer = ru.OpenEnded__c;
-            } else {
+            } else if (ru.OpenEnded__c == null && ru.SurveyOption__r.Name != null) {
                 answer = ru.SurveyOption__r.Name;
+            } else{
+                answer =String.valueOf(ru.DateResult__c);
             }
 
             SurveyQuestionResponse response = new SurveyQuestionResponse(question, answer);

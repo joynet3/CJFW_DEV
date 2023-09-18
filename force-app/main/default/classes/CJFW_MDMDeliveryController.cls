@@ -1,15 +1,4 @@
-/**
- * @description       : 
- * @author            : joohyeon.jang@dkbmc.com
- * @group             : 
- * @last modified on  : 09-15-2023
- * @last modified by  : joohyeon.jang@dkbmc.com
- * Modifications Log
- * Ver   Date         Author                    Modification
- * 1.0   08-18-2023   joohyeon.jang@dkbmc.com   Initial Version
-**/
-public with sharing class CJFW_MDMManagementController {
-
+public with sharing class CJFW_MDMDeliveryController {
     /**
      * @description 수정 일 경우(AccountId가 존재)
      *              AccountId로 MDM오브젝트 조회하여 저장되어 있는 필드와 값을 래퍼클래스에 매핑하여 화면에 리턴
@@ -653,7 +642,7 @@ public with sharing class CJFW_MDMManagementController {
                 // 없을 경우 1. MDM에서 온 경우
                 if(mdmRegRequestCustomerList.isEmpty()){ 
 
-                    system.debug('여기 찍히나요 mdm에서 온 경우');
+                    system.debug('여기 찍히나요 MDM에서 옴');
                     //메서드 만들어서 데이터 보내고, 받은다음 
                     MDMRegRequestCustomer__c mdmRequest = convertMdmRequest(objCustomer, null);
                     insert mdmRequest;
@@ -1436,6 +1425,5 @@ public with sharing class CJFW_MDMManagementController {
        PV_DELIGROUP_lu__c
        PV_KATR10_lu__c
      */
-
 
 }

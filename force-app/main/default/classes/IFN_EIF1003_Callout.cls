@@ -110,6 +110,7 @@ public with sharing class IFN_EIF1003_Callout {
             IFN_ApiGateWay gateway = new IFN_ApiGateWay(interfaceId);
             String requestBody = fromDTO(reqparam);
 
+            System.debug(requestBody);
             HttpResponse response = gateway.webCallout(requestBody, null, true);
 
             responsedata = response.getBody();
@@ -142,6 +143,9 @@ public with sharing class IFN_EIF1003_Callout {
         }
         if (request.per != null) {
             params.add('per=' + request.per);
+        }
+        if (request.page != null) {
+            params.add('page=' + request.page);
         }
         return String.join(params, '&');
     }
