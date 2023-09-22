@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 09-20-2023
+ * @last modified on  : 09-22-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkUpdateHeadController {
@@ -56,22 +56,25 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
 
                 mdmRequestbulk.Name = bulkName + ' 외 ' + mdmCustomer.size() + '건';
                 insert mdmRequestbulk;
-
                 
                 for (MDMRequest mdm : mdmCustomer) {
                     MDMRegRequestCustomer__c mdmRequest = new MDMRegRequestCustomer__c();
                     system.debug('안녕하세요 ' + mdmRequestbulk.id);
                     system.debug('MDM 고객 ID => ' + mdm.PV_KUNNR); // 고객 ID
                     system.debug('MDM 고객명 => ' + mdm.PV_NAME1); // 고객명
-                    system.debug('MDM 사업자번호 => ' + mdm.PV_STCD2); // 사업자번호
+                    system.debug('MDM 법적상태 => ' + mdm.PV_GFORM); // 법적상태
                     system.debug('MDM 대표자이름 => ' + mdm.PV_J_1KFREPRE); // 대표자이름
+                    system.debug('MDM 대표자생년월일 => ' + mdm.PV_STCD1); // 대표자생년월일
+                    system.debug('MDM 업태 => ' + mdm.PV_J_1KFTBUS); // 업태
                     system.debug('MDM 레코드유형 => ' + recordIdEx); // 레코드 유형
 
                     mdmRequest.RecordTypeId      =      String.isBlank(type) ? null : recordIdEx;
                     mdmRequest.PV_KUNNR__c       =      String.isBlank(mdm.PV_KUNNR) ? null : mdm.PV_KUNNR;
                     mdmRequest.PV_NAME1__c       =      String.isBlank(mdm.PV_NAME1) ? nameMaps.get(mdm.PV_KUNNR) : mdm.PV_NAME1;
-                    mdmRequest.PV_STCD2__c       =      String.isBlank(mdm.PV_STCD2) ? null : mdm.PV_STCD2;
+                    mdmRequest.PV_GFORM__c       =      String.isBlank(mdm.PV_GFORM) ? null : mdm.PV_GFORM;
                     mdmRequest.PV_J_1KFREPRE__c  =      String.isBlank(mdm.PV_J_1KFREPRE) ? null : mdm.PV_J_1KFREPRE;
+                    mdmRequest.PV_STCD1__c       =      String.isBlank(mdm.PV_STCD1) ? null : mdm.PV_STCD1;
+                    mdmRequest.PV_J_1KFTBUS__c   =      String.isBlank(mdm.PV_J_1KFTBUS) ? null : mdm.PV_J_1KFTBUS;
                     
                     mdmRequest.MDMRegRequestBulkCustomer__c  = mdmRequestbulk.id;
                     
@@ -140,8 +143,10 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
     public class MDMRequest{
         @AuraEnabled public String PV_KUNNR {get;set;}
         @AuraEnabled public String PV_NAME1 {get;set;}
-        @AuraEnabled public String PV_STCD2 {get;set;}
+        @AuraEnabled public String PV_GFORM {get;set;}
         @AuraEnabled public String PV_J_1KFREPRE {get;set;}
+        @AuraEnabled public String PV_STCD1 {get;set;}
+        @AuraEnabled public String PV_J_1KFTBUS {get;set;}
     }
 
 

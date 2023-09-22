@@ -1,3 +1,13 @@
+/**
+ * @description       : 
+ * @author            : joohyeon.jang@dkbmc.com
+ * @group             : 
+ * @last modified on  : 09-22-2023
+ * @last modified by  : joohyeon.jang@dkbmc.com
+ * Modifications Log
+ * Ver   Date         Author                    Modification
+ * 1.0   09-22-2023   joohyeon.jang@dkbmc.com   Initial Version
+**/
 public with sharing class CJFW_MDMEditModalController {
      /**
      * @description : 화면에서 Param으로 보내준 AccountId로 customer 필드를 조회하여, 리턴
@@ -6,19 +16,59 @@ public with sharing class CJFW_MDMEditModalController {
      * @return      `String`
      */
     @AuraEnabled
-    public static String getCustomerTypeInfo(String accId) {
-        system.debug('>>>getCustomerTypeInfo');
-        String customerType = '';
+    public static DataWrapper getCustomerTypeInfo(Id recordId) {
+        DataWrapper objWrapper = new DataWrapper();
+        system.debug(' ###CJFW_MDMEditModalController > getCustomerTypeInfo()');
+        // ObjectType 
+        
+        system.debug(' >>> recordId' + recordId);
 
-        // 화면에 AccountId로 조회하여, 해당 조회문은 단건으로 밖에 나오지않음
-        List<Account> accountList = [SELECT Id, customerType__c
-                                    FROM Account
-                                    WHERE Id =: accId
-                                    LIMIT 1];
-        if(!accountList.isEmpty())
-        {
-            customerType = accountList[0]?.customerType__c;
+        String strObjectType = String.valueOf(recordId.getSobjectType());
+        String customerType = '';
+        
+        system.debug(' >>> strObjectType ' + strObjectType);        
+
+        if(strObjectType == 'MDMRegRequestCustomer__c'){
+            objWrapper.strObjectType = 'MDMRegRequestCustomer';
+            system.debug(' ====================================> MDMRegRequestCustomer 에서 Edit 중');
+            List<MDMRegRequestCustomer__c> mdmRegRequestCustomer = [SELECT Id, PV_CUSTTYPE__c 
+                                                                    FROM MDMRegRequestCustomer__c 
+                                                                    WHERE Id =:recordId
+                                                                    Limit 1];
+            if(!mdmRegRequestCustomer.isEmpty()){
+                objWrapper.customerType = mdmRegRequestCustomer[0]?.PV_CUSTTYPE__c;
+                system.debug(' ====================================> mdmRegRequestCustomer[0]?.PV_CUSTTYPE__c ' + mdmRegRequestCustomer[0]?.PV_CUSTTYPE__c);
+            }
+        }else{
+            objWrapper.strObjectType = 'Account';
+            system.debug(' ====================================> Account 에서 Edit 중');
+            List<Account> accountList = [SELECT Id, customerType__c
+                                        FROM Account
+                                        WHERE Id =: recordId
+                                        LIMIT 1];
+            if(!accountList.isEmpty()) {
+                objWrapper.customerType = accountList[0]?.customerType__c;
+                system.debug(' ====================================> accountList[0]?.customerType__c ' + accountList[0]?.customerType__c);
+            }
         }
-        return customerType;
+
+      
+        return objWrapper;
+    }
+
+    /**
+    * @description 로딩시 뿌려줘야할 데이터 Wrapper
+    */
+    public class DataWrapper {
+        /** @description 반환성공을 알려주는 Status*/
+        @AuraEnabled public String strStatus {get;set;}
+        /** @description 에러메세지*/
+        @AuraEnabled public String strMessage {get;set;}
+        /** @description 레코드아이디를 통해 알아낸 고객유형*/
+        @AuraEnabled public String customerType {get;set;}
+        /** @description Object Name*/
+        @AuraEnabled public String strObjectType {get;set;}
+
+        public DataWrapper() {}
     }
 }

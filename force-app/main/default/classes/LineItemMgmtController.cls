@@ -208,12 +208,12 @@ public without sharing class LineItemMgmtController {
         query += '   AND    Product2.isActive = true ' ; 
 
         /* 속도이슈 개선사항  */
-        // if(strSearchInput == null || strSearchInput =='' ){
-        //     System.debug(' 상품검색  없을때 ' );
-        // }else{
-        //     System.debug(' 상품검색  있을때 ' );
-        //     query += '   AND Product2.Name LIKE \'%' + strSearchInput + '%\''; 
-        // }
+        if(strSearchInput == null || strSearchInput =='' ){
+            System.debug(' 상품검색  없을때 ' );
+        }else{
+            System.debug(' 상품검색  있을때 ' );
+            query += '   AND Product2.Name LIKE \'%' + strSearchInput + '%\''; 
+        }
         /* 속도이슈 개선사항  */
 
         if( selectedCategoryL != 'none')

@@ -94,6 +94,8 @@ public with sharing class CjfwMDMSalesCreateModalController {
             strQuery += '   ORDER BY CLOSEGB__c ASC';
 
 
+            System.debug('Database.query(strQuery)' + Database.query(strQuery));
+
             // 고객주문마감 유형코드 리스트에서 중복된 코드들 제외
             for(MDMCustomerOrderType__c obj : Database.query(strQuery)) {
                 System.debug('=========> obj.CUHR1__c : '+obj.CUHR1__c);
@@ -116,14 +118,16 @@ public with sharing class CjfwMDMSalesCreateModalController {
             
             System.debug('===========> setCloseGB : '+setCloseGB);
 
+            // 고객주문마감 유형코드 pickList 가져오기
             List<Map<String, String>> listOrderType = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_ODCLOSEGB__c', false);
             
             List<Map<String, String>> listCustomerOrderType = new List<Map<String, String>>();
-            listCustomerOrderType.add(new Map<String, String>{
-                'label' => '--없음--',
-                'value' => 'none'
-            });
+            // listCustomerOrderType.add(new Map<String, String>{
+            //     'label' => '--없음--',
+            //     'value' => 'none'
+            // });
 
+            // setCloseGB에 값이 있다면 pickList중 코드가 일치한 pickList value 값 가져오기
             if(!setCloseGB.isEmpty()) {
                 for(Map<String, String> mapTarget : listOrderType) {
                     if(setCloseGB.contains(mapTarget.get('value'))) {

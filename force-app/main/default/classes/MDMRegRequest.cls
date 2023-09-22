@@ -2,8 +2,8 @@
  * @description       : 
  * @author            : ChangeMeIn@UserSettingsUnder.SFDoc
  * @group             : 
- * @last modified on  : 09-21-2023
- * @last modified by  : joohyeon.jang@dkbmc.com
+ * @last modified on  : 09-22-2023
+ * @last modified by  : yeonji.lim@dkbmc.com
 **/
 public without sharing class MDMRegRequest {
     /**
@@ -200,6 +200,9 @@ public without sharing class MDMRegRequest {
             System.debug('listOrderType =>' + listCustomerOrderType);
 
         }catch(Exception e) {
+            System.debug('message => ' + e.getMessage());
+            System.debug('trace => ' + e.getStackTraceString());
+            
             strStatus = 'ERROR';
             strMessage = e.getMessage()+' Line : '+e.getLineNumber();
         }

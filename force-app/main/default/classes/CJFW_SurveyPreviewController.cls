@@ -14,14 +14,14 @@ public with sharing class CJFW_SurveyPreviewController {
         public String question { get; set; }
         @AuraEnabled
         // public String  answer { get; set; }
-        public List<String> answers { get; set; }
+        public String answer { get; set; }
         
 
-        public SurveyQuestionResponse(String question, List<String> answers) {
+        public SurveyQuestionResponse(String question, String answer) {
             this.question = question;
-            this.answers = answers;
+            this.answer =answer;
         }
-       
+        
         
     }
 
@@ -70,22 +70,41 @@ public with sharing class CJFW_SurveyPreviewController {
       
        
         List<SurveyQuestionResponse> totalList = new List<SurveyQuestionResponse>();
- 
+        // FM_Question__c와 SurveyOption__r.Name을 관리하기 위한 맵 생성
+        Map<String, List<String>> questionToOptionsMap = new Map<String, List<String>>();
+
         for (CJFW_SurveyResult__c ru : resultList) {
             String question = ru.FM_Question__c;
-            List<String> answers = new List<String>();
+
+            String answer;
 
             if (ru.OpenEnded__c != null) {
-                answers.add (ru.OpenEnded__c);
-            } else if (ru.OpenEnded__c == null && ru.SurveyOption__r.Name != null) {
-                answers.add (ru.SurveyOption__r.Name);
+                answer = ru.OpenEnded__c;
+            }  else if (ru.OpenEnded__c == null && ru.SurveyOption__r.Name != null) {
+                // SurveyOption__r.Name을 가져올 리스트를 생성
+                List<String> optionNames = new List<String>();
+                
+                // 같은 질문에 대한 SurveyOption__r.Name 값을 가져와서 저장
+                if (questionToOptionsMap.containsKey(question)) {
+                    optionNames = questionToOptionsMap.get(question);
+                }
+                
+                optionNames.add(ru.SurveyOption__r.Name);
+                
+                // SurveyOption__r.Name 값이 있는 경우 콤마로 연결하여 저장
+                if (!optionNames.isEmpty()) {
+                    answer = String.join(optionNames, ', ');
+                }
+                
+                // 다음에 이 질문에 대한 다른 답변이 올 경우를 대비해 맵에 저장
+                questionToOptionsMap.put(question, optionNames);
             } else if (ru.OpenEnded__c == null && ru.SurveyOption__r.Name == null && ru.DateResult__c !=null){
-                answers.add(String.valueOf(ru.DateResult__c));
+                answer =String.valueOf(ru.DateResult__c);
             } else {
-                answers.add(DateTime.newInstance(2000, 1, 1, ru.TimeResult__c.hour(), ru.TimeResult__c.minute(), ru.TimeResult__c.second()).format('a hh:mm'));
+                answer = DateTime.newInstance(2000, 1, 1, ru.TimeResult__c.hour(), ru.TimeResult__c.minute(), ru.TimeResult__c.second()).format('a hh:mm');
             }
 
-            SurveyQuestionResponse response = new SurveyQuestionResponse(question, answers);
+            SurveyQuestionResponse response = new SurveyQuestionResponse(question, answer);
             totalList.add(response);
         }
 

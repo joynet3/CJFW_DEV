@@ -30,6 +30,18 @@ public without sharing class DecisionProcessNewController {
         return mapInitData;
     }
 
+    @AuraEnabled
+    public static List<Opportunity> getOwner(Id recordId, Opportunity objOpportunity){
+        try {List<Opportunity> listOwner = [SELECT Id, RecordTypeId , RecordType.name , StageName
+                                            FROM Opportunity
+                                            WHERE Id=:recordId];
+            
+            return listOwner;
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
     /**
      * 품의이력 생성
      * 
@@ -68,7 +80,7 @@ public without sharing class DecisionProcessNewController {
                 } else if ( DocType == 'CRM005' ){
                     file = new pagereference('/apex/ESM_OpenApproval');
                 }
-    
+
                 file.getParameters().put('Id', objDecisionProcess.Opportunity__c ); 
     
                 Blob body ;

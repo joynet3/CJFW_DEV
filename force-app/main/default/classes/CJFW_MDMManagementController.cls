@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 09-21-2023
+ * @last modified on  : 09-22-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -12,51 +12,84 @@ public with sharing class CJFW_MDMManagementController {
 
     /**
      * @description RecordTypeName으로 RecordTypeId Return해주기
-     * @params recordId MDMRegRequestCustomer Id     
-     * @params mdmCustomerType MDM 고객 구분(MDMParent : 본점, MDMChild : 판매처, MDMManagement : 관리처)  
+     * 
      * @return      `String`
      */
     @AuraEnabled
-    public static DataWrapper doInit(id recordId){
+    public static DataWrapper setDefaultInfo(string  recordTypeName){
         DataWrapper objWrapper = new DataWrapper();
-        String strStatus = 'SUCCESS';                          // Success 메세지
-        String strMessage = '';                                // Error 메세지 
-        String MDMRecordTypeId = '';                           // MDMRegRequestCustomer__c의 recordTypeId
-        String strObjectType = 'MDMRegRequestCustomer__c';     // ObjectName
-        String mdmCustomerType = 'MDMManagement';              // recordTypeName
+        String strStatus = 'SUCCESS';
+        String MDMRecordTypeId = '';
+        String strObjectType = 'MDMRegRequestCustomer';
 
-        /**
-         * 1) 생성, 수정 + AccountDetail 수정  (X)
-         * 2) 생성, 수정                       (O)         
-         */
-    try {
+        system.debug('>>> setDefaultInfo ' + recordTypeName);
         
-        User objUser = [
-                SELECT Id, LastName, EmployeeNumber FROM User
-                WHERE Id =:UserInfo.getUserId()
-        ];
-        system.debug('json.objUser ' + JSON.serialize(objUser));
+        User objUser =[
+            SELECT Id,  LastName,  EmployeeNumber FROM User
+            WHERE Id =:UserInfo.getUserId()
+            ];
             
             objWrapper.objUser = objUser;
             system.debug('objUser ' + JSON.serialize(objUser));
         
-        if(strObjectType == 'MDMRegRequestCustomer__c'){
-            MDMRecordTypeId = Schema.SObjectType.MDMRegRequestCustomer__c.getRecordTypeInfosByDeveloperName().get(mdmCustomerType).getRecordTypeId();
+        if(strObjectType == 'MDMRegRequestCustomer'){
+            MDMRecordTypeId = Schema.SObjectType.MDMRegRequestCustomer__c.getRecordTypeInfosByDeveloperName().get(recordTypeName).getRecordTypeId();
             system.debug('>>> setDefaultInfo ' + MDMRecordTypeId);
             objWrapper.listCustomerOrderType = CommonUtil.getPickListValues('MDMRegRequestCustomer__c',  'PV_ODCLOSEGB__c',  true);
             system.debug('objWrapper.listCustomerOrderType ' + Json.serialize(objWrapper.listCustomerOrderType));
         }
-        
-    }catch(Exception e){
-        strStatus = 'ERROR';
-        strMessage = e.getMessage()+' Line : '+e.getLineNumber();
-    
-    }
-        objWrapper.MDMRecordTypeId = MDMRecordTypeId;
         objWrapper.strStatus = strStatus;
-        objWrapper.strMessage = strMessage;
+        objWrapper.MDMRecordTypeId = MDMRecordTypeId;
         return objWrapper;
     }
+
+    /**
+     * @description RecordTypeName으로 RecordTypeId Return해주기
+     * @params recordId MDMRegRequestCustomer Id     
+     * @params mdmCustomerType MDM 고객 구분(MDMParent : 본점, MDMChild : 판매처, MDMManagement : 관리처)  
+     * @return      `String`
+     */
+    // @AuraEnabled
+    // public static DataWrapper doInit(id recordId){
+    //     DataWrapper objWrapper = new DataWrapper();
+    //     String strStatus = 'SUCCESS';                          // Success 메세지
+    //     String strMessage = '';                                // Error 메세지 
+    //     String MDMRecordTypeId = '';                           // MDMRegRequestCustomer__c의 recordTypeId
+    //     String strObjectType = 'MDMRegRequestCustomer__c';     // ObjectName
+    //     String mdmCustomerType = 'MDMManagement';              // recordTypeName
+
+    //     /**
+    //      * 1) 생성, 수정 + AccountDetail 수정  (X)
+    //      * 2) 생성, 수정                       (O)         
+    //      */
+    // try {
+        
+    //     User objUser = [
+    //             SELECT Id, LastName, EmployeeNumber FROM User
+    //             WHERE Id =:UserInfo.getUserId()
+    //     ];
+    //     system.debug('json.objUser ' + JSON.serialize(objUser));
+            
+    //         objWrapper.objUser = objUser;
+    //         system.debug('objUser ' + JSON.serialize(objUser));
+        
+    //     if(strObjectType == 'MDMRegRequestCustomer__c'){
+    //         MDMRecordTypeId = Schema.SObjectType.MDMRegRequestCustomer__c.getRecordTypeInfosByDeveloperName().get(mdmCustomerType).getRecordTypeId();
+    //         system.debug('>>> setDefaultInfo ' + MDMRecordTypeId);
+    //         objWrapper.listCustomerOrderType = CommonUtil.getPickListValues('MDMRegRequestCustomer__c',  'PV_ODCLOSEGB__c',  true);
+    //         system.debug('objWrapper.listCustomerOrderType ' + Json.serialize(objWrapper.listCustomerOrderType));
+    //     }
+        
+    // }catch(Exception e){
+    //     strStatus = 'ERROR';
+    //     strMessage = e.getMessage()+' Line : '+e.getLineNumber();
+    
+    // }
+    //     objWrapper.MDMRecordTypeId = MDMRecordTypeId;
+    //     objWrapper.strStatus = strStatus;
+    //     objWrapper.strMessage = strMessage;
+    //     return objWrapper;
+    // }
 
     /**
      * 출고센터, 고객분류 변경시 고객 주문마감 유형코드 SelectList 변경
@@ -159,7 +192,7 @@ public with sharing class CJFW_MDMManagementController {
      * @return      `String`
      */ 
     @AuraEnabled
-    public static List<AccountDataWrapper> getAccountInfo(String selectedId){
+    public static List<AccountDataWrapper> getAccountReferenceInfo(String selectedId){
         system.debug('### CJFW_MDMManagementController.getAccountInfo(String selectedId) ### ');
         system.debug('>>> Division Account Id ' + selectedId);
         List<AccountDataWrapper> result = new List<AccountDataWrapper>();
@@ -645,10 +678,8 @@ public with sharing class CJFW_MDMManagementController {
      * @return      `EditMDMRequest`
      */
     @AuraEnabled 
-    public static EditMDMRequest getAccountToMdm(String accountId){
+    public static EditMDMRequest getAccountInfo(String accountId){
 
-        system.debug('#CJFW_MDMManagementController > getAccountToMdm()');
-        system.debug('>>> accountId ' + accountId);
         Id recordIdEx = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('ExistingCustomer').getRecordTypeId();
 
         EditMDMRequest result = new EditMDMRequest();
@@ -786,11 +817,6 @@ public with sharing class CJFW_MDMManagementController {
                 FROM MDMRegRequestCustomer__c
                 WHERE PV_KUNNR__c =: accountList[0].CustomerId__c];
 
-            system.debug('mdmRegRequestCustomerList[0].PV_VKGRP__c' + json.serialize(mdmRegRequestCustomerList[0].PV_VKGRP__c));
-            system.debug('mdmRegRequestCustomerList[0].PV_VKGRP_lu__c' + json.serialize(mdmRegRequestCustomerList[0].PV_VKGRP_lu__c));
-            
-
-
             Account account = accountList[0];
             
             List<Contact> contacts = account.Contacts;
@@ -806,7 +832,6 @@ public with sharing class CJFW_MDMManagementController {
              */
             if(mdmRegRequestCustomerList.isEmpty()){
                 system.debug('>>> MDM에서 온 데이터');
-                system.debug('>>> mdmRegRequestCustomerList[0].PV_VKGRP__c ' + mdmRegRequestCustomerList[0].PV_VKGRP__c);
                 /**
                  * isCRM  = true  : sfdc에서 생성 된 acocunt 
                  * isCRM  = false : MDM에서 꽂힌 데이터
@@ -818,7 +843,6 @@ public with sharing class CJFW_MDMManagementController {
             // 승인으로 온 친구 upsert
             }else{
                 system.debug('>>> 승인으로 온 친구');
-                system.debug('>>> mdmRegRequestCustomerList[0].PV_VKGRP__c ' + mdmRegRequestCustomerList[0].PV_VKGRP__c);
                 /**
                 * isCRM  = true  : sfdc에서 생성 된 acocunt 
                 * isCRM  = false : MDM에서 꽂힌 데이터
@@ -997,6 +1021,19 @@ public with sharing class CJFW_MDMManagementController {
         }
       
         return result;
+    }
+
+        /**
+     * @description [코드정리해야함 공통화 해]
+     *              수정 일 경우(AccountId가 존재) 
+     *              AccountId로 MDM오브젝트 조회하여 저장되어 있는 필드와 값을 래퍼클래스에 매핑하여 화면에 리턴
+     * 
+     * @return      `EditMDMRequest`
+     */
+    @AuraEnabled 
+    public static EditMDMRequest getMDMInfo(String mdmId){
+        
+        return null;
     }
 
     /**

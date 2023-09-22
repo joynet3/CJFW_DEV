@@ -43,9 +43,9 @@ public with sharing class CJFW_MDMBulkAccountSearchController {
 
             String strQuery = 'SELECT Id, CustomerID__c, Name, Owner.Name';
             strQuery += '   FROM    Account';
-            strQuery += '   WHERE   CustomerType__c IN ( \'' + searchCode + '\' )';
+            strQuery += '   WHERE   CustomerType__c IN ( \'' + searchCode + '\' ) AND CustomerId__c != NULL ';
             if(searchWord <> null) {
-                strQuery += '   AND     (Name LIKE \'%' + searchWord + '%\' OR OwnerId LIKE \'%' + searchWord + '%\')';
+                strQuery += '   AND     (Name LIKE \'%' + searchWord + '%\' OR Owner.Name LIKE \'%' + searchWord + '%\')';
             }
 
             System.debug('============> strQuery : '+strQuery);
