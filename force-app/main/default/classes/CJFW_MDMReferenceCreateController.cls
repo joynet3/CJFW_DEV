@@ -2,36 +2,13 @@
  * @description       : 
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 08-31-2023
+ * @last modified on  : 09-20-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
  * 1.0   08-24-2023   joohyeon.jang@dkbmc.com   Initial Version
 **/
 public with sharing class CJFW_MDMReferenceCreateController {
-    
-    // /** 
-    //  * @description 참조생성 모달 로딩 시, Default 데이터 (Account데이터 10개)
-    //  * 
-    //  * @return      `String`
-    //  */ 
-    // @AuraEnabled
-    // public static List<DataWrapper> doInit(){
-    //     system.debug('### CJFW_MDMReferenceCreateController > doInit(pageNumber, pageSize)');
-    //     List<DataWrapper> result = new List<DataWrapper>();
-
-    //     List<Account> accList = doSelect(null, null, null);
-    //     system.debug('>>> accList ' + JSON.serialize(accList));
-
-
-    //     if(!AccList.isEmpty()) {
-    //         for(Account acc : accList){
-    //             result.add(new DataWrapper(acc));
-    //         }
-    //     }
-    //     return result;
-    // }
-
      /**
      * @description 참조생성 모달 > 검색어 입력 후 검색 > 검색어로 Like 
      * 

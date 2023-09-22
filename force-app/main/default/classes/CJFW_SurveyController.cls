@@ -4,16 +4,26 @@
 *@group  Survey
 *@author 진현욱
 *@since 2023-08-01  최초작성
-
-*@group  Survey
+*
 *@author 최선경
 *@since 2023-09-06  샘플 코드 삭제
+*
+*@author 진현욱
+*@since 2023-09-20  설문지 Edit 버전 추가
 */
 public with sharing class CJFW_SurveyController {
     public CJFW_SurveyController() {
 
     }
+    @AuraEnabled
+    public static String getCurrentUserInfo(){
+        User currentUser = [SELECT Id, Profile.Name FROM User WHERE Id = :UserInfo.getUserId()];
+        
+        String profileName = currentUser.Profile.Name;
+        System.debug('현재 프로필: ' + profileName);
+        return profileName;
 
+    }
     /**
     * surveyType 정보 가져오기
     *
@@ -25,37 +35,12 @@ public with sharing class CJFW_SurveyController {
             Map<String,Object> result = new Map<String,Object>();
             List<selectOption> optionList = new List<selectOption>();
 
-            // //Sample 용
-            // Set<String> recordIdSet = new Set<String>{
-            //     'a1U0w000001cJd4EAE',  'a1U0w000001cJd9EAE'
-                
-            // };
-
-            // if(UserInfo.getUserId() == Id.valueOf('0050w000005XKvNAAW' || id.valueOf('0050w000005hLr4AAE'))) {
-            //     // recordIdSet.add('a1U0w000001cA9AEAU');
-            //     // recordIdSet.add('a1U0w000001cHsbEAE');
-            //     // recordIdSet.add('a1U0w000001casYEAQ');
-            //     recordIdSet.add('a1U0w000001casdEAA');
-            //     recordIdSet.add('a1U0w000001casxEAA');
-            //     recordIdSet.add('a1U0w000001cat2EAA');
-            //     recordIdSet.add('a1U0w000001casiEAA');
-            // }
-            // //'a1U0w000001cA9AEAU' Sample 스무고개 설문 - 개발
-            // //'a1U0w000001cHsbEAE' 주문목적 유형(TEST) - 개발
-            // //'a1U0w000001cJd4EAE' //주문정보
-            // //'a1U0w000001cJd9EAE' //확인사항
-            // //'a1U0w000001casYEAQ' //[Test 유형]
-            // // 'a1U0w000001casdEAA' //아이누리
-            // // 'a1U0w000001casxEAA' //헬씨누리
-            // // 'a1U0w000001cat2EAA' //원료 솔루션
-            // // 'a1U0w000001casiEAA' //급식 솔루션
             List<CJFW_Survey__c> surveyList =[
                 select
                     Id
                     , Name
                     , Description__c
                 from CJFW_Survey__c 
-                // where Id IN :recordIdSet //테스트시..
             ];
 
             for(CJFW_Survey__c survey : surveyList) {
@@ -82,10 +67,24 @@ public with sharing class CJFW_SurveyController {
     public static Map<String,Object> getSurvey(Map<String,Object> params){
         try {
             Map<String,Object> result = new Map<String,Object>();
-            result.put('params', params);
-            String recordId = (String) params.get('recordId');
-            CJFW_Survey survey = new CJFW_Survey(recordId);
+            result.put('params', params);                           //params 확인용
             
+            String recordId = (String) params.get('recordId');
+            String mode     = (String) params.get('mode');
+            String responseId;
+            if(params.get('surveyResponseId') != null) responseId = (String) params.get('surveyResponseId');
+
+            CJFW_Survey survey;
+
+            switch on mode {
+                when  'create'{
+                    survey = new CJFW_Survey(recordId);
+                }
+                when 'edit' {
+                    survey = new CJFW_Survey(recordId,responseId);
+                }
+            }
+
             if(survey != null) {
                 
                 System.debug(
@@ -109,33 +108,62 @@ public with sharing class CJFW_SurveyController {
    @AuraEnabled
     public static Map<String,Object> saveSurveyResponse(Map<String,Object> params){
         try {
+            
             Map<String,Object> result = new Map<String,Object>();
             result.put('params', params);
 
+            String mode = (String) params.get('mode');
+            String objectApiName;
             Id recordId =  Id.valueOf((String)params.get('recordId'));
-            String objectApiName = (String) params.get('objectApiName');
+            if(params.get('objectApiName') != null) objectApiName = (String) params.get('objectApiName');
+
             Id surveyTypeId  = Id.valueOf((String)params.get('surveyTypeId'));
+            Id surveyResponseId;
+            if(params.get('surveyResponseId') != null) surveyResponseId = Id.valueOf((String) params.get('surveyResponseId'));
             
             List<Object> objList = (List<Object>) JSON.deserializeUntyped(JSON.serialize(params.get('selectedValueList')));
             System.debug(objList);
-            
-            /** */
-            CJFW_SurveyResponse__c response = new CJFW_SurveyResponse__c();
-            
-            switch on objectApiName {
-                when 'Lead' {
-                    response.Lead__c = recordId;
-                }when 'Account' {
-                    response.Account__c = recordId;
-                }when 'Opportunity' {
-                    response.Opportunity__c = recordId;
+            CJFW_SurveyResponse__c response;
+            switch on mode {
+                when 'create' {
+                    /** */
+                    response = new CJFW_SurveyResponse__c();
+
+                    switch on objectApiName {
+                        when 'Lead' {
+                            response.Lead__c = recordId;
+                        }when 'Account' {
+                            response.Account__c = recordId;
+                        }when 'Opportunity' {
+                            response.Opportunity__c = recordId;
+                        }
+                    }
+
+                    response.ResponseDate__c = Date.today();
+                    response.Survey__c = surveyTypeId;
+
+                    insert response;
+                }when 'edit' {
+                    //edit 일 때는 이전 설문지 결과 데이터 삭제 후 신규 생성 : 복수개의 객관식 때문에 수정하기 어려움..        
+                    
+                    List<CJFW_SurveyResult__c> existSurveyResultList = [
+                        select id
+                        from CJFW_SurveyResult__c
+                        where SurveyResponse__c = :surveyResponseId
+                    ];
+
+                    delete existSurveyResultList;
+
+                    response = [ 
+                        select 
+                            id
+                         from 
+                            CJFW_SurveyResponse__c 
+                        where 
+                            id = :surveyResponseId
+                    ];
                 }
             }
-
-            response.ResponseDate__c = Date.today();
-            response.Survey__c = surveyTypeId;
-
-            insert response;
 
             List<CJFW_SurveyResult__c> responsResultList = new List<CJFW_SurveyResult__c>();
 
@@ -153,13 +181,15 @@ public with sharing class CJFW_SurveyController {
                         if(Boolean.valueOf(question.get('isMultipleChoice'))) {
                             //복수선택
                             List<String> selectedValueList = (List<String>) JSON.deserialize(JSON.serialize(question.get('selectedValue')), List<String>.class);
+                            Integer idx = 0;
                             for(String selectedValue : selectedValueList) {
                                 CJFW_SurveyResult__c fromData = surveyResult.clone(false, true, false, false);
                                 fromData.SurveyOption__c = selectedValue;
                                 //마지막 데이터 제외하고 Add 마지막 데이터는 마지막에 공통 Add
-                                responsResultList.add(fromData);
+                                if(idx < selectedValueList.size()-1) responsResultList.add(fromData);
+                                idx++;
                             }
-
+                            
                             surveyResult.SurveyOption__c = selectedValueList[selectedValueList.size()-1];
 
                         }else {
@@ -203,11 +233,7 @@ public with sharing class CJFW_SurveyController {
             }
             insert responsResultList;
             
-
-
             result.put('insertData', response);
-            /* */
-            //result.put('')
 
             return result;
         } catch (Exception e) {

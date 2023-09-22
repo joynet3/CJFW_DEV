@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : sunkyung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 09-16-2023
+ * @last modified on  : 09-22-2023
  * @last modified by  : sunkyung.choi@dkbmc.com
 **/
 public with sharing class CJFW_SurveyPreviewController {
@@ -13,15 +13,15 @@ public with sharing class CJFW_SurveyPreviewController {
         @AuraEnabled
         public String question { get; set; }
         @AuraEnabled
-        public String  answer { get; set; }
-        // @AuraEnabled
-        // public Boolean  isClicked { get; set; }
+        // public String  answer { get; set; }
+        public List<String> answers { get; set; }
+        
 
-        public SurveyQuestionResponse(String question, String answer) {
+        public SurveyQuestionResponse(String question, List<String> answers) {
             this.question = question;
-            this.answer = answer;
-            // this.isClicked = false;
+            this.answers = answers;
         }
+       
         
     }
 
@@ -73,20 +73,19 @@ public with sharing class CJFW_SurveyPreviewController {
  
         for (CJFW_SurveyResult__c ru : resultList) {
             String question = ru.FM_Question__c;
-            String answer;
-        
-           
-
+            List<String> answers = new List<String>();
 
             if (ru.OpenEnded__c != null) {
-                answer = ru.OpenEnded__c;
+                answers.add (ru.OpenEnded__c);
             } else if (ru.OpenEnded__c == null && ru.SurveyOption__r.Name != null) {
-                answer = ru.SurveyOption__r.Name;
-            } else{
-                answer =String.valueOf(ru.DateResult__c);
+                answers.add (ru.SurveyOption__r.Name);
+            } else if (ru.OpenEnded__c == null && ru.SurveyOption__r.Name == null && ru.DateResult__c !=null){
+                answers.add(String.valueOf(ru.DateResult__c));
+            } else {
+                answers.add(DateTime.newInstance(2000, 1, 1, ru.TimeResult__c.hour(), ru.TimeResult__c.minute(), ru.TimeResult__c.second()).format('a hh:mm'));
             }
 
-            SurveyQuestionResponse response = new SurveyQuestionResponse(question, answer);
+            SurveyQuestionResponse response = new SurveyQuestionResponse(question, answers);
             totalList.add(response);
         }
 

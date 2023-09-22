@@ -104,9 +104,10 @@ public without sharing class LineItemMgmtController {
         
         listCategory  = [ SELECT   Id, Name, gd_cls_lvl_dpt__c, upp_gd_cls_id__c, IsActive__c, gd_cls_id__c
                            FROM     ProductCategory__c 
-                           WHERE    gd_cls_lvl_dpt__c  IN ('1','2')
+                           WHERE    gd_cls_lvl_dpt__c  IN ('1','2') 
+                           AND      gd_cls_id__c NOT IN ('59','60','80','81') // 230929 최은영 : 대분류 필터 추가 
                            AND      IsActive__c = true
-                           ORDER BY gd_cls_lvl_dpt__c, upp_gd_cls_id__c ASC
+                           ORDER BY gd_cls_lvl_dpt__c, gd_cls_id__c ASC
                         ];       
 
         listCategoryL.add(new Map<String, String>{
@@ -236,7 +237,7 @@ public without sharing class LineItemMgmtController {
         else {
             query += ' ORDER BY ' + selectedMonth + '__c ' + 'ASC ';
         }
-        query += ' LIMIT    5 ' ; 
+        //  query += ' LIMIT    5 ' ; 
 
         System.debug('# doSearch 최종검색쿼리 -> ' + query);
 

@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : ChangeMeIn@UserSettingsUnder.SFDoc
  * @group             : 
- * @last modified on  : 08-18-2023
+ * @last modified on  : 09-21-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
 **/
 public without sharing class MDMRegRequest {
@@ -31,6 +31,7 @@ public without sharing class MDMRegRequest {
             ];
 
             objWrapper.objUser = objUser;
+            system.debug('### objWrapper.objUser '+ objWrapper.objUser);
 
             // Opportunity에서 MDM 신규고객등록 버튼 클릭시
             if(strObjectType == 'Opportunity') {
@@ -186,6 +187,7 @@ public without sharing class MDMRegRequest {
 
             if(!setCloseGB.isEmpty()) {
                 for(Map<String, String> mapTarget : listOrderType) {
+                    System.debug('listOrderType[mapTarget]  =>' + mapTarget);
                     if(setCloseGB.contains(mapTarget.get('value'))) {
                         listCustomerOrderType.add(mapTarget);
                     }
@@ -193,8 +195,10 @@ public without sharing class MDMRegRequest {
             }else {
                 listCustomerOrderType = listOrderType;
             }
-
+            
             objWrapper.listCustomerOrderType = listCustomerOrderType;
+            System.debug('listOrderType =>' + listCustomerOrderType);
+
         }catch(Exception e) {
             strStatus = 'ERROR';
             strMessage = e.getMessage()+' Line : '+e.getLineNumber();
@@ -208,9 +212,9 @@ public without sharing class MDMRegRequest {
 
     public class DataWrapper {
         @AuraEnabled
-        public String strStatus {get;set;}
+        public String strStatus {get;set;}      // 성공, 실패
         @AuraEnabled
-        public String strMessage {get;set;}
+        public String strMessage {get;set;}     // 에러메세지
         @AuraEnabled
         public String strObjectType {get;set;}
         @AuraEnabled

@@ -2,8 +2,8 @@
  * @description       : Opportunity 관련 데이터를 가져오는 controller 
  * @author            : eunyoung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 09-12-2023
- * @last modified by  : yeonji.lim@dkbmc.com
+ * @last modified on  : 09-21-2023
+ * @last modified by  : jieun.lee3@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
  * 1.0   09-05-2023   eunyoung.choi@dkbmc.com   Initial Version
@@ -76,6 +76,23 @@ public with sharing class OpportunityGetInfoController {
 
             throw new AuraHandledException(e.getMessage());
         }
+    }
+
+    /*
+    * 품의 생성시 Opportunity 진행 상태 값 확인
+    */
+    @AuraEnabled
+    public static List<Opportunity> getStage(String recordId) {
+        try {
+            return[
+                SELECT Id, StageName
+                FROM Opportunity
+                WHERE Id =:recordId
+            ];
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+
     }
 
 

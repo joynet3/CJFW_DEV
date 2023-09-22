@@ -10,12 +10,18 @@
 **/
 public with sharing class CJFW_CreateNewReportPageController {
     
-    /* 품의생성 데이터 관련 변수 */
-    public String recordId { get; set; }
+    public String OpptyId { get; set; }
     public DecisionProcess__c decisionProcessRecord { get; set; }
     
+    /* 
+     * 생성자
+     */
     public CJFW_CreateNewReportPageController() {
-        // url에서 레코드 아이디 가져와야함
+        
+        OpptyId = '0060w00000D8yoKAAR'; // 추후 url에서 Id값 가져오는 걸로 변경예정 
+        // OpptyId = ApexPages.currentPage().getParameters().get('recordId');
+        // System.debug('Id = ' + OpptyId);
+        
         getRecord();
     }
 
@@ -39,7 +45,9 @@ public with sharing class CJFW_CreateNewReportPageController {
                                         OpptyDescription__c,
                                         AttachedDocument__c
                                 FROM DecisionProcess__c 
-                                LIMIT 1];
+                                WHERE Opportunity__c =: OpptyId
+                                ORDER BY CreatedDate DESC
+                                LIMIT 1]; 
     }
 
 }

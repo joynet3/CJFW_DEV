@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : yejoo.lee@dkbmc.com
  * @group             : 
- * @last modified on  : 09-14-2023
+ * @last modified on  : 09-19-2023
  * @last modified by  : yejoo.lee@dkbmc.com
 **/
 public with sharing class CJFW_CommRelatedListController {
@@ -82,13 +82,18 @@ public with sharing class CJFW_CommRelatedListController {
 
         String fieldString = getFieldListString(targetObjectApiName);
 
-        String dataQuery =  ' SELECT ' + fieldString + ', ' + addFieldString +
-                            ' FROM ' + targetObjectApiName +
+        String dataQuery =  ' SELECT ' + fieldString ;
+
+        if(addFieldString != '' && addFieldString != null){
+                dataQuery += ', ' + addFieldString;
+        }
+
+                dataQuery +=' FROM ' + targetObjectApiName +
                             ' WHERE ' + sqlCondition;
         
-                            if(sortBy != '' && sortDirection != ''){
-            dataQuery    += ' ORDER BY ' + sortBy + ' ' + sortDirection +
-                            ' NULLS LAST ';
+        if(sortBy != '' && sortDirection != ''){
+                dataQuery    += ' ORDER BY ' + sortBy + ' ' + sortDirection +
+                                ' NULLS LAST ';
         }
         
         dataQuery   += ' LIMIT ' + recordLimit

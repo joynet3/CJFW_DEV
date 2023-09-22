@@ -27,12 +27,6 @@ public class IFN_EIF1003_RE001_MD001 {
         try {
             IFN_EIF1003_Callout callout = new IFN_EIF1003_Callout(this.interfaceId, 'Real');
             calloutResult = callout.getResponse(this.interfaceId, JSON.serialize(this.param));
-
-            if ('S'.equals(calloutResult.result)) {
-
-            } else {
-
-            }
         } catch (Exception e) {
             this.logWrap.ErrorCode = '-1';
             this.logWrap.ErrorText.add(e.getLineNumber() + e.getMessage() + e.getStackTraceString());
@@ -44,10 +38,10 @@ public class IFN_EIF1003_RE001_MD001 {
     }
 
     public class RE001RequestWrapper {
-//        public String start_at = String.valueOf(System.today().addDays(-1));
-        public String start_at = '2023-09-10';
+        public String start_at = String.valueOf(System.today().addDays(-1));        //-1Day까지 등록된 데이터를 가져오기 위해 today - 1로 날짜 지정
+//        public String start_at = '2023-09-10';
         public Integer page {get;set;}
-        public Integer per = 1;
+        public Integer per = 200;                                                   // 한 페이지에 나타낼 명함첩 갯수
     }
 
     public class RE001ResultWrapper {

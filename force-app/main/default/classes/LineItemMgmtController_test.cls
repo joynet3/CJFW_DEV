@@ -42,11 +42,25 @@ private class LineItemMgmtController_test {
         }
 
         insert listIF;
+        
+        List<Product2> productList = new List<Product2>();
+        // product 1개 생성 , 필수값 넣어줘야 생성 됨.
+       
+        
+       
+        
 	}
 
     @isTest 
     static void itShould() {
 
+        //product
+        Product2 pro = new Product2(
+            Name = 'AProduct'
+        );
+        insert pro;
+
+        LineItemMgmtController.getProduct(pro.id);
 
         Account objAccount = TestObjectCreator.objHealthAccount;
         insert objAccount;
@@ -154,7 +168,7 @@ private class LineItemMgmtController_test {
 
         LineItemMgmtController.doChunkQuote('Delete', listChunkQuoteDelete);
         LineItemMgmtController.doChunkOppty('Delete', listChunkOpptyDelete);
-
+        
         Test.stopTest();
     }
 

@@ -2,11 +2,11 @@
  * @description       : MDM 고객정보 전송
  * @author            : ChangeMeIn@UserSettingsUnder.SFDoc
  * @group             : 
- * @last modified on  : 03-08-2023
- * @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+ * @last modified on  : 09-22-2023
+ * @last modified by  : joohyeon.jang@dkbmc.com
 **/
 public without sharing class MDMSendBtn {
-    /** S
+    /** 
      * MDM 전송 버튼 Init
      * 
      * @param recordId MDMRegRequestCustomer Id

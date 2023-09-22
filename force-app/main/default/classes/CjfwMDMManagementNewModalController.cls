@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 08-09-2023
+ * @last modified on  : 09-21-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -22,7 +22,7 @@ public with sharing class CjfwMDMManagementNewModalController {
         try {
             List<workflow__c> categoryLevel1 = new List<workflow__c>();
             String page2catLevel1 = '1';
-            categoryLevel1 = [SELECT Id, Name, Page2LargeCode__c, Page2level__c, Page2ProcessId__c FROM workflow__c WHERE Page2level__c = :page2catLevel1  order by name];
+            categoryLevel1 = [SELECT Id, Name, Page2LargeCode__c, Page2level__c, Page2ProcessId__c FROM workflow__c WHERE Page2level__c = :page2catLevel1 ORDER BY Page2ProcessId__c asc];
             system.debug('>>> categoryLevel1 ' + categoryLevel1);
             return categoryLevel1;
         } catch (Exception e) {
@@ -37,12 +37,13 @@ public with sharing class CjfwMDMManagementNewModalController {
      *
      **/
     @AuraEnabled
-    public static List<workflow__c> getCategoryLevel2() {
-        
+    public static List<workflow__c> getCategoryLevel2(String page2LargeCode) {
+        system.debug(' ### CjfwMDMManagementNewModalController > getCategoryLevel2 ');
+        system.debug(' >>> getCategoryLevel2 >  ' + page2LargeCode);
+
         try {
             List<workflow__c> categoryLevel2 = new List<workflow__c>();
             String page2catLevel2 = '2';
-            String page2largeCode = '관리처';
 			categoryLevel2 = [SELECT Id, Name, Page2MidCategory__c, Page2Level__c FROM workflow__c WHERE Page2Level__c = :Page2CatLevel2 AND Page2LargeCode__c = :page2LargeCode];
             system.debug('>>> categoryLevel2 ' + categoryLevel2);
             

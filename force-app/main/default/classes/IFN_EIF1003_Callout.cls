@@ -32,9 +32,6 @@ public with sharing class IFN_EIF1003_Callout {
                     System.debug(' getResponse >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' + params);
                     result = IFN_EIF1003_RE001_MD001(interfaceId, params);
                 }
-                when 'IFN_EIF1003_RE001_MD002' {
-                    System.debug(' getResponse >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' + params);
-                }
             }
         } catch (Exception e) {
             result.setResult('E', e.getMessage(), null);
