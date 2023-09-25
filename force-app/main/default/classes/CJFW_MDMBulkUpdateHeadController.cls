@@ -53,8 +53,8 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
                 if(String.isBlank(bulkName) == true) {
                     bulkName = nameMaps.get(mdmCustomer[0].PV_KUNNR);
                 }
-
-                mdmRequestbulk.Name = bulkName + ' 외 ' + mdmCustomer.size() + '건';
+                
+                mdmRequestbulk.Name = bulkName + ' 외 ' + (mdmCustomer.size() -1) + '건';
                 insert mdmRequestbulk;
                 
                 for (MDMRequest mdm : mdmCustomer) {

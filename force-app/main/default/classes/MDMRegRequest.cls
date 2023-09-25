@@ -2,8 +2,8 @@
  * @description       : 
  * @author            : ChangeMeIn@UserSettingsUnder.SFDoc
  * @group             : 
- * @last modified on  : 09-22-2023
- * @last modified by  : yeonji.lim@dkbmc.com
+ * @last modified on  : 09-21-2023
+ * @last modified by  : joohyeon.jang@dkbmc.com
 **/
 public without sharing class MDMRegRequest {
     /**
@@ -22,7 +22,6 @@ public without sharing class MDMRegRequest {
         String MDMRecordTypeId = '';
         try {
             String strObjectType = String.valueOf(recordId.getSobjectType());
-            system.debug('1)정체가 뭘까 strObjectType : ' + strObjectType);
             objWrapper.strObjectType = strObjectType;
 
             User objUser = [
@@ -39,7 +38,7 @@ public without sharing class MDMRegRequest {
                 objWrapper.objOpportunity = [
                     SELECT  Id, AccountId, 
                             Account.Name, Account.OwnerId, Account.Owner.EmployeeNumber,
-                            Account.CompanyRegisterNumber__c, Account.RepresentativeName__c, Account.Phone
+                            Account.CompanyRegisterNumber__c, Account.RepresentativeName__c, Account.Phone //사업자등록번호,대표자이름
                     FROM    Opportunity where Id =:recordId
                 ];
 
@@ -200,9 +199,6 @@ public without sharing class MDMRegRequest {
             System.debug('listOrderType =>' + listCustomerOrderType);
 
         }catch(Exception e) {
-            System.debug('message => ' + e.getMessage());
-            System.debug('trace => ' + e.getStackTraceString());
-            
             strStatus = 'ERROR';
             strMessage = e.getMessage()+' Line : '+e.getLineNumber();
         }
