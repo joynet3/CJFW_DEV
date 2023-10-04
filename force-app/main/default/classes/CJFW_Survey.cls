@@ -83,9 +83,11 @@ public with sharing class CJFW_Survey {
                         , Name
                         , SurveyQuestion__c
                     from Survey_Option__r
+                    order by Order__c, Name
                 )
             from CJFW_SurveyQuestion__c       
             where Survey__c = :recordId
+            order by Order__c, Name
         ];
 
         for(CJFW_SurveyQuestion__c question : questionList) {
@@ -131,6 +133,8 @@ public with sharing class CJFW_Survey {
         }
 
         this.setQuestions(questionList, mappingKeySetMap);
+
+
     }
 
     /**
@@ -186,10 +190,8 @@ public with sharing class CJFW_Survey {
                 mappingOption.subQuestionList.add(mappingQuestionMap.get(surveyId));
             }
             
-            mappingOption.subQuestionList.sort();
+            //mappingOption.subQuestionList.sort();
         }
-        
-        this.questionList.sort();
         
         
         //설문 응답 Id 가 있을 경우 answerMap 데이터 존재
@@ -251,11 +253,16 @@ public with sharing class CJFW_Survey {
                 } 
             }
         }
-        this.questionList = parentQuestionList;
+        this.questionList = new List<Question>();
+        for(Question qWrapper : parentQuestionList) {
+            //최상위 부모에서 자식 질문 삭제
+            if(!qWrapper.isChild) {
+                this.questionList.add(qWrapper);
+            }
 
-        for(Question qWrapper : this.questionList) {
             qWrapper.optionList.sort();
         }
+        this.questionList.sort();
     }
 
     /**

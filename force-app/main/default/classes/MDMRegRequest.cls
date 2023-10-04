@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : ChangeMeIn@UserSettingsUnder.SFDoc
  * @group             : 
- * @last modified on  : 09-21-2023
+ * @last modified on  : 09-25-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
 **/
 public without sharing class MDMRegRequest {
@@ -243,6 +243,7 @@ public without sharing class MDMRegRequest {
     **/
     @AuraEnabled
     public static String saveRecords(MDMRegRequestCustomer__c customer, List<MDMRegRequestContact__c> contacts, List<MDMRegRequestBank__c> banks){
+        system.debug('@@@@@@@@@@@@@@ saveRecords > contacts 값 ' + json.serialize(contacts));
         Savepoint sp = Database.setSavepoint();
 
         try {

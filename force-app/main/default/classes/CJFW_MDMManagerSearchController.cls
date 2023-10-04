@@ -127,6 +127,73 @@ public with sharing class CJFW_MDMManagerSearchController {
         system.debug('>>> result.Name ' + json.serialize(result));
        return result;
    }
+    /**
+    * 연락처(Contact) 정보 저장
+    * 
+    * @params List<Contact> : 대상 연락처
+    *
+    **/
+    @AuraEnabled
+    public static void doSaveContact(string contactTarget){
+        try {
+            system.debug(' ################################### doSaveContact > contactTarget :: ' + contactTarget);
+            List<Contact> listContact = new List<contact>();
+            listContact = (List<Contact>) JSON.deserialize(contactTarget, List<Contact>.class);
+            if( !listContact.isEmpty()){
+               
+                // id가 없으면 Insert
+                List<Contact> insertConList = new List<Contact>();
+                // id가 있으면 Update
+                List<Contact> updateConList = new List<Contact>();
+                
+                for(Contact con : listContact)
+                {
+                    if(String.isNotBlank(con.Id))
+                    {
+                        Contact updateCon = new Contact();
+                        updateCon.LastName         = String.isBlank(con.LastName)         ? '' : con.LastName;
+                        updateCon.PV_KNVKGB__c     = String.isBlank(con.PV_KNVKGB__c)     ? '' : con.PV_KNVKGB__c;
+                        updateCon.MobilePhone      = String.isBlank(con.MobilePhone)      ? '' : con.MobilePhone;
+                        updateCon.Email            = String.isBlank(con.Email)            ? '' : con.Email;
+                        updateCon.PV_PAFKT_VK__c   = String.isBlank(con.PV_PAFKT_VK__c)   ? '' : con.PV_PAFKT_VK__c;
+                        updateCon.Department       = String.isBlank(con.Department)       ? '' : con.Department;
+                        updateCon.PV_TALKT_VK__c   = String.isBlank(con.PV_TALKT_VK__c)   ? '' : con.PV_TALKT_VK__c;
+                        updateCon.Id               = String.isBlank(con.Id)               ? '' : con.Id;
+                        updateCon.PV_KNVKGB__c               = String.isBlank(con.PV_KNVKGB__c) ? '' : con.PV_KNVKGB__c;
+                        updateConList.add(updateCon);
+                    }else{
+                        Contact insertCon = new Contact();
+                        insertCon.LastName         = String.isBlank(con.LastName)         ? '' : con.LastName;
+                        insertCon.PV_KNVKGB__c     = String.isBlank(con.PV_KNVKGB__c)     ? '' : con.PV_KNVKGB__c;
+                        insertCon.MobilePhone      = String.isBlank(con.MobilePhone)      ? '' : con.MobilePhone;
+                        insertCon.Email            = String.isBlank(con.Email)            ? '' : con.Email;
+                        insertCon.PV_PAFKT_VK__c   = String.isBlank(con.PV_PAFKT_VK__c)   ? '' : con.PV_PAFKT_VK__c;
+                        insertCon.Department       = String.isBlank(con.Department)       ? '' : con.Department;
+                        insertCon.PV_TALKT_VK__c   = String.isBlank(con.PV_TALKT_VK__c)   ? '' : con.PV_TALKT_VK__c;
+                        insertCon.PV_KNVKGB__c               = String.isBlank(con.PV_KNVKGB__c)  ? '' : con.PV_KNVKGB__c;
+                        insertConList.add(insertCon);
+                    }
+                }
+
+                if(!updateConList.isEmpty()){ update updateConList; }
+                if(!insertConList.isEmpty()){ insert insertConList; }
+            }
+
+            // Map<String, Object> cObjMap = (Map<String, Object>) JSON.deserializeUntyped(contactTarget);
+            // List<Object> listContact = (List<Object>) JSON.deserialize(contactTarget, Contact.class);
+            // system.debug('contactTarget :: ' + (List<Contact>) JSON.deserialize(contactTarget, List<Contact>.class)) ;
+            // for (Object objContact: listContact){
+
+            //     system.debug('contactTarget :: ' + (Contact) ((Object) objContact)) ;
+            // }
+            // if( !contactTarget.isEmpty()){
+            //     update contactTarget;
+            // }
+        } catch(Exception e){
+            system.debug('MDMRegRequest doSaveContact error : ' + e.getMessage() + ' (Line : ' + e.getLineNumber() + ')');
+            throw new AuraHandledException(e.getMessage() + ' (Line : ' + e.getLineNumber() + ')');
+        }
+    }
 
    public class ConatactDataWrapper { 
         //판매처에서 가져오는 기본정보

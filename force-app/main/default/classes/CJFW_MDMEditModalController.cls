@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 09-22-2023
+ * @last modified on  : 09-25-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -27,7 +27,8 @@ public with sharing class CJFW_MDMEditModalController {
         String customerType = '';
         
         system.debug(' >>> strObjectType ' + strObjectType);        
-
+        
+        // [2. MDMRegRequestCustomer__c에서 수정 시] 
         if(strObjectType == 'MDMRegRequestCustomer__c'){
             objWrapper.strObjectType = 'MDMRegRequestCustomer';
             system.debug(' ====================================> MDMRegRequestCustomer 에서 Edit 중');
@@ -39,6 +40,7 @@ public with sharing class CJFW_MDMEditModalController {
                 objWrapper.customerType = mdmRegRequestCustomer[0]?.PV_CUSTTYPE__c;
                 system.debug(' ====================================> mdmRegRequestCustomer[0]?.PV_CUSTTYPE__c ' + mdmRegRequestCustomer[0]?.PV_CUSTTYPE__c);
             }
+        // [3. Account Detail에서 수정 시]
         }else{
             objWrapper.strObjectType = 'Account';
             system.debug(' ====================================> Account 에서 Edit 중');
@@ -46,13 +48,20 @@ public with sharing class CJFW_MDMEditModalController {
                                         FROM Account
                                         WHERE Id =: recordId
                                         LIMIT 1];
+
+            List<Contact> listContact = [
+                SELECT Id, AccountId  FROM Contact WHERE AccountId =:recordId
+            ];
+
+            if(listContact <> null && listContact.size() > 0) {
+                objWrapper.isContact = true;
+            }
+            
             if(!accountList.isEmpty()) {
                 objWrapper.customerType = accountList[0]?.customerType__c;
                 system.debug(' ====================================> accountList[0]?.customerType__c ' + accountList[0]?.customerType__c);
             }
         }
-
-      
         return objWrapper;
     }
 
@@ -68,6 +77,8 @@ public with sharing class CJFW_MDMEditModalController {
         @AuraEnabled public String customerType {get;set;}
         /** @description Object Name*/
         @AuraEnabled public String strObjectType {get;set;}
+         /** @description Object Name*/
+         @AuraEnabled public Boolean isContact {get;set;}
 
         public DataWrapper() {}
     }

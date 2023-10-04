@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 09-22-2023
+ * @last modified on  : 09-25-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkAccountSearchController {
@@ -17,7 +17,9 @@ public with sharing class CJFW_MDMBulkAccountSearchController {
 
         String searchCode = null;
 
-        if(type == '판매처') {
+        if(type == '본점') {
+            searchCode = 'C01';
+        } else if(type == '판매처') {
             searchCode = 'C02';
         } else if(type == '관리처') {
             searchCode = 'C03\', \'C04\', \'C11';

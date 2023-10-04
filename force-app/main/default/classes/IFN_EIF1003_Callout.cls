@@ -32,6 +32,10 @@ public with sharing class IFN_EIF1003_Callout {
                     System.debug(' getResponse >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' + params);
                     result = IFN_EIF1003_RE001_MD001(interfaceId, params);
                 }
+                when 'IFN_EIF1003_CL001_MD001' {
+                    System.debug(' getResponse >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' + params);
+                    result = IFN_EIF1003_CL001_MD001(interfaceId, params);
+                }
             }
         } catch (Exception e) {
             result.setResult('E', e.getMessage(), null);
@@ -46,8 +50,10 @@ public with sharing class IFN_EIF1003_Callout {
     * @return IFN_CalloutResult
     * @request
         {
-            "start_at" : "2023-09-11"
-
+            "start_at" : "2023-09-11"                               //시작 날짜
+            "end_at"   : "2023-09-15"                               //종료 날짜
+            "per"      : 10                                         //한페이지에 나타낼 명함 데이터 갯수 (최대 500)
+            "page"     : 1                                          //per로 페이지를 나누었을때 몇번째 페이지를 가져올 지
         }
        @response
         {
@@ -107,13 +113,12 @@ public with sharing class IFN_EIF1003_Callout {
             IFN_ApiGateWay gateway = new IFN_ApiGateWay(interfaceId);
             String requestBody = fromDTO(reqparam);
 
-            System.debug(requestBody);
             HttpResponse response = gateway.webCallout(requestBody, null, true);
 
             responsedata = response.getBody();
 
             if (response.getStatusCode() == 200) {
-                infResponse.result = (IFN_EIF1003_RE001_MD001.RE001SuccessWrapper) JSON.deserialize((String) responsedata.replace('"default"','"defaultVal"'), IFN_EIF1003_RE001_MD001.RE001SuccessWrapper.class);
+                infResponse.result = (IFN_EIF1003_RE001_MD001.RE001SuccessWrapper) JSON.deserialize((String) responsedata.replace('"default"', '"defaultVal"'), IFN_EIF1003_RE001_MD001.RE001SuccessWrapper.class);
             } else {
                 infResponse.result = (IFN_EIF1003_RE001_MD001.RE001ErrorWrapper) JSON.deserialize((String) responsedata, IFN_EIF1003_RE001_MD001.RE001ErrorWrapper.class);
                 result_code = 'F';
@@ -131,6 +136,48 @@ public with sharing class IFN_EIF1003_Callout {
         return result;
     }
 
+    public IFN_CalloutResult IFN_EIF1003_CL001_MD001(String interfaceId, Object params) {
+        IFN_CalloutResult result = new IFN_CalloutResult();
+
+        String responsedata = '';
+        String result_code = 'S';
+        String result_message = 'Callout Success';
+
+        IFN_EIF1003_CL001_MD001.CL001ResultWrapper infResponse = new IFN_EIF1003_CL001_MD001.CL001ResultWrapper();
+        try {
+            System.debug('params >>>>>>>>>>>>>>>>>>>>>>>>>' + params);
+//            IFN_EIF1003_CL001_MD001.CL001RequestWrapper reqparam = new IFN_EIF1003_CL001_MD001.CL001RequestWrapper();
+//            reqparam = (IFN_EIF1003_CL001_MD001.CL001RequestWrapper) params;
+
+            IFN_ApiGateWay gateway = new IFN_ApiGateWay(interfaceId);
+            String requestBody = (String) JSON.deserializeStrict(JSON.serialize(params), String.class);
+
+            HttpResponse response = gateway.webCallout(requestBody, null, true);
+
+            responsedata = response.getBody();
+
+            String replaceToNcp = (String) responsedata.replaceAll('_ncp_', 'ncp_');
+            String replaceToEnd = replaceToNcp.replace('"end', '"endCnt');
+            System.debug(replaceToEnd);
+            if (response.getStatusCode() == 200) {
+//                infResponse.result = (IFN_EIF1003_CL001_MD001.CL001ResultWrapper) JSON.deserializeStrict(replaceToEnd, IFN_EIF1003_CL001_MD001.ResponseSync.class);
+                infResponse.result = (Map<String, Object>) JSON.deserializeUntyped(replaceToEnd);
+            } else {
+                result_code = 'F';
+                result_message = 'Callout Fail';
+            }
+
+        } catch (Exception e) {
+            result_code = 'E';
+            result_message = 'Interface Exception';
+        }
+        result.setResult(
+                result_code
+                , result_message
+                , infResponse
+        );
+        return result;
+    }
 
     public static String fromDTO(IFN_EIF1003_RE001_MD001.RE001RequestWrapper request) {
         List<String> params = new List<String>();

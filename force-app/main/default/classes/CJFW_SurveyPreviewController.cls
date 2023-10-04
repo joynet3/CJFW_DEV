@@ -10,7 +10,6 @@ public with sharing class CJFW_SurveyPreviewController {
 
     }
 
-    // 설문 결과를 나타내는 클래스 정의
     public class SurveyQuestionResponse {
         @AuraEnabled
         public String question { get; set; }
@@ -47,9 +46,8 @@ public with sharing class CJFW_SurveyPreviewController {
         ];
 
         List<SurveyQuestionResponse> totalList = new List<SurveyQuestionResponse>();
-        Map<String, List<String>> questionToOptionsMap = new Map<String, List<String>>();
-        Map<String, List<String>> questionToAnswerMap = new Map<String, List<String>>();
-
+        Map<String, List<List<String>>> questionToAnswerMap = new Map<String, List<List<String>>>();
+        
         for (CJFW_SurveyResult__c ru : resultList) {
             String question = ru.FM_Question__c;
             List<String> answers = new List<String>(); // 여러 개의 답변을 저장할 리스트를 생성
@@ -59,30 +57,56 @@ public with sharing class CJFW_SurveyPreviewController {
             }
             else if (ru.SurveyOption__r.Name != null) {
                 // 이미 처리한 질문인지 확인하고, 처리하지 않은 질문만 처리
-                if (questionToAnswerMap.containsKey(question)) {
-                    answers = questionToAnswerMap.get(question); // 이미 있는 리스트를 가져오기
+                if (!questionToAnswerMap.containsKey(question)) {
+                    questionToAnswerMap.put(question, new List<List<String>>());
                 }
-                answers.add(ru.SurveyOption__r.Name); // SurveyOption__r.Name의 값을 리스트에 추가
+                List<List<String>> questionAnswers = questionToAnswerMap.get(question);
+                questionAnswers.add(new List<String>{ru.SurveyOption__r.Name}); // SurveyOption__r.Name의 값을 리스트에 추가
+                System.debug('찍혔니 : '+ questionAnswers);
             }
-            
             else if (ru.DateResult__c != null) {
                 answers.add(String.valueOf(ru.DateResult__c)); // DateResult__c의 값을 리스트에 추가
+                System.debug('날짜 찍어봐 : '+ answers);
             }
             else {
                 answers.add(DateTime.newInstance(2000, 1, 1, ru.TimeResult__c.hour(), ru.TimeResult__c.minute(), ru.TimeResult__c.second()).format('a hh:mm'));
+                System.debug('시간 찍어봐  : '+ answers);
             }
         
             // 질문과 답변 리스트를 맵에 저장
-            questionToAnswerMap.put(question, answers);
+            if (!questionToAnswerMap.containsKey(question)) {
+                questionToAnswerMap.put(question, new List<List<String>>());
+            }
+            List<List<String>> questionAnswers = questionToAnswerMap.get(question);
+            System.debug('1211212'+ questionAnswers);
+            questionAnswers.add(answers);
         }
-
+        
         // 각 질문과 답변을 SurveyQuestionResponse 객체로 변환하여 totalList에 추가
         for (String question : questionToAnswerMap.keySet()) {
-            List<String> answers = questionToAnswerMap.get(question);
-            String answerString = String.join(answers, ', '); // 여러 개의 답변을 쉼표로 구분한 문자열로 변환
+            System.debug('%%%%%% :'+ question);
+            List<List<String>> answersList = questionToAnswerMap.get(question);
+            List<String> mergedAnswers = new List<String>();
+
+            for (List<String> answers : answersList) {
+                mergedAnswers.addAll(answers);
+            }
+
+            System.debug('이건 찍히나 : '+ mergedAnswers);
+            String answerString;
+            if (question.contains('날짜 From / To') || question.contains('시간 Sample')) {
+                // DateResult__c 또는 TimeResult__c인 경우 물결표로 구분
+                answerString = String.join(mergedAnswers,'~');
+            } else {
+                // 나머지 경우에는 콤마로 구분
+                answerString = String.join(mergedAnswers,',' );
+            }
+
+            System.debug('이건 2222 : '+ answerString);
             SurveyQuestionResponse response = new SurveyQuestionResponse(question, answerString);
             totalList.add(response);
         }
+        
 
         System.debug('22222' + totalList);
         return totalList;

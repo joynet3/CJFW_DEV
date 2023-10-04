@@ -1,3 +1,13 @@
+/**
+ * @description       : 
+ * @author            : joohyeon.jang@dkbmc.com
+ * @group             : 
+ * @last modified on  : 09-25-2023
+ * @last modified by  : joohyeon.jang@dkbmc.com
+ * Modifications Log
+ * Ver   Date         Author                    Modification
+ * 1.0   09-25-2023   joohyeon.jang@dkbmc.com   Initial Version
+**/
 public with sharing class CJFW_MDMDeliveryController {
     /**
      * @description 수정 일 경우(AccountId가 존재)
@@ -100,7 +110,7 @@ public with sharing class CJFW_MDMDeliveryController {
                                             ,InitialDeliveryDescription__c
                                             ,PV_SHIPTYPE__c
                                             ,PV_TEMPTARGET__c //여기까지 영업기회
-                                            ,(SELECT id, Name, AccountId, Email, Phone, MobilePhone, Department, PV_PAFKT_VK__c, Gender__c, Fax, OtherInfo__c, OwnerId, PV_TALKT_VK__c FROM Contacts)
+                                            ,(SELECT id, Name, AccountId, Email, Phone, MobilePhone, Department, PV_PAFKT_VK__c, Gender__c, Fax, OtherInfo__c, OwnerId, PV_TALKT_VK__c, PV_KNVKGB__c FROM Contacts)
                                         FROM Account WHERE Id =: accountId LIMIT 1];
         
         system.debug('accountList[0].CustomerId__c' + json.serialize(accountList[0].CustomerId__c));
@@ -114,7 +124,7 @@ public with sharing class CJFW_MDMDeliveryController {
                 SELECT Id, RecordTypeId, RequestType__c, PV_OLDCD__c, PV_NAME1__c, PV_NAME_G__c, PV_NAME2__c, PV_KTOKD__c, PV_CUSTTYPE__c, PV_STCD2__c, PV_STCD3__c, PV_STCD4__c, PV_GFORM__c, PV_J_1KFREPRE__c, PV_STCD1__c, 
                         PV_J_1KFTBUS__c, PV_J_1KFTIND__c, PV_TELF1__c, PV_TELFX__c, PV_VKGRP__c, PVRA_VKGRP__c, PV_PERNR__c, PV_PERNR_lu__c, PVRA_PERNR__c, PV_ADMINMA__c, PV_ADMINMA_lu__c, PV_LOGISCENTER__c, PVRA_LOGISCENTER__c, 
                         PV_STCDT__c, PV_FITYP__c, PV_HDOFFICEYN__c, PV_HKUNNR_lu__c, PV_HKUNNR__c, PV_VBUND__c, PV_LAND1__c, PV_KNVKTYPE__c, PV_CLOSEDT__c, PV_REGIO__c, PV_ADRES_ZIPCODE__c, PV_ADRES_ROADADDR1__c, 
-                        PV_ADRES_ROADADDR2__c, PV_ADRES_ADDR1__c, PV_ADRES_ADDR2__c, PV_SELLER_lu__c, PV_BIZPLCODE__c, PV_BUSAB__c, PV_CESSION_KZ__c, PV_ZUAWA__c, PV_AKONT__c, PV_FDGRV__c, PV_TAXKDD__c, PV_KATR5__c, PV_CUHR1__c, 
+                        PV_ADRES_ROADADDR2__c, PV_ADRES_ADDR1__c, PV_ADRES_ADDR2__c, CreateReferenceId__c	, PV_BIZPLCODE__c, PV_BUSAB__c, PV_CESSION_KZ__c, PV_ZUAWA__c, PV_AKONT__c, PV_FDGRV__c, PV_TAXKDD__c, PV_KATR5__c, PV_CUHR1__c, 
                         PVRA_CUHR1__c, PV_KONDA__c, PVRA_KONDA__c, PV_KVGR1__c, PVRA_KVGR1__c, PV_WAERS__c, PV_KVGR3__c, PV_KVGR2__c, PV_KVGR3_BOT__c, PV_ODCLOSEGB__c, PV_VACCPRTEXCYN__c, PV_ZTERM_VV__c, PV_DSTRHISTREGYN__c, 
                         PV_OLD_BIZPLACE_NEW__c, PVRA_OLD_BIZPLACE_NEW__c, PV_EXAMYN__c, PV_SHIPREQTIME__c, PV_PRODLOADCOND__c, PV_RETURNLOC__c, PV_ENTERCOND1__c, PV_UNLOADCOND1__c, PV_UNLOADCOND2__c, PV_DELIGROUP__c, PV_KATR10__c, 
                         PV_KEYYN__c, PV_KEYINFO__c, PV_KXOTD__c, PV_KXOTDTIME__c, PV_FDINFO__c, PV_FDREQD__c, PV_FDREQT__c, PV_ISFDFTF__c, PV_FDCTINFO__c, PV_FDNOTICE__c, PV_SHIPTYPE__c, PV_TEMPTARGET__c, PV_VKGRP_lu__c, 
@@ -208,7 +218,7 @@ public with sharing class CJFW_MDMDeliveryController {
                         wrapperRequest.PV_ADRES_ROADADDR2					=       acc?.AddressDetails__c;							
                         wrapperRequest.PV_ADRES_ADDR1						=       acc?.Address2__c;						
                         wrapperRequest.PV_ADRES_ADDR2						=       acc?.AddressDetails2__c;		                 
-                        // wrapperRequest.PV_SELLER_lu                      =       acc?.X;                         
+                        // wrapperRequest.CreateReferenceId                      =       acc?.X;                         
                         // wrapperRequest.PV_BIZPLCODE                      =       acc?.X;                          
                         //기본정보 [E]
                         
@@ -289,6 +299,9 @@ public with sharing class CJFW_MDMDeliveryController {
                             wrapperConRequest.OtherInfo = con.OtherInfo__c;
                             wrapperConRequest.OwnerId = con.OwnerId;
                             wrapperConRequest.PV_TALKT_VK = con.PV_TALKT_VK__c;
+
+                            // 2023-09-25 contact 유형 추가
+                            wrapperConRequest.PV_KNVKGB = con.PV_KNVKGB__c;
                             
                             customContactsList.add(wrapperConRequest); // CustomContacts 객체를 리스트에 추가
                             result.CustomContacts = customContactsList;
@@ -368,7 +381,7 @@ public with sharing class CJFW_MDMDeliveryController {
                         wrapperRequest.PV_ADRES_ROADADDR2					=       acc?.AddressDetails__c;							
                         wrapperRequest.PV_ADRES_ADDR1						=       acc?.Address2__c;						
                         wrapperRequest.PV_ADRES_ADDR2						=       acc?.AddressDetails2__c;		                 
-                        // wrapperRequest.PV_SELLER_lu                      =       acc?.X;                         
+                        // wrapperRequest.CreateReferenceId                      =       acc?.X;                         
                         // wrapperRequest.PV_BIZPLCODE                      =       acc?.X;                          
                         //기본정보 [E]
                         
@@ -450,6 +463,9 @@ public with sharing class CJFW_MDMDeliveryController {
                             wrapperConRequest.OwnerId = con.OwnerId;
                             wrapperConRequest.PV_TALKT_VK = con.PV_TALKT_VK__c;
                             
+                            // 2023-09-25 contact 유형 추가
+                            wrapperConRequest.PV_KNVKGB = con.PV_KNVKGB__c;
+
                             customContactsList.add(wrapperConRequest); // CustomContacts 객체를 리스트에 추가
                             result.CustomContacts = customContactsList;
                             System.debug('AccountId를 룩업하고 있는 ContactId2 ' + result.CustomContacts);
@@ -807,7 +823,7 @@ public with sharing class CJFW_MDMDeliveryController {
             mdmRequest.PV_ADRES_ROADADDR2__c                                  = String.isBlank(objCustomer?.PV_ADRES_ROADADDR2) ? null : objCustomer.PV_ADRES_ROADADDR2;                                                                                                         
             mdmRequest.PV_ADRES_ADDR1__c                                      = String.isBlank(objCustomer?.PV_ADRES_ADDR1) ? null : objCustomer.PV_ADRES_ADDR1;                                                                                                 
             mdmRequest.PV_ADRES_ADDR2__c                                      = String.isBlank(objCustomer?.PV_ADRES_ADDR2) ? null : objCustomer.PV_ADRES_ADDR2;                                                                                                 
-            mdmRequest.PV_SELLER_lu__c                                        = String.isBlank(objCustomer?.PV_SELLER_lu) ? null : objCustomer.PV_SELLER_lu;                                                                                         
+            mdmRequest.CreateReferenceId__c	                                  = String.isBlank(objCustomer?.CreateReferenceId) ? null : objCustomer.CreateReferenceId;                                                                                         
             mdmRequest.PV_BIZPLCODE__c                                        = String.isBlank(objCustomer?.PV_BIZPLCODE) ? null : objCustomer.PV_BIZPLCODE;
             //기본정보 완료
             //회계정보 7
@@ -953,6 +969,8 @@ public with sharing class CJFW_MDMDeliveryController {
         conRequest.Email                                     = String.isBlank(contact.Email) ? null : contact.Email; 
         conRequest.MobilePhone                               = String.isBlank(contact.MobilePhone) ? null : contact.MobilePhone; 
         conRequest.MDMRegRequestCustomer__c                  = mdmRequestId;
+        // 2023-09-25 contact 유형 추가
+        conRequest.PV_KNVKGB__c                              = String.isBlank(contact.PV_KNVKGB) ? null : contact.PV_KNVKGB;  
 
         return conRequest;
     }
@@ -1049,7 +1067,7 @@ public with sharing class CJFW_MDMDeliveryController {
         @AuraEnabled public String PV_ADRES_ROADADDR2 {get;set;}
         @AuraEnabled public String PV_ADRES_ADDR1 {get;set;}
         @AuraEnabled public String PV_ADRES_ADDR2 {get;set;}
-        @AuraEnabled public String PV_SELLER_lu {get;set;}
+        @AuraEnabled public String CreateReferenceId {get;set;}
         @AuraEnabled public String PV_BIZPLCODE {get;set;}
         //기준정보 완료
 
@@ -1143,6 +1161,7 @@ public with sharing class CJFW_MDMDeliveryController {
         @AuraEnabled public String OtherInfo {get;set;}
         @AuraEnabled public String OwnerId {get;set;}
         @AuraEnabled public String PV_TALKT_VK {get;set;}
+        @AuraEnabled public String PV_KNVKGB {get;set;}
     }
     public class CustomBanks{
         @AuraEnabled public String Name {get;set;}
@@ -1195,7 +1214,7 @@ public with sharing class CJFW_MDMDeliveryController {
         @AuraEnabled public String PV_STCDT{get;set;}                   // 세금계산서발행유형
         @AuraEnabled public String PV_ADRES_ZIPCODE{get;set;}           // 우편번호
         @AuraEnabled public String PV_ADRES_ROADADDR1{get;set;}         // 도로명주소
-        @AuraEnabled public String PV_SELLER_lu{get;set;}               // 판매처
+        @AuraEnabled public String CreateReferenceId{get;set;}               // 판매처
         @AuraEnabled public String PV_NAME_G{get;set;}                  // 고객명(G)/자국명
         @AuraEnabled public String PV_KTOKD{get;set;}                   // 고객계정그룹
         @AuraEnabled public String PV_STCD2{get;set;}                   // 사업자등록번호
@@ -1252,7 +1271,7 @@ public with sharing class CJFW_MDMDeliveryController {
             this.PV_STCDT                             = acc.TaxInvoiceType__c;                                                   
             this.PV_ADRES_ZIPCODE                     = acc.PostalCode__c;                                                           
             this.PV_ADRES_ROADADDR1                   = acc.Address__c;                                                           
-            this.PV_SELLER_lu                         = acc.Id;     //판매처
+            this.CreateReferenceId                         = acc.Id;     //판매처
             this.PV_NAME_G                            = acc.NameKor__c;                                                   
             this.PV_KTOKD                             = acc.AccountGroup__c;                                                   
             this.PV_STCD2                             = acc.CompanyRegisterNumber__c;                                                   
@@ -1361,7 +1380,7 @@ public with sharing class CJFW_MDMDeliveryController {
        PV_ADRES_ROADADDR2__c
        PV_ADRES_ADDR1__c
        PV_ADRES_ADDR2__c
-       PV_SELLER_lu__c
+       CreateReferenceId__c	
        PV_BIZPLCODE__c
        PV_BUSAB__c
        PV_CESSION_KZ__c

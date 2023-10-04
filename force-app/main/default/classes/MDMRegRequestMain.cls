@@ -141,6 +141,8 @@ public without sharing class MDMRegRequestMain {
     @AuraEnabled
     public static List<workflow__c> getCategoryLevel3(String midCode, List<workflow__c> largeCode) {
         try {
+            system.debug(' ### midCode ' + midCode);
+            system.debug(' ### largeCode ' + json.serialize(largeCode));
             List<workflow__c> categoryLevel3 = new List<workflow__c>();
             String catLevel3 = '3';
             categoryLevel3 = [SELECT Id, Name, LargeCode__c, MidCategory__c, getCategory__c,level__c 

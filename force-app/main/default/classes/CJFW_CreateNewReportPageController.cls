@@ -11,7 +11,9 @@
 public with sharing class CJFW_CreateNewReportPageController {
     
     public String OpptyId { get; set; }
-    public DecisionProcess__c decisionProcessRecord { get; set; }
+    public DecisionProcess__c decProRecord { get; set; }
+    public CJFW_ExpectedIncomeExpenses__c saveResult { get; set; }
+    public Map<String,String> saveResultMap { get; set; }
     
     /* 
      * 생성자
@@ -29,7 +31,7 @@ public with sharing class CJFW_CreateNewReportPageController {
      * 품의이력Obj에서 해당 레코드 데이터 가져오기
      */
     public void getRecord(){
-        decisionProcessRecord = [SELECT Id,
+        decProRecord = [SELECT Id,
                                         ReportSignature__c,
                                         Summary__c,
                                         ClientCompanyName__c,
@@ -48,6 +50,14 @@ public with sharing class CJFW_CreateNewReportPageController {
                                 WHERE Opportunity__c =: OpptyId
                                 ORDER BY CreatedDate DESC
                                 LIMIT 1]; 
+
+
+        // saveResult = [SELECT saveResult__c
+        //                 FROM CJFW_ExpectedIncomeExpenses__c 
+        //                 WHERE Opportunity__c =: OpptyId
+        //                 LIMIT 1];
+        
+        // saveResultMap.put('saveResult', (String)saveResult.saveResult__c);
     }
 
 }

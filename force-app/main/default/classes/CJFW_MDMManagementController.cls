@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 09-25-2023
+ * @last modified on  : 09-26-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -10,11 +10,11 @@
 **/
 public with sharing class CJFW_MDMManagementController {
 
-    /**
-    * @description [1. MDMRegRequestCustomer__c에서 생성 시]
+    /*************************************************************************************************************
+    * @description [1. MDMRegRequestCustomer__c에서 관리처 - 분할 생성 시] Default값 셋팅
     * 
     * @return      `DataWrapper`
-    **/
+    *************************************************************************************************************/
     @AuraEnabled
     public static DataWrapper setCreateDefaultInfo(){
         system.debug(' ### CJFW_MDMManagementController.setCreateDefaultInfo ');
@@ -29,63 +29,69 @@ public with sharing class CJFW_MDMManagementController {
             
             User objUser =[
                 SELECT Id,  LastName,  EmployeeNumber FROM User
-                WHERE Id =:UserInfo.getUserId()
+                WHERE Id =:UserInfo.getUserId() //현재 로그인한 사용자의 ID를 반환하는 Apex 내장 함수
                 ];
-
+            
             objWrapper.strObjectType = strObjectType;    
             objWrapper.objUser = objUser;
             MDMRecordTypeId = Schema.SObjectType.MDMRegRequestCustomer__c.getRecordTypeInfosByDeveloperName().get(recordTypeName).getRecordTypeId();
             objWrapper.listCustomerOrderType = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_ODCLOSEGB__c', true);
             
+            
         }catch(Exception e){
             strStatus = 'ERROR';
             strMessage = e.getMessage()+' Line : '+e.getLineNumber();
         }
-        objWrapper.strStatus = strStatus;
         objWrapper.MDMRecordTypeId = MDMRecordTypeId;
+        objWrapper.strStatus = strStatus;
+        objWrapper.strMessage = strMessage;
         
         return objWrapper;
     }
 
-    /**
+    /*************************************************************************************************************
     * 출고센터, 고객분류 변경시 고객 주문마감 유형코드 SelectList 변경
     * 
     * @params strType : LOGIC(출고센터), CUHR(고객분류)
     * @params mdmCustomerType MDM 고객 구분(MDMParent : 본점, MDMChild : 판매처)  
     * @return DataWrapper
-    *
-    **/
+    *************************************************************************************************************/
     @AuraEnabled
     public static DataWrapper doCheckOrderType(String strType, String PV_LOGISCENTER, String PV_CUHR1) {
-        DataWrapper objWrapper = new DataWrapper();
-        String strStatus = 'SUCCESS';
-        String strMessage = '';
-        String PV_ODCLOSEGB = '';
+        try {
+            DataWrapper objWrapper = new DataWrapper();
+            String strStatus = 'SUCCESS';
+            String strMessage = '';
+            String PV_ODCLOSEGB = '';
 
-        System.debug('==============> strType : '+strType);
-        System.debug('==============> PV_LOGISCENTER : '+PV_LOGISCENTER);
-        System.debug('==============> before PV_CUHR1 : '+PV_CUHR1);
+            System.debug('==============> strType : '+strType);
+            System.debug('==============> PV_LOGISCENTER : '+PV_LOGISCENTER);
 
-        if(PV_CUHR1 <> null && PV_CUHR1.contains('-')) {
-            PV_CUHR1 = PV_CUHR1.split('-')[0];
-        }
-        
-        System.debug('==============> after PV_CUHR1 : '+PV_CUHR1);
+            // 고객분류 코드 앞에 숫자4자리만 가져오기
+            System.debug('==============> before PV_CUHR1 : '+PV_CUHR1);
+            if(PV_CUHR1 <> null && PV_CUHR1.contains('-')) {
+                PV_CUHR1 = PV_CUHR1.split('-')[0];
+            }
+            System.debug('==============> after PV_CUHR1 : '+PV_CUHR1);
 
-        try {            
+
+            // MDMCustomerOrderType__c obj에서 선택된 Fw출고센터&고객분류에 맞는 고객주문마감 유형코드 리스트 가져오기
             Set<String> setCloseGB = new Set<String>();
 
             String strQuery = 'SELECT Id, CUHR1__c, LOGISCENTER__c, CLOSEGB__c';
-            strQuery += '   FROM    MDMCustomerOrderType__c';
+            strQuery += ' FROM  MDMCustomerOrderType__c';
             
             if(strType == 'LOGIC') {
-                strQuery += '   WHERE   LOGISCENTER__c LIKE \'%'+PV_LOGISCENTER+'%\'';
+                strQuery += ' WHERE LOGISCENTER__c LIKE \'%'+PV_LOGISCENTER+'%\'';
             }else {                
-                strQuery += '   WHERE   CUHR1__c =\''+PV_CUHR1+'\'';
+                strQuery += ' WHERE CUHR1__c =\''+PV_CUHR1+'\'';
             }
             
             strQuery += '   ORDER BY CLOSEGB__c ASC';
 
+            System.debug('Database.query(strQuery)' + Database.query(strQuery));
+
+            // 고객주문마감 유형코드 리스트에서 중복된 코드들 제외
             for(MDMCustomerOrderType__c obj : Database.query(strQuery)) {
                 System.debug('=========> obj.CUHR1__c : '+obj.CUHR1__c);
                 System.debug('=========> obj.PV_CUHR1 : '+PV_CUHR1);
@@ -103,23 +109,22 @@ public with sharing class CJFW_MDMManagementController {
                         setCloseGB.add(obj.CLOSEGB__c);
                     }
                 }
-                
             }
-
+            
             System.debug('===========> setCloseGB : '+setCloseGB);
 
-            List<Map<String, String>> listOrderType = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_ODCLOSEGB__c', true);
-
+            // 고객주문마감 유형코드 pickList 가져오기
+            List<Map<String, String>> listOrderType = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_ODCLOSEGB__c', false);
+            
             List<Map<String, String>> listCustomerOrderType = new List<Map<String, String>>();
+            // listCustomerOrderType.add(new Map<String, String>{
+            //     'label' => '--없음--',
+            //     'value' => 'none'
+            // });
 
-            listCustomerOrderType.add(new Map<String, String>{
-                'label' => '--없음--',
-                'value' => 'none'
-            });
-
+            // setCloseGB에 값이 있다면 pickList중 코드가 일치한 pickList value 값 가져오기
             if(!setCloseGB.isEmpty()) {
                 for(Map<String, String> mapTarget : listOrderType) {
-                    System.debug('listOrderType[mapTarget]  =>' + mapTarget);
                     if(setCloseGB.contains(mapTarget.get('value'))) {
                         listCustomerOrderType.add(mapTarget);
                     }
@@ -127,27 +132,28 @@ public with sharing class CJFW_MDMManagementController {
             }else {
                 listCustomerOrderType = listOrderType;
             }
-            
+
             objWrapper.listCustomerOrderType = listCustomerOrderType;
             System.debug('listOrderType =>' + listCustomerOrderType);
 
-        }catch(Exception e) {
-            strStatus = 'ERROR';
-            strMessage = e.getMessage()+' Line : '+e.getLineNumber();
-        }
-        
-        objWrapper.strStatus = strStatus;
-        objWrapper.strMessage = strMessage;
+            objWrapper.strStatus = strStatus;
 
-        return objWrapper;
+            return objWrapper;
+
+        } catch (Exception e) {
+            System.debug('message => ' + e.getMessage());
+            System.debug('trace => ' + e.getStackTraceString());
+            
+            throw new AuraHandledException(e.getMessage());
+        }
     }
-    /**
+    /*************************************************************************************************************
     * @description [2. MDMRegRequestCustomer__c에서 수정 시]
     * 
     * @return      `EditMDMRequest`
-    **/
+    *************************************************************************************************************/
     @AuraEnabled 
-    public static DataWrapper setEditMDMInfo(String mdmId){
+    public static DataWrapper setEditMDMInfo(String mdmId ){
         system.debug(' ### CJFW_MDMManagementController.getMDMInfo ');
         system.debug(' >>> mdmId ' + mdmId);
 
@@ -156,9 +162,8 @@ public with sharing class CJFW_MDMManagementController {
         String strMessage = '';                             // Error 시 메세지
         String MDMRecordTypeId = '';                        // MDMRegRequestCustomer__c의 '관리처' RecordId
         String strObjectType = 'MDMRegRequestCustomer__c';  // object api명
-        String recordTypeName = 'MDMManagement';            // recordType api명
 
-       
+        MDMRegRequestCustomer__c result = new MDMRegRequestCustomer__c();
         try{
             User objUser =[
                 SELECT Id,  LastName,  EmployeeNumber FROM User
@@ -167,10 +172,8 @@ public with sharing class CJFW_MDMManagementController {
 
             objWrapper.strObjectType = strObjectType;    
             objWrapper.objUser = objUser;
-            MDMRecordTypeId = Schema.SObjectType.MDMRegRequestCustomer__c.getRecordTypeInfosByDeveloperName().get(recordTypeName).getRecordTypeId();
-            objWrapper.listCustomerOrderType = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_ODCLOSEGB__c', true);
             
-            List<MDMRegRequestCustomer__c> objMDMRegReqCustomer = [
+            MDMRegRequestCustomer__c objMDMRegReqCustomer = [
                 SELECT  Id, Name, RecordTypeId, Account__c, Opportunity__c, opcode__c, INSTANCEID__c, PROCID__c, REQACTORID__c,
                         PV_CRMNO__c, PV_KUNNR__c, PV_OLDCD__c, PV_NAME1__c, PV_NAME_G__c, PV_NAME2__c, PV_KTOKD__c, PV_CUSTTYPE__c,
                         PV_STCD2__c, PV_STCD3__c, PV_STCD4__c, PV_GFORM__c, PV_J_1KFREPRE__c, PV_BLCKYN__c, PV_STCD1__c,
@@ -199,240 +202,49 @@ public with sharing class CJFW_MDMManagementController {
                         PV_ZUAWA_lu__c, PV_AKONT_lu__c, PV_CUHR1_lu__c, PV_KONDA_lu__c, PV_KVGR1_lu__c, PV_WAERS_lu__c, PV_KVGR3_lu__c,
                         PV_KVGR3_BOT_lu__c, PV_ZTERM_VV_lu__c, PV_OLD_BIZPLACE_NEW_lu__c, PV_DELIGROUP_lu__c, PV_KATR10_lu__c, PV_WAERS__c,
                         PV_PERNR_lu__c, PV_ADMINMA_lu__c, PV_HKUNNR_lu__c, PV_PAYCUST_lu__c, IsSelf_PV_PAYCUST__c, PV_CHARGECUST_lu__c,
-                        IsSelf_PV_CHARGECUST__c, Status__c, WF_DESCRIPTION__c
+                        IsSelf_PV_CHARGECUST__c, Status__c, WF_DESCRIPTION__c, PV_SELLER_lu__c
                 FROM    MDMRegRequestCustomer__c
                 WHERE   Id =:mdmId];
 
-            MDMRecordTypeId = objMDMRegReqCustomer[0].RecordTypeId;
+            MDMRecordTypeId = objMDMRegReqCustomer.RecordTypeId;
+            objWrapper.objMDMRegReqCustomer = objMDMRegReqCustomer;
 
-            /**
-            * 1. AccountList for문돌려서 key뽑아냄
-            * 2. Reference코드 셀렉해서 key넣고 map만듬
-            **/
-            Set<String> accCodeSet = new Set<String>();
-            for(MDMRegRequestCustomer__c mdmReg :objMDMRegReqCustomer){
-                    accCodeSet.add(mdmReg.PV_VKGRP__c);
-                    accCodeSet.add(mdmReg.PV_LOGISCENTER__c);
-                    accCodeSet.add(mdmReg.PV_STCDT__c);
-                    accCodeSet.add(mdmReg.PV_LAND1__c);
-                    accCodeSet.add(mdmReg.PV_REGIO__c);
-                    accCodeSet.add(mdmReg.PV_ZUAWA__c);
-                    accCodeSet.add(mdmReg.PV_AKONT__c);
-                    accCodeSet.add(mdmReg.PV_CUHR1__c);
-                    accCodeSet.add(mdmReg.PV_KONDA__c);
-                    accCodeSet.add(mdmReg.PV_KVGR1__c);
-                    accCodeSet.add(mdmReg.PV_WAERS__c);
-                    accCodeSet.add(mdmReg.PV_ZTERM_VV__c);
-                    accCodeSet.add(mdmReg.PV_OLD_BIZPLACE_NEW__c);
-                    accCodeSet.add(mdmReg.PV_DELIGROUP__c);
-                    accCodeSet.add(mdmReg.PV_KATR10__c);
-            }
-            system.debug(' >>> accCodeSet ' + accCodeSet);
-            List<MDMReferenceCode__c> mdmReferenceCodeList = [SELECT Id, Name, Code__c FROM MDMReferenceCode__c WHERE code__c =: accCodeSet];
-
-            Map<String, String> codeToNameMap = new Map<String, String>();
-                for(MDMReferenceCode__c mdmCode :mdmReferenceCodeList){ 
-                    codeToNameMap.put(mdmCode.Code__c, mdmCode.Name);
-                }
-
-            for(MDMRegRequestCustomer__c mdm : objMDMRegReqCustomer){
-                MDMRequest wrapperRequest = new MDMRequest();
-                    // wrapperRequest.Account                              =       mdm?.Id;
-                    wrapperRequest.RecordTypeId                         =       mdm.recordTypeId;                                          
-                    wrapperRequest.RequestType                          =       'Edit';                         
-                    //기본정보 [S] : 주석처리 되어있으면 mdmount에 필드 없는것임. 
-                    wrapperRequest.PV_KUNNR								=       mdm?.PV_KUNNR__c;				
-                    wrapperRequest.PV_OLDCD								=       mdm?.PV_OLDCD__c;				
-                    wrapperRequest.PV_NAME1								=       mdm?.PV_NAME1__c;				
-                    wrapperRequest.PV_NAME_G							=       mdm?.PV_NAME_G__c;					
-                    wrapperRequest.PV_NAME2								=       mdm?.PV_NAME2__c;				
-                    wrapperRequest.PV_KTOKD								=       mdm?.PV_KTOKD__c;				
-                    wrapperRequest.PV_CUSTTYPE							=       mdm?.PV_CUSTTYPE__c;					
-                    wrapperRequest.PV_STCD2								=       mdm?.PV_STCD2__c;				
-                    wrapperRequest.PV_STCD3								=       mdm?.PV_STCD3__c;				
-                    wrapperRequest.PV_STCD4								=       mdm?.PV_STCD4__c;				
-                    wrapperRequest.PV_GFORM								=       mdm?.PV_GFORM__c;				
-                    wrapperRequest.PV_J_1KFREPRE						=       mdm?.PV_J_1KFREPRE__c;						
-                    wrapperRequest.PV_STCD1								=       mdm?.PV_STCD1__c;				
-                    wrapperRequest.PV_J_1KFTBUS							=       mdm?.PV_J_1KFTBUS__c;					
-                    wrapperRequest.PV_J_1KFTIND							=       mdm?.PV_J_1KFTIND__c;					
-                    wrapperRequest.PV_TELF1								=       mdm?.PV_TELF1__c;				
-                    wrapperRequest.PV_TELFX								=       mdm?.PV_TELFX__c;				
-                    wrapperRequest.inputpv_vkgrp       					=       codeToNameMap.get(mdm?.PV_VKGRP__c);	                
-                    wrapperRequest.PV_VKGRP           					=       mdm?.PV_VKGRP__c;	                                    
-                    wrapperRequest.PV_VKGRP_lu       				    =       mdm?.PV_VKGRP_lu__c;	        
-                    wrapperRequest.PVRA_VKGRP							=       mdm?.PVRA_VKGRP__c;					
-                    wrapperRequest.PV_PERNR								=       mdm?.PV_PERNR__c;				
-                    wrapperRequest.PV_PERNR_lu						    =       mdm?.PV_PERNR_lu__c;	 				
-                    wrapperRequest.PVRA_PERNR							=       mdm?.PVRA_PERNR__c;					
-                    wrapperRequest.PV_ADMINMA							=       mdm?.PV_ADMINMA__c;					
-                    //wrapperRequest.PV_ADMINMA_lu						=       mdm?.X;						
-                    wrapperRequest.inputpv_LOGISCENTER				    =       codeToNameMap.get(mdm?.PV_LOGISCENTER__c);             
-                    wrapperRequest.PV_LOGISCENTER   				    =       mdm?.PV_LOGISCENTER__c;                                
-                    wrapperRequest.PV_LOGISCENTER_lu					=       mdm?.PV_LOGISCENTER_lu__c;	    
-                    wrapperRequest.PVRA_LOGISCENTER						=       mdm?.PVRA_LOGISCENTER__c;						
-                    wrapperRequest.inputpv_stcdt						=       codeToNameMap.get(mdm?.PV_STCDT__c);              
-                    wrapperRequest.PV_STCDT     						=       mdm?.PV_STCDT__c;	                                
-                    wrapperRequest.PV_STCDT_lu						    =       mdm?.PV_STCDT_lu__c;	        
-                    wrapperRequest.PV_FITYP								=       mdm?.PV_FITYP__c;				
-                    wrapperRequest.PV_HDOFFICEYN						=       mdm?.PV_HDOFFICEYN__c;						
-                    wrapperRequest.PV_HKUNNR							=       mdm?.PV_HKUNNR__c;                                 
-                    wrapperRequest.PV_HKUNNR_lu						    =       mdm?.PV_HKUNNR_lu__c; 			                             	
-                    wrapperRequest.PV_SUBSIDIARYYN						=       mdm?.PV_SUBSIDIARYYN__c;						
-                    wrapperRequest.inputpv_vbund		    			=       codeToNameMap.get(mdm?.PV_VBUND__c);           
-                    wrapperRequest.PV_VBUND     		    			=       mdm?.PV_VBUND__c;                              
-                    wrapperRequest.PV_VBUND_lu	    	    			=       mdm?.PV_VBUND_lu__c;            
-                    wrapperRequest.inputpv_land1						=       codeToNameMap.get(mdm?.PV_LAND1__c);              
-                    wrapperRequest.PV_LAND1     						=       mdm?.PV_LAND1__c;                                 
-                    wrapperRequest.PV_LAND1_lu							=       mdm?.PV_LAND1_lu__c;   			
-                    wrapperRequest.PV_KNVKTYPE							=       mdm?.PV_KNVKTYPE__c;					
-                    wrapperRequest.PV_CLOSEDT							=       mdm?.PV_CLOSEDT__c;					
-                    wrapperRequest.inputpv_regio						=       codeToNameMap.get(mdm?.PV_REGIO__c);               
-                    wrapperRequest.PV_REGIO							    =       mdm?.PV_REGIO__c;				                    
-                    wrapperRequest.PV_REGIO_lu							=       mdm?.PV_REGIO_lu__c; 	        
-                    wrapperRequest.PV_ADRES_ZIPCODE						=       mdm?.PV_ADRES_ZIPCODE__c;						
-                    wrapperRequest.PV_ADRES_ROADADDR1					=       mdm?.PV_ADRES_ROADADDR1__c;							
-                    wrapperRequest.PV_ADRES_ROADADDR2					=       mdm?.PV_ADRES_ROADADDR2__c;							
-                    wrapperRequest.PV_ADRES_ADDR1						=       mdm?.PV_ADRES_ADDR1__c;						
-                    wrapperRequest.PV_ADRES_ADDR2						=       mdm?.PV_ADRES_ADDR2__c;		                 
-                    // wrapperRequest.PV_SELLER_lu                      =       mdm?.X;                                                   
-                    // wrapperRequest.PV_BIZPLCODE                      =       mdm?.X;                          
-                    //기본정보 [E]
-                    
-                    //회계정보 [S]
-                    wrapperRequest.PV_BUSAB                             =       mdm?.PV_BUSAB__c;                
-                    wrapperRequest.PV_CESSION_KZ                        =       mdm?.PV_CESSION_KZ__c;                        
-                    wrapperRequest.inputpv_zuawa                        =       codeToNameMap.get(mdm?.PV_ZUAWA__c);                            
-                    wrapperRequest.PV_ZUAWA                             =       mdm?.PV_ZUAWA__c;
-                    wrapperRequest.PV_ZUAWA_lu                          =       mdm?.PV_ZUAWA_lu__c; 
-                    wrapperRequest.inputpv_akont                        =       codeToNameMap.get(mdm?.PV_AKONT__c);                  
-                    wrapperRequest.PV_AKONT                             =       mdm?.PV_AKONT__c;                
-                    wrapperRequest.PV_AKONT_lu                          =       mdm?.PV_AKONT_lu__c;               
-                    wrapperRequest.PV_FDGRV                             =       mdm?.PV_FDGRV__c;                
-                    wrapperRequest.PV_TAXKDD                            =       mdm?.PV_TAXKDD__c;                    
-                    wrapperRequest.PV_KATR5                             =       mdm?.PV_KATR5__c;                
-                    //회계정보 [E]
-
-                    //영업정보 [E]
-                    wrapperRequest.inputpv_cuhr1                            =    codeToNameMap.get(mdm?.PV_CUHR1__c);             
-                    wrapperRequest.PV_CUHR1                                 =    mdm?.PV_CUHR1__c;
-                    wrapperRequest.PV_CUHR1_lu                              =    mdm?.PV_CUHR1_lu__c;
-                    wrapperRequest.PVRA_CUHR1                               =    mdm?.PVRA_CUHR1__c;   
-                    wrapperRequest.inputpv_konda                            =    codeToNameMap.get(mdm?.PV_KONDA__c);            
-                    wrapperRequest.PV_KONDA                                 =    mdm?.PV_KONDA__c;
-                    wrapperRequest.PV_KONDA_lu                              =    mdm?.PV_KONDA_lu__c;  
-                    wrapperRequest.PVRA_KONDA                               =    mdm?.PVRA_KONDA__c;   
-                    wrapperRequest.inputpv_kvgr1                            =    codeToNameMap.get(mdm?.PV_KVGR1__c);         
-                    wrapperRequest.PV_KVGR1                                 =    mdm?.PV_KVGR1__c;    
-                    wrapperRequest.PV_KVGR1_lu                              =    mdm?.PV_KVGR1_lu__c;      
-                    wrapperRequest.PVRA_KVGR1                               =    mdm?.PVRA_KVGR1__c;   
-                    wrapperRequest.inputpv_waers                            =    codeToNameMap.get(mdm?.PV_WAERS__c);           
-                    wrapperRequest.PV_WAERS                                 =    mdm?.PV_WAERS__c;
-                    wrapperRequest.PV_WAERS_lu                              =    mdm?.PV_WAERS_lu__c;
-                    wrapperRequest.PV_KVGR3                                 =    mdm?.PV_KVGR3__c;   
-                    wrapperRequest.PV_KVGR2                                 =    mdm?.PV_KVGR2__c;   
-                    wrapperRequest.PV_KVGR3_BOT                             =    mdm?.PV_KVGR3_BOT__c;   
-                    wrapperRequest.PV_ODCLOSEGB                             =    mdm?.PV_ODCLOSEGB__c;   
-                    wrapperRequest.PV_VACCPRTEXCYN                          =    mdm?.PV_VACCPRTEXCYN__c;   
-                    wrapperRequest.inputpv_zterm_vv                         =    codeToNameMap.get(mdm?.PV_ZTERM_VV__c); 
-                    wrapperRequest.PV_ZTERM_VV                              =    mdm?.PV_ZTERM_VV__c;
-                    wrapperRequest.PV_ZTERM_VV_lu                           =    mdm?.PV_ZTERM_VV_lu__c;
-                    wrapperRequest.PV_DSTRHISTREGYN                         =    mdm?.PV_DSTRHISTREGYN__c;   
-                    wrapperRequest.inputpv_old_bizplace_new                 =    codeToNameMap.get(mdm?.PV_OLD_BIZPLACE_NEW__c); 
-                    wrapperRequest.PV_OLD_BIZPLACE_NEW                      =    mdm?.PV_OLD_BIZPLACE_NEW__c;
-                    wrapperRequest.PV_OLD_BIZPLACE_NEW_lu                   =    mdm?.PV_OLD_BIZPLACE_NEW_lu__c;
-                    wrapperRequest.PVRA_OLD_BIZPLACE_NEW                    =    mdm?.PVRA_OLD_BIZPLACE_NEW__c;   
-                    wrapperRequest.PV_EXAMYN                                =    mdm?.PV_EXAMYN__c;   
-                    wrapperRequest.PV_SHIPREQTIME                           =    mdm?.PV_SHIPREQTIME__c;   
-                    wrapperRequest.PV_PRODLOADCOND                          =    mdm?.PV_PRODLOADCOND__c;   
-                    wrapperRequest.PV_RETURNLOC                             =    mdm?.PV_RETURNLOC__c;   
-                    wrapperRequest.PV_ENTERCOND1                            =    mdm?.PV_ENTERCOND1__c;   
-                    wrapperRequest.PV_UNLOADCOND1                           =    mdm?.PV_UNLOADCOND1__c;   
-                    wrapperRequest.PV_UNLOADCOND2                           =    mdm?.PV_UNLOADCOND2__c;   
-                    wrapperRequest.inputpv_deligroup                        =    codeToNameMap.get(mdm?.PV_DELIGROUP__c); 
-                    wrapperRequest.PV_DELIGROUP                             =    mdm?.PV_DELIGROUP__c;   
-                    wrapperRequest.PV_DELIGROUP_lu                          =    mdm?.PV_DELIGROUP_lu__c;   
-                    wrapperRequest.inputPV_KATR10                           =    codeToNameMap.get(mdm?.PV_KATR10__c);  
-                    wrapperRequest.PV_KATR10                                =    mdm?.PV_KATR10__c; 
-                    wrapperRequest.PV_KATR10_lu                             =    mdm?.PV_KATR10_lu__c;  
-                    wrapperRequest.PV_KEYYN                                 =    mdm?.PV_KEYYN__c;   
-                    wrapperRequest.PV_KEYINFO                               =    mdm?.PV_KEYINFO__c;   
-                    wrapperRequest.PV_KXOTD                                 =    String.valueOf(Boolean.valueOf(mdm?.PV_KXOTD__c));
-                    wrapperRequest.PV_KXOTDTIME                             =    mdm?.PV_KXOTDTIME__c;   
-                    wrapperRequest.PV_FDINFO                                =    mdm?.PV_FDINFO__c; 
-                    wrapperRequest.PV_FDREQD                                =    mdm?.PV_FDREQD__c;   
-                    wrapperRequest.PV_FDREQT                                =    mdm?.PV_FDREQT__c;   
-                    wrapperRequest.PV_ISFDFTF                               =    mdm?.PV_ISFDFTF__c;   
-                    wrapperRequest.PV_FDCTINFO                              =    mdm?.PV_FDCTINFO__c;   
-                    wrapperRequest.PV_FDNOTICE                              =    mdm?.PV_FDNOTICE__c;   
-                    wrapperRequest.PV_SHIPTYPE                              =    mdm?.PV_SHIPTYPE__c;   
-                    wrapperRequest.PV_TEMPTARGET                            =    mdm?.PV_TEMPTARGET__c;   
-                
-            // ================= 수정 중 ================= //             
-
-            objWrapper.objMDMRegReqCustomer = wrapperRequest;
-
-            List<MDMRegRequestContact__c> listMDMReqContacts = [
-                SELECT  Id
-                        , MDMRegRequestCustomer__c  // MDM 고객 등록 요청
-                        , INSTANCEID__c             // INSTANCEID__c
-                        , PV_NO__c                  // No.
-                        , PV_NAME1_VK__c            // 담당자 명
-                        , PV_KNVKGB__c              // 담당자유형
-                        , PV_TELF1_VK__c            // 담당자 연락처
-                        , PV_ABTNR_VK__c            // 담당자 부서
-                        , PV_PAFKT_VK__c            // 담당자 직책
-                        , PV_TALKT_VK__c            // 담당자 통화가능시간
-                        , PV_EMAIL_VK__c            // 담당자 전자우편
-                        , PV_KNVKGB_lu__c           // 담당자유형
-                        , Contact__c                // Contact
-                        , Contact__r.AccountId
+            List<MDMRegRequestContact__c> listMDMReqContact = [
+                SELECT  Id, MDMRegRequestCustomer__c,
+                        INSTANCEID__c, PV_NO__c, PV_NAME1_VK__c, PV_KNVKGB__c, PV_TELF1_VK__c, PV_ABTNR_VK__c, PV_PAFKT_VK__c,
+                        PV_TALKT_VK__c, PV_EMAIL_VK__c, PV_KNVKGB_lu__c, Contact__c
                 FROM    MDMRegRequestContact__c
                 WHERE   MDMRegRequestCustomer__c =:mdmId
             ];
-            // account > contact 
-            //
+            
+            objWrapper.listMDMReqContact = listMDMReqContact;
 
-            List<CustomContacts> customContactsList = new List<CustomContacts>(); // CustomContacts 객체를 저장할 리스트
-            for (MDMRegRequestContact__c mdmReqContact : listMDMReqContacts) {
-                CustomContacts wrapperConRequest = new CustomContacts();
-                wrapperConRequest.id          = mdmReqContact?.Contact__c;
-                wrapperConRequest.Name        = mdmReqContact.PV_NAME1_VK__c;
-                wrapperConRequest.AccountId   = mdmReqContact?.Contact__r?.AccountId;
-                wrapperConRequest.Email       = mdmReqContact?.PV_EMAIL_VK__c;
-                wrapperConRequest.MobilePhone = mdmReqContact.PV_TELF1_VK__c;
-                wrapperConRequest.Department  = mdmReqContact.PV_ABTNR_VK__c;
-                wrapperConRequest.PV_PAFKT_VK = mdmReqContact.PV_PAFKT_VK__c;
-                wrapperConRequest.PV_TALKT_VK = mdmReqContact.PV_TALKT_VK__c;
-                
-                customContactsList.add(wrapperConRequest); // CustomContacts 객체를 리스트에 추가
-            }
+            objWrapper.listCustomerOrderType = doCheckOrderType('LOGIC', objMDMRegReqCustomer.PV_LOGISCENTER__c, objMDMRegReqCustomer.PV_CUHR1__c).listCustomerOrderType;
 
-            objWrapper.listMDMReqContact = customContactsList;
-            objWrapper.listCustomerOrderType = doCheckOrderType('LOGIC', objMDMRegReqCustomer[0].PV_LOGISCENTER__c, objMDMRegReqCustomer[0].PV_CUHR1__c).listCustomerOrderType;
-        }
         }catch(Exception e){
             strStatus = 'ERROR';
             strMessage = e.getMessage()+' Line : '+e.getLineNumber();
         }
-        
+
         objWrapper.MDMRecordTypeId = MDMRecordTypeId;
         objWrapper.strStatus = strStatus;
         objWrapper.strMessage = strMessage;
-        
+
         return objWrapper;
     }
+
     
-     /**
+     /*************************************************************************************************************
      * @description [코드정리해야함 공통화 해]
      *              수정 일 경우(AccountId가 존재) 
      *              AccountId로 MDM오브젝트 조회하여 저장되어 있는 필드와 값을 래퍼클래스에 매핑하여 화면에 리턴
      * 
      * @return      `EditMDMRequest`
-     */
+     *************************************************************************************************************/
     @AuraEnabled 
     public static EditMDMRequest getAccountInfo(String accountId){
         system.debug(' ### CJFW_MDMManagementController > getAccountInfo() ');
+        system.debug(' >>> accountId ' + accountId);
         Id recordIdEx = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('ExistingCustomer').getRecordTypeId();
 
         EditMDMRequest result = new EditMDMRequest();
@@ -526,10 +338,9 @@ public with sharing class CJFW_MDMManagementController {
                                             ,InitialDeliveryDescription__c
                                             ,PV_SHIPTYPE__c
                                             ,PV_TEMPTARGET__c //여기까지 영업기회
-                                            // ,(SELECT id, Name, AccountId, Email, Phone, MobilePhone, Department, PV_PAFKT_VK__c, Gender__c, Fax, OtherInfo__c, OwnerId, PV_TALKT_VK__c FROM Contacts)
+                                            ,(SELECT id, Name, AccountId, Email, Phone, MobilePhone, Department, PV_PAFKT_VK__c, Gender__c, Fax, OtherInfo__c, OwnerId, PV_KNVKGB__c FROM Contacts)
                                         FROM Account WHERE Id =: accountId LIMIT 1];
         // system.debug('String.isNotBlank(accountList[0].CustomerId__c)' + String.isNotBlank(accountList[0].CustomerId__c));
-        
 
         /**
          * 1. AccountList for문돌려서 key뽑아냄
@@ -557,13 +368,15 @@ public with sharing class CJFW_MDMManagementController {
         List<MDMReferenceCode__c> mdmReferenceCodeList = [SELECT Id, Name, Code__c FROM MDMReferenceCode__c WHERE code__c =: accCodeSet];
 
         Map<String, String> codeToNameMap = new Map<String, String>();
+        Map<String, String> codeToIdMap = new Map<String, String>();
             for(MDMReferenceCode__c mdmCode :mdmReferenceCodeList){ 
                 codeToNameMap.put(mdmCode.Code__c, mdmCode.Name);
+                codeToIdMap.put(mdmCode.Code__c, mdmCode.id);
             }
 
         // 이거를 하는 이유는 MDM등록수정obj에 데이터가 있는지 확인하기 위해서임
         // CustomerId__c 자체가 Null값이면 에러 남.(key이기때문에)
-        if(String.isNotBlank(accountList[0].CustomerId__c)){
+        if(!accountList.isEmpty() && String.isNotBlank(accountList[0].CustomerId__c)){
            List<MDMRegRequestCustomer__c> mdmRegRequestCustomerList = [
                 SELECT Id, Name, RecordTypeId, Account__c, Opportunity__c, opcode__c, INSTANCEID__c, PROCID__c, REQACTORID__c,
                         PV_CRMNO__c, PV_KUNNR__c, PV_OLDCD__c, PV_NAME1__c, PV_NAME_G__c, PV_NAME2__c, PV_KTOKD__c, PV_CUSTTYPE__c,
@@ -608,15 +421,183 @@ public with sharing class CJFW_MDMManagementController {
             if(mdmRegRequestCustomerList.isEmpty()){
                 system.debug('>>> MDM에서 온 데이터');
                 //insert
-                result.isCRM = false;
-                result.isEdit = true;
+                //-----TEST Start
+
+                for(Account acc : accountList){
+                    MDMRequest wrapperRequest = new MDMRequest();
+                        // [2] : sfdc에서 생성 된 데이터로, MDMRegRequstCustomer__c에 id가 있음.
+                        // objectName : MDMRegRequestCustomer__c 
+                        // requestType : update
+                        wrapperRequest.Account                              =       acc?.Id;
+                        wrapperRequest.RecordTypeId                         =       recordIdEx;                                          
+                        wrapperRequest.RequestType                          =       'Edit';                         
+                        //기본정보 [S] : 주석처리 되어있으면 account에 필드 없는것임. 
+                        wrapperRequest.PV_KUNNR								=       acc?.CustomerID__c;				
+                        wrapperRequest.PV_OLDCD								=       acc?.CustomerIDASIS__c;				
+                        wrapperRequest.PV_NAME1								=       acc?.Name;				
+                        wrapperRequest.PV_NAME_G							=       acc?.NameKor__c;					
+                        wrapperRequest.PV_NAME2								=       acc?.NameAlias__c;				
+                        wrapperRequest.PV_KTOKD								=       acc?.AccountGroup__c;				
+                        wrapperRequest.PV_CUSTTYPE							=       acc?.CustomerType__c;					
+                        wrapperRequest.PV_STCD2								=       acc?.CompanyRegisterNumber__c;				
+                        wrapperRequest.PV_STCD3								=       acc?.CorporateCode__c;				
+                        wrapperRequest.PV_STCD4								=       acc?.SubCompanyRegisterNumber__c;				
+                        wrapperRequest.PV_GFORM								=       acc?.LegalStatus__c;				
+                        wrapperRequest.PV_J_1KFREPRE						=       acc?.RepresentativeName__c;						
+                        wrapperRequest.PV_STCD1								=       acc?.RepresentativeBirthDate__c;				
+                        wrapperRequest.PV_J_1KFTBUS							=       acc?.BusinessConditions__c;					
+                        wrapperRequest.PV_J_1KFTIND							=       acc?.BusinessCategory__c;					
+                        wrapperRequest.PV_TELF1								=       acc?.Phone;				
+                        wrapperRequest.PV_TELFX								=       acc?.Fax;				
+                        wrapperRequest.inputpv_vkgrp       					=       codeToNameMap.get(acc?.PV_VKGRP__c);	                // 영업그룹 코드 -> Name으로 변경해야함
+                        wrapperRequest.PV_VKGRP           					=       acc?.PV_VKGRP__c;	                                    // 영업그룹 코드
+                        // 없음
+                        wrapperRequest.PV_VKGRP_lu       				    =       codeToIdMap.get(acc?.PV_VKGRP__c);// mdmRegRequestCustomerList[0].PV_VKGRP_lu__c;	        // 영업그룹 id
+                        
+                        wrapperRequest.PVRA_VKGRP							=       acc?.SalesGroupFromDate__c;					
+                        wrapperRequest.PV_PERNR								=       acc?.Owner.EmployeeNumber;				
+                        wrapperRequest.PV_PERNR_lu						    =       acc?.OwnerId;	 				
+                        wrapperRequest.PVRA_PERNR							=       acc?.ResponsibilityMAFromDate__c;					
+                        wrapperRequest.PV_ADMINMA							=       acc?.ResponsibilityAMA__c;					
+                        wrapperRequest.inputpv_LOGISCENTER				    =       codeToNameMap.get(acc?.FWReleaseCenter__c);             // FW 출고센터 코드	-> Name으로 변경해야함					
+                        wrapperRequest.PV_LOGISCENTER   				    =       acc?.FWReleaseCenter__c;                                // FW 출고센터 코드					
+                        wrapperRequest.PV_LOGISCENTER_lu					=       codeToIdMap.get(acc?.FWReleaseCenter__c);             // FW 출고센터 id	
+                        wrapperRequest.PVRA_LOGISCENTER						=       acc?.FWReleaseCenterFromDate__c;						
+                        wrapperRequest.inputpv_stcdt						=       codeToNameMap.get(acc?.TaxInvoiceType__c);              // 세금계산서발행유형 코드	-> Name으로 변경해야함					
+                        wrapperRequest.PV_STCDT     						=       acc?.TaxInvoiceType__c;	                                // 세금계산서발행유형 코드					
+                        wrapperRequest.PV_STCDT_lu						    =       codeToIdMap.get(acc?.TaxInvoiceType__c);                  // 세금계산서발행유형 id	
+                        wrapperRequest.PV_FITYP								=       acc?.TaxationType__c;				
+                        wrapperRequest.PV_HDOFFICEYN						=       acc?.IsHeadShopUseYN__c;						
+                        wrapperRequest.PV_HKUNNR							=       acc?.HeadOfficeCode__c;                                 // [Prod확인] 실제Prod에는 headOfficeCode OR ##SELFID## 두개가 들어가네 (확인 필요)
+                        wrapperRequest.PV_HKUNNR_lu						    =       acc?.ParentId; 			                             	
+                        wrapperRequest.PV_SUBSIDIARYYN						=       acc?.IsAffiliatedcompanyYN__c;						
+                        wrapperRequest.inputpv_vbund		    			=       codeToNameMap.get(acc?.AffiliatedCompany__c);            // [Prod확인] 값이 있는게 없음(필수값아님)	
+                        wrapperRequest.PV_VBUND     		    			=       acc?.AffiliatedCompany__c;                              // [Prod확인] 값이 있는게 없음(필수값아님)	
+                        wrapperRequest.PV_VBUND_lu	    	    			=       codeToIdMap.get(acc?.AffiliatedCompany__c);                  // [Prod확인] 값이 있는게 없음(필수값아님)	
+                        wrapperRequest.inputpv_land1						=       codeToNameMap.get(acc?.CountryKeyCode__c);                                 //국가키 코드	-> Name으로 변경해야함					
+                        wrapperRequest.PV_LAND1     						=       acc?.CountryKeyCode__c;                                 //국가키 코드					
+                        wrapperRequest.PV_LAND1_lu							=       codeToIdMap.get(acc?.CountryKeyCode__c);           		//국가키 id	
+                        wrapperRequest.PV_KNVKTYPE							=       acc?.PV_KNVKTYPE__c;					
+                        wrapperRequest.PV_CLOSEDT							=       acc?.ShutDownDate__c;					
+                        wrapperRequest.inputpv_regio						=       codeToNameMap.get(acc?.LocationState__c);                                 // 지역 코드	-> Name으로 변경해야함					
+                        wrapperRequest.PV_REGIO							    =       acc?.LocationState__c;				                     // 지역 코드					
+                        wrapperRequest.PV_REGIO_lu							=       codeToIdMap.get(acc?.LocationState__c);                   // 지역 id	
+                        wrapperRequest.PV_ADRES_ZIPCODE						=       acc?.PostalCode__c;						
+                        wrapperRequest.PV_ADRES_ROADADDR1					=       acc?.Address__c;							
+                        wrapperRequest.PV_ADRES_ROADADDR2					=       acc?.AddressDetails__c;							
+                        wrapperRequest.PV_ADRES_ADDR1						=       acc?.Address2__c;						
+                        wrapperRequest.PV_ADRES_ADDR2						=       acc?.AddressDetails2__c;		                 
+                        // wrapperRequest.CreateReferenceId                      =       acc?.X;                                                 //[수정] 판매처는 잠시,,               
+                        // wrapperRequest.PV_BIZPLCODE                      =       acc?.X;                          
+                        //기본정보 [E]
+                        
+                        //회계정보 [S]
+                        wrapperRequest.PV_BUSAB                             =       acc?.SalesForm__c;                
+                        wrapperRequest.PV_CESSION_KZ                        =       acc?.CustomerStatus__c;                        
+                        wrapperRequest.inputpv_zuawa                        =       codeToNameMap.get(acc?.SortKey__c);                    // 정렬키 :  Account의 코드를 inputField에 넣어줌               
+                        wrapperRequest.PV_ZUAWA                             =       acc?.SortKey__c;
+                        wrapperRequest.PV_ZUAWA_lu                          =       codeToIdMap.get(acc?.SortKey__c); 
+                        wrapperRequest.inputpv_akont                        =       codeToNameMap.get(acc?.MediateAccount__c);              //조정계정 : Account의 코드를 inputField에 넣어줌           
+                        wrapperRequest.PV_AKONT                             =       acc?.MediateAccount__c;                
+                        wrapperRequest.PV_AKONT_lu                          =       codeToIdMap.get(acc?.MediateAccount__c);                
+                        wrapperRequest.PV_FDGRV                             =       acc?.CashManagementGroup__c;                
+                        wrapperRequest.PV_TAXKDD                            =       acc?.TaxClassification__c;                    
+                        wrapperRequest.PV_KATR5                             =       acc?.TaxPaymentMethod__c;                
+                        //회계정보 [E]
+
+                        //영업정보 [E]
+                        wrapperRequest.inputpv_cuhr1                            =    codeToNameMap.get(acc?.CustomerRoute__c);         // 고객분류 : Account의 코드를 inputField에 넣어줌     
+                        wrapperRequest.PV_CUHR1                                 =    acc?.CustomerRoute__c;
+                        wrapperRequest.PV_CUHR1_lu                              =    codeToIdMap.get(acc?.CustomerRoute__c);   
+                        wrapperRequest.PVRA_CUHR1                               =    acc?.CustomerRouteFromDate__c;   
+                        wrapperRequest.inputpv_konda                            =    codeToNameMap.get(acc?.PriceGroup__c);            // 가격그룹 :  Account의 코드를 inputField에 넣어줌  
+                        wrapperRequest.PV_KONDA                                 =    acc?.PriceGroup__c;
+                        wrapperRequest.PV_KONDA_lu                              =    codeToIdMap.get(acc?.PriceGroup__c);  
+                        wrapperRequest.PVRA_KONDA                               =    acc?.PriceGroupFromDate__c;   
+                        wrapperRequest.inputpv_kvgr1                            =    codeToNameMap.get(acc?.UnitPriceGroup__c);          // 단가그룹(pageLayout에 빠져있음) :  Account의 코드를 inputField에 넣어줌  
+                        wrapperRequest.PV_KVGR1                                 =    acc?.UnitPriceGroup__c;    
+                        wrapperRequest.PV_KVGR1_lu                              =    codeToIdMap.get(acc?.UnitPriceGroup__c);      
+                        wrapperRequest.PVRA_KVGR1                               =    acc?.UnitPriceGroupFromDate__c;   
+                        wrapperRequest.inputpv_waers                            =    codeToNameMap.get(acc?.CurrencyIsoCode);           //통화 : Account의 코드를 inputField에 넣어줌   
+                        wrapperRequest.PV_WAERS                                 =    acc?.CurrencyIsoCode;
+                        wrapperRequest.PV_WAERS_lu                              =    codeToIdMap.get(acc?.CurrencyIsoCode);  
+                        wrapperRequest.PV_KVGR3                                 =    acc?.StatementOfDeliveryType__c;   
+                        wrapperRequest.PV_KVGR2                                 =    acc?.SubsidyType__c;   
+                        wrapperRequest.PV_KVGR3_BOT                             =    acc?.StatementOfDeliveryType2__c;   
+                        wrapperRequest.PV_ODCLOSEGB                             =    acc?.CustomerOrderDeadlineType__c;   
+                        wrapperRequest.PV_VACCPRTEXCYN                          =    acc?.IsPrintVirtualAccount__c;   
+                        wrapperRequest.inputpv_zterm_vv                         =    codeToNameMap.get(acc?.TermsOfPayment__c); //지급조건 :  Account의 코드를 inputField에 넣어줌  
+                        wrapperRequest.PV_ZTERM_VV                              =    acc?.TermsOfPayment__c;
+                        wrapperRequest.PV_ZTERM_VV_lu                           =    codeToIdMap.get(acc?.TermsOfPayment__c); 
+                        wrapperRequest.PV_DSTRHISTREGYN                         =    acc?.DisHisRegType__c;   
+                        wrapperRequest.inputpv_old_bizplace_new                 =    codeToNameMap.get(acc?.CustomerPath__c); // 경로(사업부) : Account의 코드를 inputField에 넣어줌    
+                        wrapperRequest.PV_OLD_BIZPLACE_NEW                      =    acc?.CustomerPath__c;
+                        wrapperRequest.PV_OLD_BIZPLACE_NEW_lu                   =    codeToIdMap.get(acc?.CustomerPath__c);   
+                        wrapperRequest.PVRA_OLD_BIZPLACE_NEW                    =    acc?.CustomerPathFromDate__c;   
+                        wrapperRequest.PV_EXAMYN                                =    acc?.IsFaceToFaceInspectionStatus__c;   
+                        wrapperRequest.PV_SHIPREQTIME                           =    acc?.OTD__c;   
+                        wrapperRequest.PV_PRODLOADCOND                          =    acc?.ProductLoadingCondition__c;   
+                        wrapperRequest.PV_RETURNLOC                             =    acc?.ReturnLocation__c;   
+                        wrapperRequest.PV_ENTERCOND1                            =    acc?.VehicleEntryCondtions__c;   
+                        wrapperRequest.PV_UNLOADCOND1                           =    acc?.UnloadConditions1__c;   
+                        wrapperRequest.PV_UNLOADCOND2                           =    acc?.UnloadConditions2__c;   
+                        wrapperRequest.inputpv_deligroup                        =    codeToNameMap.get(acc?.DeliveryGroup__c); // 배송그룹 : Account의 코드를 inputField에 넣어줌  
+                        wrapperRequest.PV_DELIGROUP                             =    acc?.DeliveryGroup__c;   
+                        wrapperRequest.PV_DELIGROUP_lu                          =    codeToIdMap.get(acc?.DeliveryGroup__c);   
+                        wrapperRequest.inputPV_KATR10                           =    codeToNameMap.get(acc?.ShipmentArea__c);  //출하권역 : Account의 코드를 inputField에 넣어줌
+                        wrapperRequest.PV_KATR10                                =    acc?.ShipmentArea__c; 
+                        wrapperRequest.PV_KATR10_lu                             =    codeToIdMap.get(acc?.ShipmentArea__c);    
+                        wrapperRequest.PV_KEYYN                                 =    acc?.IsBusinessPlaceKey__c;   
+                        wrapperRequest.PV_KEYINFO                               =    acc?.BusinessPlaceKeyInfo__c;   
+                        wrapperRequest.PV_KXOTD                                 =    acc?.KXOTD__c;   
+                        wrapperRequest.PV_KXOTDTIME                             =    acc?.KXOTDRequestDate__c;   
+                        wrapperRequest.PV_FDINFO                                =    acc.InitialDeliveryShare__c == 'Y' ? true : false; //acc?.InitialDeliveryShare__c;   
+                        wrapperRequest.PV_FDREQD                                =    acc?.InitialDeliveryRequestDate__c;   
+                        wrapperRequest.PV_FDREQT                                =    acc?.InitialDeliveryRequestTime__c;   
+                        wrapperRequest.PV_ISFDFTF                               =    acc?.IsInitialDeliveryFTFInspection__c;   
+                        wrapperRequest.PV_FDCTINFO                              =    acc?.InitialDeliveryContact__c;   
+                        wrapperRequest.PV_FDNOTICE                              =    acc?.InitialDeliveryDescription__c;   
+                        wrapperRequest.PV_SHIPTYPE                              =    acc?.PV_SHIPTYPE__c;   
+                        wrapperRequest.PV_TEMPTARGET                            =    acc?.PV_TEMPTARGET__c;   
+
+                        result.mdmRequest = wrapperRequest;
+                        // MDM Countact 정보 조회 => Account의 Contact조회해서 데이터 가져와야됨.
+                        List<CustomContacts> customContactsList = new List<CustomContacts>(); // CustomContacts 객체를 저장할 리스트
+                        // 원본 소스 백업
+                        for (Contact con : acc.Contacts) {
+                            CustomContacts wrapperConRequest = new CustomContacts();
+                            wrapperConRequest.id = con.Id;
+                            wrapperConRequest.Name = con.Name;
+                            wrapperConRequest.AccountId = con.AccountId;
+                            wrapperConRequest.Email = con.Email;
+                            // wrapperConRequest.Phone = con.Phone;
+                            wrapperConRequest.MobilePhone = con.MobilePhone;
+                            wrapperConRequest.Department = con.Department;
+                            wrapperConRequest.PV_PAFKT_VK = con.PV_PAFKT_VK__c;
+                            // wrapperConRequest.Gender = con.Gender__c;
+                            // wrapperConRequest.Fax = con.Fax;
+                            // wrapperConRequest.OtherInfo = con.OtherInfo__c;
+                            // wrapperConRequest.OwnerId = con.OwnerId;
+                            wrapperConRequest.PV_TALKT_VK = con.PV_TALKT_VK__c;
+                            wrapperConRequest.PV_KNVKGB    = con.PV_KNVKGB__c; //  2023-09-26 담당자 유형 추가
+
+                            customContactsList.add(wrapperConRequest); // CustomContacts 객체를 리스트에 추가
+
+                            result.CustomContacts = customContactsList;
+                            System.debug('AccountId를 룩업하고 있는 ContactId2 ' + result.CustomContacts);
+                            System.debug('wrapperConRequest ' + JSON.serialize(customContactsList));
+                        }
+                    system.debug('wrapperRequest ' + JSON.serialize(wrapperRequest));
+                    result.mdmRequest = wrapperRequest;
+                    //-----TEST End
+                }
             // 승인으로 온 친구 upsert
             }else{
                 //mdmRegRequestCustomerList빈값이 아니면 
                 system.debug('>>> 승인으로 온 친구');
                
                 // result.isCRM = true;
-                // result.isEdit = true;
+                // result.isMDMEdit = true;
 
                 // MDM Countact 정보 조회
                 List<MDMRegRequestContact__c> listMDMReqContact = [
@@ -714,7 +695,7 @@ public with sharing class CJFW_MDMManagementController {
                         wrapperRequest.PV_ADRES_ROADADDR2					=       acc?.AddressDetails__c;							
                         wrapperRequest.PV_ADRES_ADDR1						=       acc?.Address2__c;						
                         wrapperRequest.PV_ADRES_ADDR2						=       acc?.AddressDetails2__c;		                 
-                        // wrapperRequest.PV_SELLER_lu                      =       acc?.X;                                                 //[수정] 판매처는 잠시,,               
+                        // wrapperRequest.CreateReferenceId                      =       acc?.X;                                                 //[수정] 판매처는 잠시,,               
                         // wrapperRequest.PV_BIZPLCODE                      =       acc?.X;                          
                         //기본정보 [E]
                         
@@ -813,38 +794,40 @@ public with sharing class CJFW_MDMManagementController {
                          */
                             
                         List<CustomContacts> customContactsList = new List<CustomContacts>(); // CustomContacts 객체를 저장할 리스트
-                        for (MDMRegRequestContact__c mdmReqContact : getMDMReqContactList.get(acc.id)) {
-                            CustomContacts wrapperConRequest = new CustomContacts();
-                            wrapperConRequest.id = mdmReqContact?.Contact__c;
-                            wrapperConRequest.Name = mdmReqContact.PV_NAME1_VK__c;
-                            wrapperConRequest.AccountId = mdmReqContact?.Contact__r?.AccountId;
-                            wrapperConRequest.Email = mdmReqContact?.PV_EMAIL_VK__c;
-                            wrapperConRequest.MobilePhone = mdmReqContact.PV_TELF1_VK__c;
-                            wrapperConRequest.Department = mdmReqContact.PV_ABTNR_VK__c;
-                            wrapperConRequest.PV_PAFKT_VK = mdmReqContact.PV_PAFKT_VK__c;
-                            wrapperConRequest.PV_TALKT_VK = mdmReqContact.PV_TALKT_VK__c;
-
-                            
-                            customContactsList.add(wrapperConRequest); // CustomContacts 객체를 리스트에 추가
-                            result.CustomContacts = customContactsList;
-                            System.debug('AccountId를 룩업하고 있는 ContactId2 ' + result.CustomContacts);
-                            System.debug('wrapperConRequest ' + JSON.serialize(customContactsList));
-                        }
+                        if(!getMDMReqContactList.get(acc.id).isEmpty()){
+                            system.debug('여기 안타면 됨. ');
+                            for (MDMRegRequestContact__c mdmReqContact : getMDMReqContactList.get(acc.id)) {
+                                CustomContacts wrapperConRequest = new CustomContacts();
+                                wrapperConRequest.id = mdmReqContact?.Contact__c;
+                                wrapperConRequest.Name = mdmReqContact.PV_NAME1_VK__c;
+                                wrapperConRequest.AccountId = mdmReqContact?.Contact__r?.AccountId;
+                                wrapperConRequest.Email = mdmReqContact?.PV_EMAIL_VK__c;
+                                wrapperConRequest.MobilePhone = mdmReqContact.PV_TELF1_VK__c;
+                                wrapperConRequest.Department = mdmReqContact.PV_ABTNR_VK__c;
+                                wrapperConRequest.PV_PAFKT_VK = mdmReqContact.PV_PAFKT_VK__c;
+                                wrapperConRequest.PV_TALKT_VK = mdmReqContact.PV_TALKT_VK__c;
+                                wrapperConRequest.PV_TALKT_VK = mdmReqContact.PV_TALKT_VK__c;
+                                wrapperConRequest.PV_KNVKGB    = mdmReqContact.PV_KNVKGB_lu__c; //2023-09-26 담당자 유형 추가
+                                customContactsList.add(wrapperConRequest); // CustomContacts 객체를 리스트에 추가
+                                result.CustomContacts = customContactsList;
+                                System.debug('result.CustomContacts ' + JSON.serialize(result.CustomContacts));
+                                System.debug('wrapperConRequest ' + JSON.serialize(customContactsList));
+                            }
+                    }
                     system.debug('wrapperRequest ' + JSON.serialize(wrapperRequest));
                     result.mdmRequest = wrapperRequest;
                 }
             }
-
         }else{
         }
         return result;
     }
 
     /**
-     * @description 선택한 recordId를 이용해 Account정보/ Contact정보 가져와 MDM 고객 등록 요청(관리처)에 보내주기
-     * 
-     * @return      `String`
-     */ 
+    * @description 선택한 recordId를 이용해 Account정보/ Contact정보 가져와 MDM 고객 등록 요청(관리처)에 보내주기
+    * 
+    * @return      `String`
+    */ 
     @AuraEnabled
     public static List<AccountDataWrapper> getAccountReferenceInfo(String selectedId){
         system.debug('### CJFW_MDMManagementController.getAccountInfo(String selectedId) ### ');
@@ -896,22 +879,22 @@ public with sharing class CJFW_MDMManagementController {
     }
 
     /**
-     * @description 관리처 화면에 오늘날짜 Setting
-     *
-     * @return      `Date`
-     */
+    * @description 관리처 화면에 오늘날짜 Setting
+    *
+    * @return      `Date`
+    */
     @AuraEnabled
-    public static Date getFirstDayOfMonthDate() {
+    public static Date getTodayDate() {
         system.debug('>>>getFirstDayOfMonthDate');
         Date result = System.today();
 
         return result;
     }
     /**
-     * @description 본점 조회
-     *
-     * @return      `List<Account>`
-     */
+    * @description 본점 조회
+    *
+    * @return      `List<Account>`
+    */
     @AuraEnabled
     public static Account getHKUNNR(String accountId) {
         system.debug(' ### getHKUNNR ' + accountId);
@@ -921,11 +904,11 @@ public with sharing class CJFW_MDMManagementController {
     }
 
     /**
-     * User 정보 조회
-     * 
-     * @params userId : User Id     
-     * @return `User` 
-     *
+    * User 정보 조회
+    * 
+    * @params userId : User Id     
+    * @return `User` 
+    *
     **/
     @AuraEnabled
     public static User getUserEmployeeNumber(String userId) {
@@ -933,6 +916,19 @@ public with sharing class CJFW_MDMManagementController {
         
         return us;
     }
+
+    /*************************************************************************************************************
+    * @description [코드정리해야함 공통화 해]
+    *              수정 일 경우(AccountId가 존재) 
+    *              AccountId로 MDM오브젝트 조회하여 저장되어 있는 필드와 값을 래퍼클래스에 매핑하여 화면에 리턴
+    * 
+    * @return      `EditMDMRequest`
+    *************************************************************************************************************/
+    @AuraEnabled 
+    public static List<MDMReferenceCode__c> getReferenceNames(List<String> codes){
+        return [SELECT Id, Name, CODE__c  FROM MDMReferenceCode__c WHERE CODE__c IN :codes AND GROUPID__c = 'KNVKGB'];
+    }
+
    /**
    * Save 버튼을 클릭 했을 때 호출
    * 
@@ -943,157 +939,206 @@ public with sharing class CJFW_MDMManagementController {
    * CRM 오브젝트 = wrapper class다 
    * contact < 스탠다드 오브젝트 
    **/
-    @AuraEnabled
-    public static SaveResult doSave(MDMRequest objCustomer,  List<CustomContacts> contacts, Boolean isEdit)
-    {
-        
+    @AuraEnabled                                // List<CustomContacts> contacts, Boolean isMDMEdit
+    public static String saveRecords(MDMRegRequestCustomer__c customer, List<MDMRegRequestContact__c> contacts, Boolean isMDMEdit){
         system.debug(' ### CJFW_MDMManagementController > doSave ');
-        system.debug(' >>> doSave > objCustomer.Account ' + objCustomer.Account);
-        system.debug(' >>> doSave > json.serialize(objCustomer) ' + json.serialize(objCustomer));
-        SaveResult saveResult = new SaveResult();
+        system.debug(' >>> doSave > json.serialize(objCustomer) ' + json.serialize(customer));
+        system.debug(' >>> doSave > json.serialize(objCustomer) ' + json.serialize(contacts));
+        Savepoint sp = Database.setSavepoint();
         // aura  String 으로 넘어와서 JSON.des
         // ObjCustomer obj =  JSON.deserialize(objCustomer,  래퍼클래스명.class);
         Id recordIdEx = Schema.SObjectType.MDMRegRequestCustomer__c.getRecordTypeInfosByDeveloperName().get('MDMManagement').getRecordTypeId();
 
-
-        /**
-         * 1 관리처 생성 MDM에 id가 없음
-         * 2 관리처 수정 1) MDM에서 온 경우 MDM에 id가 없음
-         *              2) sfdc에서 승인 난 경우 MDM id 가 있음
-         */
         try {
-            
-            // ================ MDM 요청 =============
-            // 생성 인 경우
+            upsert customer;
 
-            String mdmRequestId = '';
+            List<MDMRegRequestContact__c> listCurContact = [
+                SELECT Id FROM MDMRegRequestContact__c WHERE MDMRegRequestCustomer__c =:customer.Id
+            ];
 
-            if(!isEdit){ 
-                system.debug(' >>> doSave > isEdit = false ' );
-                system.debug(' json.serialize(objCustomer) ' + json.serialize(objCustomer));
-                MDMRegRequestCustomer__c mdmRequest = convertMdmRequest(objCustomer, null);
-
-                insert mdmRequest;
-                mdmRequestId = mdmRequest.id;
-            // 수정 인 경우
-            }else{
-                system.debug(' >>> doSave > isEdit = true ' );
-                system.debug(' json.serialize(objCustomer) ' + json.serialize(objCustomer));
-                List<Account> accountList = [SELECT Id, recordTypeId, Name, CustomerID__c FROM Account WHERE Id =: objCustomer.Account LIMIT 1 ];
-                List<MDMRegRequestCustomer__c> mdmRegRequestCustomerList = [
-                    SELECT id
-                    FROM MDMRegRequestCustomer__c  
-                    WHERE PV_KUNNR__c =: accountList[0].CustomerId__c]; 
-                
-                // 없을 경우 1. MDM에서 온 경우
-                if(mdmRegRequestCustomerList.isEmpty()){ 
-
-                    system.debug('여기 찍히나요 mdm에서 온 경우');
-                    //메서드 만들어서 데이터 보내고, 받은다음 
-                    MDMRegRequestCustomer__c mdmRequest = convertMdmRequest(objCustomer, null);
-                    insert mdmRequest;
-                    mdmRequestId = mdmRequest.id;
-                 //2. 있을 경우 sfdc 출신 MDM
-                }else{
-                    // CustomerId__c로 찾은 MDMRegRequestCustomer__c를 넣어줌
-                    MDMRegRequestCustomer__c originalCustomer = mdmRegRequestCustomerList[0];
-                    MDMRegRequestCustomer__c mdmRequest = convertMdmRequest(objCustomer, originalCustomer);
-
-                    update mdmRequest;
-                    mdmRequestId = mdmRequest.id;
-                }
+            if(listCurContact <> null && listCurContact.size() > 0) {
+                delete listCurContact;
             }
+            List<MDMRegRequestContact__c> listInsertMDMContact = new List<MDMRegRequestContact__c>();
+            List<Contact> listUpdateContact = new List<Contact>();
 
-            /** =============== 담당자 정보 ============ **/
-            // contactId가 있으면 usert/ 없으면 inert
-            List<Contact> insertContactList = new List<Contact>();
-            List<Contact> updateContactList = new List<Contact>();
+            integer i = 1;
+            if (contacts != null && contacts.size() > 0) {
+                for(MDMRegRequestContact__c con : contacts) {
+                    // 원본
+                    // con.Id = null;
+                    // con.MDMRegRequestCustomer__c = customer.Id;
 
-            List<MDMRegRequestContact__c> conMdmRequestList = new List<MDMRegRequestContact__c>();
-
-            for (CustomContacts contact : contacts) {
-                // 없음 = insert
-                if (String.isBlank(contact.id)) {
-                    //// 공통적인 부분은 메소드에 contact보내서 처리함
-                    system.debug('컨택이 없는 이름 => ' + contact.Name);
-                    insertContactList.add(convertContact(contact, mdmRequestId));
-                // 있음 = update
-                }else{
-
-                    // Contact conRequest = new Contact();
-                    // conRequest.id                                         = contact.id; // 아이디 특정
-                    // conRequest.LastName                                  = String.isBlank(contact.Name) ? null : contact.Name;
-                    // conRequest.Email                                     = String.isBlank(contact.Email) ? null : contact.Email; 
-                    // conRequest.MobilePhone                               = String.isBlank(contact.MobilePhone) ? null : contact.MobilePhone; 
-                    // conRequest.MDMRegRequestCustomer__c                  = mdmRequest.id;
-                    // updateContactList.add(conRequest);
-
-                    // contact Convert 부분은 메소드에 contact보내서 처리함 (공통사용)
-                    updateContactList.add(convertContact(contact, mdmRequestId));
+                    // Insert MDM Contact
+                    MDMRegRequestContact__c insertMDMCon = con.clone(false, true, false, false);
+                    insertMDMCon.Id = null;  // 신규 추가에 경우 Name값이 ""으로 들어와서 널 값처리(AutoNumber)
                     
-                    // MDMRegRequestContact__c mdmConRequest = new MDMRegRequestContact__c();
-                    // mdmConRequest.PV_NAME1_VK__c                                     = String.isBlank(contact.Name) ? null : contact.Name;
-                    // mdmConRequest.PV_EMAIL_VK__c                                     = String.isBlank(contact.Email) ? null : contact.Email; 
-                    // mdmConRequest.PV_TELF1_VK__c                                     = String.isBlank(contact.MobilePhone) ? null : contact.MobilePhone; 
-                    // mdmConRequest.MDMRegRequestCustomer__c                           = mdmRequestId;
-                    // mdmConRequest.Contact__c                                         = contact.id;    
+                    insertMDMCon.MDMRegRequestCustomer__c = customer.Id;
+                    listInsertMDMContact.add(insertMDMCon);      
 
-                    // mdm contact Convert 부분은 메소드에 contact보내서 처리함 (공통사용)
-                    system.debug('컨택이 있는 이름 => ' + contact.name);
-                    conMdmRequestList.add(convertMdmContact(contact, mdmRequestId, contact.Id));
-                }
-            }
-            
-            if(!insertContactList.isEmpty()){
-                insert insertContactList;
-                
-                Map<String, String> insertConRequestMap = new Map<String, String>(); 
-
-                // 새로 생성한 Contact의 경우 Id값이 없으니까 insert하고나서 맵에 키 넣어두고 Id값 가져옴
-                for(Contact insertContact : insertContactList)
-                {
-                    insertConRequestMap.put(insertContact.LastName +'-'+insertContact.Email +'-'+insertContact.MobilePhone, insertContact.id);
-                }
-
-                for (CustomContacts contact : contacts) {
-                    String name        = String.isBlank(contact.Name) ? null : contact.Name;
-                    String email       = String.isBlank(contact.Email) ? null : contact.Email; 
-                    String mobilePhone = String.isBlank(contact.MobilePhone) ? null : contact.MobilePhone; 
-
-                    // 위에서 넣어준 Map에 key넣어주어 Insert된 ContactId가져옴
-                    String conRequestid = insertConRequestMap.get(Name+'-'+Email+'-'+MobilePhone);
-
-                    // mdm contact Convert 부분은 메소드에 contact보내서 처리함 (공통사용)
-                    if(conRequestid!= null)
+                    // Update Contact
+                    if(String.isNotBlank(con.Contact__c))
                     {
-                        conMdmRequestList.add(convertMdmContact(contact, mdmRequestId, conRequestid));
+                        Contact objUpdateContact = new Contact();
+                        objUpdateContact.Id = con.Contact__c;
+                        objUpdateContact.ExtId__c = customer.Account__c+'_'+ i++;
+                        listUpdateContact.add(objUpdateContact);
                     }
                 }
+                // 원본
+                //insert contacts;
+                if(!listInsertMDMContact.isEmpty()) 
+                {
+                    system.debug(JSON.serialize(listInsertMDMContact));
 
-                //여기에 MDMRegRequestContact__c 추가해주면 안되는건가?
-            }
-            if(!updateContactList.isEmpty()){
-                update updateContactList;
-            }
-            if(!conMdmRequestList.isEmpty()){
-                system.debug(conMdmRequestList.size());
-                List<MDMRegRequestContact__c> delConMDMRequestList = [SELECT Id FROM MDMRegRequestContact__c WHERE MDMRegRequestCustomer__c =:mdmRequestId];
-                if(!delConMDMRequestList.isEmpty()){
-                    delete delConMDMRequestList;
+                    insert listInsertMDMContact;
                 }
-                upsert conMdmRequestList;
             }
-        } catch (Exception e) {
-            saveResult = new SaveResult('F',  e.getMessage() + e.getLineNumber());
+
+            if(listUpdateContact <> null && listUpdateContact.size() > 0) {
+                update listUpdateContact;
+            }
+            if(customer.Id != null && customer.Account__c != null){
+                Account objAccount = new Account();
+
+                objAccount.Id = customer.Account__c;
+                objAccount.IsRequestMDMReg__c = true;
+
+                update objAccount;
+            }
+
+            return customer.Id;
+        }catch(Exception e) {
+            Database.rollback(sp);
+            System.debug('Error ==============> '+e.getMessage());
+            System.debug('=============================> Error Line '+e.getLineNumber());
+            return 'error';
+        // return e.getMessage();
+        //     System.debug('=============================> Error Line '+e.getLineNumber());
+        //     System.debug('=============================> Error '+e.getMessage());
         }
 
-        return saveResult;
+        // /**
+        //  * 1 관리처 생성 MDM에 id가 없음
+        //  * 2 관리처 수정 1) MDM에서 온 경우 MDM에 id가 없음
+        //  *              2) sfdc에서 승인 난 경우 MDM id 가 있음
+        //  */
+        // try {
+            
+        //     // ================ MDM 요청 =============
+        //     // 생성 인 경우
+
+        //     String mdmRequestId = '';
+
+        //     if(!isMDMEdit){ 
+        //         system.debug(' >>> doSave > isMDMEdit = false ' );
+        //         system.debug(' json.serialize(objCustomer) ' + json.serialize(objCustomer));
+        //         MDMRegRequestCustomer__c mdmRequest = convertMdmRequest(objCustomer, null);
+
+        //         insert mdmRequest;
+        //         mdmRequestId = mdmRequest.id;
+        //     // 수정 인 경우
+        //     }else{
+        //         system.debug(' >>> doSave > isMDMEdit = true ' );
+        //         system.debug(' json.serialize(objCustomer) ' + json.serialize(objCustomer));
+        //         List<Account> accountList = [SELECT Id, recordTypeId, Name, CustomerID__c FROM Account WHERE Id =: objCustomer.Account LIMIT 1 ];
+        //         List<MDMRegRequestCustomer__c> mdmRegRequestCustomerList = [
+        //             SELECT id
+        //             FROM MDMRegRequestCustomer__c  
+        //             WHERE PV_KUNNR__c =: accountList[0].CustomerId__c]; 
+                
+        //         // 없을 경우 1. MDM에서 온 경우
+        //         if(mdmRegRequestCustomerList.isEmpty()){ 
+
+        //             system.debug('여기 찍히나요 mdm에서 온 경우');
+        //             //메서드 만들어서 데이터 보내고, 받은다음 
+        //             MDMRegRequestCustomer__c mdmRequest = convertMdmRequest(objCustomer, null);
+        //             insert mdmRequest;
+        //             mdmRequestId = mdmRequest.id;
+        //          //2. 있을 경우 sfdc 출신 MDM
+        //         }else{
+        //             // CustomerId__c로 찾은 MDMRegRequestCustomer__c를 넣어줌
+        //             MDMRegRequestCustomer__c originalCustomer = mdmRegRequestCustomerList[0];
+        //             MDMRegRequestCustomer__c mdmRequest = convertMdmRequest(objCustomer, originalCustomer);
+
+        //             update mdmRequest;
+        //             mdmRequestId = mdmRequest.id;
+        //         }
+        //     }
+
+        //     /** =============== 담당자 정보 ============ **/
+        //     // contactId가 있으면 usert/ 없으면 inert
+        //     List<Contact> insertContactList = new List<Contact>();
+        //     List<Contact> updateContactList = new List<Contact>();
+
+        //     List<MDMRegRequestContact__c> conMdmRequestList = new List<MDMRegRequestContact__c>();
+
+        //     for (CustomContacts contact : contacts) {
+        //         // 없음 = insert
+        //         if (String.isBlank(contact.id)) {
+        //             //// 공통적인 부분은 메소드에 contact보내서 처리함
+        //             system.debug('컨택이 없는 이름 => ' + contact.Name);
+        //             insertContactList.add(convertContact(contact, mdmRequestId));
+        //         // 있음 = update
+        //         }else{
+        //             // contact Convert 부분은 메소드에 contact보내서 처리함 (공통사용)
+        //             updateContactList.add(convertContact(contact, mdmRequestId));
+                    
+        //             // mdm contact Convert 부분은 메소드에 contact보내서 처리함 (공통사용)
+        //             system.debug('컨택이 있는 이름 => ' + contact.name);
+        //             conMdmRequestList.add(convertMdmContact(contact, mdmRequestId, contact.Id));
+        //         }
+        //     }
+            
+        //     if(!insertContactList.isEmpty()){
+        //         insert insertContactList;
+                
+        //         Map<String, String> insertConRequestMap = new Map<String, String>(); 
+
+        //         // 새로 생성한 Contact의 경우 Id값이 없으니까 insert하고나서 맵에 키 넣어두고 Id값 가져옴
+        //         for(Contact insertContact : insertContactList)
+        //         {
+        //             insertConRequestMap.put(insertContact.LastName +'-'+insertContact.Email +'-'+insertContact.MobilePhone, insertContact.id);
+        //         }
+
+        //         for (CustomContacts contact : contacts) {
+        //             String name        = String.isBlank(contact.Name) ? null : contact.Name;
+        //             String email       = String.isBlank(contact.Email) ? null : contact.Email; 
+        //             String mobilePhone = String.isBlank(contact.MobilePhone) ? null : contact.MobilePhone; 
+
+        //             // 위에서 넣어준 Map에 key넣어주어 Insert된 ContactId가져옴
+        //             String conRequestid = insertConRequestMap.get(Name+'-'+Email+'-'+MobilePhone);
+
+        //             // mdm contact Convert 부분은 메소드에 contact보내서 처리함 (공통사용)
+        //             if(conRequestid!= null)
+        //             {
+        //                 conMdmRequestList.add(convertMdmContact(contact, mdmRequestId, conRequestid));
+        //             }
+        //         }
+
+        //         //여기에 MDMRegRequestContact__c 추가해주면 안되는건가?
+        //     }
+        //     if(!updateContactList.isEmpty()){
+        //         update updateContactList;
+        //     }
+        //     if(!conMdmRequestList.isEmpty()){
+        //         system.debug(conMdmRequestList.size());
+        //         List<MDMRegRequestContact__c> delConMDMRequestList = [SELECT Id FROM MDMRegRequestContact__c WHERE MDMRegRequestCustomer__c =:mdmRequestId];
+        //         if(!delConMDMRequestList.isEmpty()){
+        //             delete delConMDMRequestList;
+        //         }
+        //         upsert conMdmRequestList;
+        //     }
+        // } catch (Exception e) {
+        //     saveResult = new SaveResult('F',  e.getMessage() + e.getLineNumber());
+        // }
+        
     } 
-     /**
-      * @param  : objCustomer => 화면에서 보내준 래퍼클래스
-      * @param  : mdmRegRequestRecordId    => 수정 일 경우 originalCustomer
-      * @return : 래퍼클래스를 MDMRegRequestCustomer__c 오브젝트에 매핑해서 변환
-      */
+    /*************************************************************************************************************
+    * @param  : objCustomer => 화면에서 보내준 래퍼클래스
+    * @param  : mdmRegRequestRecordId    => 수정 일 경우 originalCustomer
+    * @return : 래퍼클래스를 MDMRegRequestCustomer__c 오브젝트에 매핑해서 변환
+    *************************************************************************************************************/
     public static MDMRegRequestCustomer__c convertMdmRequest(MDMRequest objCustomer, MDMRegRequestCustomer__c originalCustomer){
             system.debug(' ### CJFW_MDMManagementController > convertMdmRequest ');
             system.debug(' >>> objCustomer ' + json.serialize(objCustomer));
@@ -1156,6 +1201,7 @@ public with sharing class CJFW_MDMManagementController {
             mdmRequest.PV_ADRES_ADDR1__c                                      = String.isBlank(objCustomer?.PV_ADRES_ADDR1) ? null : objCustomer.PV_ADRES_ADDR1;                                                                                                 
             mdmRequest.PV_ADRES_ADDR2__c                                      = String.isBlank(objCustomer?.PV_ADRES_ADDR2) ? null : objCustomer.PV_ADRES_ADDR2;                                                                                                 
             mdmRequest.PV_SELLER_lu__c                                        = String.isBlank(objCustomer?.PV_SELLER_lu) ? null : objCustomer.PV_SELLER_lu;                                                                                         
+            mdmRequest.CreateReferenceId__c                                   = String.isBlank(objCustomer?.CreateReferenceId) ? null : objCustomer.CreateReferenceId;                                                                                         
             mdmRequest.PV_BIZPLCODE__c                                        = String.isBlank(objCustomer?.PV_BIZPLCODE) ? null : objCustomer.PV_BIZPLCODE;
             //기본정보 완료
             //회계정보 7
@@ -1262,11 +1308,11 @@ public with sharing class CJFW_MDMManagementController {
                 //     }
                 // }
     }  
-    /**
-     * @param  : objCustomer => 화면에서 보내준 래퍼클래스
-     * @param  : contact
-     * @return : 래퍼클래스를 Contact 오브젝트에 매핑해서 변환
-    */
+    /*************************************************************************************************************
+    * @param  : objCustomer => 화면에서 보내준 래퍼클래스
+    * @param  : contact
+    * @return : 래퍼클래스를 Contact 오브젝트에 매핑해서 변환
+    *************************************************************************************************************/
     public static Contact convertContact(CustomContacts contact, String mdmRequestId){
         Contact conRequest = new Contact();
 
@@ -1283,11 +1329,11 @@ public with sharing class CJFW_MDMManagementController {
         return conRequest;
     }
 
-    /**
-     * @param  : objCustomer => 화면에서 보내준 래퍼클래스
-     * @param  : 
-     * @return : 래퍼클래스를 MDMRegRequestContact__c 오브젝트에 매핑해서 변환
-    */
+    /*************************************************************************************************************
+    * @param  : objCustomer => 화면에서 보내준 래퍼클래스
+    * @param  : 
+    * @return : 래퍼클래스를 MDMRegRequestContact__c 오브젝트에 매핑해서 변환
+    *************************************************************************************************************/
     public static MDMRegRequestContact__c convertMdmContact(CustomContacts contact, String mdmRequestId, String contactId ){
 
         MDMRegRequestContact__c mdmConRequest = new MDMRegRequestContact__c();
@@ -1328,9 +1374,9 @@ public with sharing class CJFW_MDMManagementController {
 
 
 
-    /**
-     * MDMRequest 공통
-     */
+    /*************************************************************************************************************
+    * MDMRequest  Wrapper
+    *************************************************************************************************************/
     public class MDMRequest{
         //필드 총 3 + 49 + 9 + 45
         //기존 3
@@ -1386,6 +1432,7 @@ public with sharing class CJFW_MDMManagementController {
         @AuraEnabled public String PV_ADRES_ROADADDR2 {get;set;}
         @AuraEnabled public String PV_ADRES_ADDR1 {get;set;}
         @AuraEnabled public String PV_ADRES_ADDR2 {get;set;}
+        @AuraEnabled public String CreateReferenceId {get;set;}
         @AuraEnabled public String PV_SELLER_lu {get;set;}
         @AuraEnabled public String PV_BIZPLCODE {get;set;}
         //기준정보 완료
@@ -1482,6 +1529,8 @@ public with sharing class CJFW_MDMManagementController {
         @AuraEnabled public String OtherInfo {get;set;}
         @AuraEnabled public String OwnerId {get;set;}
         @AuraEnabled public String PV_TALKT_VK {get;set;}
+        @AuraEnabled public String PV_KNVKGB {get;set;}
+        @AuraEnabled public Integer idNumber {get;set;}
     }
     public class CustomBanks{
         @AuraEnabled public String Name {get;set;}
@@ -1514,9 +1563,9 @@ public with sharing class CJFW_MDMManagementController {
         /** @description */
         @AuraEnabled public Opportunity objOpportunity {get;set;}
         /** @description */
-        @AuraEnabled public MDMRequest objMDMRegReqCustomer {get;set;}
+        @AuraEnabled public MDMRegRequestCustomer__c objMDMRegReqCustomer {get;set;}
         /** @description */
-        @AuraEnabled public List<CustomContacts> listMDMReqContact {get;set;}
+        @AuraEnabled public List<MDMRegRequestContact__c> listMDMReqContact {get;set;}
 
         public DataWrapper() {}
     }
@@ -1534,7 +1583,7 @@ public with sharing class CJFW_MDMManagementController {
         @AuraEnabled public String PV_STCDT{get;set;}                   // 세금계산서발행유형
         @AuraEnabled public String PV_ADRES_ZIPCODE{get;set;}           // 우편번호
         @AuraEnabled public String PV_ADRES_ROADADDR1{get;set;}         // 도로명주소
-        @AuraEnabled public String PV_SELLER_lu{get;set;}               // 판매처
+        @AuraEnabled public String CreateReferenceId{get;set;}               // 판매처
         @AuraEnabled public String PV_NAME_G{get;set;}                  // 고객명(G)/자국명
         @AuraEnabled public String PV_KTOKD{get;set;}                   // 고객계정그룹
         @AuraEnabled public String PV_STCD2{get;set;}                   // 사업자등록번호
@@ -1552,6 +1601,7 @@ public with sharing class CJFW_MDMManagementController {
         @AuraEnabled public String PV_KVGR3_BOT{get;set;}               // 납품서 하단유형
         @AuraEnabled public String PV_DSTRHISTREGYN{get;set;}           // 유통이력 신고대상 유형
         @AuraEnabled public String PV_DELIGROUP{get;set;}               // 배송그룹
+        @AuraEnabled public String PV_SELLER_lu{get;set;}               // 판매처
 
         // Default
         @AuraEnabled public String PV_OLDCD {get;set;}
@@ -1592,6 +1642,7 @@ public with sharing class CJFW_MDMManagementController {
             this.PV_ADRES_ZIPCODE                     = acc.PostalCode__c;                                                           
             this.PV_ADRES_ROADADDR1                   = acc.Address__c;                                                           
             this.PV_SELLER_lu                         = acc.Id;     //판매처
+            this.CreateReferenceId                    = acc.Id;     //참조생성
             this.PV_NAME_G                            = acc.NameKor__c;                                                   
             this.PV_KTOKD                             = acc.AccountGroup__c;                                                   
             this.PV_STCD2                             = acc.CompanyRegisterNumber__c;                                                   
@@ -1655,115 +1706,4 @@ public with sharing class CJFW_MDMManagementController {
             this.id = id;
         }
     }
-
-    /** 관리처 생성 시 저장되는 데이터 API
-     * RecordTypeId
-       requestType__c
-       PV_OLDCD__c
-       PV_NAME1__c
-       PV_NAME_G__c
-       PV_NAME2__c
-       PV_KTOKD__c
-       PV_CUSTTYPE__c
-       PV_STCD2__c
-       PV_STCD3__c
-       PV_STCD4__c
-       PV_GFORM__c
-       PV_J_1KFREPRE__c
-       PV_STCD1__c
-       PV_J_1KFTBUS__c
-       PV_J_1KFTIND__c
-       PV_TELF1__c
-       PV_TELFX__c
-       PV_VKGRP__c
-       PVRA_VKGRP__c
-       PV_PERNR__c
-       PV_PERNR_lu__c
-       PVRA_PERNR__c
-       PV_ADMINMA__c
-       PV_ADMINMA_lu__c
-       PV_LOGISCENTER__c
-       PVRA_LOGISCENTER__c
-       PV_STCDT__c
-       PV_FITYP__c
-       PV_HDOFFICEYN__c
-       PV_HKUNNR_lu__c
-       PV_HKUNNR__c
-       PV_VBUND__c
-       PV_LAND1__c
-       PV_LAND1_lu__c
-       PV_KNVKTYPE__c
-       PV_CLOSEDT__c
-       PV_REGIO__c
-       PV_ADRES_ZIPCODE__c
-       PV_ADRES_ROADADDR1__c
-       PV_ADRES_ROADADDR2__c
-       PV_ADRES_ADDR1__c
-       PV_ADRES_ADDR2__c
-       PV_SELLER_lu__c
-       PV_BIZPLCODE__c
-       PV_BUSAB__c
-       PV_CESSION_KZ__c
-       PV_ZUAWA__c
-       PV_AKONT__c
-       PV_FDGRV__c
-       PV_TAXKDD__c
-       PV_KATR5__c
-       PV_CUHR1__c
-       PVRA_CUHR1__c
-       PV_KONDA__c
-       PVRA_KONDA__c
-       PV_KVGR1__c
-       PVRA_KVGR1__c
-       PV_WAERS__c
-       PV_KVGR3__c
-       PV_KVGR2__c
-       PV_KVGR3_BOT__c
-       PV_ODCLOSEGB__c
-       PV_VACCPRTEXCYN__c
-       PV_ZTERM_VV__c
-       PV_DSTRHISTREGYN__c
-       PV_OLD_BIZPLACE_NEW__c
-       PVRA_OLD_BIZPLACE_NEW__c
-       PV_EXAMYN__c
-       PV_SHIPREQTIME__c
-       PV_PRODLOADCOND__c
-       PV_RETURNLOC__c
-       PV_ENTERCOND1__c
-       PV_UNLOADCOND1__c
-       PV_UNLOADCOND2__c
-       PV_DELIGROUP__c
-       PV_KATR10__c
-       PV_KEYYN__c
-       PV_KEYINFO__c
-       PV_KXOTD__c
-       PV_KXOTDTIME__c
-       PV_FDINFO__c
-       PV_FDREQD__c
-       PV_FDREQT__c
-       PV_ISFDFTF__c
-       PV_ISFDFTF__c
-       PV_FDCTINFO__c
-       PV_FDNOTICE__c
-       PV_SHIPTYPE__c
-       PV_TEMPTARGET__c
-       PV_VKGRP_lu__c
-       PV_LOGISCENTER_lu__c
-       PV_STCDT_lu__c
-       PV_VBUND_lu__c
-       PV_LAND1_lu__c
-       PV_REGIO_lu__c
-       PV_ZUAWA_lu__c
-       PV_AKONT_lu__c
-       PV_CUHR1_lu__c
-       PV_KONDA_lu__c
-       PV_KVGR1_lu__c
-       PV_WAERS_lu__c
-       PV_ZTERM_VV_lu__c
-       PV_OLD_BIZPLACE_NEW_lu__c
-       PV_DELIGROUP_lu__c
-       PV_KATR10_lu__c
-     */
-
-
 }

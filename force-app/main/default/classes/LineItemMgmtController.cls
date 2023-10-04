@@ -177,7 +177,7 @@ public without sharing class LineItemMgmtController {
      *         - selectedCategoryL : 선택된 상품분류(대)
      *         - sortStatus  : 조회 정렬 기준
      *         - objUser : 검색을 한 유저정보
-     *         - strSearchInput : 검색을 한 유저정보
+     *         - strSearchInput : 검색키
      * @return Map<String, Object> mapInitData
      *         - listAllEntry : 조회된 상품 리스트
      * 23.08.03 : mapParam 안에 objUser 정보 추가
@@ -196,6 +196,8 @@ public without sharing class LineItemMgmtController {
 
         System.debug(' objUser ->'+ objUser );
         System.debug(' mapParam ->'+ mapParam );
+        System.debug(' strSearchInput ->'+ strSearchInput );
+        System.debug(' selectedCategoryL ->'+ selectedCategoryL );
         
         datetime qryEnd = datetime.now(); 
         system.debug(logginglevel.WARN, (qryEnd.getTime() - qryStart.getTime()) /1000);
@@ -220,6 +222,7 @@ public without sharing class LineItemMgmtController {
         query += '   AND    Product2.ProductCategory__r.fm_LAR_CLS_ID__c = \'' + selectedCategoryL + '\' ' ;
         query += '   AND    ' + selectedMonth + '__c != null ' ;
         query += '   AND    ' + selectedMonth + '__c != 0 ' ;
+        query += '   AND    ' + selectedMonth + '__c != 1 ' ;
         
         if ( sortStatus != 'none'){
             String sortDirection = sortStatus.substring(0,2) == 'DN' ? 'DESC' : 'ASC';
@@ -237,7 +240,7 @@ public without sharing class LineItemMgmtController {
         else {
             query += ' ORDER BY ' + selectedMonth + '__c ' + 'ASC ';
         }
-        //  query += ' LIMIT    5 ' ; 
+            query += ' LIMIT    1000 ' ; 
 
         System.debug('# doSearch 최종검색쿼리 -> ' + query);
 

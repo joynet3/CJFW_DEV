@@ -13,9 +13,9 @@ public with sharing class CjfwMDMManagementNewModalController {
     }
 
      /**
-     * @description 세금계산서 발행 Tab의 From발행일자을 달의 첫날로 Setting
+     * @description 워크플로우 Lv1 카테고리 리스트 조회
      * 
-     * @return      `Date`
+     * @return      `List<workflow__c>`
      */
     @AuraEnabled
     public static List<workflow__c> getCategoryLevel1() {
@@ -23,8 +23,9 @@ public with sharing class CjfwMDMManagementNewModalController {
             List<workflow__c> categoryLevel1 = new List<workflow__c>();
             String page2catLevel1 = '1';
             categoryLevel1 = [SELECT Id, Name, Page2LargeCode__c, Page2level__c, Page2ProcessId__c FROM workflow__c WHERE Page2level__c = :page2catLevel1 ORDER BY Page2ProcessId__c asc];
-            system.debug('>>> categoryLevel1 ' + categoryLevel1);
+            
             return categoryLevel1;
+            
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
         }
