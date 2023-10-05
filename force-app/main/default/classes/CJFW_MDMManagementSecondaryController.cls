@@ -1,14 +1,14 @@
 /**
- * @description       : 
+ * @description       : 관리처-2차 Controller
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
  * @last modified on  : 10-05-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
- * 1.0   09-25-2023   joohyeon.jang@dkbmc.com   Initial Version
+ * 1.0   10-05-2023   joohyeon.jang@dkbmc.com   Initial Version
 **/
-public with sharing class CJFW_MDMSalesController {
+public with sharing class CJFW_MDMManagementSecondaryController {
     /**
     * =======================================================================================================================
     * @description : [1. MDMRegRequestCustomer__c 생성 시]기본값 셋팅(레코드Id, 고객 주문마감 유형코드, 요청자 사원번호 세팅)
@@ -25,7 +25,7 @@ public with sharing class CJFW_MDMSalesController {
         String strMessage = '';                             // Error 시 메세지
         String MDMRecordTypeId = '';                        // MDMRegRequestCustomer__c의 '관리처' RecordId
         String strObjectType = 'MDMRegRequestCustomer__c';  // object api명
-        String recordTypeName = 'MDMChild';            // recordType api명
+        String recordTypeName = 'MDMManagement';            // recordType api명
 
         try{
             // 요청자 사원번호 세팅위해 조회 함 
@@ -252,7 +252,7 @@ public with sharing class CJFW_MDMSalesController {
         String strMessage = '';                             // Error 시 메세지
         String MDMRecordTypeId = '';                        // MDMRegRequestCustomer__c의 '관리처' RecordId
         String strObjectType = 'Account';  // object api명
-        String recordTypeName = 'MDMChild';            // recordType api명
+        String recordTypeName = 'MDMManagement';            // recordType api명
 
         system.debug(' ### CJFW_MDMManagementController > getAccountInfo() ');
         system.debug(' >>> accountId ' + accountId);
@@ -586,7 +586,7 @@ public with sharing class CJFW_MDMSalesController {
         String strMessage = '';                             // Error 시 메세지
         String MDMRecordTypeId = '';                        // MDMRegRequestCustomer__c의 '관리처' RecordId
         String strObjectType = 'Account';  // object api명
-        String recordTypeName = 'MDMChild';            // recordType api명
+        String recordTypeName = 'MDMManagement';            // recordType api명
 
         Id recordIdEx = Schema.SObjectType.MDMRegRequestCustomer__c.getRecordTypeInfosByDeveloperName().get(recordTypeName).getRecordTypeId();
         system.debug('### CJFW_MDMManagementController.getAccountReferenceInfo())');
@@ -850,26 +850,6 @@ public with sharing class CJFW_MDMSalesController {
     public static List<MDMReferenceCode__c> getManagerNameByCodes(List<String> codes){
         return [SELECT Id, Name, CODE__c  FROM MDMReferenceCode__c WHERE CODE__c IN :codes AND GROUPID__c = 'KNVKGB'];
     }
-        /**
-    * Account MDM 고객Id 조회
-    * 
-    * @params accountId : Account Id     
-    * @return String : Account의 CustomerID__c
-    *
-    **/
-    /**
-    * =======================================================================================================================
-    * @description : code만 알고있는 필드를 이용해 Name을 가져오기 (PV_KNVKGB__c) 에 넣어줘야 함 
-    * 
-    * @params      : Account Id     
-    * @return      : String `Account의 CustomerID__c`
-    * =======================================================================================================================
-    */
-    @AuraEnabled
-    public static String getCustomerId(String accountId) {
-        Account acc = [select id, CustomerID__c from account where id =:accountId];
-        return acc.CustomerID__c;
-    }
 
     /**
     * =======================================================================================================================
@@ -886,10 +866,10 @@ public with sharing class CJFW_MDMSalesController {
         system.debug(' ### CJFW_MDMManagementController > doSave ');
         system.debug(' >>> doSave > json.serialize(objCustomer) ' + json.serialize(customer));
         system.debug(' >>> doSave > json.serialize(objCustomer) ' + json.serialize(contacts));
-
         Savepoint sp = Database.setSavepoint();
         // aura  String 으로 넘어와서 JSON.des
         // ObjCustomer obj =  JSON.deserialize(objCustomer,  래퍼클래스명.class);
+        Id recordIdEx = Schema.SObjectType.MDMRegRequestCustomer__c.getRecordTypeInfosByDeveloperName().get('MDMManagement').getRecordTypeId();
 
         try {
             upsert customer;

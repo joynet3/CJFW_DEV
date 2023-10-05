@@ -307,7 +307,7 @@ public with sharing class CJFW_Survey {
                 this.recordId =  response.Opportunity__c;
             }
 
-            this.objectApiName = this.recordId.getSobjectType().getDescribe().getName();
+            this.objectApiName = this.recordId?.getSobjectType().getDescribe().getName();
 
             for(CJFW_SurveyResult__c result : response.Survey_Result__r) {
 

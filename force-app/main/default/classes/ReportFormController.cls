@@ -11,7 +11,7 @@
 
  * @author            : eunyoung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 10-04-2023
+ * @last modified on  : 10-05-2023
  * @last modified by  : eunyoung.choi@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -24,13 +24,12 @@ public with sharing class ReportFormController {
     public String opportunityId { get; set; }
     public String incomeExpensesId { get; set;} // 예상손익 id
     public Decimal versionCheck { get; set; }
+    public Boolean reportCheck { get; set; }
     public String showtable { get; set; }
-
 
     public String fieldValue { get; private set; }
 
     /* 계산값 가져오기 */
-    public Account accountInfo {get;set;}
     public CJFW_ExpectedIncomeExpenses__c IncomeExpensesInfo {get;set;} //예상손익 
     public CJFW_ExpectedIncomeManager__c IncomeManager {get;set;} // 예상손익관리 
 
@@ -46,33 +45,32 @@ public with sharing class ReportFormController {
     public List<SelectOption> collateralPickList { get; set; } // 담보제공종류
 
     /* 계산로직 test */
-    public Decimal input1 { get; set; }
+/*     public Decimal input1 { get; set; }
     public Decimal input2 { get; set; }
-    public Decimal result { get; set; }
+    public Decimal result { get; set; } */
 
     /* 날짜형식변환 */
-    public String CollateralPeriod { get; set; } // 담보 제공 기간
-    public String ContractPaymentDate { get; set; } // 약정결제일
+    public String collateralPeriod { get; set; } // 담보 제공 기간
+    public String contractPaymentDate { get; set; } // 약정결제일
 
-    public void saveAccount() {
+/*     public void saveAccount() {
         savedAccountName = accountName;
-    }
+    } */
 
-    public void multiply() {
+/*     public void multiply() {
         result = input1 * input2;
-    }
+    } */
 
-    public void passValueToController(){
+/*     public void passValueToController(){
         fieldValue = selectedPayment;
         system.debug('fieldValue' + fieldValue);
-    }
+    } */
     
 
     /* 
     컨트롤러가 호출되면 돌아가는 부분 
     */
     public ReportFormController() {
-        
         getPicklistValues(); 
         getIncomeExpenses(); // oppty 값 담아주는 메소드 
         getExpectManager();
@@ -101,151 +99,13 @@ public with sharing class ReportFormController {
             paymentPickList.add(new SelectOption(picklistValue.getLabel(), picklistValue.getValue()));
         }
 
-       // System.debug('# paymentPickList ->' + paymentPickList );
-       // System.debug('# collateralPickList ->' + collateralPickList );
-
     }
-
-
-
-    /*
-    거래처 정보를 가져오는 메소드
-     */
-    public void getAccountInfo() {
-        accountInfo = [SELECT Id,
-                            searchKey__c,
-                            Type,
-                            RepresentativeName__c,
-                            BusinessPath__c,
-                            PV_CSHAPE__c,
-                            OurSales__c,
-                            InitialDeliveryRequestDate__c,
-                            Address__c,
-                            InitialDeliveryContact__c,
-                            PV_EXISTSUP__c,
-                            UnitPriceGroup__c,
-                            FWReleaseCenter__c,
-                            CaptialSales__c
-                    FROM Account 
-                    WHERE searchKey__c ='[25109]이로운나라의앨리스'
-                    //LIMIT 1
-                    ];
-    }
-
 
     /* 
     예산손익 : CJFW_ExpectedIncomeExpenses__c 에서 값 가져오기
     VF Page 초기호출시  
     */
     public void getIncomeExpenses() {
-
-        System.debug('# ReportFormController # getIncomeExpenses');
-        
-        opportunityId = ApexPages.currentPage().getParameters().get('opportunityId');
-        incomeExpensesId = ApexPages.currentPage().getParameters().get('incomeExpensesId');
-        showtable = ApexPages.currentPage().getParameters().get('showtable');
-
-        System.debug('# opportunityId ->' + opportunityId );
-        System.debug('# incomeExpensesId ->' + incomeExpensesId );
-        System.debug('# showtable ->' + showtable );
-
-        try {
-
-            List<CJFW_ExpectedIncomeExpenses__c> incomeExpensesList = [
-            SELECT Id,
-                Version__c,
-                ExpectSales__c,
-                Opportunity__c,
-                ResultExpectSales__c,
-                ResultExpectRate__c,
-                ExpectContributionProfit__c,
-                ExpectContributionProfitRate__c,
-                SupportFeeRate__c,
-                ExpectSalesProfit__c,
-                ExpectSalesProfitRate__c,
-                ContractDepreciationRate__c,
-                CollateralAmount__c,
-                CollateralType__c,
-                ExpectProfit__c,
-                CollateralPeriod__c,
-                CreditLoanAmount__c,
-                ContractDepreciationSupport__c,
-                SalesFeeSupport__c,
-                DonationSupport__c,
-                OtherSupport__c,
-                PaymentMethod__c,
-                ContractPaymentDate__c,
-                ChefSupportCnt__c,
-                FarmSupportExpect__c,
-                MarineSupportExpect__c,
-                LivestockSupportExpect__c,
-                ManufactureSupportExpect__c,
-                NonFoodSupportExpect__c,
-                SalesSupportExpect__c,
-                IsReportCheck__c,
-                IncentiveSupport__c
-            FROM CJFW_ExpectedIncomeExpenses__c 
-            // WHERE id ='a1l0w000001Ma13AAC'  //예상손익 id
-            //   WHERE Opportunity__c = '0060w00000D8uikAAB' // 예상손익 매핑o
-            WHERE Opportunity__c =: opportunityId 
-            ORDER BY Version__c DESC LIMIT 1
-            ];  
-
-            if (!incomeExpensesList.isEmpty()) {
-                IncomeExpensesInfo = incomeExpensesList[0];
-                versionCheck = ( incomeExpensesList[0].Version__c ) + 1 ;
-                System.debug('버전 up ! '+ versionCheck);
-                
-            } else {
-                versionCheck = 1;
-                System.debug('버전2 ! '+ versionCheck );
-                IncomeExpensesInfo = new CJFW_ExpectedIncomeExpenses__c();
-            }
-
-        }catch (QueryException e) {
-            IncomeExpensesInfo = new CJFW_ExpectedIncomeExpenses__c(); // 빈 레코드로 초기화
-        }
-
-        System.debug('IncomeExpensesInfo '+ IncomeExpensesInfo);
-
-        String[] defaultValSet = new String[] {
-            'ContractDepreciationRate__c',
-            'IncentiveSupport__c',
-            'SalesFeeSupport__c',
-            'DonationSupport__c',
-            'OtherSupport__c',
-            'ChefSupportCnt__c',
-            'FarmSupportExpect__c',
-            'MarineSupportExpect__c',
-            'LivestockSupportExpect__c',
-            'ManufactureSupportExpect__c',
-            'NonFoodSupportExpect__c',
-            'SalesSupportExpect__c',
-            'CollateralAmount__c',
-            'CreditLoanAmount__c'
-        };
-
-        for (String fieldName : defaultValSet) {
-            Object fieldValue = IncomeExpensesInfo.get(fieldName);
-            
-            if (fieldValue == null) fieldValue = 0.0; 
-            IncomeExpensesInfo.put(fieldName, fieldValue);
-
-            // System.debug(' 예상손익 : ' + fieldName + ': ' + fieldValue);
-        }
-
-        // ContractPaymentDate__c 필드를 yyyy-MM-dd 형식의 문자열로 변환
-        String ContractPaymentDateString = String.valueOf(IncomeExpensesInfo.ContractPaymentDate__c); 
-        String CollateralPeriodString = String.valueOf(IncomeExpensesInfo.CollateralPeriod__c);
-
-        ContractPaymentDate = ContractPaymentDateString != null ? ContractPaymentDateString.substring(0, 10) : null;
-        CollateralPeriod = CollateralPeriodString != null ? CollateralPeriodString.substring(0, 10) : null;
-
-
-        System.debug('# paymentPickList ->' + paymentPickList ); 
-        System.debug('# collateralPickList ->' + collateralPickList ); 
-    }
-    public void getIncomeExpenses_beta() {
 
         System.debug('# ReportFormController # getIncomeExpenses');
         
@@ -274,77 +134,48 @@ public with sharing class ReportFormController {
             'ExpectProfit__c, ' +
             'CollateralPeriod__c, ' +
             'CreditLoanAmount__c, ' +
-            'ContractDepreciationSupport__c ' +
-            'SalesFeeSupport__c ' +
-            'DonationSupport__c ' +
-            'OtherSupport__c ' +
-            'PaymentMethod__c ' +
-            'ContractPaymentDate__c ' +
-            'ChefSupportCnt__c ' +
-            'FarmSupportExpect__c ' +
-            'MarineSupportExpect__c ' +
-            'LivestockSupportExpect__c ' +
-            'ManufactureSupportExpect__c ' +
-            'NonFoodSupportExpect__c ' +
-            'SalesSupportExpect__c ' +
-            'IsReportCheck__c ' +
+            'ContractDepreciationSupport__c, ' +
+            'SalesFeeSupport__c, ' +
+            'DonationSupport__c, ' +
+            'OtherSupport__c, ' +
+            'PaymentMethod__c, ' +
+            'ContractPaymentDate__c, ' +
+            'ChefSupportCnt__c, ' +
+            'FarmSupportExpect__c, ' +
+            'MarineSupportExpect__c, ' +
+            'LivestockSupportExpect__c, ' +
+            'ManufactureSupportExpect__c, ' +
+            'NonFoodSupportExpect__c, ' +
+            'SalesSupportExpect__c, ' +
+            'IsReportCheck__c, ' +
+            'ContractDepreciationRate__c, ' +
             'IncentiveSupport__c ' +
             'FROM CJFW_ExpectedIncomeExpenses__c';
 
-            if (opportunityId != null) {
-                query += ' WHERE Opportunity__c = :opportunityId';
-            }else if (incomeExpensesId != null) {
-                query += ' WHERE id = :incomeExpensesId';
+            if (incomeExpensesId != null) {
+                query += ' WHERE id = :incomeExpensesId ';
+            }else if (opportunityId != null) {
+                query += ' WHERE Opportunity__c = :opportunityId ';
             }
-            query += ' ORDER BY Version__c DESC LIMIT 1';
+
+            if(showtable =='true'){
+                query += ' ORDER BY IsReportCheck__c DESC LIMIT 1';
+            }else{
+                query += ' ORDER BY Version__c DESC LIMIT 1';
+            }
+
+
+            // query += ' ORDER BY Version__c DESC LIMIT 1';
 
             System.debug('# query ->' + query );
             List<CJFW_ExpectedIncomeExpenses__c> incomeExpensesList = Database.query(query);
-
-            //List<CJFW_ExpectedIncomeExpenses__c> incomeExpensesList = [
-            //SELECT Id,
-            //    Version__c,
-            //    ExpectSales__c,
-            //    Opportunity__c,
-            //    ResultExpectSales__c,
-            //    ResultExpectRate__c,
-            //    ExpectContributionProfit__c,
-            //    ExpectContributionProfitRate__c,
-            //    SupportFeeRate__c,
-            //    ExpectSalesProfit__c,
-            //    ExpectSalesProfitRate__c,
-            //    ContractDepreciationRate__c,
-            //    CollateralAmount__c,
-            //    CollateralType__c,
-            //    ExpectProfit__c,
-            //    CollateralPeriod__c,
-            //    CreditLoanAmount__c,
-            //    ContractDepreciationSupport__c,
-            //    SalesFeeSupport__c,
-            //    DonationSupport__c,
-            //    OtherSupport__c,
-            //    PaymentMethod__c,
-            //    ContractPaymentDate__c,
-            //    ChefSupportCnt__c,
-            //    FarmSupportExpect__c,
-            //    MarineSupportExpect__c,
-            //    LivestockSupportExpect__c,
-            //    ManufactureSupportExpect__c,
-            //    NonFoodSupportExpect__c,
-            //    SalesSupportExpect__c,
-            //    IsReportCheck__c,
-            //    IncentiveSupport__c
-            //FROM CJFW_ExpectedIncomeExpenses__c 
-            // WHERE id ='a1l0w000001Ma13AAC'  //예상손익 id
-            //   WHERE Opportunity__c = '0060w00000D8uikAAB' // 예상손익 매핑o
-            //if(opportunityId <> null) WHERE Opportunity__c =: opportunityId 
-            //ORDER BY Version__c DESC LIMIT 1
-            //];  
 
             if (!incomeExpensesList.isEmpty()) {
                 IncomeExpensesInfo = incomeExpensesList[0];
                 versionCheck = ( incomeExpensesList[0].Version__c ) + 1 ;
                 System.debug('버전 up ! '+ versionCheck);
+                reportCheck = ( incomeExpensesList[0].IsReportCheck__c );
+                System.debug(' 품의지정 체크 '+ reportCheck);
                 
             } else {
                 versionCheck = 1;
@@ -359,7 +190,7 @@ public with sharing class ReportFormController {
         System.debug('IncomeExpensesInfo '+ IncomeExpensesInfo);
 
         String[] defaultValSet = new String[] {
-            'ContractDepreciationRate__c',
+            'ContractDepreciationSupport__c',
             'IncentiveSupport__c',
             'SalesFeeSupport__c',
             'DonationSupport__c',
@@ -381,19 +212,26 @@ public with sharing class ReportFormController {
             if (fieldValue == null) fieldValue = 0.0; 
             IncomeExpensesInfo.put(fieldName, fieldValue);
 
-            System.debug(' 예상손익 : ' + fieldName + ': ' + fieldValue);
+            //System.debug(' 예상손익 : ' + fieldName + ': ' + fieldValue);
         }
 
         // ContractPaymentDate__c 필드를 yyyy-MM-dd 형식의 문자열로 변환
-        String ContractPaymentDateString = String.valueOf(IncomeExpensesInfo.ContractPaymentDate__c); 
-        String CollateralPeriodString = String.valueOf(IncomeExpensesInfo.CollateralPeriod__c);
+        String collateralPeriodString = String.valueOf(IncomeExpensesInfo.collateralPeriod__c);
+        String contractPaymentDateString = String.valueOf(IncomeExpensesInfo.contractPaymentDate__c); 
 
-        ContractPaymentDate = ContractPaymentDateString != null ? ContractPaymentDateString.substring(0, 10) : null;
-        CollateralPeriod = CollateralPeriodString != null ? CollateralPeriodString.substring(0, 10) : null;
+        collateralPeriod = collateralPeriodString != null ? collateralPeriodString.substring(0, 10) : null;
+        contractPaymentDate = contractPaymentDateString != null ? contractPaymentDateString.substring(0, 10) : null;
 
+        selectedCollateral = IncomeExpensesInfo.CollateralType__c; // 담보종류
+        selectedPayment = IncomeExpensesInfo.PaymentMethod__c; // 결제수단 
 
         System.debug('# paymentPickList ->' + paymentPickList ); 
         System.debug('# collateralPickList ->' + collateralPickList ); 
+        System.debug('# 담보제공 날짜 ->' + collateralPeriod ); 
+        System.debug('# 채권 날짜 ->' + contractPaymentDate ); 
+        
+        System.debug('# 담보종류 ->' + selectedCollateral ); 
+        System.debug('# 결제수단 ->' + selectedPayment ); 
     }
 
 
@@ -445,113 +283,98 @@ public with sharing class ReportFormController {
 
     }
 
-
-
-
-    /* 
-    CJFW_NewOpenReport_ProfitReview (VF Page) 에서 입력받은 값 update   
-    */
-/*     @RemoteAction
-    public static String saveIncomeExpenses_before(String DataList , String opportunityId ) {
-        System.debug(' 데이터 save !!!' );
-        try {
-
-            versionCheck();
-            SaveDataList = DataList;
-            System.debug(' 데이터 받아온것 -> ' + DataList);
-            // String opptyId = ApexPages.currentPage().getParameters().get('opportunityId');
-            System.debug(' opportunityId -> ' + opportunityId );
-            CJFW_ExpectedIncomeExpenses__c record = new CJFW_ExpectedIncomeExpenses__c();
-            // record.ChefSupportCnt__c = Integer.valueOf(fieldValue); // 필드 값을 설정
-            record.saveResult__c = DataList; // 필드 값을 설정
-            record.Opportunity__c = opportunityId ; // 필드 값을 설정
-            
-            // 데이터 저장
-            insert record;
-            System.debug(' 생성된 id -> ' +  record.id );
-
-            return 'success';
-        } catch (Exception e) {
-            return 'error: ' + e.getMessage();
-        }
-    } */
-
     /* 
     CJFW_NewOpenReport_ProfitReview (VF Page) 에서 입력받은 값 update   
     */
     @RemoteAction
-    public static String saveIncomeExpenses(String DataList  , String opportunityId , Decimal versionCheck , String incomeExpensesId) {
-        System.debug(' 데이터 save !!!' );
+    public static String saveIncomeExpenses(String DataList, String opportunityId, Decimal versionCheck, String incomeExpensesId) {
+        System.debug('데이터 save !!!');
         try {
-            System.debug(' DataList ' + DataList );
-            System.debug(' opportunityId  ' + opportunityId );
-            System.debug(' versionCheck  ' + versionCheck );
-            System.debug(' incomeExpensesId  ' + incomeExpensesId );
+            System.debug('DataList ' + DataList);
+            System.debug('opportunityId ' + opportunityId);
+            System.debug('versionCheck ' + versionCheck);
+            System.debug('incomeExpensesId ' + incomeExpensesId);
             
             Map<String, Object> dataMap = (Map<String, Object>) JSON.deserializeUntyped(DataList);
-            Decimal deprecAmount = convertToDecimal(dataMap.get('detail-deprec-amount'));
-            Decimal donationAmount = convertToDecimal(dataMap.get('detail-donation-amount'));
-            Decimal feeAmount = convertToDecimal(dataMap.get('detail-fee-amount'));
-            Decimal incentiveAmount = convertToDecimal(dataMap.get('detail-incentive-amount'));
-            Decimal otherAmount = convertToDecimal(dataMap.get('detail-other-amount'));
+            System.debug('넘어온 데이터! ' + dataMap);
             
-            //Decimal farmBefore = convertToDecimal(dataMap.get('farm-before'));
-            //Decimal livestockBefore = convertToDecimal(dataMap.get('livestock-before'));
-            //Decimal manufactureBefore = convertToDecimal(dataMap.get('manufacture-before'));
-            //Decimal marinBefore = convertToDecimal(dataMap.get('marin-before'));
-            //Decimal nonfoodBefore = convertToDecimal(dataMap.get('nonfood-before'));
+            CJFW_ExpectedIncomeExpenses__c expectIncome;
 
-            System.debug('deprecAmount: ' + deprecAmount);
-            System.debug('donationAmount: ' + donationAmount);
-            System.debug('feeAmount: ' + feeAmount);
-            System.debug('incentiveAmount: ' + incentiveAmount);
-            System.debug('otherAmount: ' + otherAmount);
-
-            //System.debug('farmBefore: ' + farmBefore);
-            //System.debug('livestockBefore: ' + livestockBefore);
-            //System.debug('manufactureBefore: ' + manufactureBefore);
-            //System.debug('marinBefore: ' + marinBefore);
-            //System.debug('nonfoodBefore: ' + nonfoodBefore);
-
-            //System.debug(' dataMap get! 약정감가 2  ' + Decimal.valueOf(deprec) );
-
-            if(incomeExpensesId <> null ){
-                System.debug('update ->  ' + incomeExpensesId);
-                CJFW_ExpectedIncomeExpenses__c expectIncome = [SELECT Id, ContractDepreciationSupport__c , IncentiveSupport__c ,  SalesFeeSupport__c , DonationSupport__c, OtherSupport__c  FROM CJFW_ExpectedIncomeExpenses__c WHERE  Id = :incomeExpensesId];
-                expectIncome.ContractDepreciationSupport__c = deprecAmount;
-                expectIncome.IncentiveSupport__c = incentiveAmount;
-                expectIncome.SalesFeeSupport__c = feeAmount;
-                expectIncome.DonationSupport__c = donationAmount;
-                expectIncome.OtherSupport__c = otherAmount;
-                update expectIncome;
-            }else{
-                System.debug('insert ->  ' + incomeExpensesId);
-                CJFW_ExpectedIncomeExpenses__c expectIncome = new CJFW_ExpectedIncomeExpenses__c();
-                expectIncome.ContractDepreciationSupport__c = deprecAmount;
-                expectIncome.IncentiveSupport__c = incentiveAmount;
-                expectIncome.SalesFeeSupport__c = feeAmount;
-                expectIncome.DonationSupport__c = donationAmount;
-                expectIncome.OtherSupport__c = otherAmount;
-                insert expectIncome;
-                System.debug(' expectIncome id -> ' + expectIncome.id );
-                
+            if (incomeExpensesId != null && incomeExpensesId != '') {
+                System.debug('update ★-> ' + incomeExpensesId);
+                expectIncome = [SELECT Id FROM CJFW_ExpectedIncomeExpenses__c WHERE Id = :incomeExpensesId];
+            } else { // insert 
+                System.debug('insert ★-> ');
+                expectIncome = new CJFW_ExpectedIncomeExpenses__c();
+                expectIncome.Version__c = versionCheck; // 필수값
+                expectIncome.Opportunity__c = opportunityId; // 필수값
             }
+            expectIncome.saveResult__c = DataList;
 
-            // expectIncome.ContractDepreciationSupport__c = deprecAmount;
-            // expectIncome.IncentiveSupport__c = incentiveAmount;
-            // expectIncome.SalesFeeSupport__c = feeAmount;
-            // expectIncome.DonationSupport__c = donationAmount;
-            // expectIncome.OtherSupport__c = otherAmount;
+            expectIncome.CollateralType__c = (String)dataMap.get('detail-collateral-kind') != null ? (String)dataMap.get('detail-collateral-kind') : ''; // 담보제공 종류
+            expectIncome.PaymentMethod__c = (String)dataMap.get('payment-picklist') != null ? (String)dataMap.get('payment-picklist') : ''; // 결제수단 종류
 
-            // expectIncome.ContractDepreciationSupport__c = Decimal.valueOf(dataMap.get('detail-deprec-amount'));
-            // System.debug(' expectIncome ' + expectIncome );
+
+
+            expectIncome.CreditLoanAmount__c = convertToDecimal(dataMap.get('detail-creditLoan-amount')); // 신용여신금액 
+
+            expectIncome.ContractDepreciationSupport__c = convertToDecimal(dataMap.get('detail-deprec-amount'));
+            expectIncome.IncentiveSupport__c = convertToDecimal(dataMap.get('detail-incentive-amount'));
+            expectIncome.SalesFeeSupport__c = convertToDecimal(dataMap.get('detail-fee-amount'));
+            expectIncome.DonationSupport__c = convertToDecimal(dataMap.get('detail-donation-amount'));
+            expectIncome.OtherSupport__c = convertToDecimal(dataMap.get('detail-other-amount'));
+
+            expectIncome.FarmSupportExpect__c = convertToDecimal(dataMap.get('farm-before'));  //농산 지원 월예상 
+            expectIncome.MarineSupportExpect__c = convertToDecimal(dataMap.get('marin-before')); //수산 지원 월예상
+            expectIncome.LivestockSupportExpect__c = convertToDecimal(dataMap.get('livestock-before')); // 축산 지원 월예상
+            expectIncome.ManufactureSupportExpect__c = convertToDecimal(dataMap.get('manufacture-before')); // 가공식품 지원 월예상
+            expectIncome.NonFoodSupportExpect__c = convertToDecimal(dataMap.get('nonfood-before')); // 비식품 지원 월예상
+
+            expectIncome.SalesSupportExpect__c = convertToDecimal(dataMap.get('sales-support')); // 매출이익률
+            expectIncome.CollateralAmount__c = convertToDecimal(dataMap.get('detail-collateral-amount')); // 담보제공금액 
+
+            expectIncome.ChefSupportCnt__c = convertToDecimal(dataMap.get('chef-support')); // 쉐프지원 
+
+            String collateralPeriod = (String)dataMap.get('collateral-period');
+            String contractPeriod = (String)dataMap.get('contract-payment-period');
+            System.debug(' collateralPeriod-> ' + collateralPeriod);
+            System.debug(' contractPeriod-> ' + contractPeriod);
+            if(collateralPeriod <> null && contractPeriod <> '') {
+                Date collateralPeriodDate = Date.valueOf(collateralPeriod); // 담보제공기간
+                expectIncome.CollateralPeriod__c = collateralPeriodDate;
+                System.debug(' 담보제공일자 1 -> ' + collateralPeriodDate);
+            }
+            if(contractPeriod <> null && contractPeriod <> '') {
+                Date contractPeriodDate = Date.valueOf(contractPeriod); // 약정결제일
+                expectIncome.ContractPaymentDate__c = contractPeriodDate;
+                System.debug(' 담보제공일자 2 -> ' + contractPeriodDate);
+            }
             
-            // insert expectIncome;
-            // System.debug(' expectIncome id -> ' + expectIncome.id );
+           // Date collateralPeriodDate = Date.valueOf((String)dataMap.get('collateral-period')); // 담보제공기간
+           // Date contractPeriodDate = Date.valueOf((String)dataMap.get('contract-payment-period')); // 약정결제일
+            // System.debug(' 담보제공일자 1 -> ' + Date.valueOf((String)dataMap.get('collateral-period')) );
+            // System.debug(' 담보제공일자 2 -> ' + Date.valueOf((String)dataMap.get('contract-payment-period')) );
 
+            //if(collateralPeriodDate <> null ){
+            //    System.debug(' 담보제공일자  -> ' + collateralPeriodDate);
+            //    expectIncome.CollateralPeriod__c = collateralPeriodDate;
+            //} 
+            //if(contractPeriodDate <> null ) {
+            //    System.debug(' 약정결제일자  -> ' + collateralPeriodDate);
+            //    expectIncome.ContractPaymentDate__c = contractPeriodDate;
+            //}
+
+            upsert expectIncome;
             return 'success';
         } catch (Exception e) {
-            return 'error: ' + e.getMessage();
+            String errorMessage = e.getMessage(); // 에러 메시지
+            String errorStackTrace = e.getStackTraceString(); // 에러 스택 트레이스
+
+            System.debug('에러 메시지: ' + errorMessage);
+            System.debug('에러 라인: ' + errorStackTrace);
+
+            return 'error';
+
         }
     }
 
@@ -564,12 +387,14 @@ public with sharing class ReportFormController {
         System.debug(' ReportCheck ');
         System.debug(' incomeExpensesId =>  ' + incomeExpensesId + ' oppty =>' + opportunityId );
         try{
-            CJFW_ExpectedIncomeExpenses__c RemoveList = [SELECT Id, IsReportCheck__c FROM CJFW_ExpectedIncomeExpenses__c WHERE Opportunity__c =: opportunityId AND Id != :incomeExpensesId];
+            //CJFW_ExpectedIncomeExpenses__c RemoveList = [SELECT Id, IsReportCheck__c FROM CJFW_ExpectedIncomeExpenses__c WHERE Opportunity__c =: opportunityId AND Id != :incomeExpensesId];
+            List<CJFW_ExpectedIncomeExpenses__c> RemoveList = [SELECT Id, IsReportCheck__c FROM CJFW_ExpectedIncomeExpenses__c WHERE Opportunity__c = :opportunityId AND Id != :incomeExpensesId];
             CJFW_ExpectedIncomeExpenses__c checkList = [SELECT Id, IsReportCheck__c FROM CJFW_ExpectedIncomeExpenses__c WHERE  Id = :incomeExpensesId];
 
             if(RemoveList <> null ){
-                RemoveList.IsReportCheck__c =false;
-                System.debug(' RemoveList ' + RemoveList );
+                for(CJFW_ExpectedIncomeExpenses__c data : RemoveList) {
+                    data.IsReportCheck__c = false;
+                }
                 update RemoveList;
             }
 
@@ -580,10 +405,20 @@ public with sharing class ReportFormController {
             }
             return 'success';
         }catch (Exception e) {
-            return 'error: ' + e.getMessage();
+
+            String errorMessage = e.getMessage(); // 에러 메시지
+            String errorStackTrace = e.getStackTraceString(); // 에러 스택 트레이스
+
+            System.debug('에러 메시지: ' + errorMessage);
+            System.debug('에러 라인: ' + errorStackTrace);
+            return 'error';
         }
     }
 
+
+    /* 
+    Decimal 값으로 변환하기위해 사용되는 메소드
+    */
     public static Decimal convertToDecimal(Object objValue) {
         Decimal decimalValue = 0.0; // 기본값 설정
     
@@ -598,13 +433,5 @@ public with sharing class ReportFormController {
     
         return decimalValue;
     }
-
-/*     public static void versionCheck() {
-        System.debug(' versionCheck 호출' );
-        System.debug(' version ' + versionCheck );
-        System.debug(' save Data  ' + SaveDataList );
-
-    }
- */
 
 }

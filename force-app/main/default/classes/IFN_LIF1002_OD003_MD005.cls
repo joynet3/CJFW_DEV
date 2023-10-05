@@ -10,6 +10,7 @@
  *  NO | Date       | Modifier       | Description
  * ----------------------------------------------
  *  1. | 2023.08.11 | 조일근 | 최초작성
+ *  2. | 2023.09.15 | 백영주 | ServiceContents__c 오브젝트 추가
  * */
 @RestResource(urlMapping='/LIF1002/OD003/MD005')
 global with sharing class IFN_LIF1002_OD003_MD005 {
@@ -73,7 +74,7 @@ global with sharing class IFN_LIF1002_OD003_MD005 {
 
         try {
             RestRequest request = RestContext.request;
-            requestBody = request.requestBody == null ? '' : request.requestBody.toString();
+            requestBody = request.requestBody.toString();
             logWrap.requestBody = requestBody;   
 
             if(requestBody == '' || requestBody == null) {
@@ -103,59 +104,78 @@ global with sharing class IFN_LIF1002_OD003_MD005 {
                     Map<String, String> plClassServiceStatus = CommonUtil.getMapPickListLabel('ClassService__c', 'Status__c');
                     Map<String, String> plClassTargetGroup = CommonUtil.getMapPickListLabel('ClassService__c', 'TargetGroup__c');
                     Map<String, String> plServiceContentRegion = CommonUtil.getMapPickListLabel('ServiceContents__c', 'Region__c');
-    
+                    //20230915백영주대리 contentInfo
+                    ServiceContents__c contentInfo = new ServiceContents__c();
                     ClassService__c classInfo = new ClassService__c();
+                    ExtraService__c exService = new ExtraService__c();
                     try{
-                        // 교육 서비스 상세조회
-                        classInfo = [Select Id, ServiceContent__c
-                        , MDMCode__c
-                        ,ServiceContent__r.IsUsage__c
-                        ,ServiceContent__r.Region__c
-                        ,ServiceContent__r.Category__c
-                        ,ServiceContent__r.OpenDate__c
-                        ,ServiceContent__r.Name
-                        ,ServiceContent__r.Instructor__r.Name
-                        ,ServiceContent__r.Instructor2__r.Name
-                        ,ServiceContent__r.Instructor3__r.Name
-                        , Status__c
-                        ,Customer__r.Name
-                        ,Manager__c
-                        ,CustomerPhone__c
-                        ,TargetGroup__c
-                        ,ApplicantsNumber__c
-                        ,GroupMealAge__c
-                        ,Address__c
-                        ,Description__c
-                        from ClassService__c
-                        where ServiceContent__c = :input.cttId
-                        and MDMCode__c = :input.mdmCd];
-    
                         selData resData = new selData();
-    
-                        resData.cttId      = classInfo.ServiceContent__c;
-                        resData.mdmCd      = classInfo.MDMCode__c;
-                        resData.cttSttsNm  = classInfo.ServiceContent__r.IsUsage__c  == true ? '진행중' : '미진행';
-                        resData.cttSttsCd  = classInfo.ServiceContent__r.IsUsage__c  == true ? '진행중' : '미진행';
-                        resData.cttRg      = String.isEmpty(classInfo.ServiceContent__r.Region__c) ? '': plServiceContentRegion.get(classInfo.ServiceContent__r.Region__c);
-                        resData.cttTp      = classInfo.ServiceContent__r.Category__c;
-                        resData.cttStDt    = IFN_Util.converDateTimeToStrFormat(classInfo.ServiceContent__r.OpenDate__c);
-                        resData.cttTtl     = classInfo.ServiceContent__r.Name;
-                        resData.istrt      = classInfo.ServiceContent__r.Instructor__r.Name;
-                        resData.istrt2     = classInfo.ServiceContent__r.Instructor2__r.Name;
-                        resData.istrt3     = classInfo.ServiceContent__r.Instructor3__r.Name;
-                        resData.reqStts    = String.isEmpty(classInfo.Status__c) ? '': plClassServiceStatus.get(classInfo.Status__c);
-                        resData.accNm      = classInfo.Customer__r.Name;
-                        resData.mngNm      = classInfo.Manager__c;
-                        resData.accCall    = classInfo.CustomerPhone__c;
-                        resData.svcTgtNm   = String.isEmpty(classInfo.TargetGroup__c) ? '': plClassTargetGroup.get(classInfo.TargetGroup__c);
-                        resData.svcTgtCd   = classInfo.TargetGroup__c;
-                        resData.reqMemCnt  = classInfo.ApplicantsNumber__c;
-                        resData.avgAge     = classInfo.GroupMealAge__c;
-                        resData.addr       = classInfo.Address__c;
-                        resData.dscrt      = classInfo.Description__c;
+                        //20230915백영주대리 contentInfo
+                        contentInfo = [Select Id
+                        ,IsUsage__c
+                        ,Region__c
+                        ,Category__c
+                        ,OpenDate__c
+                        ,Name
+                        ,Instructor__r.Name
+                        ,Instructor2__r.Name
+                        ,Instructor3__r.Name
+                        from ServiceContents__c
+                        where Id = :input.cttId];
+                        
+                        //20230915백영주대리 contentInfo
+                        resData.cttId      = contentInfo.Id;
+                        resData.cttSttsNm  = contentInfo.IsUsage__c  == true ? '진행중' : '미진행';
+                        resData.cttSttsCd  = contentInfo.IsUsage__c  == true ? '진행중' : '미진행';
+                        resData.cttRg      = String.isEmpty(contentInfo.Region__c) ? '': plServiceContentRegion.get(contentInfo.Region__c);
+                        resData.cttTp      = contentInfo.Category__c;
+                        resData.cttStDt    = IFN_Util.converDateTimeToStrFormat(contentInfo.OpenDate__c);
+                        resData.cttTtl     = contentInfo.Name;
+                        resData.istrt      = contentInfo.Instructor__r.Name;
+                        resData.istrt2     = contentInfo.Instructor2__r.Name;
+                        resData.istrt3     = contentInfo.Instructor3__r.Name;
+
+                        try{
+                            // 교육 서비스 상세조회
+                            classInfo = [Select Id, ServiceContent__c
+                            , MDMCode__c
+                            , Status__c
+                            ,Customer__r.Name
+                            ,Manager__c
+                            ,CustomerPhone__c
+                            ,TargetGroup__c
+                            ,ApplicantsNumber__c
+                            ,GroupMealAge__c
+                            ,Address__c
+                            ,Description__c
+                            from ClassService__c
+                            where ServiceContent__c = :input.cttId
+                            and MDMCode__c = :input.mdmCd];
+        
+        
+                            resData.mdmCd      = classInfo.MDMCode__c;
+                            resData.reqStts    = String.isEmpty(classInfo.Status__c) ? '': plClassServiceStatus.get(classInfo.Status__c);
+                            resData.accNm      = classInfo.Customer__r.Name;
+                            resData.mngNm      = classInfo.Manager__c;
+                            resData.accCall    = classInfo.CustomerPhone__c;
+                            resData.svcTgtNm   = String.isEmpty(classInfo.TargetGroup__c) ? '': plClassTargetGroup.get(classInfo.TargetGroup__c);
+                            resData.svcTgtCd   = classInfo.TargetGroup__c;
+                            resData.reqMemCnt  = classInfo.ApplicantsNumber__c;
+                            resData.avgAge     = classInfo.GroupMealAge__c;
+                            resData.addr       = classInfo.Address__c;
+                            resData.dscrt      = classInfo.Description__c;
+
+                        } catch (Exception e) {
+                            
+                        }
     
                         try {
-                            ExtraService__c exService =  [select id,ServiceStartDateTime__c,ProgressTime__c from ExtraService__c where  ServiceContents__c = :classInfo.ServiceContent__c Limit 1];
+                            exService =  [select id
+                            ,ServiceStartDateTime__c
+                            ,ProgressTime__c 
+                            from ExtraService__c 
+                            where  ServiceContents__c = :classInfo.ServiceContent__c 
+                            Limit 1];
                             resData.reqDt = IFN_Util.converDateTimeToStrFormat(exService.ServiceStartDateTime__c,'yyyy-MM-dd a hh');
                             resData.reqDt = resData.reqDt.replace('AM', '오전');
                             resData.reqDt = resData.reqDt.replace('PM', '오후');

@@ -157,8 +157,10 @@ public with sharing class OilApporvalRequest {
             strQuery += '    WHERE   ApprovalStatus__c = \''+mapParam.get('selectedStatus')+'\'';
             strQuery += '    AND     EventStartDate__c >= '+ targetDateStart;
             strQuery += '    AND     EventStartDate__c <= '+ targetDateEnd;
+            /* 
+            2023-09-06 백영주대리 주유거리가 0이여도 승인받을수 있도록 수정
             strQuery += '    AND     OilTotalDistance__c != 0';
-            strQuery += '    AND     OilTotalDistance__c != null';
+            strQuery += '    AND     OilTotalDistance__c != null'; */
             
             if(mapParam.get('selectedHeadOffice') <> null && mapParam.get('selectedHeadOffice') <> 'none') {
                 strQuery += '    AND     User__r.HeadOffice__c = \''+mapParam.get('selectedHeadOffice')+'\'';

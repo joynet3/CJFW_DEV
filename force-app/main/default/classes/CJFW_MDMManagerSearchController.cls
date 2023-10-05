@@ -2,13 +2,18 @@
  * @description       : 
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 09-05-2023
+ * @last modified on  : 10-04-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
  * 1.0   08-29-2023   joohyeon.jang@dkbmc.com   Initial Version
 **/
 public with sharing class CJFW_MDMManagerSearchController {
+
+    @AuraEnabled 
+    public static List<MDMReferenceCode__c> getMdmNamesByCodes(List<String> codes){
+        return [SELECT Id, Name, CODE__c  FROM MDMReferenceCode__c WHERE CODE__c IN :codes AND GROUPID__c = 'KNVKGB'];
+    }
     /**
     * @description 선택한 recordId를 이용해 Account정보/ Contact정보 가져와 MDM 고객 등록 요청(관리처)에 보내주기
     * 
@@ -105,27 +110,49 @@ public with sharing class CJFW_MDMManagerSearchController {
     * @return      `String`
     */ 
    @AuraEnabled
-   public static  List<ConatactDataWrapper> getSingleContactInfo(String clickedAccId){
-       system.debug('### CJFW_MDMManagerSearchController.searchContactInfo(String searchWord) 모달 ### ');
+   public static  DataWrapper getSingleContactInfo(String clickedAccId){
+       system.debug('### CJFW_MDMManagerSearchController.getSingleContactInfo(String searchWord) 모달 ### ');
        system.debug('>>> contactId : ' + clickedAccId);
        
-       List<ConatactDataWrapper> result = new List<ConatactDataWrapper>();
+       DataWrapper objWrapper = new DataWrapper();
+       
        //여기서부터시작.
 
-        List<Contact> conList = [SELECT Id, Name, LastName, Firstname, Email, Phone, MobilePhone, Department, PV_PAFKT_VK__c, PV_TALKT_VK__c, PV_KNVKGB__c
+        List<Contact> listReqContactList = [SELECT Id, Name, LastName, Firstname, Email, Phone, MobilePhone, Department, PV_PAFKT_VK__c, PV_TALKT_VK__c, PV_KNVKGB__c
         FROM Contact
         WHERE id = :clickedAccId];
 
-        system.debug('>>> accList ' + json.serialize(conList));
-        system.debug('>>> accList.size() ' + conList.size());
-
-        if(!conList.isEmpty()){
-            for(Contact con : conList){
-                result.add(new ConatactDataWrapper(con));
-            }
+        Set<String> conCodeSet = new Set<String>();
+        for(Contact con :listReqContactList){
+            conCodeSet.add(con.PV_KNVKGB__c);
         }
-        system.debug('>>> result.Name ' + json.serialize(result));
-       return result;
+        
+        List<MDMReferenceCode__c> conReferenceCodeList = [SELECT Id, Name, Code__c FROM MDMReferenceCode__c WHERE code__c =: conCodeSet];
+        
+        Map<String, String> codeToConIdMap = new Map<String, String>();
+        for(MDMReferenceCode__c conCode :conReferenceCodeList){ 
+            codeToConIdMap.put(conCode.Code__c, conCode.id);
+        }
+
+        List<MDMRegRequestContact__c> mdmReqContactList = new List<MDMRegRequestContact__c>();
+        for(Contact con : listReqContactList){
+            MDMRegRequestContact__c mdmReqContact = new MDMRegRequestContact__c();
+                mdmReqContact.PV_NAME1_VK__c  = con.Name;
+                mdmReqContact.PV_KNVKGB__c    = con.PV_KNVKGB__c;        
+                mdmReqContact.PV_KNVKGB_lu__c = codeToConIdMap.get(con?.PV_KNVKGB__c);
+                mdmReqContact.PV_TELF1_VK__c  = con.MobilePhone;
+                mdmReqContact.PV_ABTNR_VK__c  = con.Department; 
+                mdmReqContact.PV_PAFKT_VK__c  = con.PV_PAFKT_VK__c;
+                mdmReqContact.PV_EMAIL_VK__c  = con.Email;
+                mdmReqContact.PV_TALKT_VK__c  = con.PV_TALKT_VK__c;
+                mdmReqContact.Contact__c      = con.id;
+                mdmReqContactList.add(mdmReqContact);
+            
+        }
+        objWrapper.listMDMReqContact = mdmReqContactList;
+
+   
+       return objWrapper;
    }
     /**
     * 연락처(Contact) 정보 저장
@@ -219,6 +246,33 @@ public with sharing class CJFW_MDMManagerSearchController {
             this.PV_KNVKGB                            = con.PV_KNVKGB__c;                                                   
             this.PV_TALKT_VK                          = con.PV_TALKT_VK__c;                                                           
         }
+    }
+
+    
+    /**
+     * @description 로딩시 뿌려줘야할 데이터 Wrapper
+     */
+    public class DataWrapper {
+        /** @description 반환성공을 알려주는 Status*/
+        @AuraEnabled public String strStatus {get;set;}
+        /** @description 에러메세지*/
+        @AuraEnabled public String strMessage {get;set;}
+        /** @description 레코드아이디를 통해 알아낸 ObjectName*/
+        @AuraEnabled public String strObjectType {get;set;}
+         /** @description */
+        @AuraEnabled public String MDMRecordTypeId {get;set;}
+        /** @description */
+        @AuraEnabled public List<Map<String,  String>> listCustomerOrderType {get;set;}
+        /** @description */
+        @AuraEnabled public User objUser {get;set;}
+        /** @description */
+        @AuraEnabled public Opportunity objOpportunity {get;set;}
+        /** @description */
+        @AuraEnabled public MDMRegRequestCustomer__c objMDMRegReqCustomer {get;set;}
+        /** @description */
+        @AuraEnabled public List<MDMRegRequestContact__c> listMDMReqContact {get;set;}
+
+        public DataWrapper() {}
     }
 
 }

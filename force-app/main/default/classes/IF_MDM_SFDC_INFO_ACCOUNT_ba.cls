@@ -88,6 +88,15 @@ global with sharing class IF_MDM_SFDC_INFO_ACCOUNT_ba implements Database.Batcha
             FROM IF_MDM_SFDC_INFO_ACCOUNT_BANK__C
             WHERE transactionId__c = :transactionId
         ];
+        
+        //owner변경코드 추가 20230919-백영주-
+        Set<String> picCd = new Set<String>();
+        for(IF_MDM_SFDC_INFO_ACCOUNT__c obj : scope){
+            picCd.add(obj.PV_PERNR__c);
+        }
+        List<User> picUsers = [SELECT Id, EmployeeNumber FROM User WHERE EmployeeNumber IN :picCd];
+        
+        //##################################
 
         Id recordIdEx = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('ExistingCustomer').getRecordTypeId();
 
@@ -147,6 +156,13 @@ global with sharing class IF_MDM_SFDC_INFO_ACCOUNT_ba implements Database.Batcha
                 // accountObj.PVO_VKGRP__c = obj.PVO_VKGRP__c;
                 accountObj.SalesGroupFromDate__c = obj.PVRA_VKGRP__c <> null ? Date.valueOf(obj.PVRA_VKGRP__c) : null;
                 accountObj.PICCode__c = obj.PV_PERNR__c;
+                //owner변경코드 추가 20230920-백영주-
+                for(User pic : picUsers){
+                    if(obj.PV_PERNR__c <> null && pic.EmployeeNumber == obj.PV_PERNR__c){
+                        accountObj.PIC__c = pic.Id; 
+                        accountObj.OwnerId = pic.Id;
+                    }
+                }
                 accountObj.PVVF_PERNR__c = obj.PVVF_PERNR__c <> null ? Date.valueOf(obj.PVVF_PERNR__c) : null;
                 // accountObj.PVN_PERNR__c = obj.PVN_PERNR__c;
                 // accountObj.PVO_PERNR__c = obj.PVO_PERNR__c;

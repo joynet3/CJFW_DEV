@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 09-25-2023
+ * @last modified on  : 10-04-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkUpdateHeadController {
@@ -11,11 +11,9 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
     * Save 버튼을 클릭 했을 때 호출
     * 
     * @params mdmCustomer : 화면 mdmCustomer 데이터
-    * @params contacts :화면 contacts (List)데이터 > 왜 리스트가 나올까? 데이터가 다건인가?
-    * @params banks : 화면 banks (List) 데이터 
+    * @params type : 본점 OR 판매처 OR 관리처
     * 
-    * CRM 오브젝트 = wrapper class다 
-    * contact < 스탠다드 오브젝트 
+    * MDMRequest = wrapper class다 
     */
     @AuraEnabled
     public static SaveResult doSave(List<MDMRequest> mdmCustomer, String type) {
@@ -93,6 +91,7 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
         return saveResult;
     }
 
+    // 이름이 null값이 되지 않도록 null일 경우 기존 값을 찾아서 기입해 줄 Map 생성
     public static Map<String, String> getNameOfNull(List<MDMRequest> mdmCustomer) {
 
         // Custom Id 넣을 List 생성

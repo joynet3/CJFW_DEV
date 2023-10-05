@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 09-26-2023
+ * @last modified on  : 10-04-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkUpdateInfoListController {
@@ -35,6 +35,7 @@ public with sharing class CJFW_MDMBulkUpdateInfoListController {
             mdmRequest.PV_KUNNR           =      String.isBlank(mdms[i].PV_KUNNR__c) ? null : mdms[i].PV_KUNNR__c;
 
             if(mdms[i].PV_KUNNR__c == accList[i].CustomerId__c) {
+                mdmRequest.PV_INDEX           =      i + 1;
                 mdmRequest.PV_NAME1           =      String.isBlank(accList[i].Name) ? null : accList[i].Name;
                 mdmRequest.PV_NAME1_MOD       =      String.isBlank(mdms[i].PV_NAME1__c) ? null : mdms[i].PV_NAME1__c;
                 mdmRequest.PV_GFORM           =      String.isBlank(accList[i].LegalStatus__c) ? null : accList[i].LegalStatus__c;
@@ -83,33 +84,42 @@ public with sharing class CJFW_MDMBulkUpdateInfoListController {
 
         List<String> headerList = new List<String>();
         headerList.add('0');
+        headerList.add('1');
 
-        if(mdmList[0].PV_NAME1 != mdmList[0].PV_NAME1_MOD) {
-            headerList.add('1');
-            headerList.add('2');
+        for(Integer i = 0; i < mdmList.size(); i++) {
+            if(mdmList[i].PV_NAME1 != mdmList[i].PV_NAME1_MOD) {
+                headerList.add('2');
+                headerList.add('3');
+            }
+            
+            if(mdmList[i].PV_GFORM != mdmList[i].PV_GFORM_MOD) {
+                headerList.add('4');
+                headerList.add('5');
+            }
+    
+            if(mdmList[i].PV_J_1KFREPRE != mdmList[i].PV_J_1KFREPRE_MOD) {
+                headerList.add('6');
+                headerList.add('7');
+            }
+    
+            if(mdmList[i].PV_STCD1 != mdmList[i].PV_STCD1_MOD) {
+                headerList.add('8');
+                headerList.add('9');
+            }
+    
+            if(mdmList[i].PV_J_1KFTBUS != mdmList[i].PV_J_1KFTBUS_MOD) {
+                headerList.add('10');
+                headerList.add('11');
+            }
         }
+
+        Set<String> headerSet = new Set<String>(headerList);
+
+        List<String> newHeaderList = new List<String>(headerSet);
         
-        if(mdmList[0].PV_GFORM != mdmList[0].PV_GFORM_MOD) {
-            headerList.add('3');
-            headerList.add('4');
-        }
+        newHeaderList.sort();
 
-        if(mdmList[0].PV_J_1KFREPRE != mdmList[0].PV_J_1KFREPRE_MOD) {
-            headerList.add('5');
-            headerList.add('6');
-        }
-
-        if(mdmList[0].PV_STCD1 != mdmList[0].PV_STCD1_MOD) {
-            headerList.add('7');
-            headerList.add('8');
-        }
-
-        if(mdmList[0].PV_J_1KFTBUS != mdmList[0].PV_J_1KFTBUS_MOD) {
-            headerList.add('9');
-            headerList.add('10');
-        }
-
-        return headerList;
+        return newHeaderList;
 
     }
 
@@ -126,6 +136,7 @@ public with sharing class CJFW_MDMBulkUpdateInfoListController {
     MDMRequest 공통
     */
     public class MDMRequest {
+        @AuraEnabled public Integer PV_INDEX {get;set;}
         @AuraEnabled public String PV_KUNNR {get;set;}
         @AuraEnabled public String PV_NAME1 {get;set;}
         @AuraEnabled public String PV_NAME1_MOD {get;set;}

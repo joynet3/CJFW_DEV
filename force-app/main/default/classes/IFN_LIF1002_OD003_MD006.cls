@@ -147,6 +147,7 @@ global with sharing class IFN_LIF1002_OD003_MD006 {
                         logWrap.LogText.add(' 교육신청 upsert data  ======> ' + Json.serialize(clsreq));
 
                         upsert clsreq;
+                        objOutput.svcRcdId = clsreq.Id; //20230915백영주대리 생성된 recordID전달
 
 
                     } catch (Exception e) {
