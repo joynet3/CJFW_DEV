@@ -11,7 +11,7 @@
 
  * @author            : eunyoung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 10-05-2023
+ * @last modified on  : 10-10-2023
  * @last modified by  : eunyoung.choi@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -32,6 +32,7 @@ public with sharing class ReportFormController {
     /* 계산값 가져오기 */
     public CJFW_ExpectedIncomeExpenses__c IncomeExpensesInfo {get;set;} //예상손익 
     public CJFW_ExpectedIncomeManager__c IncomeManager {get;set;} // 예상손익관리 
+    public CJFW_DistributionCost__c DistributeCost {get;set;} // 물류비관리 
 
     public String accountName { get; set; }
     public String savedAccountName { get; set; }
@@ -74,6 +75,7 @@ public with sharing class ReportFormController {
         getPicklistValues(); 
         getIncomeExpenses(); // oppty 값 담아주는 메소드 
         getExpectManager();
+        getDistributeCost(); // 물류비관리 값 가져오기 
     }
 
 
@@ -102,7 +104,7 @@ public with sharing class ReportFormController {
     }
 
     /* 
-    예산손익 : CJFW_ExpectedIncomeExpenses__c 에서 값 가져오기
+    예산손익(CJFW_ExpectedIncomeExpenses__c) 에서 값 가져오기
     VF Page 초기호출시  
     */
     public void getIncomeExpenses() {
@@ -173,13 +175,9 @@ public with sharing class ReportFormController {
             if (!incomeExpensesList.isEmpty()) {
                 IncomeExpensesInfo = incomeExpensesList[0];
                 versionCheck = ( incomeExpensesList[0].Version__c ) + 1 ;
-                System.debug('버전 up ! '+ versionCheck);
                 reportCheck = ( incomeExpensesList[0].IsReportCheck__c );
-                System.debug(' 품의지정 체크 '+ reportCheck);
-                
             } else {
                 versionCheck = 1;
-                System.debug('버전2 ! '+ versionCheck );
                 IncomeExpensesInfo = new CJFW_ExpectedIncomeExpenses__c();
             }
 
@@ -206,13 +204,11 @@ public with sharing class ReportFormController {
             'CreditLoanAmount__c'
         };
 
-        for (String fieldName : defaultValSet) {
-            Object fieldValue = IncomeExpensesInfo.get(fieldName);
-            
-            if (fieldValue == null) fieldValue = 0.0; 
-            IncomeExpensesInfo.put(fieldName, fieldValue);
+        for (String defaultSet : defaultValSet) {
+            Object fieldValue = IncomeExpensesInfo.get(defaultSet);
 
-            //System.debug(' 예상손익 : ' + fieldName + ': ' + fieldValue);
+            if (fieldValue == null) fieldValue = 0.0; 
+            IncomeExpensesInfo.put(defaultSet, fieldValue);
         }
 
         // ContractPaymentDate__c 필드를 yyyy-MM-dd 형식의 문자열로 변환
@@ -229,14 +225,13 @@ public with sharing class ReportFormController {
         System.debug('# collateralPickList ->' + collateralPickList ); 
         System.debug('# 담보제공 날짜 ->' + collateralPeriod ); 
         System.debug('# 채권 날짜 ->' + contractPaymentDate ); 
-        
         System.debug('# 담보종류 ->' + selectedCollateral ); 
         System.debug('# 결제수단 ->' + selectedPayment ); 
     }
 
 
     /* 
-    예산손익관리 : CJFW_ExpectedIncomeManager__c 에서 값 가져오기
+    예산손익관리(CJFW_ExpectedIncomeManager__c) 에서 값 가져오기
     적용시작일 기준으로 값 가져와야함 
     */
     public void getExpectManager() {
@@ -271,17 +266,47 @@ public with sharing class ReportFormController {
             'SupportFee__c'
         };
 
-        for (String fieldName : defaultValSet) {
-            Object fieldValue = IncomeManager.get(fieldName);
-            
+        for (String defaultSet : defaultValSet) {
+            Object fieldValue = IncomeManager.get(defaultSet);
             // 필드 값이 null이면 기본값을 0 으로 설정
             if (fieldValue == null)  fieldValue = 0; 
-            IncomeManager.put(fieldName, fieldValue);
-            
-            // System.debug(' 예상손익관리 : ' + fieldName + ': ' + fieldValue);
+            IncomeManager.put(defaultSet, fieldValue);
         }
 
     }
+
+    /* 
+    물류비관리(CJFW_DistributionCost__c) 에서 값 가져오기 
+     */
+    public void getDistributeCost() {
+        System.debug('# ReportFormController # getDistributeCost');
+
+        DistributeCost = [
+            SELECT Id, 
+                   Name,
+                   StartDate__c,  
+                   Region__c, 
+                   Type__c, 
+                   Cost__c, 
+                   HeadOffice__c, 
+                   SU__c 
+            FROM CJFW_DistributionCost__c WHERE StartDate__c <= TODAY ];
+
+        String[] defaultValSet = new String[] {
+            'Cost__c'
+        };
+
+        for (String defaultSet : defaultValSet) {
+            Object fieldValue = DistributeCost.get(defaultSet);
+            // 필드 값이 null이면 기본값을 0 으로 설정
+            if (fieldValue == null)  fieldValue = 0; 
+            DistributeCost.put(defaultSet, fieldValue);
+        }
+
+        system.debug('DistributeCost' +  DistributeCost);
+
+    }
+
 
     /* 
     CJFW_NewOpenReport_ProfitReview (VF Page) 에서 입력받은 값 update   
@@ -308,13 +333,12 @@ public with sharing class ReportFormController {
                 expectIncome = new CJFW_ExpectedIncomeExpenses__c();
                 expectIncome.Version__c = versionCheck; // 필수값
                 expectIncome.Opportunity__c = opportunityId; // 필수값
+                if(versionCheck == 1) expectIncome.IsReportCheck__c = true; // 초기 insert 시에 품의지정 default 세팅
             }
             expectIncome.saveResult__c = DataList;
 
             expectIncome.CollateralType__c = (String)dataMap.get('detail-collateral-kind') != null ? (String)dataMap.get('detail-collateral-kind') : ''; // 담보제공 종류
             expectIncome.PaymentMethod__c = (String)dataMap.get('payment-picklist') != null ? (String)dataMap.get('payment-picklist') : ''; // 결제수단 종류
-
-
 
             expectIncome.CreditLoanAmount__c = convertToDecimal(dataMap.get('detail-creditLoan-amount')); // 신용여신금액 
 
@@ -337,39 +361,22 @@ public with sharing class ReportFormController {
 
             String collateralPeriod = (String)dataMap.get('collateral-period');
             String contractPeriod = (String)dataMap.get('contract-payment-period');
-            System.debug(' collateralPeriod-> ' + collateralPeriod);
-            System.debug(' contractPeriod-> ' + contractPeriod);
+
             if(collateralPeriod <> null && contractPeriod <> '') {
                 Date collateralPeriodDate = Date.valueOf(collateralPeriod); // 담보제공기간
                 expectIncome.CollateralPeriod__c = collateralPeriodDate;
-                System.debug(' 담보제공일자 1 -> ' + collateralPeriodDate);
             }
             if(contractPeriod <> null && contractPeriod <> '') {
                 Date contractPeriodDate = Date.valueOf(contractPeriod); // 약정결제일
                 expectIncome.ContractPaymentDate__c = contractPeriodDate;
-                System.debug(' 담보제공일자 2 -> ' + contractPeriodDate);
             }
             
-           // Date collateralPeriodDate = Date.valueOf((String)dataMap.get('collateral-period')); // 담보제공기간
-           // Date contractPeriodDate = Date.valueOf((String)dataMap.get('contract-payment-period')); // 약정결제일
-            // System.debug(' 담보제공일자 1 -> ' + Date.valueOf((String)dataMap.get('collateral-period')) );
-            // System.debug(' 담보제공일자 2 -> ' + Date.valueOf((String)dataMap.get('contract-payment-period')) );
-
-            //if(collateralPeriodDate <> null ){
-            //    System.debug(' 담보제공일자  -> ' + collateralPeriodDate);
-            //    expectIncome.CollateralPeriod__c = collateralPeriodDate;
-            //} 
-            //if(contractPeriodDate <> null ) {
-            //    System.debug(' 약정결제일자  -> ' + collateralPeriodDate);
-            //    expectIncome.ContractPaymentDate__c = contractPeriodDate;
-            //}
-
             upsert expectIncome;
             return 'success';
         } catch (Exception e) {
-            String errorMessage = e.getMessage(); // 에러 메시지
-            String errorStackTrace = e.getStackTraceString(); // 에러 스택 트레이스
 
+            String errorMessage = e.getMessage(); 
+            String errorStackTrace = e.getStackTraceString(); 
             System.debug('에러 메시지: ' + errorMessage);
             System.debug('에러 라인: ' + errorStackTrace);
 
@@ -384,8 +391,7 @@ public with sharing class ReportFormController {
     */
     @RemoteAction
     public static String ReportCheck(String incomeExpensesId , String opportunityId ){
-        System.debug(' ReportCheck ');
-        System.debug(' incomeExpensesId =>  ' + incomeExpensesId + ' oppty =>' + opportunityId );
+
         try{
             //CJFW_ExpectedIncomeExpenses__c RemoveList = [SELECT Id, IsReportCheck__c FROM CJFW_ExpectedIncomeExpenses__c WHERE Opportunity__c =: opportunityId AND Id != :incomeExpensesId];
             List<CJFW_ExpectedIncomeExpenses__c> RemoveList = [SELECT Id, IsReportCheck__c FROM CJFW_ExpectedIncomeExpenses__c WHERE Opportunity__c = :opportunityId AND Id != :incomeExpensesId];
@@ -403,7 +409,9 @@ public with sharing class ReportFormController {
                 System.debug(' checkList ' + checkList );
                 update checkList;
             }
+
             return 'success';
+
         }catch (Exception e) {
 
             String errorMessage = e.getMessage(); // 에러 메시지

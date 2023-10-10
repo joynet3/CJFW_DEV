@@ -2,8 +2,8 @@
  * @description       : 
  * @author            : yejoo.lee@dkbmc.com
  * @group             : 
- * @last modified on  : 10-05-2023
- * @last modified by  : doyeon.kim@dkbmc.com
+ * @last modified on  : 10-10-2023
+ * @last modified by  : yejoo.lee@dkbmc.com
 **/
 public with sharing class CJFW_DeliveryDstMgmtController {
     @AuraEnabled

@@ -4,6 +4,10 @@
 *@group  Survey
 *@author 진현욱
 *@since 2023-07-31  최초 작성
+*
+*
+*@author 최선경
+*@since 2023-10-06  TextType__c  필드 추가,isOpenended 추가  
 */
 public with sharing class CJFW_Survey {
     
@@ -72,7 +76,8 @@ public with sharing class CJFW_Survey {
                 , Survey__c             
                 , Survey__r.Name        //설문 유형명
                 , Survey__r.Description__c
-                , Type__c               
+                , Type__c    
+                , TextType__c        
                 , MultipleChoice__c     
                 , Order__c
                 , DateType__c
@@ -181,6 +186,7 @@ public with sharing class CJFW_Survey {
                     optionMap.put(oWrapper.id, oWrapper);
                 }
             }
+           
 
         }
 
@@ -347,18 +353,26 @@ public with sharing class CJFW_Survey {
         @AuraEnabled public Integer no;                             //질문번호
         @AuraEnabled public String  content;                        //질문내용
         @AuraEnabled public String  type;                           //질문유형
+        @AuraEnabled public String  textType;                       //주관식 텍스트 유형 
         @AuraEnabled public String  multipleChoice;                 //객관식유형 singular, plural
         @AuraEnabled public String  dateType;                       //날짜유형 
         @AuraEnabled public List<QuestionOption> optionList;        //선택지 리스트
         @AuraEnabled public Object  selectedValue;                  //선택된 값: Date, Date From/To, 주관식, QuestionOption
         @AuraEnabled public Boolean isChild = false;                //자식 여부 
         @AuraEnabled public Boolean isMultipleChoice = false;        //복수선택 여부
+        @AuraEnabled public Boolean isOpenended = false;             //주관식 여부
         @AuraEnabled public Boolean isMultiple = false;              //객관식 여부
         @AuraEnabled public Boolean isDate = false;                  //날짜 여부
         @AuraEnabled public Boolean isTime = false;                  //시간 여부
         @AuraEnabled public Boolean isFromTo = false;                //날짜 From/To 여부
         @AuraEnabled public Boolean isSelected = false;              //선택여부
         @AuraEnabled public Boolean isShowDetail = true;             //설문지 디테일 보이기 여부
+        
+        @AuraEnabled public Boolean isTextType = false;             // TextType Text
+        @AuraEnabled public Boolean isNumberType = false;           // TextType Number
+        @AuraEnabled public Boolean isPhoneType = false;            // TextType Phone
+        @AuraEnabled public Boolean isEmailType = false;            // TextType Email
+       
 
 
         public Question() {}
@@ -372,6 +386,7 @@ public with sharing class CJFW_Survey {
             this.no = Integer.valueOf(question.Order__c);
             this.content = question.Name__c;
             this.type = question.Type__c;
+            this.textType =question.TextType__c;
             this.multipleChoice = question.MultipleChoice__c;
             this.dateType = question.DateType__c;
             this.optionList = new List<QuestionOption>();
@@ -390,6 +405,28 @@ public with sharing class CJFW_Survey {
                 }when 'time' {
                     this.isTime = true;
                     this.isFromTo = true;
+                }when 'openended'{
+                    // isOpenended = true;
+                    
+                    // // 주관식 Text 타입
+
+                    // if (textType == 'Text') {
+                    //     isTextType =true; 
+                    //     System.debug('1 Text 확인 '+ isTextType);
+                       
+                    // } else if (textType == 'Number') {
+                    //     isNumberType =true;    
+                    //     System.debug('2 Number 확인 '+ isNumberType);
+
+                    // } else if (textType == 'Phone') {
+                    //     isPhoneType =true; 
+                    //     System.debug('3 Phone 확인 '+ isPhoneType);
+
+                    // }else {
+                    //     isEmailType =true;
+                    //     System.debug('4 Email 확인 '+ isEmailType);
+
+                    // }
                 }
             }
 

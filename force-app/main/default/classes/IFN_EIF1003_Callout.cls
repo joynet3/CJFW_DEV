@@ -103,15 +103,15 @@ public with sharing class IFN_EIF1003_Callout {
         String result_message = 'Callout Success';
 
         IFN_EIF1003_RE001_MD001.RE001ResultWrapper infResponse = new IFN_EIF1003_RE001_MD001.RE001ResultWrapper();
-//        Map<String,Object> infResponse = new Map<String,Object>();
 
         try {
             System.debug('params >>>>>>>>>>>>>>>>>>>>>>>>>' + params);
-            IFN_EIF1003_RE001_MD001.RE001RequestWrapper reqparam = new IFN_EIF1003_RE001_MD001.RE001RequestWrapper();
-            reqparam = (IFN_EIF1003_RE001_MD001.RE001RequestWrapper) JSON.deserializeStrict((String) params, IFN_EIF1003_RE001_MD001.RE001RequestWrapper.class) ;
+
+            IFN_EIF1003_RE001_MD001 re001Md001 = new IFN_EIF1003_RE001_MD001();
 
             IFN_ApiGateWay gateway = new IFN_ApiGateWay(interfaceId);
-            String requestBody = fromDTO(reqparam);
+
+            String requestBody = re001Md001.convertUrlParam();
 
             HttpResponse response = gateway.webCallout(requestBody, null, true);
 
@@ -146,8 +146,6 @@ public with sharing class IFN_EIF1003_Callout {
         IFN_EIF1003_CL001_MD001.CL001ResultWrapper infResponse = new IFN_EIF1003_CL001_MD001.CL001ResultWrapper();
         try {
             System.debug('params >>>>>>>>>>>>>>>>>>>>>>>>>' + params);
-//            IFN_EIF1003_CL001_MD001.CL001RequestWrapper reqparam = new IFN_EIF1003_CL001_MD001.CL001RequestWrapper();
-//            reqparam = (IFN_EIF1003_CL001_MD001.CL001RequestWrapper) params;
 
             IFN_ApiGateWay gateway = new IFN_ApiGateWay(interfaceId);
             String requestBody = (String) JSON.deserializeStrict(JSON.serialize(params), String.class);
@@ -156,12 +154,8 @@ public with sharing class IFN_EIF1003_Callout {
 
             responsedata = response.getBody();
 
-            String replaceToNcp = (String) responsedata.replaceAll('_ncp_', 'ncp_');
-            String replaceToEnd = replaceToNcp.replace('"end', '"endCnt');
-            System.debug(replaceToEnd);
             if (response.getStatusCode() == 200) {
-//                infResponse.result = (IFN_EIF1003_CL001_MD001.CL001ResultWrapper) JSON.deserializeStrict(replaceToEnd, IFN_EIF1003_CL001_MD001.ResponseSync.class);
-                infResponse.result = (Map<String, Object>) JSON.deserializeUntyped(replaceToEnd);
+                infResponse.result = (Map<String, Object>) JSON.deserializeUntyped(responsedata);
             } else {
                 result_code = 'F';
                 result_message = 'Callout Fail';
@@ -179,18 +173,4 @@ public with sharing class IFN_EIF1003_Callout {
         return result;
     }
 
-    public static String fromDTO(IFN_EIF1003_RE001_MD001.RE001RequestWrapper request) {
-        List<String> params = new List<String>();
-
-        if (String.isNotBlank(request.start_at)) {
-            params.add('start_at=' + EncodingUtil.urlEncode(request.start_at, 'UTF-8'));
-        }
-        if (request.per != null) {
-            params.add('per=' + request.per);
-        }
-        if (request.page != null) {
-            params.add('page=' + request.page);
-        }
-        return String.join(params, '&');
-    }
 }

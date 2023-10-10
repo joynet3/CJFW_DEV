@@ -57,7 +57,7 @@ public class IFN_EIF1001_Callout_TEST {
         String resbody = JSON.serialize(errData);
 
         Test.setMock(HttpCalloutMock.class, new IF_HttpCalloutMock(resbody,500)); 
-        IFN_EIF1001_Callout callout = new IFN_EIF1001_Callout('IFN_EIF1001_EC002_MD003','Rseal');
+        IFN_EIF1001_Callout callout = new IFN_EIF1001_Callout('IFN_EIF1001_EC002_MD003','Real');
 
         IFN_EIF1001_EC002_MD003.EC002RequstWrapper reqparam = new IFN_EIF1001_EC002_MD003.EC002RequstWrapper();
         reqparam.image = '123123';
@@ -137,7 +137,7 @@ public class IFN_EIF1001_Callout_TEST {
         
         String resbody = JSON.serialize(resSucc);
 
-        Test.setMock(HttpCalloutMock.class, new IF_HttpCalloutMock(resbody,200)); 
+        Test.setMock(HttpCalloutMock.class, new IF_HttpCalloutMock(resbody,200));
         IFN_EIF1001_Callout callout = new IFN_EIF1001_Callout('tIFN_EIF1001_EC003_MD005','Rseal');
 
         // req

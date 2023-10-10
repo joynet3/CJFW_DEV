@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : yeonji.lim@dkbmc.com
  * @group             : 
- * @last modified on  : 10-05-2023
+ * @last modified on  : 10-06-2023
  * @last modified by  : yeonji.lim@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -38,24 +38,24 @@ public with sharing class CJFW_CreateNewReportPageController {
      */
     public void getRecord(){
         decProRecord = [SELECT Id,
-                                        ReportSignature__c,
-                                        Summary__c,
-                                        ClientCompanyName__c,
-                                        RepresentativeName__c,
-                                        BusinessPath__c,
-                                        SalesMonthly__c,
-                                        OurSales__c,
-                                        InitialDate__c,
-                                        Address__c,
-                                        RepresentativePhone__c,
-                                        PV_EXISTSUP__c,
-                                        ExceptionPrice__c,
-                                        OpptyDescription__c,
-                                        AttachedDocument__c
-                                FROM DecisionProcess__c 
-                                WHERE Opportunity__c =: OpptyId
-                                ORDER BY CreatedDate DESC
-                                LIMIT 1]; 
+                                ReportSignature__c,
+                                Summary__c,
+                                ClientCompanyName__c,
+                                RepresentativeName__c,
+                                BusinessPath__c,
+                                SalesMonthly__c,
+                                OurSales__c,
+                                InitialDate__c,
+                                Address__c,
+                                RepresentativePhone__c,
+                                PV_EXISTSUP__c,
+                                ExceptionPrice__c,
+                                OpptyDescription__c,
+                                AttachedDocument__c
+                        FROM DecisionProcess__c 
+                        WHERE Opportunity__c =: OpptyId
+                        ORDER BY CreatedDate DESC
+                        LIMIT 1]; 
 
 
         saveResult = [SELECT saveResult__c

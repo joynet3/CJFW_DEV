@@ -10,25 +10,25 @@ public with sharing class CJFW_CategoryFileController {
     public static List<ContentVersion> getFileList(String category, Id recordId){
         try {
             //category가 "계약 참고자료"일 때 파일을 가져오기
-            // if (category == '계약 참고자료') {
-            //     List<ContentVersion> cvList =  [SELECT Id, 
-            //                                             VersionData, 
-            //                                             FileType, 
-            //                                             Title, 
-            //                                             FileExtension,
-            //                                             ContentDocumentId, 
-            //                                             CreatedDate,
-            //                                             ContentSize, 
-            //                                             LastModifiedDate,
-            //                                             CreatedBy.Name
-            //                                     FROM ContentVersion
-            //                                     WHERE Category__c =: category
-            //                                     ORDER BY LastModifiedDate ASC
-            //                                     ];
-            //     System.debug('조건: ' + cvList);
-            //     return cvList;  
+            if (category == '계약 참고자료') {
+                List<ContentVersion> cvList =  [SELECT Id, 
+                                                        VersionData, 
+                                                        FileType, 
+                                                        Title, 
+                                                        FileExtension,
+                                                        ContentDocumentId, 
+                                                        CreatedDate,
+                                                        ContentSize, 
+                                                        LastModifiedDate,
+                                                        CreatedBy.Name
+                                                FROM ContentVersion
+                                                WHERE Category__c =: category
+                                                ORDER BY LastModifiedDate ASC
+                                                ];
+                System.debug('조건: ' + cvList);
+                return cvList;  
 
-            // } else {
+            } else {
                 List<ContentDocumentLink> ContentDocumentLinkList = [SELECT Id, 
                                                                             LinkedEntityId, 
                                                                             ContentDocumentId                    
@@ -61,7 +61,7 @@ public with sharing class CJFW_CategoryFileController {
     
                 return cvList;           
                 
-            
+            }
 
             
         } catch (Exception e) {

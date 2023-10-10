@@ -9,6 +9,7 @@
  * Ver      Date            Author          Modification
  * ===================================================================================
  * 1.0      2022.08.24      Minje.Kim       Create
+ * 1.1      2023.10.06      Jieun.Lee       Delete
 *************************************************************************************/
 
 public without sharing class Opportunity_tr extends TriggerHandler {
@@ -165,27 +166,15 @@ public without sharing class Opportunity_tr extends TriggerHandler {
 
      /***********************************************************************************************************
     *  Trigger : Before Delete
-    *  내용    : 진행된 영업기회 삭제 방지
+    *  내용    : 진행된 영업기회 삭제 방지, 소유자만 삭제 가능
     ************************************************************************************************************/    
     private void doCheckStatus(){
-        // List<String> listOwnerId = new List<String>();
-        
-        // for(Opportunity obj : listOld){
-        //     listOwnerId.add(obj.OwnerId);
-        // }
-
-        Map<Id, User> mapOwner = new Map<Id, User>([
-            SELECT Id, Name
-            FROM User
-            WHERE Id =: UserInfo.getUserId()
-        ]);
 
         for(Opportunity obj : listOld){
-            if(!mapOwner.isEmpty()){
+            if(obj.OwnerId <> null && UserInfo.getUserId() <> null){
                 if(obj.StageName.contains('Closed')){
                     obj.addError('진행된 영업기회는 삭제할 수 없습니다.');
-                }else if(obj.OwnerId <> mapOwner.get(obj.OwnerId).Id){
-                    // System.debug('ehlsk');
+                }else if(obj.OwnerId <> UserInfo.getUserId()){
                     obj.addError('영업기회 소유자만 삭제 가능합니다.');
                 }
             }

@@ -8,11 +8,12 @@
 @isTest
 private class CJFW_MDMBulkUpdateHeadController_test {
     
-    static List<Account> accList = new List<Account>();
     static List<CJFW_MDMBulkUpdateHeadController.MDMRequest> customerList = new List<CJFW_MDMBulkUpdateHeadController.MDMRequest>();
     
     @TestSetup
     static void setData() {
+        
+        List<Account> accList = new List<Account>();
         
         // 본점 C01, 판매처 C02, 관리처 C03, C04, C11
         for(Integer i = 0; i < 100; i++) {
@@ -92,6 +93,7 @@ private class CJFW_MDMBulkUpdateHeadController_test {
 
     }
 
+    // 공통 부분
     @isTest
     static void getList() {
 

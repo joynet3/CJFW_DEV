@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 10-04-2023
+ * @last modified on  : 10-05-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkUpdateHeadController {
@@ -40,7 +40,8 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
 
         System.debug(' type => ' + type);
         System.debug(' recordIdEx => ' + recordIdEx);
-
+        
+        // 이름이 null값이 되지 않도록 null일 경우 기존 값을 찾아서 기입해 줄 Map 생성
         Map<String, String> nameMaps = getNameOfNull(mdmCustomer);
 
         try {
@@ -59,14 +60,14 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
                 
                 for (MDMRequest mdm : mdmCustomer) {
                     MDMRegRequestCustomer__c mdmRequest = new MDMRegRequestCustomer__c();
-                    system.debug('안녕하세요 ' + mdmRequestbulk.id);
-                    system.debug('MDM 고객 ID => ' + mdm.PV_KUNNR); // 고객 ID
-                    system.debug('MDM 고객명 => ' + mdm.PV_NAME1); // 고객명
-                    system.debug('MDM 법적상태 => ' + mdm.PV_GFORM); // 법적상태
-                    system.debug('MDM 대표자이름 => ' + mdm.PV_J_1KFREPRE); // 대표자이름
-                    system.debug('MDM 대표자생년월일 => ' + mdm.PV_STCD1); // 대표자생년월일
-                    system.debug('MDM 업태 => ' + mdm.PV_J_1KFTBUS); // 업태
-                    system.debug('MDM 레코드유형 => ' + recordIdEx); // 레코드 유형
+                    // system.debug('안녕하세요 ' + mdmRequestbulk.id);
+                    // system.debug('MDM 고객 ID => ' + mdm.PV_KUNNR); // 고객 ID
+                    // system.debug('MDM 고객명 => ' + mdm.PV_NAME1); // 고객명
+                    // system.debug('MDM 법적상태 => ' + mdm.PV_GFORM); // 법적상태
+                    // system.debug('MDM 대표자이름 => ' + mdm.PV_J_1KFREPRE); // 대표자이름
+                    // system.debug('MDM 대표자생년월일 => ' + mdm.PV_STCD1); // 대표자생년월일
+                    // system.debug('MDM 업태 => ' + mdm.PV_J_1KFTBUS); // 업태
+                    // system.debug('MDM 레코드유형 => ' + recordIdEx); // 레코드 유형
 
                     mdmRequest.RecordTypeId      =      String.isBlank(type) ? null : recordIdEx;
                     mdmRequest.PV_KUNNR__c       =      String.isBlank(mdm.PV_KUNNR) ? null : mdm.PV_KUNNR;
@@ -80,6 +81,8 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
                     
                     customerList.add(mdmRequest);
                 }
+
+                // System.debug('customerList => ' + customerList);
 
                 insert customerList;
 

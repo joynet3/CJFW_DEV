@@ -114,7 +114,8 @@ public with sharing class CJFW_SurveyController {
 
             String mode = (String) params.get('mode');
             String objectApiName;
-            Id recordId =  Id.valueOf((String)params.get('recordId'));
+            Id recordId;
+            if(params.get('recordId') != null) recordId = Id.valueOf((String)params.get('recordId'));
             if(params.get('objectApiName') != null) objectApiName = (String) params.get('objectApiName');
 
             Id surveyTypeId  = Id.valueOf((String)params.get('surveyTypeId'));

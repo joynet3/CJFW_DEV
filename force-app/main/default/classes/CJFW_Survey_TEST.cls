@@ -2,7 +2,7 @@
 public with sharing class CJFW_Survey_TEST {
     
     @testSetup
-    static void makeData() {
+    public static void makeData() {
         //원료솔루션사업부: 4600
         //급식솔루션사업부: 4700
         //아이누리사업부: 4100
@@ -321,6 +321,88 @@ public with sharing class CJFW_Survey_TEST {
         test.stopTest();
     }
 
+    public static CJFW_SurveyResponse__c saveSurveyResponse(String surveyId) {
+        List<CJFW_SurveyResult__c> responsResultList = new List<CJFW_SurveyResult__c>();
+
+        CJFW_SurveyResponse__c response = new CJFW_SurveyResponse__c();
+        response.Survey__c = surveyId;
+        response.ResponseDate__c = Date.today();
+        insert response;
+
+        for(CJFW_SurveyQuestion__c question :[
+            select 
+                id
+                , survey__c
+                , name
+                , Type__c               
+                , MultipleChoice__c     
+                , Order__c
+                , DateType__c
+                , (
+                    select  
+                        Id
+                        , Order__c
+                        , Name
+                        , SurveyQuestion__c
+                    from Survey_Option__r
+                    order by Order__c, Name
+                )
+            from CJFW_SurveyQuestion__c
+            where 
+                Survey__c = :surveyId
+            order by Order__c, Name
+        ]) {
+            CJFW_SurveyResult__c result = new CJFW_SurveyResult__c(
+                SurveyResponse__c = response.id
+                ,SurveyQuestion__c = question.id
+            );
+
+            if('openended'.equals(question.Type__c)) {
+                //주관식
+                result.OpenEnded__c = '주관식 답변';
+                responsResultList.add(result);
+            }else if('multiple'.equals(question.Type__c)) {
+                //객관식
+                for(CJFW_SurveyOption__c option : question.Survey_Option__r) {
+
+                    if('singular'.equals(question.MultipleChoice__c)) {
+                        result.SurveyOption__c = option.id;
+                        responsResultList.add(result);
+                        break;
+                    }else if('plural'.equals(question.MultipleChoice__c)) {
+                        CJFW_SurveyResult__c cloneResult = result.clone(false);
+                        cloneResult.SurveyOption__c = option.id;
+                        responsResultList.add(cloneResult);
+                    }
+                }
+            }else if('date'.equals(question.Type__c)) {
+                //날짜
+                if('Date'.equals(question.DateType__c)) {
+                    result.DateResult__c = Date.today().addDays(1);
+                    responsResultList.add(result);
+                }
+                
+                if('From/To'.equals(question.DateType__c)) {
+                    CJFW_SurveyResult__c cloneResult = result.clone(false);
+                    cloneResult.DateResult__c = Date.today().addDays(2);
+                    responsResultList.add(cloneResult);
+                }
+
+            }else if('time'.equals(question.Type__c)) { 
+                //시간
+
+                result.TimeResult__c = Time.newInstance(9, 0, 0, 0);
+                responsResultList.add(result);
+
+                CJFW_SurveyResult__c cloneResult = result.clone(false);
+                cloneResult.TimeResult__c = Time.newInstance(10, 0, 0, 0);
+                responsResultList.add(cloneResult);
+            }
+        }
+
+        return response;
+    }
+
     @isTest
     public static void user4600_Execute() {
         test.startTest();
@@ -337,85 +419,86 @@ public with sharing class CJFW_Survey_TEST {
 
             CJFW_Survey__c survey = [select id from CJFW_Survey__c where SU__c = '4600' limit 1];
             
-            CJFW_SurveyResponse__c response = new CJFW_SurveyResponse__c();
-            response.Survey__c = survey.id;
-            response.ResponseDate__c = Date.today();
-            responseList.add(response);
+            CJFW_SurveyResponse__c response = saveSurveyResponse(survey.id);
+            // new CJFW_SurveyResponse__c();
+            // response.Survey__c = survey.id;
+            // response.ResponseDate__c = Date.today();
+            // responseList.add(response);
 
-            insert responseList;
+            // insert responseList;
 
-            for(CJFW_SurveyQuestion__c question :[
-                select 
-                    id
-                    , survey__c
-                    , name
-                    , Type__c               
-                    , MultipleChoice__c     
-                    , Order__c
-                    , DateType__c
-                    , (
-                        select  
-                            Id
-                            , Order__c
-                            , Name
-                            , SurveyQuestion__c
-                        from Survey_Option__r
-                        order by Order__c, Name
-                    )
-                from CJFW_SurveyQuestion__c
-                where 
-                    Survey__c = :survey.id
-                order by Order__c, Name
-            ]) {
-                CJFW_SurveyResult__c result = new CJFW_SurveyResult__c(
-                    SurveyResponse__c = response.id
-                    ,SurveyQuestion__c = question.id
-                );
+            // for(CJFW_SurveyQuestion__c question :[
+            //     select 
+            //         id
+            //         , survey__c
+            //         , name
+            //         , Type__c               
+            //         , MultipleChoice__c     
+            //         , Order__c
+            //         , DateType__c
+            //         , (
+            //             select  
+            //                 Id
+            //                 , Order__c
+            //                 , Name
+            //                 , SurveyQuestion__c
+            //             from Survey_Option__r
+            //             order by Order__c, Name
+            //         )
+            //     from CJFW_SurveyQuestion__c
+            //     where 
+            //         Survey__c = :survey.id
+            //     order by Order__c, Name
+            // ]) {
+            //     CJFW_SurveyResult__c result = new CJFW_SurveyResult__c(
+            //         SurveyResponse__c = response.id
+            //         ,SurveyQuestion__c = question.id
+            //     );
 
-                if('openended'.equals(question.Type__c)) {
-                    //주관식
-                    result.OpenEnded__c = '주관식 답변';
-                    responsResultList.add(result);
-                }else if('multiple'.equals(question.Type__c)) {
-                    //객관식
-                    for(CJFW_SurveyOption__c option : question.Survey_Option__r) {
+            //     if('openended'.equals(question.Type__c)) {
+            //         //주관식
+            //         result.OpenEnded__c = '주관식 답변';
+            //         responsResultList.add(result);
+            //     }else if('multiple'.equals(question.Type__c)) {
+            //         //객관식
+            //         for(CJFW_SurveyOption__c option : question.Survey_Option__r) {
 
-                        if('singular'.equals(question.MultipleChoice__c)) {
-                            result.SurveyOption__c = option.id;
-                            responsResultList.add(result);
-                            break;
-                        }else if('plural'.equals(question.MultipleChoice__c)) {
-                            CJFW_SurveyResult__c cloneResult = result.clone(false);
-                            cloneResult.SurveyOption__c = option.id;
-                            responsResultList.add(cloneResult);
-                        }
-                    }
-                }else if('date'.equals(question.Type__c)) {
-                    //날짜
-                    if('Date'.equals(question.DateType__c)) {
-                        result.DateResult__c = Date.today().addDays(1);
-                        responsResultList.add(result);
-                    }
+            //             if('singular'.equals(question.MultipleChoice__c)) {
+            //                 result.SurveyOption__c = option.id;
+            //                 responsResultList.add(result);
+            //                 break;
+            //             }else if('plural'.equals(question.MultipleChoice__c)) {
+            //                 CJFW_SurveyResult__c cloneResult = result.clone(false);
+            //                 cloneResult.SurveyOption__c = option.id;
+            //                 responsResultList.add(cloneResult);
+            //             }
+            //         }
+            //     }else if('date'.equals(question.Type__c)) {
+            //         //날짜
+            //         if('Date'.equals(question.DateType__c)) {
+            //             result.DateResult__c = Date.today().addDays(1);
+            //             responsResultList.add(result);
+            //         }
                     
-                    if('From/To'.equals(question.DateType__c)) {
-                        CJFW_SurveyResult__c cloneResult = result.clone(false);
-                        cloneResult.DateResult__c = Date.today().addDays(2);
-                        responsResultList.add(cloneResult);
-                    }
+            //         if('From/To'.equals(question.DateType__c)) {
+            //             CJFW_SurveyResult__c cloneResult = result.clone(false);
+            //             cloneResult.DateResult__c = Date.today().addDays(2);
+            //             responsResultList.add(cloneResult);
+            //         }
 
-                }else if('time'.equals(question.Type__c)) { 
-                    //시간
+            //     }else if('time'.equals(question.Type__c)) { 
+            //         //시간
 
-                    result.TimeResult__c = Time.newInstance(9, 0, 0, 0);
-                    responsResultList.add(result);
+            //         result.TimeResult__c = Time.newInstance(9, 0, 0, 0);
+            //         responsResultList.add(result);
 
-                    CJFW_SurveyResult__c cloneResult = result.clone(false);
-                    cloneResult.TimeResult__c = Time.newInstance(10, 0, 0, 0);
-                    responsResultList.add(cloneResult);
-                }
-            }
+            //         CJFW_SurveyResult__c cloneResult = result.clone(false);
+            //         cloneResult.TimeResult__c = Time.newInstance(10, 0, 0, 0);
+            //         responsResultList.add(cloneResult);
+            //     }
+            // }
 
-            insert responsResultList;
+            // insert responsResultList;
 
             CJFW_Survey resultSurvey = new CJFW_Survey(survey.id , response.id);
             CJFW_Survey.Question resultSurveyQuestion = resultSurvey.questionList.get(0);

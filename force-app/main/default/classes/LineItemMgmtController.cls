@@ -66,7 +66,8 @@ public without sharing class LineItemMgmtController {
                                            Product2.strg_cond_cd__c, TaxTypeName__c, 
                                            ProfitMargin__c, SortOrder, fm_PriceBookEntryName__c, Product2Id,  
                                            PricebookEntryId, ListPrice, UnitPrice, UnitPriceWithVAT__c, VAT__c,
-                                           ProductCategoryCode__c, ProductCategoryLName__c, ProductCategoryMName__c
+                                           ProductCategoryCode__c, ProductCategoryLName__c, ProductCategoryMName__c,
+                                           UnitConversion__c, ProductWeight__c // 20231006 김도연 : 단위환산, 중량 필드추가
                                  FROM      QuoteLineItem
                                  WHERE     QuoteId = :recordId
                                  ORDER BY  SortOrder
@@ -95,7 +96,6 @@ public without sharing class LineItemMgmtController {
                         WHERE   Id = :recordId
                        ]; 
         }
-   
 
         // 상품군 정보 Query
         List<ProductCategory__c > listCategory = new List<ProductCategory__c >();
