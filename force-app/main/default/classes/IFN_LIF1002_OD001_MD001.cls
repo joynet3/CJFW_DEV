@@ -5,6 +5,7 @@
  * @Date : 2023-08-16
  * @Version : 1.0
  * @Description : 식자재 신청 고객 정보 CRM Lead로 생성
+ *                주문시스템 -> 중계서버 -> 세일즈포스
  * @Modified : 
  * ----------------------------------------------
  *  NO | Date       | Modifier       | Description

@@ -2,15 +2,32 @@
  * @description       : 
  * @author            : seol.kim@dkbmc.com
  * @group             : 
- * @last modified on  : 10-05-2023
+ * @last modified on  : 10-10-2023
  * @last modified by  : seol.kim@dkbmc.com
 **/
 public with sharing class CJFW_CategoryFileController {
     @AuraEnabled(cacheable=true)
     public static List<ContentVersion> getFileList(String category, Id recordId){
         try {
+            
             //category가 "계약 참고자료"일 때 파일을 가져오기
             if (category == '계약 참고자료') {
+  
+                List<ContentDocumentLink> ContentDocumentLinkList = [SELECT Id, 
+                                                                            LinkedEntityId, 
+                                                                            ContentDocumentId                    
+                                                                        FROM ContentDocumentLink                  
+                                                                        WHERE LinkedEntityId IN (SELECT Id FROM Opportunity) //전체 opp 조회
+                                                                    ];
+                                                                    System.debug('ContentDocumentLinkList: ' + ContentDocumentLinkList);                                                
+
+                Set<Id> contentDocumentIds = new Set<Id>();
+                for (ContentDocumentLink link : ContentDocumentLinkList) {
+                    contentDocumentIds.add(link.ContentDocumentId);
+                    System.debug('contentDocumentIds: ' + contentDocumentIds);
+                    
+                }
+
                 List<ContentVersion> cvList =  [SELECT Id, 
                                                         VersionData, 
                                                         FileType, 
@@ -23,6 +40,7 @@ public with sharing class CJFW_CategoryFileController {
                                                         CreatedBy.Name
                                                 FROM ContentVersion
                                                 WHERE Category__c =: category
+                                                AND ContentDocumentId =: contentDocumentIds
                                                 ORDER BY LastModifiedDate ASC
                                                 ];
                 System.debug('조건: ' + cvList);
@@ -68,9 +86,6 @@ public with sharing class CJFW_CategoryFileController {
             throw new AuraHandledException(e.getMessage());
         }
     }
-
-    
-    
 
 
     @AuraEnabled

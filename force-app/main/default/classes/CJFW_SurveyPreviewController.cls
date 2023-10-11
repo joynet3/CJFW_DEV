@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : sunkyung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 09-25-2023
+ * @last modified on  : 10-11-2023
  * @last modified by  : sunkyung.choi@dkbmc.com
 **/
 public with sharing class CJFW_SurveyPreviewController {
@@ -15,10 +15,17 @@ public with sharing class CJFW_SurveyPreviewController {
         public String question { get; set; }
         @AuraEnabled
         public String answer { get; set; }
+        @AuraEnabled
+        public String createdDate { get; set; }
+        @AuraEnabled
+        public String customerName { get; set; }
 
-        public SurveyQuestionResponse(String question, String answer) {
+        public SurveyQuestionResponse(String question, String answer,String createdDate,String customerName) {
             this.question = question;
             this.answer = answer;
+            this.createdDate = createdDate;
+            this.customerName = customerName;
+            
         }
     }
 
@@ -27,7 +34,7 @@ public with sharing class CJFW_SurveyPreviewController {
         Set<String> responseId = new Set<String>();
 
         List<CJFW_SurveyResponse__c> responseList = [
-            SELECT Id, OwnerId, Name, Survey__c, Lead__c, Account__c, Opportunity__c
+            SELECT Id, OwnerId, Name, Survey__c, Lead__c,Lead__r.Name, Account__c,Account__r.Name, Opportunity__c,Opportunity__r.Name,CreatedDate
             FROM CJFW_SurveyResponse__c
             WHERE Id = :recordId
         ];
@@ -38,7 +45,7 @@ public with sharing class CJFW_SurveyPreviewController {
 
         List<CJFW_SurveyResult__c> resultList = [
             SELECT Id, OwnerId, Owner.Name, SurveyResponse__c, SurveyQuestion__c, SurveyOption__c,
-                OpenEnded__c, DateResult__c, TimeResult__c, FM_Question__c, SurveyOption__r.Name,
+                OpenEnded__c, DateResult__c, TimeResult__c, FM_Question__c, SurveyOption__r.Name,CreatedDate,
                 SurveyQuestion__r.Order__c
             FROM CJFW_SurveyResult__c
             WHERE SurveyResponse__c = :responseId
@@ -73,6 +80,7 @@ public with sharing class CJFW_SurveyPreviewController {
                 System.debug('시간 찍어봐  : '+ answers);
             }
         
+           
             // 질문과 답변 리스트를 맵에 저장
             if (!questionToAnswerMap.containsKey(question)) {
                 questionToAnswerMap.put(question, new List<List<String>>());
@@ -80,6 +88,8 @@ public with sharing class CJFW_SurveyPreviewController {
             List<List<String>> questionAnswers = questionToAnswerMap.get(question);
             System.debug('1211212'+ questionAnswers);
             questionAnswers.add(answers);
+
+        
         }
         
         // 각 질문과 답변을 SurveyQuestionResponse 객체로 변환하여 totalList에 추가
@@ -101,10 +111,27 @@ public with sharing class CJFW_SurveyPreviewController {
                 // 나머지 경우에는 콤마로 구분
                 answerString = String.join(mergedAnswers,',' );
             }
-
+            
             System.debug('이건 2222 : '+ answerString);
-            SurveyQuestionResponse response = new SurveyQuestionResponse(question, answerString);
-            totalList.add(response);
+            // SurveyQuestionResponse response = new SurveyQuestionResponse(question, answerString);
+            // totalList.add(response);
+
+            String createdDate = null;
+            String customerName = null;
+            for (CJFW_SurveyResponse__c res : responseList) {
+                createdDate = res.CreatedDate.format('yyyy년 MM월 dd일');
+                if (res.Account__c != null) {
+                    customerName = res.Account__r.Name;
+                }else if (res.Account__c == null || res.Lead__c != null ) {
+                    customerName = res.Lead__r.Name;
+                }else if (res.Account__c == null || res.Lead__c == null ||res.Opportunity__c !=null ) {
+                    customerName = res.Opportunity__r.Name;
+                }
+                 
+            }
+    
+        SurveyQuestionResponse response = new SurveyQuestionResponse(question, answerString, createdDate,customerName);
+        totalList.add(response);
         }
         
 

@@ -309,7 +309,9 @@ public virtual without sharing class NotiHandler {
     */
     @testVisible protected void setEmailPersonalize(Map<String,NotiEmailTemplate> langTemplateMap, Map<String, String> fieldsMap, String targetId, String lang, Set<String> toAddresses, Set<String> ccAddresses, Set<String> bccAddresses, Set<String> attachmentIds, Boolean isTargetObjectId) {
         NotiEmailTemplate template = langTemplateMap.get(lang);
-        NotiEmailTemplate cloneTemplateData = template == null ? (NotiEmailTemplate) langTemplateMap.get('ko').cloneTemplate() : (NotiEmailTemplate) langTemplateMap.get(lang).cloneTemplate();
+        if(template == null) template = langTemplateMap.get('ko');
+        NotiEmailTemplate cloneTemplateData =  (NotiEmailTemplate) template.cloneTemplate();
+        System.debug(JSON.serializePretty(cloneTemplateData));
         cloneTemplateData.setFieldsMap(fieldsMap);
         cloneTemplateData.setToAddresses(toAddresses);
         cloneTemplateData.setCcAddresses(ccAddresses);

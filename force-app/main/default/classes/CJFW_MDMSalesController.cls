@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 10-05-2023
+ * @last modified on  : 10-10-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -52,7 +52,8 @@ public with sharing class CJFW_MDMSalesController {
             objWrapper.PvFDGRVOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_FDGRV__c', true);                   // 현금관리그룹 (PV_FDGRV__c)
             objWrapper.PvTAXKDDOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_TAXKDD__c', true);                 // 세금분류 (PV_TAXKDD__c)
             objWrapper.PvKATR5Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KATR5__c', true);                   // 세금납부방법 (PV_KATR5__c)
-            objWrapper.PvKVGR3ption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KVGR3__c', true);                    // 납품서유형 (PV_KVGR3__c) [영업정보]
+            objWrapper.PvKDGRPOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KDGRP__c', true);                   // 여신관리(고객향) (PV_KDGRP__c) [영업정보]
+            objWrapper.PvKVGR3Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KVGR3__c', true);                    // 납품서유형 (PV_KVGR3__c) [영업정보]
             objWrapper.PvKVGR2Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KVGR2__c', true);                   // 장려금유형 (PV_KVGR2__c)
             objWrapper.PvKVGR3BOTOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KVGR3_BOT__c', true);            // 납품서 하단유형 (PV_KVGR3_BOT__c)      
             objWrapper.PvDSTRHISTREGYNPOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_DSTRHISTREGYN__c', true);  // 유통이력 신고대상 유형 (PV_DSTRHISTREGYN__c)                  
@@ -234,28 +235,29 @@ public with sharing class CJFW_MDMSalesController {
 
             MDMRecordTypeId = objMDMRegReqCustomer.RecordTypeId;
             objWrapper.objMDMRegReqCustomer = objMDMRegReqCustomer;
-            objWrapper.PvGFORMOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_GFORM__c', true);
 
             /**
             * lightning-record-edit-form 사용 시, 'PickList Field'에 slds-has-error class가 먹지 않음
             * 때문에 필수값인 PickList의 값만 combobox를 만들어 사용..
             */
-            objWrapper.PvGFORMOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_GFORM__c', true);                   // 법적상태 (PV_GFORM__c) [기본정보]
-            objWrapper.PvFITYPOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_FITYP__c', true);                   // 과세유형 (PV_FITYP__c) 
-            objWrapper.PvKNVKTYPEOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KNVKTYPE__c', true);             // 주문유형 (PV_KNVKTYPE__c)   
-            objWrapper.PvBUSABOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_BUSAB__c', true);                   // 매출형태 (PV_BUSAB__c) [회계정보]
-            objWrapper.PvCESSIOnKZOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_CESSION_KZ__c', true);          // 고객상태 (PV_CESSION_KZ__c)   
-            objWrapper.PvFDGRVOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_FDGRV__c', true);                   // 현금관리그룹 (PV_FDGRV__c)
-            objWrapper.PvTAXKDDOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_TAXKDD__c', true);                 // 세금분류 (PV_TAXKDD__c)
-            objWrapper.PvKATR5Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KATR5__c', true);                   // 세금납부방법 (PV_KATR5__c)
-            objWrapper.PvKVGR3ption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KVGR3__c', true);                    // 납품서유형 (PV_KVGR3__c) [영업정보]
-            objWrapper.PvKVGR2Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KVGR2__c', true);                   // 장려금유형 (PV_KVGR2__c)
-            objWrapper.PvKVGR3BOTOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KVGR3_BOT__c', true);            // 납품서 하단유형 (PV_KVGR3_BOT__c)      
-            objWrapper.PvDSTRHISTREGYNPOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_DSTRHISTREGYN__c', true);  // 유통이력 신고대상 유형 (PV_DSTRHISTREGYN__c)                  
-            objWrapper.PvENTERCOND1Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_ENTERCOND1__c', true);         // 차량 진입조건-1 (PV_ENTERCOND1__c)    
-            objWrapper.PvUNLOADCOND1Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_UNLOADCOND1__c', true);       // 하역조건-1 (PV_UNLOADCOND1__c)
-            objWrapper.PvUNLOADCOND2Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_UNLOADCOND2__c', true);       // 하역조건-2 (PV_UNLOADCOND2__c) 
-            objWrapper.PvTEMPTARGETOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_TEMPTARGET__c', true);         // 온도기록지 제출 대상 여부 (PV_TEMPTARGET__c)  
+           objWrapper.PvGFORMOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_GFORM__c', true);                   // 법적상태 (PV_GFORM__c) [기본정보]
+           objWrapper.PvFITYPOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_FITYP__c', true);                   // 과세유형 (PV_FITYP__c) 
+           objWrapper.PvKNVKTYPEOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KNVKTYPE__c', true);             // 주문유형 (PV_KNVKTYPE__c)   
+           objWrapper.PvBUSABOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_BUSAB__c', true);                   // 매출형태 (PV_BUSAB__c) [회계정보]
+           objWrapper.PvCESSIOnKZOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_CESSION_KZ__c', true);          // 고객상태 (PV_CESSION_KZ__c)   
+           objWrapper.PvFDGRVOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_FDGRV__c', true);                   // 현금관리그룹 (PV_FDGRV__c)
+           objWrapper.PvTAXKDDOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_TAXKDD__c', true);                 // 세금분류 (PV_TAXKDD__c)
+           objWrapper.PvKATR5Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KATR5__c', true);                   // 세금납부방법 (PV_KATR5__c)
+           objWrapper.PvKDGRPOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KDGRP__c', true);                   // 여신관리(고객향) (PV_KDGRP__c) [영업정보]
+           objWrapper.PvKVGR3Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KVGR3__c', true);                    // 납품서유형 (PV_KVGR3__c) [영업정보]
+           objWrapper.PvKVGR2Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KVGR2__c', true);                   // 장려금유형 (PV_KVGR2__c)
+           objWrapper.PvKVGR3BOTOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KVGR3_BOT__c', true);            // 납품서 하단유형 (PV_KVGR3_BOT__c)      
+           objWrapper.PvDSTRHISTREGYNPOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_DSTRHISTREGYN__c', true);  // 유통이력 신고대상 유형 (PV_DSTRHISTREGYN__c)                  
+           objWrapper.PvENTERCOND1Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_ENTERCOND1__c', true);         // 차량 진입조건-1 (PV_ENTERCOND1__c)    
+           objWrapper.PvUNLOADCOND1Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_UNLOADCOND1__c', true);       // 하역조건-1 (PV_UNLOADCOND1__c)
+           objWrapper.PvUNLOADCOND2Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_UNLOADCOND2__c', true);       // 하역조건-2 (PV_UNLOADCOND2__c) 
+           objWrapper.PvTEMPTARGETOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_TEMPTARGET__c', true);         // 온도기록지 제출 대상 여부 (PV_TEMPTARGET__c)  
+
 
             // mdmCustomerId로 MDMRegRequestContact__c 조회
             List<MDMRegRequestContact__c> listMDMReqContact = [
@@ -401,6 +403,8 @@ public with sharing class CJFW_MDMSalesController {
                                                 ,InitialDeliveryContact__c
                                                 ,InitialDeliveryDescription__c
                                                 ,PV_TEMPTARGET__c //여기까지 영업기회
+                                                ,PaymentAccountCode__c // 지급처코드 [판매처 추가]
+                                                ,ShippingAccountCode__c
                                                 ,(SELECT id, Name, AccountId, Email, Phone, MobilePhone, Department, PV_PAFKT_VK__c, Gender__c, Fax, OtherInfo__c, OwnerId, PV_KNVKGB__c FROM Contacts)
                                             FROM Account WHERE Id =: accountId LIMIT 1];
 
@@ -448,25 +452,29 @@ public with sharing class CJFW_MDMSalesController {
             * lightning-record-edit-form 사용 시, 'PickList Field'에 slds-has-error class가 먹지 않음
             * 때문에 필수값인 PickList의 값만 combobox를 만들어 사용..
             */
-            objWrapper.PvGFORMOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_GFORM__c', true);                   // 법적상태 (PV_GFORM__c) [기본정보]
-            objWrapper.PvFITYPOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_FITYP__c', true);                   // 과세유형 (PV_FITYP__c) 
-            objWrapper.PvKNVKTYPEOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KNVKTYPE__c', true);             // 주문유형 (PV_KNVKTYPE__c)   
-            objWrapper.PvBUSABOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_BUSAB__c', true);                   // 매출형태 (PV_BUSAB__c) [회계정보]
-            objWrapper.PvCESSIOnKZOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_CESSION_KZ__c', true);          // 고객상태 (PV_CESSION_KZ__c)   
-            objWrapper.PvFDGRVOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_FDGRV__c', true);                   // 현금관리그룹 (PV_FDGRV__c)
-            objWrapper.PvTAXKDDOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_TAXKDD__c', true);                 // 세금분류 (PV_TAXKDD__c)
-            objWrapper.PvKATR5Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KATR5__c', true);                   // 세금납부방법 (PV_KATR5__c)
-            objWrapper.PvKVGR3ption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KVGR3__c', true);                    // 납품서유형 (PV_KVGR3__c) [영업정보]
-            objWrapper.PvKVGR2Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KVGR2__c', true);                   // 장려금유형 (PV_KVGR2__c)
-            objWrapper.PvKVGR3BOTOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KVGR3_BOT__c', true);            // 납품서 하단유형 (PV_KVGR3_BOT__c)      
-            objWrapper.PvDSTRHISTREGYNPOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_DSTRHISTREGYN__c', true);  // 유통이력 신고대상 유형 (PV_DSTRHISTREGYN__c)                  
-            objWrapper.PvENTERCOND1Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_ENTERCOND1__c', true);         // 차량 진입조건-1 (PV_ENTERCOND1__c)    
-            objWrapper.PvUNLOADCOND1Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_UNLOADCOND1__c', true);       // 하역조건-1 (PV_UNLOADCOND1__c)
-            objWrapper.PvUNLOADCOND2Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_UNLOADCOND2__c', true);       // 하역조건-2 (PV_UNLOADCOND2__c) 
-            objWrapper.PvTEMPTARGETOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_TEMPTARGET__c', true);         // 온도기록지 제출 대상 여부 (PV_TEMPTARGET__c)  
+           objWrapper.PvGFORMOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_GFORM__c', true);                   // 법적상태 (PV_GFORM__c) [기본정보]
+           objWrapper.PvFITYPOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_FITYP__c', true);                   // 과세유형 (PV_FITYP__c) 
+           objWrapper.PvKNVKTYPEOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KNVKTYPE__c', true);             // 주문유형 (PV_KNVKTYPE__c)   
+           objWrapper.PvBUSABOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_BUSAB__c', true);                   // 매출형태 (PV_BUSAB__c) [회계정보]
+           objWrapper.PvCESSIOnKZOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_CESSION_KZ__c', true);          // 고객상태 (PV_CESSION_KZ__c)   
+           objWrapper.PvFDGRVOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_FDGRV__c', true);                   // 현금관리그룹 (PV_FDGRV__c)
+           objWrapper.PvTAXKDDOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_TAXKDD__c', true);                 // 세금분류 (PV_TAXKDD__c)
+           objWrapper.PvKATR5Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KATR5__c', true);                   // 세금납부방법 (PV_KATR5__c)
+           objWrapper.PvKDGRPOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KDGRP__c', true);                   // 여신관리(고객향) (PV_KDGRP__c) [영업정보]
+           objWrapper.PvKVGR3Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KVGR3__c', true);                    // 납품서유형 (PV_KVGR3__c)
+           objWrapper.PvKVGR2Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KVGR2__c', true);                   // 장려금유형 (PV_KVGR2__c)
+           objWrapper.PvKVGR3BOTOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KVGR3_BOT__c', true);            // 납품서 하단유형 (PV_KVGR3_BOT__c)      
+           objWrapper.PvDSTRHISTREGYNPOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_DSTRHISTREGYN__c', true);  // 유통이력 신고대상 유형 (PV_DSTRHISTREGYN__c)                  
+           objWrapper.PvENTERCOND1Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_ENTERCOND1__c', true);         // 차량 진입조건-1 (PV_ENTERCOND1__c)    
+           objWrapper.PvUNLOADCOND1Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_UNLOADCOND1__c', true);       // 하역조건-1 (PV_UNLOADCOND1__c)
+           objWrapper.PvUNLOADCOND2Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_UNLOADCOND2__c', true);       // 하역조건-2 (PV_UNLOADCOND2__c) 
+           objWrapper.PvTEMPTARGETOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_TEMPTARGET__c', true);         // 온도기록지 제출 대상 여부 (PV_TEMPTARGET__c)  
 
             // Account 코드필드들 MDMReferenceCode__c 조회해서 Id값 알아내기
             Set<String> accCodeSet = new Set<String>();
+            // 지급처, 판매처 코드로 AccountId알아내기
+            Set<String> paymentAccountCodeIdSet = new Set<String>();
+
             for(Account acc :accountList){
                     accCodeSet.add(acc.PV_VKGRP__c);
                     accCodeSet.add(acc.FWReleaseCenter__c);
@@ -483,6 +491,8 @@ public with sharing class CJFW_MDMSalesController {
                     accCodeSet.add(acc.CustomerPath__c);
                     accCodeSet.add(acc.DeliveryGroup__c);
                     accCodeSet.add(acc.ShipmentArea__c);
+                    //지급처
+                    paymentAccountCodeIdSet.add(acc.PaymentAccountCode__c);
             }
 
             List<MDMReferenceCode__c> mdmReferenceCodeList = [SELECT Id, Name, Code__c FROM MDMReferenceCode__c WHERE code__c =: accCodeSet];
@@ -530,8 +540,10 @@ public with sharing class CJFW_MDMSalesController {
                 mdmRequest.PV_STCD1__c                                 = acc?.RepresentativeBirthDate__c;				                                                       
                 mdmRequest.PV_J_1KFTBUS__c                             = acc?.BusinessConditions__c;					                                                           
                 mdmRequest.PV_J_1KFTIND__c                             = acc?.BusinessCategory__c;					                                                           
-                mdmRequest.PV_TELF1__c                                 = acc?.Phone;				                                                       
-                mdmRequest.PV_TELFX__c                                 = acc?.Fax;				                                                       
+                //mdmRequest.PV_TELF1__c                                 = acc?.Phone;				                                                       
+                //mdmRequest.PV_TELFX__c                                 = acc?.Fax;
+                mdmRequest.PV_TELF1__c                                 = addHyphenToPhoneNumber(acc?.Phone);				                                                       
+                mdmRequest.PV_TELFX__c                                 = addHyphenToPhoneNumber(acc?.Fax);				                                                       
                 mdmRequest.PV_VKGRP__c                                 = acc?.PV_VKGRP__c;	                                      // 영업그룹 코드                                                       
                 mdmRequest.PV_VKGRP_lu__c                              = codeToIdMap.get(acc?.PV_VKGRP__c);      	              // 영업그룹 id 
                 mdmRequest.PVRA_VKGRP__c							   = acc?.SalesGroupFromDate__c;					
@@ -623,6 +635,14 @@ public with sharing class CJFW_MDMSalesController {
                 mdmRequest.PV_FDNOTICE__c                              = acc?.InitialDeliveryDescription__c;   
                 mdmRequest.PV_TEMPTARGET__c                            = acc?.PV_TEMPTARGET__c;   
                 mdmRequest.EditRequestDate__c                          = Date.today();
+
+                // //지급처
+                // mdmRequest.PV_PAYCUST__c = getCustomerId(acc?.PaymentAccountCode__c);
+                // mdmRequest.PV_PAYCUST_lu__c = getCustomerId(acc?.PaymentAccountCode__c);
+                // //청구처
+                // mdmRequest.PV_CHARGECUST__c   = getCustomerId(acc?.ShippingAccountCode__c);
+                // mdmRequest.PV_CHARGECUST_lu__c   = getCustomerId(acc?.ShippingAccountCode__c);
+
                 objWrapper.objMDMRegReqCustomer = mdmRequest;
             }
         }catch(Exception e){
@@ -695,6 +715,7 @@ public with sharing class CJFW_MDMSalesController {
                                                 ,  CashManagementGroup__c
                                                 ,  TaxClassification__c
                                                 ,  TaxPaymentMethod__c
+                                                ,  CreditManagement__c
                                                 //, tolabel(DisHisRegType__c) DisHisRegType
                                                 ,  (SELECT Id,  Lastname,  Firstname,  Email,  Phone,  MobilePhone,  Department,  PV_PAFKT_VK__c,  PV_TALKT_VK__c,  PV_KNVKGB__c FROM Contacts) 
                                             FROM Account 
@@ -828,6 +849,7 @@ public with sharing class CJFW_MDMSalesController {
 
                 //영업정보 [E]
                 mdmRequest.PV_KVGR3__c                                 = acc?.StatementOfDeliveryType__c;   
+                mdmRequest.PV_KDGRP__c                                 = acc?.CreditManagement__c; //여신관리(고객향)   
                 mdmRequest.PV_KVGR2__c                                 = acc?.SubsidyType__c;   
                 mdmRequest.PV_KVGR3_BOT__c                             = acc?.StatementOfDeliveryType2__c;   
                 mdmRequest.PV_ODCLOSEGB__c                             = acc?.CustomerOrderDeadlineType__c;  
@@ -849,6 +871,21 @@ public with sharing class CJFW_MDMSalesController {
             system.debug(strMessage);
         }
         return objWrapper;
+    }
+    /**
+    * =======================================================================================================================
+    * @description : 전화번호에 - 하이픈 넣기
+    * 
+    * @params      : X
+    * @return      : `Date`
+    * =======================================================================================================================
+    */
+    @AuraEnabled
+    public static String addHyphenToPhoneNumber(String phoneNumber) {
+        if (phoneNumber != null && phoneNumber.length() == 11) {
+            return phoneNumber.substring(0, 3) + '-' + phoneNumber.substring(3, 7) + '-' + phoneNumber.substring(7, 11);
+        }
+        return phoneNumber;
     }
     /**
     * =======================================================================================================================
@@ -921,7 +958,20 @@ public with sharing class CJFW_MDMSalesController {
     public static List<MDMReferenceCode__c> getManagerNameByCodes(List<String> codes){
         return [SELECT Id, Name, CODE__c  FROM MDMReferenceCode__c WHERE CODE__c IN :codes AND GROUPID__c = 'KNVKGB'];
     }
+    /**
+    * =======================================================================================================================
+    * @description : Account MDM 고객Id 조회
+    * 
+    * @params      : Account Id     
+    * @return      : `Account`
+    * =======================================================================================================================
+    */
+    @AuraEnabled
+    public static String getCustomerId(String accountId) {
+      Account acc = [SELECT Id, CustomerID__c FROM account WHERE Id =:accountId];
 
+      return acc.Id;
+    }
     /**
     * =======================================================================================================================
     * @description : Save 버튼을 클릭 했을 때 호출
@@ -1045,8 +1095,10 @@ public with sharing class CJFW_MDMSalesController {
         @AuraEnabled public List<Map<String,String>> PvTAXKDDOption {get;set;}
         /** @description PickList Field : 세금납부방법 (PV_KATR5__c) : 필수O */
         @AuraEnabled public List<Map<String,String>> PvKATR5Option {get;set;}
-        /** @description PickList Field : 납품서유형 (PV_KVGR3__c) : 필수O [영업정보] */
-        @AuraEnabled public List<Map<String,String>> PvKVGR3ption {get;set;}
+        /** @description PickList Field : 여신관리(고객향) (PV_KDGRP__c) : 필수O [영업정보] */
+        @AuraEnabled public List<Map<String,String>> PvKDGRPOption {get;set;}
+         /** @description PickList Field : 납품서유형 (PV_KVGR3__c) : 필수O  */
+         @AuraEnabled public List<Map<String,String>> PvKVGR3Option {get;set;}
         /** @description PickList Field : 장려금유형 (PV_KVGR2__c) : 필수X */
         @AuraEnabled public List<Map<String,String>> PvKVGR2Option {get;set;}
         /** @description PickList Field : 납품서 하단유형 (PV_KVGR3_BOT__c) : 필수O */

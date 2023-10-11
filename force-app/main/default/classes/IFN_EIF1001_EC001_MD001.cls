@@ -5,6 +5,7 @@
  * @Date : 2023-08-31
  * @Version : 1.0
  * @Description : MMS 메세지 전송
+ *                Salesforce -> 중계서버 -> Comm.one(메세징시스템)
  * @Modified : 
  * ----------------------------------------------
  *  NO | Date       | Modifier       | Description

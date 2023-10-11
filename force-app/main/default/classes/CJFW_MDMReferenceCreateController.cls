@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 09-20-2023
+ * @last modified on  : 10-10-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -49,20 +49,19 @@ public with sharing class CJFW_MDMReferenceCreateController {
         system.debug('doSearch');
 
         if(String.isNotBlank(customerId) || String.isNotBlank(customerName) || String.isNotBlank(managerMA)){
-            String pSearchLike = '';
-
+            
             if(String.isNotBlank(customerId)) {
-                pSearchLike = '%' + customerId + '%';
-                S_WHERE += ' AND CustomerID__c Like : pSearchLike' ;
+                String pSearchCustomerId = '%' + customerId + '%';
+                S_WHERE += ' AND CustomerID__c Like :pSearchCustomerId' ;
             }
             if(String.isNotBlank(customerName)) {
                 system.debug('customerName 잘 들어옵니까 ' + customerName);
-                pSearchLike = '%' + customerName + '%';
-                S_WHERE += ' AND Name Like : pSearchLike' ;
+                String pSearchCustomerName = '%' + customerName + '%';
+                S_WHERE += ' AND Name Like :pSearchCustomerName' ;
             }
             if(String.isNotBlank(managerMA)) {
-                pSearchLike = '%' + managerMA + '%';
-                S_WHERE += ' AND Owner.Name Like : pSearchLike' ;
+                String pSearchManagerMA = '%' + managerMA + '%';
+                S_WHERE += ' AND Owner.Name Like :pSearchManagerMA' ;
             }
         }
 

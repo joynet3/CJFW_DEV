@@ -2,7 +2,7 @@
  * @description       : 관리처-2차 Controller
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 10-05-2023
+ * @last modified on  : 10-11-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -52,7 +52,7 @@ public with sharing class CJFW_MDMManagementSecondaryController {
             objWrapper.PvFDGRVOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_FDGRV__c', true);                   // 현금관리그룹 (PV_FDGRV__c)
             objWrapper.PvTAXKDDOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_TAXKDD__c', true);                 // 세금분류 (PV_TAXKDD__c)
             objWrapper.PvKATR5Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KATR5__c', true);                   // 세금납부방법 (PV_KATR5__c)
-            objWrapper.PvKVGR3ption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KVGR3__c', true);                    // 납품서유형 (PV_KVGR3__c) [영업정보]
+            objWrapper.PvKVGR3Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KVGR3__c', true);                    // 납품서유형 (PV_KVGR3__c) [영업정보]
             objWrapper.PvKVGR2Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KVGR2__c', true);                   // 장려금유형 (PV_KVGR2__c)
             objWrapper.PvKVGR3BOTOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KVGR3_BOT__c', true);            // 납품서 하단유형 (PV_KVGR3_BOT__c)      
             objWrapper.PvDSTRHISTREGYNPOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_DSTRHISTREGYN__c', true);  // 유통이력 신고대상 유형 (PV_DSTRHISTREGYN__c)                  
@@ -249,7 +249,7 @@ public with sharing class CJFW_MDMManagementSecondaryController {
             objWrapper.PvFDGRVOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_FDGRV__c', true);                   // 현금관리그룹 (PV_FDGRV__c)
             objWrapper.PvTAXKDDOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_TAXKDD__c', true);                 // 세금분류 (PV_TAXKDD__c)
             objWrapper.PvKATR5Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KATR5__c', true);                   // 세금납부방법 (PV_KATR5__c)
-            objWrapper.PvKVGR3ption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KVGR3__c', true);                    // 납품서유형 (PV_KVGR3__c) [영업정보]
+            objWrapper.PvKVGR3Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KVGR3__c', true);                    // 납품서유형 (PV_KVGR3__c) [영업정보]
             objWrapper.PvKVGR2Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KVGR2__c', true);                   // 장려금유형 (PV_KVGR2__c)
             objWrapper.PvKVGR3BOTOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KVGR3_BOT__c', true);            // 납품서 하단유형 (PV_KVGR3_BOT__c)      
             objWrapper.PvDSTRHISTREGYNPOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_DSTRHISTREGYN__c', true);  // 유통이력 신고대상 유형 (PV_DSTRHISTREGYN__c)                  
@@ -459,7 +459,7 @@ public with sharing class CJFW_MDMManagementSecondaryController {
             objWrapper.PvFDGRVOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_FDGRV__c', true);                   // 현금관리그룹 (PV_FDGRV__c)
             objWrapper.PvTAXKDDOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_TAXKDD__c', true);                 // 세금분류 (PV_TAXKDD__c)
             objWrapper.PvKATR5Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KATR5__c', true);                   // 세금납부방법 (PV_KATR5__c)
-            objWrapper.PvKVGR3ption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KVGR3__c', true);                    // 납품서유형 (PV_KVGR3__c) [영업정보]
+            objWrapper.PvKVGR3Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KVGR3__c', true);                    // 납품서유형 (PV_KVGR3__c) [영업정보]
             objWrapper.PvKVGR2Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KVGR2__c', true);                   // 장려금유형 (PV_KVGR2__c)
             objWrapper.PvKVGR3BOTOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KVGR3_BOT__c', true);            // 납품서 하단유형 (PV_KVGR3_BOT__c)      
             objWrapper.PvDSTRHISTREGYNPOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_DSTRHISTREGYN__c', true);  // 유통이력 신고대상 유형 (PV_DSTRHISTREGYN__c)                  
@@ -858,6 +858,7 @@ public with sharing class CJFW_MDMManagementSecondaryController {
         }
         return objWrapper;
     }
+
     /**
     * =======================================================================================================================
     * @description : 관리처 화면에 오늘날짜 Setting
@@ -1006,6 +1007,7 @@ public with sharing class CJFW_MDMManagementSecondaryController {
 
                 update objAccount;
             }
+            system.debug('customer.id ' + customer.id);
             return customer.Id;
         }catch(Exception e) {
             Database.rollback(sp);
@@ -1013,6 +1015,7 @@ public with sharing class CJFW_MDMManagementSecondaryController {
             System.debug('=============================> Error Line '+e.getLineNumber());
             return 'error';
         }
+
      
     } 
     /**
@@ -1054,7 +1057,7 @@ public with sharing class CJFW_MDMManagementSecondaryController {
         /** @description PickList Field : 세금납부방법 (PV_KATR5__c) : 필수O */
         @AuraEnabled public List<Map<String,String>> PvKATR5Option {get;set;}
         /** @description PickList Field : 납품서유형 (PV_KVGR3__c) : 필수O [영업정보] */
-        @AuraEnabled public List<Map<String,String>> PvKVGR3ption {get;set;}
+        @AuraEnabled public List<Map<String,String>> PvKVGR3Option {get;set;}
         /** @description PickList Field : 장려금유형 (PV_KVGR2__c) : 필수X */
         @AuraEnabled public List<Map<String,String>> PvKVGR2Option {get;set;}
         /** @description PickList Field : 납품서 하단유형 (PV_KVGR3_BOT__c) : 필수O */

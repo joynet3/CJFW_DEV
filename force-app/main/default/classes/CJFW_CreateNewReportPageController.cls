@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : yeonji.lim@dkbmc.com
  * @group             : 
- * @last modified on  : 10-06-2023
+ * @last modified on  : 10-10-2023
  * @last modified by  : yeonji.lim@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -51,7 +51,12 @@ public with sharing class CJFW_CreateNewReportPageController {
                                 PV_EXISTSUP__c,
                                 ExceptionPrice__c,
                                 OpptyDescription__c,
-                                AttachedDocument__c
+                                AttachedDocument__c,
+                                ContractStartDate__c,
+                                ContractEndDate__c,
+                                ContractType__c,
+                                OtherSupportDetail__c,
+                                ImprovementPlanDetails__c
                         FROM DecisionProcess__c 
                         WHERE Opportunity__c =: OpptyId
                         ORDER BY CreatedDate DESC

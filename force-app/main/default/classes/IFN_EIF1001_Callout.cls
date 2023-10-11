@@ -4,7 +4,7 @@
  * @Author : 김동영
  * @Date : 2023-08-28
  * @Version : 1.0
- * @Description : 알림 - 메세징 시스템 이미지 업로드 Callout 관리
+ * @Description : 알림 - 메세징 시스템 발송 Callout 관리
  * @Modified : 
  * ----------------------------------------------
  *  NO | Date       | Modifier       | Description

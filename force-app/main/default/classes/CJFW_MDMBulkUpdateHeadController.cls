@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 10-05-2023
+ * @last modified on  : 10-10-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkUpdateHeadController {
@@ -54,6 +54,8 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
                 if(String.isBlank(bulkName) == true) {
                     bulkName = nameMaps.get(mdmCustomer[0].PV_KUNNR);
                 }
+
+                mdmRequestbulk.RequestType__c = 'Edit';
                 
                 mdmRequestbulk.Name = bulkName + ' 외 ' + (mdmCustomer.size() -1) + '건';
                 insert mdmRequestbulk;
@@ -86,7 +88,10 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
 
                 insert customerList;
 
+                saveResult.bulkId = mdmRequestbulk.id;
+
             }
+            
         } catch (Exception e) {
             saveResult = new SaveResult('F', e.getMessage() + e.getLineNumber());
         }
@@ -127,6 +132,7 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
     public class SaveResult{
         @AuraEnabled public String status{get;set;}
         @AuraEnabled public String massage{get;set;}
+        @AuraEnabled public String bulkId{get;set;}
 
         // 생성자의 역할은 기본적으로
         // 전역변수(인스턴스변수) 초기화 해주는 역할을함
@@ -134,10 +140,16 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
             this.status = 'S';
             this.massage = '성공 하였습니다.';
         }
-
+        
         public SaveResult(String status, String massage) {
             this.status  = status;
             this.massage = massage;
+        }
+        
+        public SaveResult(String status, String massage, String bulkId) {
+            this.status  = status;
+            this.massage = massage;
+            this.bulkId = bulkId;
         }
     }
 

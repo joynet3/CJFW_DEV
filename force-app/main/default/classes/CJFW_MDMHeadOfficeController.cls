@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 10-06-2023
+ * @last modified on  : 10-10-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -797,6 +797,20 @@ public with sharing class CJFW_MDMHeadOfficeController{
     @AuraEnabled 
     public static List<MDMReferenceCode__c> getManagerNameByCodes(List<String> codes){
         return [SELECT Id, Name, CODE__c  FROM MDMReferenceCode__c WHERE CODE__c IN :codes AND GROUPID__c = 'KNVKGB'];
+    }
+    /**
+    * =======================================================================================================================
+    * @description : Account MDM 고객Id 조회
+    * 
+    * @params      : Account Id     
+    * @return      : `Account`
+    * =======================================================================================================================
+    */
+    @AuraEnabled
+    public static String getCustomerId(String accountId) {
+        Account acc = [SELECT Id, CustomerID__c FROM account WHERE Id =:accountId];
+
+        return acc.Id;
     }
     /**
     * =======================================================================================================================

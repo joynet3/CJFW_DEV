@@ -5,6 +5,7 @@
  * @Date : 2023-08-31
  * @Version : 1.0
  * @Description : KaKao AT 전송
+ *                Salesforce -> 중계서버 -> Comm.one(메시징시스템)
  * @Modified : 
  * ----------------------------------------------
  *  NO | Date       | Modifier       | Description

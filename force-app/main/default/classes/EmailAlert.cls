@@ -16,13 +16,15 @@ public without sharing class EmailAlert implements NotiAlert{
     public EmailAlert() {
 
         if(String.isBlank(orgWideEmailId)) {
+            CJFW_ModuleSetting__c setting = CJFW_ModuleSetting__c.getInstance();
+            
 
             List<OrgWideEmailAddress> oweaList= [ select 
                                             Id
                                             , Address
                                             , DisplayName
                                         from OrgWideEmailAddress  
-                                        //조건문 추가 필요
+                                        where Address = :setting.OrgWideEmail__c
             ];
            
             if(!oweaList.isEmpty()) orgWideEmailId = oweaList[0].Id;                      

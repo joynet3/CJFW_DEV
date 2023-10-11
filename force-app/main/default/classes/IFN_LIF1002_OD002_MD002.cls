@@ -5,6 +5,7 @@
  * @Date : 2023-08-16
  * @Version : 1.0
  * @Description : 주문시스템(샘플신청, 부가서비스신청) 문의 CRM 등록
+ *                주문시스템 -> 중계서버 -> 세일즈포스
  * @Modified : 
  * ----------------------------------------------
  *  NO | Date       | Modifier       | Description

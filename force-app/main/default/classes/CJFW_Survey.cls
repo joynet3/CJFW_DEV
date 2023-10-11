@@ -405,28 +405,48 @@ public with sharing class CJFW_Survey {
                 }when 'time' {
                     this.isTime = true;
                     this.isFromTo = true;
-                }when 'openended'{
-                    // isOpenended = true;
+                }
+                // when 'openended'{
+                //     isOpenended = true;
                     
-                    // // 주관식 Text 타입
+                //     // 주관식 Text 타입
 
-                    // if (textType == 'Text') {
-                    //     isTextType =true; 
-                    //     System.debug('1 Text 확인 '+ isTextType);
+                //     if (textType == 'Text') {
+                //         isTextType =true; 
+                //         System.debug('1 Text 확인 '+ isTextType);
                        
-                    // } else if (textType == 'Number') {
-                    //     isNumberType =true;    
-                    //     System.debug('2 Number 확인 '+ isNumberType);
+                //     } else if (textType == 'Number') {
+                //         isNumberType =true;    
+                //         System.debug('2 Number 확인 '+ isNumberType);
 
-                    // } else if (textType == 'Phone') {
-                    //     isPhoneType =true; 
-                    //     System.debug('3 Phone 확인 '+ isPhoneType);
+                //     } else if (textType == 'Phone') {
+                //         isPhoneType =true; 
+                //         System.debug('3 Phone 확인 '+ isPhoneType);
 
-                    // }else {
-                    //     isEmailType =true;
-                    //     System.debug('4 Email 확인 '+ isEmailType);
+                //     }else {
+                //         isEmailType =true;
+                //         System.debug('4 Email 확인 '+ isEmailType);
 
-                    // }
+                //     }
+                // }
+            }
+            switch on this.textType {
+                when 'Text' {
+                    this.isTextType = true;
+                    System.debug('1 Text 확인 '+ isTextType);
+                }
+                when 'Number' {
+                    this.isNumberType = true;
+                    System.debug('2 Number 확인 '+ isNumberType);
+                }
+                when 'Phone' {
+                    this.isPhoneType = true;
+                    System.debug('3 Phone 확인 '+ isPhoneType);
+                }
+                when 'Email' {
+                    this.isEmailType = true;
+                    System.debug('4 Email 확인 '+ isEmailType);
+
                 }
             }
 

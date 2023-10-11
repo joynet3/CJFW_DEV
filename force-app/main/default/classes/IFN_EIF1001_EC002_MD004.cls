@@ -4,7 +4,8 @@
  * @Author : 김동영
  * @Date : 2023-08-28
  * @Version : 1.0
- * @Description : MMS 이미지 업로드
+ * @Description : 카카오 이미지 업로드
+ *                Salesforce -> 중계서버 -> Comm.one(메시징시스템)
  * @Modified : 
  * ----------------------------------------------
  *  NO | Date       | Modifier       | Description

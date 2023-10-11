@@ -5,6 +5,7 @@
  * @Date : 2023-08-22
  * @Version : 1.0
  * @Description : MMS 메시지 전송 결과 Webhook Callback API
+ *				  Comm.one(메시징시스템) -> 중계서버 -> Salesforce
  * @Modified : 
  * ----------------------------------------------
  *  NO | Date       | Modifier       | Description
