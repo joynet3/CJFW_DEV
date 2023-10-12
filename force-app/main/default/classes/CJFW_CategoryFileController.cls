@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : seol.kim@dkbmc.com
  * @group             : 
- * @last modified on  : 10-10-2023
+ * @last modified on  : 10-11-2023
  * @last modified by  : seol.kim@dkbmc.com
 **/
 public with sharing class CJFW_CategoryFileController {
@@ -120,5 +120,6 @@ public with sharing class CJFW_CategoryFileController {
         delete [SELECT Id FROM ContentDocument WHERE Id = :contentDocumentId];    
         System.debug('test' + [SELECT Id FROM ContentDocument WHERE Id = :contentDocumentId]);   
     }  
+
 
 }

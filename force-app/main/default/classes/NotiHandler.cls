@@ -35,6 +35,7 @@ public virtual without sharing class NotiHandler {
     */
     @testVisible protected Map<String, List<NotiTemplate>> categorySendDataListMap;         //실제 전송할 Template
     @testVisible protected Set<String> recipientIdSet;
+    @testVisible protected Map<String,Object> sendResultMap;                                //전송 상태값
     public static Map<String, String> customNotiTypeIdMap;
 
     public NotiHandler() {
@@ -95,12 +96,14 @@ public virtual without sharing class NotiHandler {
                     notiTemplate.setTitle(template.Title__c);
                     notiTemplate.setLang(template.Language__c);
                     notiTemplate.setTemplateId(customNotiTypeIdMap.get(noti.CustomNotificationTypeId__c));
+                    notiTemplate.setNotiId(noti.Id);
                     ((AppTemplate)notiTemplate).setPageReference(noti.PageReference__c);
                 }
                 when 'Email'{
                     notiTemplate = new NotiEmailTemplate();
                     notiTemplate.setLang(template.Language__c);
                     notiTemplate.setTemplateId(template.EmailDeveloperName__c);
+                    notiTemplate.setNotiId(noti.Id);
                     ((NotiEmailTemplate)notiTemplate).setIsSystem(noti.IsSystemEmail__c);
                     ((NotiEmailTemplate)notiTemplate).setIsUseOWE(noti.IsUseOWE__c);
                     ((NotiEmailTemplate)notiTemplate).setIsSaveAsActivity(noti.IsSaveAsActivity__c);
@@ -311,7 +314,6 @@ public virtual without sharing class NotiHandler {
         NotiEmailTemplate template = langTemplateMap.get(lang);
         if(template == null) template = langTemplateMap.get('ko');
         NotiEmailTemplate cloneTemplateData =  (NotiEmailTemplate) template.cloneTemplate();
-        System.debug(JSON.serializePretty(cloneTemplateData));
         cloneTemplateData.setFieldsMap(fieldsMap);
         cloneTemplateData.setToAddresses(toAddresses);
         cloneTemplateData.setCcAddresses(ccAddresses);
@@ -347,8 +349,8 @@ public virtual without sharing class NotiHandler {
                 fieldsMap.put(field, value);
             }
             Set<String> tmpRecipientIdSet = new Set<String>(this.recipientIdSet);
-            List<NotiTarget> recipientList = recipientListMap.get(targetId);
-            if(recipientList == null) continue;
+            List<NotiTarget> recipientList = recipientListMap?.get(targetId);
+            if(recipientList == null) recipientList = new List<NotiTarget>();
 
             if(categoryTemplateMapMap.containsKey('App')) {
                 for(NotiTarget recipient : recipientList) {
@@ -362,7 +364,8 @@ public virtual without sharing class NotiHandler {
                     User recipient = allUserMap.get(recipientId);
                     if(recipient == null) continue;
                     AppTemplate template = langTemplateMap.get(recipient.LanguageLocaleKey);
-                    AppTemplate cloneTemplateData = template == null ? (AppTemplate) langTemplateMap.get('ko').cloneTemplate() : (AppTemplate) langTemplateMap.get(recipient.LanguageLocaleKey).cloneTemplate();
+                    if(template == null) template = langTemplateMap.get('ko');
+                    AppTemplate cloneTemplateData =  (AppTemplate) template.cloneTemplate();
                     cloneTemplateData.setFieldsMap(fieldsMap);
                     cloneTemplateData.setTitle(cloneTemplateData.setMessage(cloneTemplateData.getTitle()));
                     cloneTemplateData.setBody(cloneTemplateData.setMessage(cloneTemplateData.getBody()));

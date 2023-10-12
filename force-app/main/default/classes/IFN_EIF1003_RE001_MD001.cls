@@ -60,7 +60,8 @@ public class IFN_EIF1003_RE001_MD001 {
         public String message { get; set; }
     }
 
-    //Remember 데이터 response DTO
+    //Remember responseDTO
+//    ---------------------------------------------------------------------------------
     public class Stack {
         public Integer id { get; set; }
         public Card main_card { get; set; }
@@ -122,7 +123,7 @@ public class IFN_EIF1003_RE001_MD001 {
         public Integer total_count { get; set; }
         public Integer total_pages { get; set; }
     }
-
+//--------------------------------------------------------------------------------
     /**
     * RE001RequestDTO url parameter 변환
     * @param request re001 request parameter

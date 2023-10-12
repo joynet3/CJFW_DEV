@@ -6,5 +6,5 @@
 *@since 2023-07-24  생성
 */
 public interface NotiAlert {
-    void send(List<NotiTemplate> sendData);
+    Map<String,Object> send(List<NotiTemplate> sendData);
 }

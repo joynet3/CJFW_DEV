@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : yeonji.lim@dkbmc.com
  * @group             : 
- * @last modified on  : 10-10-2023
+ * @last modified on  : 10-11-2023
  * @last modified by  : yeonji.lim@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -65,8 +65,8 @@ public with sharing class CJFW_CreateNewReportPageController {
 
         saveResult = [SELECT saveResult__c
                         FROM CJFW_ExpectedIncomeExpenses__c 
-                        WHERE Id = 'a1l0w000001MmAMAA0'
-                        // WHERE Opportunity__c =: OpptyId AND IsReportCheck__c = true
+                        // WHERE Id = 'a1l0w000001MmAMAA0'
+                        WHERE Opportunity__c =: OpptyId AND IsReportCheck__c = true
                         LIMIT 1];
 
         saveResultMap = new Map<String,Object>();

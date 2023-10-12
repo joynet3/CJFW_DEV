@@ -9,14 +9,20 @@
 @isTest
 public class CJFW_CategoryFileController_test {
     @isTest
-    static void test1() {
+    static void makeData(){
+        Opportunity opp = new Opportunity();
+        opp.Name = 'test';
+        insert opp;
 
-        ContentVersion contentVersion_1 = new ContentVersion(
-            Title = 'Penguins',
-            PathOnClient = 'Penguins.jpg',
-            VersionData = Blob.valueOf('Test Content')
-            
-          );
-          insert contentVersion_1;
+        ContentDocumentLink cdList = new ContentDocumentLink();
+        cdList.LinkedEntityId = opp.Id;
+        insert cdList;
+
+        Test.startTest();
+        CJFW_CategoryFileController.getFileList('계약 참고자료', opp.Id);
+        Test.stopTest();
+
+        
     }
+
 }

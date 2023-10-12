@@ -13,6 +13,7 @@ public with sharing class NotificationManager {
     @testVisible protected Set<String> targetIdSet;
     @testVisible protected List<sObject> targetSObjectList;
     @testVisible protected Object targetObject;
+    @testVisible protected List<CustomNotificationType> errorCustomNotificationList;
 
     //임시
     public static List<IFMaster__c> logMasters;
@@ -39,7 +40,9 @@ public with sharing class NotificationManager {
 
         for(Notification__c noti : [
             select 
+
                 ClassName__c
+                , Id
                 , IsDynamic__c
                 , Key__c
                 , Description__c
@@ -165,10 +168,16 @@ public with sharing class NotificationManager {
     *
     *@param  key 알림 마스터 데이터 가져올 Unique Key
     */
-    public void execute(String key) {
+    public Map<String,Object> execute(String key) {
+        Map<String,Object> result = new Map<String,Object>();
+        
         Notification__c noti = notiMap.get(key);
 
-        if(noti == null) return;
+        if(noti == null) {
+            result.put('status', 'error');
+            result.put('errMsg', 'Notification does not exist!');
+            return result;
+        }
 
         String className = 'NotiHandler';
         if(noti.IsDynamic__c) {
@@ -177,13 +186,23 @@ public with sharing class NotificationManager {
         NotiHandler notiHandler = (NotiHandler)Type.forName(className).newInstance();
         notiHandler.setNotiData(noti);
         //notiHandler.setUserListMap(recipientListMap);
-        
-         if(instance.targetIdSet != null) notiHandler.execute(instance.targetIdSet, null, null);
-         else if(instance.targetSObjectList != null) notiHandler.execute(null, instance.targetSObjectList, null);
-         else if(instance.targetObject != null ) notiHandler.execute(null, null, instance.targetObject);
+        try {
+            
+            if(instance.targetIdSet != null) notiHandler.execute(instance.targetIdSet, null, null);
+            else if(instance.targetSObjectList != null) notiHandler.execute(null, instance.targetSObjectList, null);
+            else if(instance.targetObject != null ) notiHandler.execute(null, null, instance.targetObject);
+            
+            result.put('status', 'success');
+
+        } catch (Exception e) {
+            result.put('status', 'error');
+            String errMsg = 'ErrorLineNumber: '+ String.valueOf(e.getLineNumber())+' \n ErrorMessage: ' +e.getMessage() +' \n ErrorTypeName: '+e.getTypeName()+' \n ErrorStackTraceString: '+e.getStackTraceString();
+            result.put('errMsg', errMsg);
+        }
 
         instance.resetData();
 
+        return result;
     }
 
     /**
@@ -209,6 +228,35 @@ public with sharing class NotificationManager {
                 objLog.IFMaster__c = logMasters[0]?.Id;
             }
             insert logList;
+
+            sendSaveErrorHistoryNoti(logList);
         }
+    }
+
+    public static void sendSaveErrorHistoryNoti(List<IFLog__c> saveLogList) {
+        if(instance.errorCustomNotificationList == null) {
+            instance.errorCustomNotificationList = [
+                select Id
+                from CustomNotificationType 
+                where DeveloperName = 'ErrorNotification'
+            ];
+        }
+        
+        if(!instance.errorCustomNotificationList.isEmpty()) {
+
+            for(IFLog__c saveLog : saveLogList) {
+                if('ERROR'.equals(saveLog.Status__c)) {
+                    Messaging.CustomNotification notification = new Messaging.CustomNotification();
+                
+                    notification.setTitle('Notification Send Error');
+                    notification.setBody('Go to Eror Log detail page');
+            
+                    notification.setNotificationTypeId(instance.errorCustomNotificationList[0].id);
+                    notification.setTargetId(saveLog.Id);
+                    notification.send(new Set<String>{UserInfo.getUserId()}); 
+                }
+            }
+        }
+
     }
 }

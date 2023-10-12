@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 10-04-2023
+ * @last modified on  : 10-12-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkUpdateInfoListController {
@@ -46,6 +46,7 @@ public with sharing class CJFW_MDMBulkUpdateInfoListController {
                 mdmRequest.PV_STCD1_MOD       =      String.isBlank(mdms[i].PV_STCD1__c) ? null : mdms[i].PV_STCD1__c;
                 mdmRequest.PV_J_1KFTBUS       =      String.isBlank(accList[i].BusinessConditions__c) ? null : accList[i].BusinessConditions__c;
                 mdmRequest.PV_J_1KFTBUS_MOD   =      String.isBlank(mdms[i].PV_J_1KFTBUS__c) ? null : mdms[i].PV_J_1KFTBUS__c;
+                System.debug('mdmRequest => ' + mdmRequest);
                 mdmList.add(mdmRequest);
             }
         }
@@ -65,7 +66,7 @@ public with sharing class CJFW_MDMBulkUpdateInfoListController {
             }
         }
 
-        List<String> headerList = getHeadList(mdmList);
+        List<Integer> headerList = getHeadList(mdmList);
 
         System.debug('result => ' + result);
         System.debug('mdmList => ' + mdmList);
@@ -80,45 +81,47 @@ public with sharing class CJFW_MDMBulkUpdateInfoListController {
     }
 
     /* 헤더 List 얻기 */
-    public static List<String> getHeadList(List<MDMRequest> mdmList) {
+    public static List<Integer> getHeadList(List<MDMRequest> mdmList) {
 
-        List<String> headerList = new List<String>();
-        headerList.add('0');
-        headerList.add('1');
+        List<Integer> headerList = new List<Integer>();
+        headerList.add(0);
+        headerList.add(1);
 
         for(Integer i = 0; i < mdmList.size(); i++) {
-            if(mdmList[i].PV_NAME1 != mdmList[i].PV_NAME1_MOD) {
-                headerList.add('2');
-                headerList.add('3');
+            if(mdmList[i].PV_NAME1 != mdmList[i].PV_NAME1_MOD && mdmList[i].PV_NAME1_MOD != null) {
+                headerList.add(2);
+                headerList.add(3);
             }
             
-            if(mdmList[i].PV_GFORM != mdmList[i].PV_GFORM_MOD) {
-                headerList.add('4');
-                headerList.add('5');
+            if(mdmList[i].PV_GFORM != mdmList[i].PV_GFORM_MOD && mdmList[i].PV_GFORM_MOD != null) {
+                headerList.add(4);
+                headerList.add(5);
             }
     
-            if(mdmList[i].PV_J_1KFREPRE != mdmList[i].PV_J_1KFREPRE_MOD) {
-                headerList.add('6');
-                headerList.add('7');
+            if(mdmList[i].PV_J_1KFREPRE != mdmList[i].PV_J_1KFREPRE_MOD && mdmList[i].PV_J_1KFREPRE_MOD != null) {
+                headerList.add(6);
+                headerList.add(7);
             }
     
-            if(mdmList[i].PV_STCD1 != mdmList[i].PV_STCD1_MOD) {
-                headerList.add('8');
-                headerList.add('9');
+            if(mdmList[i].PV_STCD1 != mdmList[i].PV_STCD1_MOD && mdmList[i].PV_STCD1_MOD != null) {
+                headerList.add(8);
+                headerList.add(9);
             }
     
-            if(mdmList[i].PV_J_1KFTBUS != mdmList[i].PV_J_1KFTBUS_MOD) {
-                headerList.add('10');
-                headerList.add('11');
+            if(mdmList[i].PV_J_1KFTBUS != mdmList[i].PV_J_1KFTBUS_MOD && mdmList[i].PV_J_1KFTBUS_MOD != null) {
+                headerList.add(10);
+                headerList.add(11);
             }
         }
 
-        Set<String> headerSet = new Set<String>(headerList);
+        Set<Integer> headerSet = new Set<Integer>(headerList);
 
-        List<String> newHeaderList = new List<String>(headerSet);
-        
+        List<Integer> newHeaderList = new List<Integer>(headerSet);
+
         newHeaderList.sort();
 
+        System.debug('newHeaderList => ' + newHeaderList);
+        
         return newHeaderList;
 
     }
@@ -127,7 +130,7 @@ public with sharing class CJFW_MDMBulkUpdateInfoListController {
         @AuraEnabled
         public List<MDMRequest> mdmList {get;set;}
         @AuraEnabled
-        public List<String> headerList {get;set;}
+        public List<Integer> headerList {get;set;}
         @AuraEnabled
         public Integer lastPageNumber {get;set;}
 	}

@@ -16,20 +16,46 @@ public without sharing class EmailAlert implements NotiAlert{
     public EmailAlert() {
 
         if(String.isBlank(orgWideEmailId)) {
-            CJFW_ModuleSetting__c setting = CJFW_ModuleSetting__c.getInstance();
-            
+                        
+            String orgWideEmail = getSettingOWE();
 
             List<OrgWideEmailAddress> oweaList= [ select 
                                             Id
                                             , Address
                                             , DisplayName
                                         from OrgWideEmailAddress  
-                                        where Address = :setting.OrgWideEmail__c
+                                        where Address = :orgWideEmail
             ];
            
             if(!oweaList.isEmpty()) orgWideEmailId = oweaList[0].Id;                      
         }
     
+    }
+
+    /**
+    * Custom Setting 에 등록한 오그 전체 이메일 주소 가져오기
+    *
+    */
+   @testVisible private String getSettingOWE() {
+        String orgWideEmail = '';
+
+        CJFW_ModuleSetting__c userSetting = CJFW_ModuleSetting__c.getValues(UserInfo.getUserId());
+        CJFW_ModuleSetting__c profileSetting = CJFW_ModuleSetting__c.getValues(UserInfo.getProfileId());
+        CJFW_ModuleSetting__c orgSetting = CJFW_ModuleSetting__c.getOrgDefaults();
+
+        if(String.isNotBlank(userSetting?.OrgWideEmail__c)) {
+            return orgWideEmail = userSetting?.OrgWideEmail__c;
+        }
+
+        if(String.isNotBlank(profileSetting?.OrgWideEmail__c)) {
+            return orgWideEmail = profileSetting?.OrgWideEmail__c;
+        }
+        
+        if(String.isNotBlank(orgSetting?.OrgWideEmail__c)) {
+            return orgWideEmail = orgSetting?.OrgWideEmail__c;
+        }
+
+        return orgWideEmail;
     }
 
     public void setIsBatch(Boolean isBatch) {
@@ -40,8 +66,8 @@ public without sharing class EmailAlert implements NotiAlert{
     *
     *@param  sendData Email 알림 Template 을 파라미터로 전송
     */
-    public void send(List<NotiTemplate> sendData) {
-
+    public Map<String,Object> send(List<NotiTemplate> sendData) {
+        Map<String,Object> result = new Map<String,Object>();
         List<IFLog__c> objLogList = new List<IFLog__c>();
 
         List<Messaging.SingleEmailMessage> emailList = new List<Messaging.SingleEmailMessage>();
@@ -77,6 +103,7 @@ public without sharing class EmailAlert implements NotiAlert{
 
             if(template == null) {
                 sendDatum.setErrorMsg('[Dont use Email Template] - Template Developer Name:'+sendDatum.getTemplateId());
+                sendDatum.setStatus('FAIL');
                 errorDataList.add(sendDatum);
                 continue;
             }
@@ -158,6 +185,7 @@ public without sharing class EmailAlert implements NotiAlert{
             }
             else {
                 sendDatum.setErrorMsg('[Recipients Limit Exceeded] -'+recipientSizeStr);
+                sendDatum.setStatus('FAIL');
                 errorDataList.add(sendDatum);
             }
             idx++;
@@ -181,6 +209,7 @@ public without sharing class EmailAlert implements NotiAlert{
             Integer i = 0;
             for(Messaging.SendEmailResult sendResult : sendResults) {
                 //System.debug(sendResult.isSuccess());
+                NotiEmailTemplate logTemplate = tmpSendData[mappingIdxMap.get(i)];
                 if(!sendResult.isSuccess()) {
                     Messaging.SendEmailError[] errors = sendResult.getErrors();
                     Set<String> errorMsgSet = new Set<String>();
@@ -193,12 +222,15 @@ public without sharing class EmailAlert implements NotiAlert{
                     }
                     if(!errorMsgSet.isEmpty()) {
                         //TBD 메일 전송 실패 이력 생성
-                        tmpSendData[mappingIdxMap.get(i)].setErrorMsg(JSON.serialize(errorMsgSet)+'\n');
-                        errorList.add(tmpSendData[mappingIdxMap.get(i)]);
+                        
+                        logTemplate.setErrorMsg(JSON.serialize(errorMsgSet)+'\n');
+                        logTemplate.setStatus('FAIL');
+                        errorList.add(logTemplate);
                     }
                 }else {
                     //메일 전송 성공 이력 생성
-                    successList.add(tmpSendData[mappingIdxMap.get(i)]);
+                    logTemplate.setStatus('SUCCESS');
+                    successList.add(logTemplate);
                     
                 }
                 i++;
@@ -215,8 +247,9 @@ public without sharing class EmailAlert implements NotiAlert{
                 errorobjLog.ResultMessage__c = resultDataStr <> null && resultDataStr.length() > 130000 ? resultDataStr.substring(0,130000) : resultDataStr;
                 objLogList.add(errorobjLog);
             }
+
+
         }else{
-            //TBD 한 트랜잭션에 Email Send 호출 수 Limit 보다 클때 트랜잭션 분리를 위해 Batch로 전송
             
             Database.executeBatch(new NotiEmailSendBatch(batchSendData), 50);
         }
@@ -232,10 +265,10 @@ public without sharing class EmailAlert implements NotiAlert{
             objLogList.add(objLog);
         }
 
-        
+        result.put('sendLogList', sendData);
         NotificationManager.saveHistory(objLogList);
         
-
+        return result;
     }
 
    

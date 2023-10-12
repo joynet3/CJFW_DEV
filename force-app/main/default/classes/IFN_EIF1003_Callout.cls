@@ -32,10 +32,6 @@ public with sharing class IFN_EIF1003_Callout {
                     System.debug(' getResponse >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' + params);
                     result = IFN_EIF1003_RE001_MD001(interfaceId, params);
                 }
-                when 'IFN_EIF1003_CL001_MD001' {
-                    System.debug(' getResponse >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' + params);
-                    result = IFN_EIF1003_CL001_MD001(interfaceId, params);
-                }
             }
         } catch (Exception e) {
             result.setResult('E', e.getMessage(), null);
@@ -124,43 +120,6 @@ public with sharing class IFN_EIF1003_Callout {
                 result_code = 'F';
                 result_message = 'Callout Fail';
             }
-        } catch (Exception e) {
-            result_code = 'E';
-            result_message = 'Interface Exception';
-        }
-        result.setResult(
-                result_code
-                , result_message
-                , infResponse
-        );
-        return result;
-    }
-
-    public IFN_CalloutResult IFN_EIF1003_CL001_MD001(String interfaceId, Object params) {
-        IFN_CalloutResult result = new IFN_CalloutResult();
-
-        String responsedata = '';
-        String result_code = 'S';
-        String result_message = 'Callout Success';
-
-        IFN_EIF1003_CL001_MD001.CL001ResultWrapper infResponse = new IFN_EIF1003_CL001_MD001.CL001ResultWrapper();
-        try {
-            System.debug('params >>>>>>>>>>>>>>>>>>>>>>>>>' + params);
-
-            IFN_ApiGateWay gateway = new IFN_ApiGateWay(interfaceId);
-            String requestBody = (String) JSON.deserializeStrict(JSON.serialize(params), String.class);
-
-            HttpResponse response = gateway.webCallout(requestBody, null, true);
-
-            responsedata = response.getBody();
-
-            if (response.getStatusCode() == 200) {
-                infResponse.result = (Map<String, Object>) JSON.deserializeUntyped(responsedata);
-            } else {
-                result_code = 'F';
-                result_message = 'Callout Fail';
-            }
-
         } catch (Exception e) {
             result_code = 'E';
             result_message = 'Interface Exception';

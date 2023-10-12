@@ -34,6 +34,8 @@ public without sharing class DecisionProcessNewController {
      * FS 사용자 여부에 따른 picklist 구분
      */
     @AuraEnabled
+    public String listOwner { get; set; }
+    @AuraEnabled
     public static List<Opportunity> getOwner(Id recordId, Opportunity objOpportunity){
         try {List<Opportunity> listOwner = [SELECT Id, RecordTypeId , RecordType.name , StageName
                                             FROM Opportunity

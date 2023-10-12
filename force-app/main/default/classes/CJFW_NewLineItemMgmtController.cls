@@ -44,8 +44,8 @@ public with sharing class CJFW_NewLineItemMgmtController {
     **/
     @AuraEnabled
     public static Map<String, Object> getLineItem(id recordId, String sObjectName) {
-        System.debug('# LineItemMgmtController # getLineItem ');
-        List<QuoteLineItem> listQuoteLineItem = new List<QuoteLineItem>();
+        System.debug('# CJFW_NewLineItemMgmtController # getLineItem ');
+        List<CJFW_QuoteLineItem__c> listQuoteLineItem = new List<CJFW_QuoteLineItem__c>();
         Quote objQuote = new Quote();
 
         List<OpportunityLineItem> listOpptyLineItem = new List<OpportunityLineItem>();
@@ -53,22 +53,24 @@ public with sharing class CJFW_NewLineItemMgmtController {
         
         if ( sObjectName == 'Quote'){
 
-            listQuoteLineItem = [SELECT    QuoteId, Month__c, LogisticsCenter__c, fm_ProductCode__c, OldBasePurchasePrice__c, BasePurchasePrice__c, Quantity,
-                                           fm_QuantityUnitOfMeasure__c, CountryOfOriginName__c, StorageConditionName__c, Product2.bas_unit_cd__c, 
-                                           Product2.strg_cond_cd__c, TaxTypeName__c, 
-                                           ProfitMargin__c, SortOrder, fm_PriceBookEntryName__c, Product2Id,  
-                                           PricebookEntryId, ListPrice, UnitPrice, UnitPriceWithVAT__c, VAT__c,
+            listQuoteLineItem = [SELECT    QuoteId__c, Month__c, LogisticsCenter__c, ProductCode__c, ProductName__c,
                                            ProductCategoryCode__c, ProductCategoryLName__c, ProductCategoryMName__c,
-                                           UnitConversion__c, ProductWeight__c // 20231006 김도연 : 단위환산, 중량 필드추가
-                                 FROM      QuoteLineItem
-                                 WHERE     QuoteId = :recordId
-                                 ORDER BY  SortOrder
-                                ];
+                                           CountryOfOriginName__c, StorageCondition__c, UnitPrice__c, BasePurchasePrice__c,
+                                           TaxTypeName__c, ProfitMargin__c, Product2Id__c,  
+                                           UnitPriceWithVAT__c, VAT__c,
+                                           UnitConversion__c, ProductWeight__c //단위환산, 중량
+                                        //    Product2Id__r.Name,  Product2Id__r.bas_unit_cd__c, Product2Id__r.strg_cond_cd__c, 
+                                 FROM      CJFW_QuoteLineItem__c
+                                 WHERE     QuoteId__c = :recordId
+                                 ];
+                                 //  ORDER BY  SortOrder
 
             objQuote = [SELECT  Id, Pricebook2Id, Account.CustomerID__c
                         FROM    Quote
                         WHERE   Id = :recordId
                         ];
+
+            System.debug(listQuoteLineItem);
 
         }
         else if ( sObjectName == 'Opportunity' ){

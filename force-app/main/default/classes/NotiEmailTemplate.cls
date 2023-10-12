@@ -107,7 +107,7 @@ public with sharing class NotiEmailTemplate extends NotiTemplate{
         cloneTemplate.setIsUseOWE(this.getIsUseOWE());
         cloneTemplate.setIsSaveAsActivity(this.getIsSaveAsActivity());
         cloneTemplate.setIsTargetObjectId(this.getIsTargetObjectId());
-        
+        cloneTemplate.setNotiId(this.getNotiId());
         return cloneTemplate;
     }
 

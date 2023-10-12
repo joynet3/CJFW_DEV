@@ -1,10 +1,12 @@
 /**
- * @description       : 
+ * @description       : 배송처 관리 (작성 완료시 이메일 발송)
  * @author            : yejoo.lee@dkbmc.com
  * @group             : 
- * @last modified on  : 10-10-2023
+ * @last modified on  : 10-11-2023
  * @last modified by  : yejoo.lee@dkbmc.com
+ * @since 2023-10-11  내용 작성
 **/
+
 public with sharing class CJFW_DeliveryDstMgmtController {
     @AuraEnabled
     public static Map<String,Object> sendEmail(String recordId){
@@ -73,15 +75,16 @@ public with sharing class CJFW_DeliveryDstMgmtController {
             }
             // }
             
-            NotificationManager.getInstance()
-                                // .setTargetSObjectList(target)
-                                // .setTargetObject(target)
-                                .setTargetIdSet(new Set<String>{targetId})
-                                .setRecipientListMap(recipientIdListMap)
-                                .execute('Delivery_Destination_Mail');
-                                // .execute('Delivery_Destination_Noti_Mail');
+            Map<String,Object> emailResult = NotificationManager.getInstance()
+                                                // .setTargetSObjectList(target)
+                                                // .setTargetObject(target)
+                                                .setTargetIdSet(new Set<String>{targetId})
+                                                .setRecipientListMap(recipientIdListMap)
+                                                .execute('Delivery_Destination_Mail');
+                                                // .execute('Delivery_Destination_Noti_Mail');
 
             resultMap.put('STATUS', 'S');
+            resultMap.put('emailResult', emailResult);
 
         } catch (Exception e) {
             resultMap.put('STATUS', 'E');

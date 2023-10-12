@@ -13,8 +13,10 @@ public with sharing class SampleDynamicEmailHandler extends NotiHandler {
         NotiEmailTemplate emailTemplate = new NotiEmailTemplate();
         emailTemplate.setTemplateId('NotiSampleTest'); //Email 일 경우 Developer API 명
         emailTemplate.setFieldsMap(new Map<String, String>{'0'=>multipleName});
-        emailTemplate.setIsTargetObjectId(true);
-        emailTemplate.setToAddresses(new Set<String>{UserInfo.getUserId()});
+        emailTemplate.setToAddresses(new Set<String>{'hyunwook.jin@cj.net'});
+        emailTemplate.setIsUseOWE(true);
+        emailTemplate.setNotiId(noti.Id);
+        //emailTemplate.setIsTargetObjectId(true);
         emailTemplateList.add(emailTemplate);
 
         //발송할 채널별 Email Template Lis 대입

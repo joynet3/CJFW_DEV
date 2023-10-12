@@ -17,7 +17,8 @@ public without sharing class AppAlert implements NotiAlert {
     *
     *@param  sendData App 알림 Template 을 파라미터로 전송
     */
-    public void send(List<NotiTemplate> sendData) {
+    public Map<String,Object> send(List<NotiTemplate> sendData) {
+        Map<String,Object> result = new Map<String,Object>();
         /* 임시 저장 Log */
         List<IFLog__c> objLogList = new List<IFLog__c>();
 
@@ -44,6 +45,7 @@ public without sharing class AppAlert implements NotiAlert {
                 if(isTestException) throw new NullPointerException();
 
                 notification.send(sendDatum.getToAddresses());    
+                sendDatum.setStatus('SUCCESS');
                 successList.add(sendDatum);
                 
             }catch (Exception e) {
@@ -52,6 +54,7 @@ public without sharing class AppAlert implements NotiAlert {
 
                 String errorMsg = 'Messaging.CustomNotification e.getMessage() = ' + e.getMessage() + ' , e.getStackTraceString() = '+e.getStackTraceString() + ', e.getLineNumber() = '+ e.getLineNumber() + ' , e.getTypeName() ' + e.getTypeName() ;
                 sendDatum.setErrorMsg(errorMsg);
+                sendDatum.setStatus('FAIL');
                 errorList.add(sendDatum);
 
             }
@@ -75,7 +78,9 @@ public without sharing class AppAlert implements NotiAlert {
             objLogList.add(errorobjLog);
         }
 
+        result.put('sendLogList', sendData);
         NotificationManager.saveHistory(objLogList);
 
+        return result;
     }
 }

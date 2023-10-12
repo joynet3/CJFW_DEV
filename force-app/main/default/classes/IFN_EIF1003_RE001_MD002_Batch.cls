@@ -10,13 +10,11 @@
  *  NO | Date       | Modifier       | Description
  * ----------------------------------------------
  *  1. | 2023.09.13 | 박지오         | 최초작성
+ *  2. | 2023.10.12 | 박지오         | 레코드타입아이디를 하드코딩에서 오브젝트에서 가져오도록 변경
  * */
 public with sharing class IFN_EIF1003_RE001_MD002_Batch implements Database.Batchable<IFN_EIF1003_RE001_MD001.Stack>, Database.Stateful, Database.AllowsCallouts {
 
-    String interfaceId = 'IFN_EIF1003_RE001_MD002_Batch';
     List<IFN_EIF1003_RE001_MD001.Stack> rememberStacks = new List<IFN_EIF1003_RE001_MD001.Stack>();
-
-//    IFMaster__c ifMasterObj = [SELECT Id, Name, ContentType__c, Endpoint__c, Method__c FROM IFMaster__c WHERE Name = :interfaceId];
 
     public IFN_EIF1003_RE001_MD002_Batch(List<IFN_EIF1003_RE001_MD001.Stack> rememberStacks) {
         this.rememberStacks = rememberStacks;
@@ -38,16 +36,17 @@ public with sharing class IFN_EIF1003_RE001_MD002_Batch implements Database.Batc
     *  내용    : 리멤버 데이터 리드에 등록
     ************************************************************************************************************/
     public void execute(Database.BatchableContext bc, List<IFN_EIF1003_RE001_MD001.Stack> scope) {
-        Map<String, List<IFN_EIF1003_RE001_MD001.Stack>> userStackGroup = new Map<String, List<IFN_EIF1003_RE001_MD001.Stack>>();
         try {
             List <Lead> rememberLeads = new List<Lead>();
             for (IFN_EIF1003_RE001_MD001.Stack stack : scope) {
                 User user;
+                RecordType recordType;
                 try {
-                    user = [SELECT Id, CompanyName, Department, Email FROM User WHERE Email = :stack.main_card.user.email ORDER BY CreatedDate DESC LIMIT 1];
+                    user = [SELECT Id, CompanyName, Department, Email FROM User WHERE Email = :stack.main_card.user.email ORDER BY CreatedDate DESC LIMIT 1];   // 이메일이 중복되는 아이디가 있을시 가장 마지막에 등록된 유저 하나만 가져온다.
+                    recordType = [SELECT Id FROM RecordType WHERE Name = 'RememberLead'ORDER BY CreatedDate DESC LIMIT 1];                                      // RecordType - RememberLead RecordTypeId.
                     Lead rememberLead = new Lead(
                             LastName = stack.main_card.name,
-                            RecordTypeId = '0120w0000022e4uAAA',
+                            RecordTypeId = recordType.Id,
                             Company = stack.main_card.company,
                             MobilePhone = formatPhoneNumber(stack.main_card.mobile.national_number),
                             OwnerId = user.Id

@@ -8,7 +8,7 @@
  * Ver   Date         Author                    Modification
  * 1.0   10-05-2023   joohyeon.jang@dkbmc.com   Initial Version
 **/
-public with sharing class CJFW_MDMManagementSecondaryController {
+public with sharing class CJFW_MDMManagementSecondaryController  {
     /**
     * =======================================================================================================================
     * @description : [1. MDMRegRequestCustomer__c 생성 시]기본값 셋팅(레코드Id, 고객 주문마감 유형코드, 요청자 사원번호 세팅)
@@ -229,7 +229,7 @@ public with sharing class CJFW_MDMManagementSecondaryController {
                         PV_ZUAWA_lu__c, PV_AKONT_lu__c, PV_CUHR1_lu__c, PV_KONDA_lu__c, PV_KVGR1_lu__c, PV_WAERS_lu__c, PV_KVGR3_lu__c,
                         PV_KVGR3_BOT_lu__c, PV_ZTERM_VV_lu__c, PV_OLD_BIZPLACE_NEW_lu__c, PV_DELIGROUP_lu__c, PV_KATR10_lu__c, PV_WAERS__c,
                         PV_PERNR_lu__c, PV_ADMINMA_lu__c, PV_HKUNNR_lu__c, PV_PAYCUST_lu__c, IsSelf_PV_PAYCUST__c, PV_CHARGECUST_lu__c,
-                        IsSelf_PV_CHARGECUST__c, Status__c, WF_DESCRIPTION__c, PV_SELLER_lu__c
+                        IsSelf_PV_CHARGECUST__c, Status__c, WF_DESCRIPTION__c, PV_SELLER_lu__c, DeliveryManagement__c //배송관리처는 MDM에만 일단 생성함
                 FROM    MDMRegRequestCustomer__c
                 WHERE   Id =:mdmCustomerId];
 
@@ -404,6 +404,8 @@ public with sharing class CJFW_MDMManagementSecondaryController {
                                                 ,InitialDeliveryDescription__c
                                                 ,PV_SHIPTYPE__c
                                                 ,PV_TEMPTARGET__c //여기까지 영업기회
+                                                ,IsDeposit__c            //입금여부(FS만 사용)
+                                                ,ContractRocationDate__c //약정회전일
                                                 ,(SELECT id, Name, AccountId, Email, Phone, MobilePhone, Department, PV_PAFKT_VK__c, Gender__c, Fax, OtherInfo__c, OwnerId, PV_KNVKGB__c FROM Contacts)
                                             FROM Account WHERE Id =: accountId LIMIT 1];
 

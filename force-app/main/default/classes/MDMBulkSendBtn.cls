@@ -129,7 +129,11 @@ public without sharing class MDMBulkSendBtn {
                     List<MDMContact> PV_MANAGER_INFO = new List<MDMContact>();
                     List<Contact> listUpdateContact = new List<Contact>();
 
+                    // map에서 id로 담당자 list 꺼내 오기
                     List<MDMRegRequestContact__c> listMDMContact = listMap.get(objTarget.Id);
+
+                    System.debug('===========> Integer : ' + i + ', objTarget : '+ objTarget);
+                    System.debug('===========> listMDMContact : '+ listMDMContact);
 
                     if(listMDMContact <> null && listMDMContact.size() > 0) {
 
@@ -172,7 +176,8 @@ public without sharing class MDMBulkSendBtn {
                     if(response.getStatusCode() == 200) {
                         IF_MDM_SFDC_RES_ACCOUNT.Item objResponse = (IF_MDM_SFDC_RES_ACCOUNT.Item)JSON.deserialize(responseBody,  IF_MDM_SFDC_RES_ACCOUNT.Item.class);
     
-                        System.debug('=================> objResponse : '+JSON.serialize(objResponse));
+                        System.debug('=================> objResponse1 : '+ objResponse);
+                        System.debug('=================> objResponse2 : '+ JSON.serialize(objResponse));
     
                         if(objResponse.err_cd == 'S') {
                             MDMRegRequestCustomer__c objUpdateTarget = new MDMRegRequestCustomer__c();

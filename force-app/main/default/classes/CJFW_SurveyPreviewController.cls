@@ -34,7 +34,7 @@ public with sharing class CJFW_SurveyPreviewController {
         Set<String> responseId = new Set<String>();
 
         List<CJFW_SurveyResponse__c> responseList = [
-            SELECT Id, OwnerId, Name, Survey__c, Lead__c,Lead__r.Name, Account__c,Account__r.Name, Opportunity__c,Opportunity__r.Name,CreatedDate
+            SELECT Id, OwnerId, Name, Survey__c, Lead__c,Lead__r.Name, Account__c,Account__r.Name, Opportunity__c,Opportunity__r.Account.name,CreatedDate
             FROM CJFW_SurveyResponse__c
             WHERE Id = :recordId
         ];
@@ -122,10 +122,10 @@ public with sharing class CJFW_SurveyPreviewController {
                 createdDate = res.CreatedDate.format('yyyy년 MM월 dd일');
                 if (res.Account__c != null) {
                     customerName = res.Account__r.Name;
-                }else if (res.Account__c == null || res.Lead__c != null ) {
+                }else if (res.Account__c == null && res.Lead__c != null ) {
                     customerName = res.Lead__r.Name;
-                }else if (res.Account__c == null || res.Lead__c == null ||res.Opportunity__c !=null ) {
-                    customerName = res.Opportunity__r.Name;
+                }else if (res.Account__c == null && res.Lead__c == null &&res.Opportunity__c !=null ) {
+                    customerName = res.Opportunity__r.Account.Name;
                 }
                  
             }

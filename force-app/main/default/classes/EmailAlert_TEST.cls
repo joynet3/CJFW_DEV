@@ -158,4 +158,43 @@ public with sharing class EmailAlert_TEST {
 
         test.stopTest();
     }
+
+    @isTest
+    static void getSettingOWEByUser_TEST() {
+        test.startTest();
+        CJFW_ModuleSetting__c userSetting = CJFW_ModuleSetting__c.getValues(UserInfo.getUserId());
+        userSetting.OrgWideEmail__c = 'test@test.com';
+        upsert userSetting;
+
+        EmailAlert alert = new EmailAlert();
+
+        test.stopTest();
+    }
+
+    @isTest
+    static void getSettingOWEByProfile_TEST() {
+        test.startTest();
+
+        CJFW_ModuleSetting__c profileSetting = new CJFW_ModuleSetting__c();
+        profileSetting.OrgWideEmail__c = 'test@test.com';
+        profileSetting.Name = 'CustomSettingName (Profile)';
+        profileSetting.SetupOwnerId = UserInfo.getProfileId();
+        insert profileSetting;
+
+        EmailAlert alert = new EmailAlert();
+
+        test.stopTest();
+    }
+
+    @isTest
+    static void getSettingOWEByOrg_TEST() {
+        test.startTest();
+        CJFW_ModuleSetting__c orgSetting = new CJFW_ModuleSetting__c();
+        orgSetting.OrgWideEmail__c = 'test@test.com';
+        orgSetting.SetupOwnerId = UserInfo.getOrganizationId();
+        insert orgSetting;
+
+        EmailAlert alert = new EmailAlert();
+        test.stopTest();
+    }
 }

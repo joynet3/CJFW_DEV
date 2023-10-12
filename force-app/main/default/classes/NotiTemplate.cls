@@ -16,6 +16,8 @@ public virtual with sharing class NotiTemplate {
     @TestVisible protected String lang;                   //언어
     @TestVisible protected Map<String, String> fieldsMap; //key: 필드, value: 값 > 개인화할떄 필요한 값
     @TestVisible protected String errorMsg;
+    @TestVisible protected String notiId;
+    @TestVisible protected String status;                 //SUCCESS, FAIL
     
     //@TestVisible private String pageReference;
 
@@ -95,6 +97,22 @@ public virtual with sharing class NotiTemplate {
         this.templateId = templateId;
     }
 
+    public String getNotiId() {
+        return this.notiId;
+    }
+
+    public void setNotiId(String notiId) {
+        this.notiId = notiId;
+    }
+
+    public String getStatus() {
+        return this.status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     /**
     * template 데이터 clone 자식에서 이 기능 사용하려면 override 필수
     *
@@ -111,7 +129,7 @@ public virtual with sharing class NotiTemplate {
         cloneTemplate.setLang(this.getLang());
         cloneTemplate.setErrorMsg(this.getErrorMsg());
         cloneTemplate.setFieldsMap(this.getFieldsMap());
-        
+        cloneTemplate.setNotiId(this.getNotiId());
         return cloneTemplate;
     }
 
