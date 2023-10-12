@@ -60,9 +60,12 @@ public class IFN_LIF1002_SE001_MD001 {
      */
     public class SE001RequstWrapper{
         public String searchSp {get;set;}
+        public String keywd_sp {get;set;}
         public String keywd    {get;set;}
         public String limitCnt    {get;set;}
         public String offset   {get;set;}
+        public String order   {get;set;}
+        public String order_mt   {get;set;}
     }
 
 
