@@ -26,6 +26,9 @@ public class IFN_LIF1002_SE001_MD001 {
 
         this.logWrap = new IFN_CommonLog.logWrap(this.interfaceId, 'Real');
         this.commlog = new IFN_CommonLog();
+
+
+        
       
         try {
             
@@ -62,8 +65,8 @@ public class IFN_LIF1002_SE001_MD001 {
         public String searchSp {get;set;}
         public String keywd_sp {get;set;}
         public String keywd    {get;set;}
-        public String limitCnt    {get;set;}
-        public String offset   {get;set;}
+        public String pageSize    {get;set;}
+        public String page   {get;set;}
         public String order   {get;set;}
         public String order_mt   {get;set;}
     }

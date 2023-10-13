@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : doyeon.kim@dkbmc.com
  * @group             : 
- * @last modified on  : 10-06-2023
+ * @last modified on  : 10-13-2023
  * @last modified by  : yejoo.lee@dkbmc.com
 **/
 public with sharing class CJFW_DeliveryDstMgmtTriggerHandler extends TriggerHandler{
@@ -19,7 +19,7 @@ public with sharing class CJFW_DeliveryDstMgmtTriggerHandler extends TriggerHand
     private Map<Id, CJFW_DeliveryDestinationMgmt__c> mapOld { get; set; }
 
     public override void beforeUpdate() {
-        //doCheckCompleted();
+        // doCheckCompleted();
     }
     
     public override void beforeDelete() {
@@ -35,10 +35,9 @@ public with sharing class CJFW_DeliveryDstMgmtTriggerHandler extends TriggerHand
 
         for (CJFW_DeliveryDestinationMgmt__c oldDelivery : listOld) {
             // if (oldDelivery.Completed__c == true) {
-            if (oldDelivery.LastActivityDate != null) {
+            if (oldDelivery.LastActivityDate != null && oldDelivery.Completed__c == true) {
                 oldDelivery.addError('배송처 작성완료 처리 후 삭제는 불가합니다.');
             }
-            
         }
     }
 }

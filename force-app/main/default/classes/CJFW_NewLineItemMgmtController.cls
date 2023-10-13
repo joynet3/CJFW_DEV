@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : doyeon.kim@dkbmc.com
  * @group             : 
- * @last modified on  : 10-11-2023
+ * @last modified on  : 10-13-2023
  * @last modified by  : doyeon.kim@dkbmc.com
 **/
 public with sharing class CJFW_NewLineItemMgmtController {
@@ -56,14 +56,14 @@ public with sharing class CJFW_NewLineItemMgmtController {
             listQuoteLineItem = [SELECT    QuoteId__c, Month__c, LogisticsCenter__c, ProductCode__c, ProductName__c,
                                            ProductCategoryCode__c, ProductCategoryLName__c, ProductCategoryMName__c,
                                            CountryOfOriginName__c, StorageCondition__c, UnitPrice__c, BasePurchasePrice__c,
-                                           TaxTypeName__c, ProfitMargin__c, Product2Id__c,  
-                                           UnitPriceWithVAT__c, VAT__c,
+                                           TaxTypeName__c, ProfitMargin__c, Product2Id__c, QuantityUnitOfMeasure__c,
+                                           UnitPriceWithVAT__c, VAT__c, SortOrder__c,
                                            UnitConversion__c, ProductWeight__c //단위환산, 중량
                                         //    Product2Id__r.Name,  Product2Id__r.bas_unit_cd__c, Product2Id__r.strg_cond_cd__c, 
                                  FROM      CJFW_QuoteLineItem__c
                                  WHERE     QuoteId__c = :recordId
+                                 ORDER BY  SortOrder__c
                                  ];
-                                 //  ORDER BY  SortOrder
 
             objQuote = [SELECT  Id, Pricebook2Id, Account.CustomerID__c
                         FROM    Quote
@@ -540,8 +540,8 @@ public with sharing class CJFW_NewLineItemMgmtController {
      * @param  listChunk : 생성 또는 삭제 대상
     **/    
     @AuraEnabled
-    public static void doChunkQuote(String chunkType, List<QuoteLineItem> listChunk) {
-        System.debug('# LineItemMgmtController # doChunkQuote ');
+    public static void doChunkQuote(String chunkType, List<CJFW_QuoteLineItem__c> listChunk) {
+        System.debug('#New LineItemMgmtController # doChunkQuote ');
         try {
             if ( chunkType == 'Delete'){
                 if( !listChunk.isEmpty()){
@@ -550,8 +550,8 @@ public with sharing class CJFW_NewLineItemMgmtController {
             }
             else if (chunkType == 'Insert') {
                 if( !listChunk.isEmpty()){
-                    for ( QuoteLineItem objInsertTarget : listChunk){
-                        objInsertTarget.SortOrder = integer.valueOf(objInsertTarget.SortOrder);
+                    for ( CJFW_QuoteLineItem__c objInsertTarget : listChunk){
+                        objInsertTarget.SortOrder__c = integer.valueOf(objInsertTarget.SortOrder__c);
                     }
                     insert listChunk;
                 }

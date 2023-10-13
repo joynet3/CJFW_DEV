@@ -174,7 +174,7 @@ public with sharing class NotificationManager {
         Notification__c noti = notiMap.get(key);
 
         if(noti == null) {
-            result.put('status', 'error');
+            result.put('notiHandlerstatus', 'error');
             result.put('errMsg', 'Notification does not exist!');
             return result;
         }
@@ -186,19 +186,21 @@ public with sharing class NotificationManager {
         NotiHandler notiHandler = (NotiHandler)Type.forName(className).newInstance();
         notiHandler.setNotiData(noti);
         //notiHandler.setUserListMap(recipientListMap);
+        
         try {
             
             if(instance.targetIdSet != null) notiHandler.execute(instance.targetIdSet, null, null);
             else if(instance.targetSObjectList != null) notiHandler.execute(null, instance.targetSObjectList, null);
             else if(instance.targetObject != null ) notiHandler.execute(null, null, instance.targetObject);
             
-            result.put('status', 'success');
+            result.put('notiHandlerstatus', 'SUCCESS');
 
         } catch (Exception e) {
-            result.put('status', 'error');
+            result.put('status', 'ERROR');
             String errMsg = 'ErrorLineNumber: '+ String.valueOf(e.getLineNumber())+' \n ErrorMessage: ' +e.getMessage() +' \n ErrorTypeName: '+e.getTypeName()+' \n ErrorStackTraceString: '+e.getStackTraceString();
             result.put('errMsg', errMsg);
         }
+        result.put('sendInfo', notiHandler.getSendResultMap());
 
         instance.resetData();
 
@@ -229,10 +231,11 @@ public with sharing class NotificationManager {
             }
             insert logList;
 
-            sendSaveErrorHistoryNoti(logList);
+            //sendSaveErrorHistoryNoti(logList); 개발환경 테스트용 
         }
     }
 
+    /* 개발환경 테스트용 
     public static void sendSaveErrorHistoryNoti(List<IFLog__c> saveLogList) {
         if(instance.errorCustomNotificationList == null) {
             instance.errorCustomNotificationList = [
@@ -258,5 +261,5 @@ public with sharing class NotificationManager {
             }
         }
 
-    }
+    }*/
 }

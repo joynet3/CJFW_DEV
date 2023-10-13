@@ -67,12 +67,13 @@ private class DecisionProcessNewController_test {
             objDecisionProcess.Type__c = 'CRM004';
             objDecisionProcess.Opportunity__c = objOpportunity.Id;
 
-            PageReference pageRef = Page.ESM_RiskCheck;
+            PageReference pageRef = Page.ESM_ProposalApproval;
             Test.setCurrentPage(pageRef);
             ApexPages.currentPage().getParameters().put('Id', objOpportunity.Id);
 
             Test.setMock(HttpCalloutMock.class, new HttpCalloutSuccessMock());
 
+            DecisionProcessNewController.getOwner(objOpportunity.Id, objOpportunity);
             DecisionProcessNewController.getInitData();
             DecisionProcessNewController.doCheckOpenApproval(objOpportunity.Id, objDecisionProcess.Type__c);
             DecisionProcessNewController.doSave(objOpportunity.Id, objDecisionProcess);
@@ -102,12 +103,13 @@ private class DecisionProcessNewController_test {
             objDecisionProcess.Type__c = 'CRM005';
             objDecisionProcess.Opportunity__c = objOpportunity.Id;
 
-            PageReference pageRef = Page.ESM_SealUse;
+            PageReference pageRef = Page.ESM_OpenApproval;
             Test.setCurrentPage(pageRef);
             ApexPages.currentPage().getParameters().put('Id', objOpportunity.Id);
 
             Test.setMock(HttpCalloutMock.class, new HttpCalloutSuccessMock2());
 
+            DecisionProcessNewController.getOwner(objOpportunity.Id, objOpportunity);
             DecisionProcessNewController.getInitData();
             DecisionProcessNewController.doCheckOpenApproval(objOpportunity.Id, objDecisionProcess.Type__c);
             DecisionProcessNewController.doSave(objOpportunity.Id, objDecisionProcess);
@@ -126,7 +128,7 @@ private class DecisionProcessNewController_test {
             Opportunity objOpportunity = [SELECT Id FROM Opportunity LIMIT 1];
 
             DecisionProcess__c objDecisionProcess = new DecisionProcess__c();
-            objDecisionProcess.Name = '제안 품의';
+            objDecisionProcess.Name = '(급식/헬씨) 신규개설 및 재계약';
             objDecisionProcess.DocStatus__c = '임시저장';
             objDecisionProcess.DocId__c = '046B9F0DC91A';
             objDecisionProcess.totalLineCount__c = 2;
@@ -135,15 +137,53 @@ private class DecisionProcessNewController_test {
             objDecisionProcess.approvedUserType__c = '기안자';
             objDecisionProcess.approvedUserCode__c = '1000000245';
             objDecisionProcess.approvedDate__c = '"2023-01-20 16:01:54';
-            objDecisionProcess.Type__c = 'CRM005';
+            objDecisionProcess.Type__c = 'CRM006';
             objDecisionProcess.Opportunity__c = objOpportunity.Id;
 
-            PageReference pageRef = Page.ESM_OpenApproval;
+            PageReference pageRef = Page.CJFW_CreateNewReport;
             Test.setCurrentPage(pageRef);
             ApexPages.currentPage().getParameters().put('Id', objOpportunity.Id);
 
             Test.setMock(HttpCalloutMock.class, new HttpCalloutSuccessMock());
 
+            DecisionProcessNewController.getOwner(objOpportunity.Id, objOpportunity);
+            DecisionProcessNewController.getInitData();
+            DecisionProcessNewController.doCheckOpenApproval(objOpportunity.Id, objDecisionProcess.Type__c);
+            DecisionProcessNewController.doSave(objOpportunity.Id, objDecisionProcess);
+
+        } catch (Exception e) {
+            system.debug('DecisionProcessNewController_test  error : ' + e.getMessage() + ' (Line : ' + e.getLineNumber() + ')');
+        }
+        test.stopTest(); 
+    }
+
+    @IsTest
+    static void DecisionProcessNewController_test4() {
+        test.startTest();
+
+        try {
+            Opportunity objOpportunity = [SELECT Id FROM Opportunity LIMIT 1];
+
+            DecisionProcess__c objDecisionProcess = new DecisionProcess__c();
+            objDecisionProcess.Name = 'Risk 점검 의뢰서';
+            objDecisionProcess.DocStatus__c = '임시저장';
+            objDecisionProcess.DocId__c = '046B9F0DC91A';
+            objDecisionProcess.totalLineCount__c = 2;
+            objDecisionProcess.approvedCount__c = 1;
+            objDecisionProcess.approvedUserName__c = '김성진님';
+            objDecisionProcess.approvedUserType__c = '기안자';
+            objDecisionProcess.approvedUserCode__c = '1000000245';
+            objDecisionProcess.approvedDate__c = '"2023-01-20 16:01:54';
+            objDecisionProcess.Type__c = 'CRM001';
+            objDecisionProcess.Opportunity__c = objOpportunity.Id;
+
+            PageReference pageRef = Page.ESM_RiskCheck;
+            Test.setCurrentPage(pageRef);
+            ApexPages.currentPage().getParameters().put('Id', objOpportunity.Id);
+
+            Test.setMock(HttpCalloutMock.class, new HttpCalloutSuccessMock());
+
+            DecisionProcessNewController.getOwner(objOpportunity.Id, objOpportunity);
             DecisionProcessNewController.getInitData();
             DecisionProcessNewController.doCheckOpenApproval(objOpportunity.Id, objDecisionProcess.Type__c);
             DecisionProcessNewController.doSave(objOpportunity.Id, objDecisionProcess);

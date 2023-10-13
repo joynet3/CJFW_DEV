@@ -2,7 +2,7 @@
  * @description       : Oppty 품의서 작성화면 관련 Controller ( LWC(cjfwCreateNewReport) 연결 )
  * @author            : yeonji.lim@dkbmc.com
  * @group             : 
- * @last modified on  : 10-10-2023
+ * @last modified on  : 10-12-2023
  * @last modified by  : yeonji.lim@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -84,6 +84,7 @@ public class CJFW_CreateNewReportController {
             decPro.RepresentativePhone__c = (String)saveData.get('RepresentativePhone__c'); //연락처
             decPro.PV_EXISTSUP__c = (String)saveData.get('PV_EXISTSUP__c');  // 기존납품처
             decPro.ExceptionPrice__c = String.isNotBlank((String)saveData.get('ExceptionPrice__c')) ? Decimal.valueOf((String)saveData.get('ExceptionPrice__c')) : 0.0; //단가/예외가 -> currency
+            decPro.Center__c = (String)saveData.get('Center__c'); //센터
             decPro.ContractStartDate__c = String.isNotBlank((String)saveData.get('ContractStartDate__c')) ? Date.valueOf((String)saveData.get('ContractStartDate__c')) : null;  //계약 시작기간
             decPro.ContractEndDate__c = String.isNotBlank((String)saveData.get('ContractEndDate__c')) ? Date.valueOf((String)saveData.get('ContractEndDate__c')) : null;    //계약 종료기간
             decPro.ContractType__c = (String)saveData.get('ContractType__c');  //계약서 종류

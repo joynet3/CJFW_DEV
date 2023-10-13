@@ -55,8 +55,8 @@ public with sharing class IFN_LIF1002_SE001_MD001_TEST {
         String interfaceId = 'IFN_LIF1002_SE001_MD001';
         params.searchSp = '05';
         params.keywd = '우유';
-        params.offset = '1';
-        params.limitCnt = '3';
+        params.page = '1';
+        params.pageSize = '3';
         IFN_LIF1002_SE001_MD001.SE001_01ResultWrapper res = cont.callout( params);
 
         

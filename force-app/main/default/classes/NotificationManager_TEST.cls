@@ -270,4 +270,11 @@ public with sharing class NotificationManager_TEST {
                             })
                             .execute('Sample_Noti_Email');
     }
+
+    @isTest
+    static void execute_Fail(){
+        NotificationManager.getInstance()
+                            .setTargetIdSet(new Set<String>{UserInfo.getUserId()})
+                            .execute('SampleErrorCase');
+    }
 }

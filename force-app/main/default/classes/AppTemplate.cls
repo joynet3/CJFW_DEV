@@ -33,7 +33,7 @@ public with sharing class AppTemplate extends NotiTemplate{
         cloneTemplate.setLang(this.getLang());
         cloneTemplate.setErrorMsg(this.getErrorMsg());
         cloneTemplate.setFieldsMap(this.getFieldsMap());
-        
+        cloneTemplate.setNotiId(this.getNotiId());
         return cloneTemplate;
     }
 

@@ -2,8 +2,8 @@
  * @description       : 
  * @author            : ChangeMeIn@UserSettingsUnder.SFDoc
  * @group             : 
- * @last modified on  : 03-08-2023
- * @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+ * @last modified on  : 10-12-2023
+ * @last modified by  : joohyeon.jang@dkbmc.com
 **/
 public without sharing class EDMSFileUpload {
     /**
@@ -29,6 +29,7 @@ public without sharing class EDMSFileUpload {
 
             objWrapper.listSelectType = listSelectType;
 
+            system.debug('listSelectType ' + JSON.serialize(listSelectType));
             /*
             List<EDMSFile__c> listEMDSFile = new List<EDMSFile__c>();
 

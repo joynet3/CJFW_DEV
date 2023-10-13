@@ -405,8 +405,9 @@ public with sharing class CJFW_Survey {
                 }when 'time' {
                     this.isTime = true;
                     this.isFromTo = true;
-                }when 'openended'{
-                    isOpenended = true;
+                }
+                when 'openended'{
+                    this.isOpenended = true;
                     
                     // 주관식 Text 타입
 
@@ -420,12 +421,10 @@ public with sharing class CJFW_Survey {
 
                     } else if (textType == 'Phone') {
                         isPhoneType =true; 
-                        
 
-                    }else {
+                    }else if (textType =='Email') {
                         isEmailType =true;
-                       
-                    }
+                    } 
                     System.debug('1 Text 확인 '+ isTextType);
                     System.debug('2 Number 확인 '+ isNumberType);
                     System.debug('3 Phone 확인 '+ isPhoneType);
@@ -438,17 +437,15 @@ public with sharing class CJFW_Survey {
             //     when 'Text' {
             //         this.isTextType = true;
             //         System.debug('1 Text 확인 '+ isTextType);
-            //         break;
+                   
             //     }
             //     when 'Number' {
             //         this.isNumberType = true;
             //         System.debug('2 Number 확인 '+ isNumberType);
-            //         break;
             //     }
             //     when 'Phone' {
             //         this.isPhoneType = true;
             //         System.debug('3 Phone 확인 '+ isPhoneType);
-            //         break;
             //     }
             //     when 'Email' {
             //         this.isEmailType = true;

@@ -34,10 +34,8 @@ public without sharing class DecisionProcessNewController {
      * FS 사용자 여부에 따른 picklist 구분
      */
     @AuraEnabled
-    public String listOwner { get; set; }
-    @AuraEnabled
     public static List<Opportunity> getOwner(Id recordId, Opportunity objOpportunity){
-        try {List<Opportunity> listOwner = [SELECT Id, RecordTypeId , RecordType.name , StageName
+        try {List<Opportunity> listOwner = [SELECT Id, RecordType.name , StageName
                                             FROM Opportunity
                                             WHERE Id=:recordId];
             
@@ -228,43 +226,43 @@ public without sharing class DecisionProcessNewController {
     }
 
     
-    @Future(Callout=true)
-    public static void doDelete(String docId) {
+    // @Future(Callout=true)
+    // public static void doDelete(String docId) {
 
-        try {
-            User objUser = [
-                SELECT  Id, EmployeeNumber
-                FROM    User
-                WHERE   Id =: UserInfo.getUserId()
-            ];
+    //     try {
+    //         User objUser = [
+    //             SELECT  Id, EmployeeNumber
+    //             FROM    User
+    //             WHERE   Id =: UserInfo.getUserId()
+    //         ];
 
-            // I/F 파라미터 셋팅
-            Map<String, Object> mapInput = new Map<String, Object>();
+    //         // I/F 파라미터 셋팅
+    //         Map<String, Object> mapInput = new Map<String, Object>();
                             
-            mapInput.put('doc_Id', docId);
-            mapInput.put('sabun', objUser.EmployeeNumber);
+    //         mapInput.put('doc_Id', docId);
+    //         mapInput.put('sabun', objUser.EmployeeNumber);
 
-            IFUtil ifutilWrapper = new IFUtil('IF_SFDC_IFRESH_DEL_APPROVAL');
+    //         IFUtil ifutilWrapper = new IFUtil('IF_SFDC_IFRESH_DEL_APPROVAL');
 
-            // I/F 진행
-            System.debug(' check Input ::: ' + mapInput);
-            String strJsonRequestBody = JSON.serialize(mapInput);
-            HttpResponse response = ifutilWrapper.webCallout(strJsonRequestBody, true);
-            system.debug( 'check Output ::: ' + response.getBody() );
+    //         // I/F 진행
+    //         System.debug(' check Input ::: ' + mapInput);
+    //         String strJsonRequestBody = JSON.serialize(mapInput);
+    //         HttpResponse response = ifutilWrapper.webCallout(strJsonRequestBody, true);
+    //         system.debug( 'check Output ::: ' + response.getBody() );
 
-            // I/F 성공시
-            if(response.getStatusCode() == 200){
-                Map<String, Object> resultMap = (Map<String, Object>) JSON.deserializeUntyped(response.getBody());  
-                System.debug('성공');
-            } else {
-                system.debug( '[I/F Error] ::: [' + response.getStatusCode() + '] 서버접속 실패');
-            }
+    //         // I/F 성공시
+    //         if(response.getStatusCode() == 200){
+    //             Map<String, Object> resultMap = (Map<String, Object>) JSON.deserializeUntyped(response.getBody());  
+    //             System.debug('성공');
+    //         } else {
+    //             system.debug( '[I/F Error] ::: [' + response.getStatusCode() + '] 서버접속 실패');
+    //         }
 
-        } catch(Exception e) {
-            System.debug('error getMessage : ' + e.getMessage());
-            System.debug('error getLineNumber : ' + e.getLineNumber());
-            System.debug('error getCause : ' + e.getCause());
-        }
-    }
+    //     } catch(Exception e) {
+    //         System.debug('error getMessage : ' + e.getMessage());
+    //         System.debug('error getLineNumber : ' + e.getLineNumber());
+    //         System.debug('error getCause : ' + e.getCause());
+    //     }
+    // }
 
 }

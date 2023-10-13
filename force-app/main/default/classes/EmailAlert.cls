@@ -265,7 +265,9 @@ public without sharing class EmailAlert implements NotiAlert{
             objLogList.add(objLog);
         }
 
-        result.put('sendLogList', sendData);
+        result.put('sendLogList', 
+           JSON.deserializeUntyped(JSON.serialize(sendData))
+        );
         NotificationManager.saveHistory(objLogList);
         
         return result;

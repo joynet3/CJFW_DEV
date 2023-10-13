@@ -2,7 +2,7 @@
  * @description       : 배송처 관리 (작성 완료시 이메일 발송)
  * @author            : yejoo.lee@dkbmc.com
  * @group             : 
- * @last modified on  : 10-11-2023
+ * @last modified on  : 10-13-2023
  * @last modified by  : yejoo.lee@dkbmc.com
  * @since 2023-10-11  내용 작성
 **/
@@ -100,28 +100,32 @@ public with sharing class CJFW_DeliveryDstMgmtController {
      * 작성완료 시 Completed__c true 변경
      */
     @AuraEnabled
-    public static void changeCompleted(String recordId){
-        System.debug('check recordId ' + recordId);
+    public static Map<String,Object> changeCompleted(String recordId){
 
+        Map<String,Object> resultMap = new  Map<String,Object>();
         List<CJFW_DeliveryDestinationMgmt__c> updateDelivery = new List<CJFW_DeliveryDestinationMgmt__c>();
 
         try {
             List<CJFW_DeliveryDestinationMgmt__c> deliveryList = [SELECT Id, Name, Completed__c
                                                                 FROM CJFW_DeliveryDestinationMgmt__c
                                                                 WHERE Id =: recordId];
-            System.debug('deliveryList => ' + deliveryList);
 
             for (CJFW_DeliveryDestinationMgmt__c delivery : deliveryList) {
                 delivery.Completed__c = true;
                 updateDelivery.add(delivery);
             }
-            System.debug('updateDelivery => ' + updateDelivery);
+            
+            update updateDelivery;
+            resultMap.put('STATUS', 'S');
+            resultMap.put('resultList', updateDelivery);
             
         } catch (Exception e) {
-            System.debug(e.getMessage());
+            resultMap.put('STATUS', 'E');
+            resultMap.put('MESSAGE', e.getMessage());
+            resultMap.put('TRACE', e.getStackTraceString());
         }
 
-        update updateDelivery;
+        return resultMap;
     }
     
 }

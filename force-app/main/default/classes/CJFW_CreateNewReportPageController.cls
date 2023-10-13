@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : yeonji.lim@dkbmc.com
  * @group             : 
- * @last modified on  : 10-11-2023
+ * @last modified on  : 10-12-2023
  * @last modified by  : yeonji.lim@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -14,6 +14,9 @@ public with sharing class CJFW_CreateNewReportPageController {
     public DecisionProcess__c decProRecord { get; set; }
     public CJFW_ExpectedIncomeExpenses__c saveResult { get; set; }
     public Map<String,Object> saveResultMap { get; set; }
+    
+    public String saveResultStr { get; set; }
+
     public DataWrapper dataWrapper { get; set; }
     
     /* 
@@ -56,7 +59,8 @@ public with sharing class CJFW_CreateNewReportPageController {
                                 ContractEndDate__c,
                                 ContractType__c,
                                 OtherSupportDetail__c,
-                                ImprovementPlanDetails__c
+                                ImprovementPlanDetails__c,
+                                Center__c
                         FROM DecisionProcess__c 
                         WHERE Opportunity__c =: OpptyId
                         ORDER BY CreatedDate DESC
@@ -73,6 +77,9 @@ public with sharing class CJFW_CreateNewReportPageController {
         if (saveResult != null) {
             saveResultMap = (Map<String, Object>)JSON.deserializeUntyped(saveResult.saveResult__c);
         }
+
+        saveResultStr =  JSON.serialize(saveResultMap);
+
     }
 
     /* 

@@ -42,6 +42,14 @@ public virtual without sharing class NotiHandler {
 
     }
 
+    public Map<String,Object> getSendResultMap() {
+        return this.sendResultMap;
+    }
+
+    public void setSendResultMap(Map<String,Object> sendResultMap) {
+        this.sendResultMap = sendResultMap;
+    }
+
     /**
     * Noti Master Data 설정
     *
@@ -253,13 +261,16 @@ public virtual without sharing class NotiHandler {
             objLog.Status__c = 'SUCCESS';
             String resultDataStr = 'Noti Test : \n' + JSON.serialize(categorySendDataListMap.get(category));
             objLog.ResultMessage__c = resultDataStr <> null && resultDataStr.length() > 130000 ? resultDataStr.substring(0,130000) : resultDataStr;
-            
+            this.setSendResultMap(new Map<String,Object>{'sendTestLogList'=> objLog.ResultMessage__c});
             NotificationManager.saveHistory(new List<IFLog__c>{objLog});
 
         }else {
             NotiAlert alertHandler = (NotiAlert)Type.forName(managementData.AlertClass__c).newInstance();
             //System.debug('categorySendDataListMap:: ' +JSON.serialize(categorySendDataListMap));
-            if(!categorySendDataListMap.isEmpty()) alertHandler.send(categorySendDataListMap.get(category));
+            if(!categorySendDataListMap.isEmpty()) {
+                Map<String,Object> sendResultMap = alertHandler.send(categorySendDataListMap.get(category));
+                this.setSendResultMap(sendResultMap);
+            }
         }
     }
 
