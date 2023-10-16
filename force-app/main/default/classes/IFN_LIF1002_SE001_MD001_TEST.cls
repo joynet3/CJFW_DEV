@@ -53,10 +53,12 @@ public with sharing class IFN_LIF1002_SE001_MD001_TEST {
         IFN_LIF1002_SE001_MD001.SE001RequstWrapper params = new IFN_LIF1002_SE001_MD001.SE001RequstWrapper();
         IFN_LIF1002_SE001_MD001 cont = new IFN_LIF1002_SE001_MD001();
         String interfaceId = 'IFN_LIF1002_SE001_MD001';
-        params.searchSp = '05';
+        params.searchSp = '02';
         params.keywd = '우유';
         params.page = '1';
         params.pageSize = '3';
+        params.order = 'gd_bd_kw';
+        params.order_mt = 'asc';
         IFN_LIF1002_SE001_MD001.SE001_01ResultWrapper res = cont.callout( params);
 
         
