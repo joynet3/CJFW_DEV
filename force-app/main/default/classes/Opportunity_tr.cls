@@ -19,6 +19,9 @@ public without sharing class Opportunity_tr extends TriggerHandler {
         mapOld = (Map<Id, Opportunity>) trigger.oldMap;
         listOld = (List<Opportunity>) trigger.old;
 
+        // 중복 update 방지용
+        Boolean alreadyUpdated = false;
+
         idNaraMarketOpportunity = Schema.SObjectType.Opportunity.getRecordTypeInfosByDeveloperName().get('NaraMarketOpportunity').getRecordTypeId();
         idMilitaryOpportunity = Schema.SObjectType.Opportunity.getRecordTypeInfosByDeveloperName().get('MilitaryOpportunity').getRecordTypeId();
     }
@@ -37,13 +40,20 @@ public without sharing class Opportunity_tr extends TriggerHandler {
         doSetAutoRecordType();
         doSetName();
         doCheckClone();
+        
+    }   
+
+    public override void afterInsert() {
+        doInsertContract();
     }   
 
     public override void beforeUpdate() {
+        
         doSetAutoRecordType();
     }
 
     public override void afterUpdate() {
+        doInsertContract();
         doFieldTracking();
     }
 
@@ -182,5 +192,38 @@ public without sharing class Opportunity_tr extends TriggerHandler {
     
     }
 
+    /***********************************************************************************************************
+    *  Trigger : After Insert , Before Update
+    *  내용    : Oppty의 StageName 이 Contract 로 변경됐을때 Contract 생성되도록 수정
+    ************************************************************************************************************/    
+   private void doInsertContract() {
+        system.debug(' # Opportunity_tr # doInsertContract');
+        List<Id> opptyId = new List<Id>();
+        String contractId;
 
+        for (Opportunity obj : listNew) {
+            if (obj.ContractId == null && obj.StageName == 'Contract' && !obj.IsContract__c ) {
+                system.debug(' 조건만족 ' );
+                Contract newContract = new Contract();
+                newContract.AccountId = obj.AccountId;
+                newContract.Name = obj.Name;
+                insert newContract;
+
+                if (newContract.Id != null ) {
+                    opptyId.add(obj.Id);
+                    contractId = newContract.Id;
+                }
+            }
+        }
+
+        if (!opptyId.isEmpty() && contractId != null) {
+            system.debug(' Oppty SET Id-> ' + opptyId );
+            List<Opportunity> opptyContractUpdate = [SELECT Id FROM Opportunity WHERE Id IN :opptyId LIMIT 1];
+            for (Opportunity opp : opptyContractUpdate) {
+                opp.ContractId = contractId;
+                opp.IsContract__c = true; // Oppty update되면서 무한루프현상 방지용 flag
+            }
+            update opptyContractUpdate;
+        }
+    }
 }

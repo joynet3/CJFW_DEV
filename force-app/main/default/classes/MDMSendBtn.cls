@@ -52,6 +52,7 @@ public without sharing class MDMSendBtn {
 
             List<MDMRegRequestCustomer__c> listMDMCustomer = new List<MDMRegRequestCustomer__c>();
 
+            /* 관리처 필드 추가해야 함 */
             listMDMCustomer = [
                 SELECT  Id, Account__c,
                         INSTANCEID__c, PROCID__c, REQACTORID__c, PV_CRMNO__c, PV_KUNNR__c, PV_OLDCD__c, PV_NAME1__c, 
@@ -93,7 +94,7 @@ public without sharing class MDMSendBtn {
                 WHERE   MDMRegRequestCustomer__c =:recordId
             ];
 
-            /*
+            /* 대유 주석
             List<MDMRegRequestBank__c> listMDMBank = new List<MDMRegRequestBank__c>();
 
             listMDMBank = [
@@ -114,10 +115,10 @@ public without sharing class MDMSendBtn {
                 objUpdateAccount.Id = objTarget.Account__c;
                 //objUpdateAccount.ExtId__c = objTarget.Account__c;
 
-                objInput.INSTANCEID = CommonUtil.nullToBlank(objTarget.INSTANCEID__c);
-                objInput.PROCID = CommonUtil.nullToBlank(objTarget.PROCID__c);
-                objInput.REQACTORID = CommonUtil.nullToBlank(objTarget.REQACTORID__c);
-                objInput.PV_CRMNO = CommonUtil.nullToBlank(objTarget.Account__c);
+                objInput.INSTANCEID = CommonUtil.nullToBlank(objTarget.INSTANCEID__c);                      /* dev & prod : INSTANCEID__c 값이 있는게 없음 => 빈값을 넣어주고 있음 */
+                objInput.PROCID = CommonUtil.nullToBlank(objTarget.PROCID__c);                              /* MD-01-01-01(본점), MD-01-01-10(판매처), 관리처는 확인 필요*/
+                objInput.REQACTORID = CommonUtil.nullToBlank(objTarget.REQACTORID__c);                      /* 요청자 사원번호 세팅 */
+                objInput.PV_CRMNO = CommonUtil.nullToBlank(objTarget.Account__c);                           /* AccountID : component.set('v.objCustomer.Account__c', objOpportunity.AccountId); */
                 // 2022-12-13 빈값으로 변경                
                 objInput.PV_KUNNR = '';
                 objInput.PV_OLDCD = CommonUtil.nullToBlank(objTarget.PV_OLDCD__c);
@@ -332,7 +333,7 @@ public without sharing class MDMSendBtn {
                     objInput.PV_MANAGER_INFO = PV_MANAGER_INFO;
                 }
 
-                /*
+                /* 대유주석
                 List<MDMBank> PV_BANK_INFO = new List<MDMBank>();
 
                 if(listMDMBank <> null && listMDMBank.size() > 0) {
@@ -359,7 +360,7 @@ public without sharing class MDMSendBtn {
                 */
 
                 IFUtil ifutilWrapper = new IFUtil('IF_SFDC_MDM_REG_ACCOUNT');
-
+                                            /*  MDMCustomer objInput = new MDMCustomer(); */
                 String strJsonRequestBody = JSON.serialize(objInput);
                 
                 HttpResponse response = ifutilWrapper.webCallout(strJsonRequestBody, true);
@@ -369,6 +370,28 @@ public without sharing class MDMSendBtn {
                 System.debug('===========> strJsonRequestBody : '+strJsonRequestBody);
 
                 if(response.getStatusCode() == 200) {
+                    /* IF_MDM_SFDC_RES_ACCOUNT  */
+                    /* 
+                     * global class Input {
+                     *  public List<Item> data;
+                     *  public String transaction_Id;
+                     *  public String total_page;
+                     *  public String page_no;
+                     *  public String is_last;
+                     * }
+                     * global class Item {
+                     *  public String err_cd;
+                     *  public String err_msg_ctt;        
+                     *  public String INSTANCEID;
+                     *  //public String WF_INSTANCEID;
+                     *  public String PV_CRMNO;
+                     *  public String WF_STATUS;
+                     *  public List<Actor> WF_ACTOR;
+                     *  public List<NextActor> WF_NEXTACTOR;
+                     *  public String WF_DATE;
+                     *  public String WF_DESCRIPTION;
+                     * }
+                     */
                     IF_MDM_SFDC_RES_ACCOUNT.Item objResponse = (IF_MDM_SFDC_RES_ACCOUNT.Item)JSON.deserialize(responseBody,  IF_MDM_SFDC_RES_ACCOUNT.Item.class);
 
                     System.debug('=================> objResponse : '+JSON.serialize(objResponse));
@@ -428,7 +451,7 @@ public without sharing class MDMSendBtn {
 
                         System.debug('==================> objUpdateAccount : '+JSON.serialize(objUpdateAccount));
 
-                        /*
+                        /* 대유주석
                         if(objUpdateAccount.Id <> null) {
                             System.debug('==================> objUpdateAccount Update');
                             update objUpdateAccount;
@@ -648,7 +671,7 @@ public without sharing class MDMSendBtn {
 
         @AuraEnabled
         public List<MDMContact> PV_MANAGER_INFO {get;set;}
-        /*
+        /* 대유주석
         @AuraEnabled
         public List<MDMBank> PV_BANK_INFO {get;set;}
         */
@@ -666,7 +689,7 @@ public without sharing class MDMSendBtn {
         @AuraEnabled public String PV_EMAIL_VK {get;set;}
 	}
 
-    /*
+    /* 대유주석
     public class MDMBank {
         @AuraEnabled public String INSTANCEID {get;set;}
         @AuraEnabled public String PV_NO {get;set;}

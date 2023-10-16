@@ -2,7 +2,7 @@
  * @description       : 관리처-분할 Controller
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 10-11-2023
+ * @last modified on  : 10-13-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -201,35 +201,198 @@ public with sharing class CJFW_MDMManagementController {
             objWrapper.objUser = objUser;
             
             MDMRegRequestCustomer__c objMDMRegReqCustomer = [
-                SELECT  Id, Name, RecordTypeId, Account__c, Opportunity__c, opcode__c, INSTANCEID__c, PROCID__c, REQACTORID__c,
-                        PV_CRMNO__c, PV_KUNNR__c, PV_OLDCD__c, PV_NAME1__c, PV_NAME_G__c, PV_NAME2__c, PV_KTOKD__c, PV_CUSTTYPE__c,
-                        PV_STCD2__c, PV_STCD3__c, PV_STCD4__c, PV_GFORM__c, PV_J_1KFREPRE__c, PV_BLCKYN__c, PV_STCD1__c,
-                        PV_ESALESPROFITRATE__c, PV_J_1KFTBUS__c, PV_ESALESPROFIT__c, PV_J_1KFTIND__c, PV_SUPFEERATE__c,
-                        PV_ECPROFITRATE__c, PV_ECPROFIT__c, PV_TELF1__c, PV_TELFX__c, PV_RESEPROFIT__c, PV_PAYCUST__c,
-                        PV_CHARGECUST__c, PV_RESEEARN__c, PV_RESESALES__c, PV_SPECIALNOTE__c, PV_ISCOLFEE__c, PV_VKGRP__c,
-                        PV_AMOUNTCOL__c, PV_PROVCOL__c, PV_DEPOSITF__c, PV_DEPOSIT__c, PV_DEPOSITYN__c, PV_COMMRATE__c,
-                        PVVF_VKGRP__c, PV_ETCSUP__c, PVRA_VKGRP__c, PV_DONATION__c, PV_SUBSIDY__c, PV_PERNR__c, PV_DEPRE__c,
-                        PVVF_PERNR__c, PV_SUPPOINT__c, PVRA_PERNR__c, PV_ETCRATE__c, PV_ADMINMA__c, PV_CARDFRATE__c, PV_CGRRATE__c,
-                        PV_LOGISCENTER__c, PV_LRATE__c, PV_LOGISRATIO__c, PV_SALESMNG__c, PV_ETCSALESFEE__c, PV_DELAVG__c,
-                        PV_NUMPARTNER__c, PV_NUMSKU__c, PV_GSALESFEE__c, PV_EXSALESFEE__c, PV_SKUPERSALESFC__c, PV_DROPSIZEFC__c,
-                        PV_SALESPERSTOREFC__c, PV_GPROFITFC__c, PV_EXPROFITFC__c, PV_GSALESFC__c, PV_EXSALESFC__c, PV_ESALESFC__c,
-                        PV_EPROFIT__c, PV_ESALES__c, PV_TERMT__c, PV_EXISTSUP__c, PV_TERMF__c, PV_STORECNT__c, PV_CSHAPE__c,
-                        PVVF_LOGISCENTER__c, PVRA_LOGISCENTER__c, PV_STCDT__c, PV_BIZPLCODE__c, PV_STATUSTYPE__c, PV_FITYP__c, PV_HDOFFICEYN__c,
-                        PV_HKUNNR__c, PV_SUBSIDIARYYN__c, PV_ORDERMA__c, PV_LIFNR__c, PV_TEMPTARGET__c, PV_SHIPTYPE__c, PV_FDNOTICE__c,
-                        PV_LAND1__c, PV_FDCTINFO__c, PV_ISFDFTF__c, PV_FDREQT__c, PV_KNVKTYPE__c, PV_FDREQD__c, PV_CLOSEDT__c, PV_KXOTDTIME__c,
-                        PV_KEYINFO__c, PV_KEYYN__c, PV_KATR10__c, PV_REGIO__c, PV_ADRES_ZIPCODE__c, PV_ADRES_SEQ__c, PV_DELIGROUP__c,
-                        PV_ADRES_ADDR1__c, PV_ADRES_ADDR2__c, PV_UNLOADCOND2__c, PV_ADRES_ROADADDR1__c, PV_ADRES_ROADADDR2__c,
-                        PV_UNLOADCOND1__c, PV_ADRES_ROADMGMTNO__c, PV_BUSAB__c, PV_ENTERCOND1__c, PV_CESSION_KZ__c, PV_RETURNLOC__c,
-                        PV_PRODLOADCOND__c, PV_SHIPREQTIME__c, PV_EXAMYN__c, PV_SHAPE__c, PVRA_OLD_BIZPLACE_NEW__c, PVVF_OLD_BIZPLACE_NEW__c,
-                        PV_ZUAWA__c, PV_OLD_BIZPLACE_NEW__c, PV_KULTG__c, PV_DSTRHISTREGYN__c, PV_ZTERM_VV__c, PV_VACCPRTEXCYN__c,
-                        PV_AKONT__c, PV_ODCLOSEGB__c, PV_KVGR3_BOT__c, PV_KVGR2__c, PV_FDGRV__c, PV_KVGR3__c, PV_VRSDG__c, PVRA_KVGR1__c,
-                        PV_TAXKDD__c, PVVF_KVGR1__c, PV_KATR5__c, PV_KVGR1__c, PVRA_KONDA__c, PV_CUHR1__c, PVVF_KONDA__c, PV_KONDA__c,
-                        PVRA_CUHR1__c, PVVF_CUHR1__c, PV_SALESCUST__c, PV_DELICUST__c, PV_FDINFO__c, PV_KXOTD__c, PV_KDGRP__c, PV_VBUND__c,
-                        PV_VKGRP_lu__c, PV_LOGISCENTER_lu__c, PV_STCDT_lu__c, PV_VBUND_lu__c, PV_LIFNR_lu__c, PV_LAND1_lu__c, PV_REGIO_lu__c,
-                        PV_ZUAWA_lu__c, PV_AKONT_lu__c, PV_CUHR1_lu__c, PV_KONDA_lu__c, PV_KVGR1_lu__c, PV_WAERS_lu__c, PV_KVGR3_lu__c,
-                        PV_KVGR3_BOT_lu__c, PV_ZTERM_VV_lu__c, PV_OLD_BIZPLACE_NEW_lu__c, PV_DELIGROUP_lu__c, PV_KATR10_lu__c, PV_WAERS__c,
-                        PV_PERNR_lu__c, PV_ADMINMA_lu__c, PV_HKUNNR_lu__c, PV_PAYCUST_lu__c, IsSelf_PV_PAYCUST__c, PV_CHARGECUST_lu__c,
-                        IsSelf_PV_CHARGECUST__c, Status__c, WF_DESCRIPTION__c, PV_SELLER_lu__c
+                SELECT   Id
+                        ,Name                           // MDM 고객 등록 요청 
+                        ,RecordTypeId                   // 레코드 유형 ID 
+                        ,Account__c                     // 고객 
+                        ,Opportunity__c                 // 영업활동 
+                        ,opcode__c                      // 업무코드MD002 
+                        ,INSTANCEID__c                  // 인스턴스ID 
+                        ,PROCID__c                      // 프로세스ID 
+                        ,REQACTORID__c                  // 요청자ID 
+                        ,PV_CRMNO__c                    // CRM 내부 고객코드 
+                        ,PV_KUNNR__c                    // 고객ID 
+                        ,PV_OLDCD__c                    // 구코드(As-Is) 
+                        ,PV_NAME1__c                    // 고객명(영문명 포함) 
+                        ,PV_NAME_G__c                   // 고객명(G) / 자국명 
+                        ,PV_NAME2__c                    // 고객약칭명(변경) 
+                        ,PV_KTOKD__c                    // 고객계정그룹 
+                        ,PV_CUSTTYPE__c                 // 고객유형 
+                        ,PV_STCD2__c                    // 사업자등록번호 
+                        ,PV_STCD3__c                    // 법인코드 
+                        ,PV_STCD4__c                    // 종사업자번호 
+                        ,PV_GFORM__c                    // 법적상태 
+                        ,PV_J_1KFREPRE__c               // 대표자이름 
+                        ,PV_BLCKYN__c                   // 사용중지 
+                        ,PV_STCD1__c                    // 대표자 생년월일 
+                        ,PV_ESALESPROFITRATE__c         // 예상 영업이익률(%) 
+                        ,PV_J_1KFTBUS__c                // 업태 
+                        ,PV_ESALESPROFIT__c             // 예상 영업이익 
+                        ,PV_J_1KFTIND__c                // 업종 
+                        ,PV_SUPFEERATE__c               // 지원수수료율(%) 
+                        ,PV_ECPROFITRATE__c             // 예상 공헌이익률(%) 
+                        ,PV_ECPROFIT__c                 // 예상 공헌이익 
+                        ,PV_TELF1__c                    // 전화번호 
+                        ,PV_TELFX__c                    // 팩스번호 
+                        ,PV_RESEPROFIT__c               // 예상 매익률(%) 
+                        ,PV_PAYCUST__c                  // 지급처 
+                        ,PV_CHARGECUST__c               // 청구처 
+                        ,PV_RESEEARN__c                 // 예상 매익 
+                        ,PV_RESESALES__c                // 예상 매출 
+                        ,PV_SPECIALNOTE__c              // 특이사항 
+                        ,PV_ISCOLFEE__c                 // 담보 수수료 제공여부 
+                        ,PV_VKGRP__c                    // 영업그룹 
+                        ,PV_AMOUNTCOL__c                // 담보금액(백만) 
+                        ,PV_PROVCOL__c                  // 담보유형 
+                        ,PV_DEPOSITF__c                 // 보증금 수수료(%) 
+                        ,PV_DEPOSIT__c                  // 보증금액(백만) 
+                        ,PV_DEPOSITYN__c                // 보증금 영업여부 
+                        ,PV_COMMRATE__c                 // 기타지원율(%) 
+                        ,PVVF_VKGRP__c                  // 영업그룹(유효기간 관리) - 미래 속성의 VALID FROM 
+                        ,PV_ETCSUP__c                   // 수수료율(%) 
+                        ,PVRA_VKGRP__c                  // 영업그룹(유효기간 관리) - 현재 속성의 VALID FROM 
+                        ,PV_DONATION__c                 // 후원금(%) 
+                        ,PV_SUBSIDY__c                  // 장려금율(%) 
+                        ,PV_PERNR__c                    // 담당MA 
+                        ,PV_DEPRE__c                    // 지원사항률(%) 
+                        ,PVVF_PERNR__c                  // 담당MA (유효일자) - 미래 속성의 VALID FROM 
+                        ,PV_SUPPOINT__c                 // 약정감가율(%) 
+                        ,PVRA_PERNR__c                  // 담당MA (유효일자) - 현재 속성의 VALID FROM 
+                        ,PV_ETCRATE__c                  // 기타(%) 
+                        ,PV_ADMINMA__c                  // 담당AMA 
+                        ,PV_CARDFRATE__c                // 카드수수료율(%) 
+                        ,PV_CGRRATE__c                  // 그룹공통비(%) 
+                        ,PV_LOGISCENTER__c              // FW 출고센터 
+                        ,PV_LRATE__c                    // 인건비율(%) 
+                        ,PV_LOGISRATIO__c               // 물류비율(%) 
+                        ,PV_SALESMNG__c                 // 판매관리비율(%) 
+                        ,PV_ETCSALESFEE__c              // 판매수수료(전용, 특이사항) 
+                        ,PV_DELAVG__c                   // 점포당 평균 배송횟수 
+                        ,PV_NUMPARTNER__c               // 협력업체 수 
+                        ,PV_NUMSKU__c                   // 전용 SKU 수 
+                        ,PV_GSALESFEE__c                // 판매수수료(범용,%) 
+                        ,PV_EXSALESFEE__c               // 판매수수료(전용,%) 
+                        ,PV_SKUPERSALESFC__c            // 전용상품 SKU 당 매출액 
+                        ,PV_DROPSIZEFC__c               // Drop-Size 
+                        ,PV_SALESPERSTOREFC__c          // 점포당 매출액 
+                        ,PV_GPROFITFC__c                // 범용매익률(%) 
+                        ,PV_EXPROFITFC__c               // 전용매익률(%) 
+                        ,PV_GSALESFC__c                 // 범용매출액(백만) 
+                        ,PV_EXSALESFC__c                // 전용매출액(백만) 
+                        ,PV_ESALESFC__c                 // 예상매출액 
+                        ,PV_EPROFIT__c                  // 예상매익률(%) 
+                        ,PV_ESALES__c                   // 예상매출액(백만) 
+                        ,PV_TERMT__c                    // 계약기간(To) 
+                        ,PV_EXISTSUP__c                 // 기존 납품처 
+                        ,PV_TERMF__c                    // 계약기간(From) 
+                        ,PV_STORECNT__c                 // 점포 수 
+                        ,PV_CSHAPE__c                   // 고객 외형(백만) 
+                        ,PVVF_LOGISCENTER__c            // FW 출고센터(유효일자 관리 필요) - 미래 속성의 VALID FROM 
+                        ,PVRA_LOGISCENTER__c            // FW 출고센터(유효일자 관리 필요) - 현재 속성의 VALID FROM 
+                        ,PV_STCDT__c                    // 세금계산서발행유형 
+                        ,PV_BIZPLCODE__c                // OnlyOneFoodNet사업장ID 
+                        ,PV_STATUSTYPE__c               // 중단유형 
+                        ,PV_FITYP__c                    // 과세유형 
+                        ,PV_HDOFFICEYN__c               // 본점사용 유무 
+                        ,PV_HKUNNR__c                   // 본점코드 
+                        ,PV_SUBSIDIARYYN__c             // 관계사여부 
+                        ,PV_ORDERMA__c                  // 수주MA 
+                        ,PV_LIFNR__c                    // 수수료지급처 
+                        ,PV_TEMPTARGET__c               // 온도기록지 제출 대상 여부 
+                        ,PV_SHIPTYPE__c                 // 배송유형 
+                        ,PV_FDNOTICE__c                 // 초도배송 시 전달사항 
+                        ,PV_LAND1__c                    // 국가키 
+                        ,PV_FDCTINFO__c                 // 초도배송 담당자 연락처 
+                        ,PV_ISFDFTF__c                  // 초도배송 대면검수 
+                        ,PV_FDREQT__c                   // 초도배송 요청시간 
+                        ,PV_KNVKTYPE__c                 // 주문유형 
+                        ,PV_FDREQD__c                   // 초도배송 요청일자 
+                        ,PV_CLOSEDT__c                  // 휴폐업일자 
+                        ,PV_KXOTDTIME__c                // KX OTD 요청시간 
+                        ,PV_KEYINFO__c                  // 업장key 정보 
+                        ,PV_KEYYN__c                    // 업장key 여부 
+                        ,PV_KATR10__c                   // 출하권역 
+                        ,PV_REGIO__c                    // 지역 
+                        ,PV_ADRES_ZIPCODE__c            // 주소 - 우편번호 
+                        ,PV_ADRES_SEQ__c                // 주소 - 일련번호 
+                        ,PV_DELIGROUP__c                // 배송그룹 
+                        ,PV_ADRES_ADDR1__c              // 주소 - 기본주소 
+                        ,PV_ADRES_ADDR2__c              // 주소 - 상세주소 
+                        ,PV_UNLOADCOND2__c              // 하역조건-2 
+                        ,PV_ADRES_ROADADDR1__c          // 주소 - 도로명 기본주소 
+                        ,PV_ADRES_ROADADDR2__c          // 주소 - 도로명 상세주소 
+                        ,PV_UNLOADCOND1__c              // 하역조건-1 
+                        ,PV_ADRES_ROADMGMTNO__c         // 주소 - 건물관리번호 
+                        ,PV_BUSAB__c                    // 매출형태 
+                        ,PV_ENTERCOND1__c               // 차량 진입조건-1 
+                        ,PV_CESSION_KZ__c               // 고객상태 
+                        ,PV_RETURNLOC__c                // 반품회수 위치 
+                        ,PV_PRODLOADCOND__c             // 상품적재조건 
+                        ,PV_SHIPREQTIME__c              // OTD(배송요구시간) 
+                        ,PV_EXAMYN__c                   // 대면검수여부 
+                        ,PV_SHAPE__c                    // 외형(정원) 
+                        ,PVRA_OLD_BIZPLACE_NEW__c       // 경로(사업부) - 현재 속성의 VALID FROM 
+                        ,PVVF_OLD_BIZPLACE_NEW__c       // 경로(사업부) - 미래 속성의 VALID FROM 
+                        ,PV_ZUAWA__c                    // 정렬키 
+                        ,PV_OLD_BIZPLACE_NEW__c         // 경로(사업부) 
+                        ,PV_KULTG__c                    // 약정회전일 
+                        ,PV_DSTRHISTREGYN__c            // 유통이력 신고대상 유형 
+                        ,PV_ZTERM_VV__c                 // 지급조건 
+                        ,PV_VACCPRTEXCYN__c             // 가상계좌 출력 제외 
+                        ,PV_AKONT__c                    // 조정계정 
+                        ,PV_ODCLOSEGB__c                // 고객 주문마감 유형코드 
+                        ,PV_KVGR3_BOT__c                // 납품서 하단유형 
+                        ,PV_KVGR2__c                    // 장려금유형 
+                        ,PV_FDGRV__c                    // 현금관리그룹 
+                        ,PV_KVGR3__c                    // 납품서유형 
+                        ,PV_VRSDG__c                    // 입금여부(FS만 사용) 
+                        ,PVRA_KVGR1__c                  // 단가그룹(유효일자 관리 필요) - 현재 속성의 VALID FROM 
+                        ,PV_TAXKDD__c                   // 세금분류 
+                        ,PVVF_KVGR1__c                  // 단가그룹(유효일자 관리 필요) - 미래 속성의 VALID FROM 
+                        ,PV_KATR5__c                    // 세금납부방법 
+                        ,PV_KVGR1__c                    // 단가그룹 
+                        ,PVRA_KONDA__c                  // 가격그룹(유효일자 관리 필요) - 현재 속성의 VALID FROM 
+                        ,PV_CUHR1__c                    // 고객분류 
+                        ,PVVF_KONDA__c                  // 가격그룹(유효일자 관리 필요) - 미래 속성의 VALID FROM 
+                        ,PV_KONDA__c                    // 가격그룹 
+                        ,PVRA_CUHR1__c                  // 고객분류 - 현재 속성의 VALID FROM 
+                        ,PVVF_CUHR1__c                  // 고객분류 - 미래 속성의 VALID FROM 
+                        ,PV_SALESCUST__c                // 판매처 
+                        ,PV_DELICUST__c                 // 배송관리처 
+                        ,PV_FDINFO__c                   // 초도배송 정보공유 
+                        ,PV_KXOTD__c                    // KX OTD 
+                        ,PV_KDGRP__c                    // 여신관리(고객향) 
+                        ,PV_VBUND__c                    // 관계사 코드 
+                        ,PV_VKGRP_lu__c                 // 영업그룹 
+                        ,PV_LOGISCENTER_lu__c           // FW 출고센터 
+                        ,PV_STCDT_lu__c                 // 세금계산서발행유형 
+                        ,PV_VBUND_lu__c                 // 관계사 코드 
+                        ,PV_LIFNR_lu__c                 // 수수료지급처 
+                        ,PV_LAND1_lu__c                 // 국가키 
+                        ,PV_REGIO_lu__c                 // 지역 
+                        ,PV_ZUAWA_lu__c                 // 정렬키 
+                        ,PV_AKONT_lu__c                 // 조정계정 
+                        ,PV_CUHR1_lu__c                 // 고객분류 
+                        ,PV_KONDA_lu__c                 // 가격그룹 
+                        ,PV_KVGR1_lu__c                 // 단가그룹 
+                        ,PV_WAERS_lu__c                 // 통화 
+                        ,PV_KVGR3_lu__c                 // 납품서유형 
+                        ,PV_KVGR3_BOT_lu__c             // 납품서 하단유형 
+                        ,PV_ZTERM_VV_lu__c              // 지급조건 
+                        ,PV_OLD_BIZPLACE_NEW_lu__c      // 경로(사업부) 
+                        ,PV_DELIGROUP_lu__c             // 배송그룹 
+                        ,PV_KATR10_lu__c                // 출하권역 
+                        ,PV_WAERS__c                    // 통화 
+                        ,PV_PERNR_lu__c                 // 담당MA 
+                        ,PV_ADMINMA_lu__c               // 담당AMA 
+                        ,PV_HKUNNR_lu__c                // 본점코드 
+                        ,PV_PAYCUST_lu__c               // 지급처 
+                        ,IsSelf_PV_PAYCUST__c           // 지급처 Self 여부 
+                        ,PV_CHARGECUST_lu__c            // 청구처 
+                        ,IsSelf_PV_CHARGECUST__c        // 청구처 Self 여부 
+                        ,Status__c                      // 전송상태 
+                        ,WF_DESCRIPTION__c              // 결재의견 
+                        ,PV_SELLER_lu__c                // 판매처 
                 FROM    MDMRegRequestCustomer__c
                 WHERE   Id =:mdmCustomerId];
 
@@ -249,7 +412,7 @@ public with sharing class CJFW_MDMManagementController {
             objWrapper.PvFDGRVOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_FDGRV__c', true);                   // 현금관리그룹 (PV_FDGRV__c)
             objWrapper.PvTAXKDDOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_TAXKDD__c', true);                 // 세금분류 (PV_TAXKDD__c)
             objWrapper.PvKATR5Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KATR5__c', true);                   // 세금납부방법 (PV_KATR5__c)
-            objWrapper.PvKVGR3Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KVGR3__c', true);                    // 납품서유형 (PV_KVGR3__c) [영업정보]
+            objWrapper.PvKVGR3Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KVGR3__c', true);                   // 납품서유형 (PV_KVGR3__c) [영업정보]
             objWrapper.PvKVGR2Option = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KVGR2__c', true);                   // 장려금유형 (PV_KVGR2__c)
             objWrapper.PvKVGR3BOTOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_KVGR3_BOT__c', true);            // 납품서 하단유형 (PV_KVGR3_BOT__c)      
             objWrapper.PvDSTRHISTREGYNPOption = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_DSTRHISTREGYN__c', true);  // 유통이력 신고대상 유형 (PV_DSTRHISTREGYN__c)                  
@@ -285,7 +448,7 @@ public with sharing class CJFW_MDMManagementController {
     }
     /**
     * =======================================================================================================================
-    * @description : [3. Account Detail에서 수정 시]
+    * @description : [3. Account Detail에서 수정 시] [참조생성 데이터 받으면 수정할 것임]
     * 
     * @params      : accountId(Accout의 Id)
     * @return      : `DataWrapper`
