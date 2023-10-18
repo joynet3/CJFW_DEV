@@ -23,12 +23,16 @@ global without sharing class IF_SFDC_DATA_REQ_NARA_TENDER_DETAIL2 {
         String strMessage = '';
         String getRquest = '';
         List<String> errList = new List<String>();
-        Map<String, Lead> leadMap = new Map<String, Lead>(); 
+
+        //2023.09.11 - sancho (Lead -> CJFW_BiddingInformation__c)
+        Map<String, CJFW_BiddingInformation__c> leadMap = new Map<String, CJFW_BiddingInformation__c>(); 
 
         try {
             IFMaster__c ifMasterObj = [SELECT Id, Name, ContentType__c, Endpoint__c, Method__c FROM IFMaster__c WHERE Name = 'IF_SFDC_DATA_REQ_NARA_TENDER_DETAIL2'];
             API_Authenticationkey__mdt authKey = [select KeyValue__c, DateRange__c, MasterLabel from API_Authenticationkey__mdt where MasterLabel = '공공데이터_Key'];
-            List<Lead> insertList = new List<Lead>();
+            
+            //2023.09.11 - sancho (Lead -> CJFW_BiddingInformation__c)
+            List<CJFW_BiddingInformation__c> insertList = new List<CJFW_BiddingInformation__c>();
 
             if(sourceSiteChk == '1'){
                 inputStr.substring(4,11);
@@ -62,37 +66,39 @@ global without sharing class IF_SFDC_DATA_REQ_NARA_TENDER_DETAIL2 {
             if(res.getStatusCode() == 200) {
                 IF_SFDC_DATA_REQ_NARA_TENDER_DETAIL.Input input = (IF_SFDC_DATA_REQ_NARA_TENDER_DETAIL.Input) JSON.deserialize(res.getBody(), IF_SFDC_DATA_REQ_NARA_TENDER_DETAIL.Input.Class);
                 responseBody = String.valueOf(input);
-                Id naraRecordId = Schema.SObjectType.LEAD.getRecordTypeInfosByDeveloperName().get('NaraMarketLead').getRecordTypeId();
+
+                //2023.09.11 - sancho (Lead -> CJFW_BiddingInformation__c)
+                Id naraRecordId = Schema.SObjectType.CJFW_BiddingInformation__c.getRecordTypeInfosByDeveloperName().get('NaraMarket').getRecordTypeId();  //NaraMarketLead -> NaraMarket  신규(Military,Local,NaraMarket)
                 System.debug('==========================itmes:::'+ input.response.body.items);
 
                 for (IF_SFDC_DATA_REQ_NARA_TENDER_DETAIL.Items item : input.response.body.items) {
 
-                    Lead leadObj = new Lead();
+                    CJFW_BiddingInformation__c leadObj = new CJFW_BiddingInformation__c();
 
                     if (leadMap.get(item.bidNtceNo) == null || (leadMap.get(item.bidNtceNo) <> null) && Integer.valueOf(leadMap.get(item.bidNtceOrd)) < Integer.valueOf(item.bidNtceOrd)) {
-                        leadObj.LastName = (item.ofclNm == null || item.ofclNm == '') ? item.ntceInsttNm : item.ofclNm;
-                        leadObj.Company = item.ntceInsttNm;
-                        leadObj.Status = 'New';
-                        leadobj.MobilePhone = item.ofclTelNo;
-                        leadObj.Email = item.ofclEmail;
-                        leadObj.LeadSource = 'NaraMarket';
-                        leadObj.BidNoticeStatus__c = item.ntceDivNm;
+                        leadObj.PIC__c                  = (item.ofclNm == null || item.ofclNm == '') ? item.ntceInsttNm : item.ofclNm;
+                        leadObj.Company__c          = item.ntceInsttNm;   //2023.10.17: 원래 Lead 에서는 leadObj.ntceInsttNm__c 이렇게 별도로 있으나, 오브젝트 분리하며 company 에 합친다.
+                        //leadObj.Status = 'New';               //2023.10.17 사용안함
+                        leadobj.Phone__c                = item.ofclTelNo;
+                        leadObj.Email__c                = item.ofclEmail;
+                        //leadObj.LeadSource = 'NaraMarket';      //2023.10.17 사용안함
+                        leadObj.BidNoticeStatus__c      = item.ntceDivNm;
                         if (Integer.valueOf(item.bidNtceOrd) < 10) {
                             Integer ord = Integer.valueOf(item.bidNtceOrd);
-                            leadObj.BidNoticeNumber__c = item.bidNtceNo+'-0'+ String.valueOf(ord);
+                            leadObj.BidNoticeNumber__c      = item.bidNtceNo+'-0'+ String.valueOf(ord);
                         }else {
-                            leadObj.BidNoticeNumber__c = item.bidNtceNo+'-'+item.bidNtceOrd;
+                            leadObj.BidNoticeNumber__c      = item.bidNtceNo+'-'+item.bidNtceOrd;
                         }
-                        leadObj.bidNtceOrd__c = item.bidNtceOrd;
-                        leadObj.BidNoticeName__c = item.ntceNm;
-                        leadObj.BidMethod__c = item.bidMethdNm;
-                        leadObj.ContractSignMethod__c = item.cntrctMthdNm;
-                        leadObj.SubNumber__c = item.bidNtceOrd;
-                        leadObj.IsReBid__c = (item.rbidDivNm == 'Y') ? true : false;
-                        leadObj.BidBeginDateTime__c = (item.bidBeginDt == null || item.bidBeginDt == '') ? null : Datetime.valueOf(item.bidBeginDt);
-                        leadObj.BidOpenDateTime__c = (item.opengDt == null || item.opengDt == '') ? null : Datetime.valueOf(item.opengDt);
-                        leadObj.BidCloseDateTime__c = (item.bidClseDt == null || item.bidClseDt == '') ? null : Datetime.valueOf(item.bidClseDt);
-                        leadObj.BidOpenPlace__c = item.opengPlce;
+                        leadObj.SubNumber__c            = item.bidNtceOrd;
+                        leadObj.Name                    = item.ntceNm;          //2023.10.17 왜 이걸쓰지...?
+                        leadObj.BidMethod__c            = item.bidMethdNm;
+                        leadObj.ContractSignMethod__c   = item.cntrctMthdNm;
+                        leadObj.SubNumber__c            = item.bidNtceOrd;
+                        leadObj.IsReBid__c              = (item.rbidDivNm == 'Y') ? true : false;
+                        leadObj.BidBeginDateTime__c     = (item.bidBeginDt == null || item.bidBeginDt == '') ? null : Datetime.valueOf(item.bidBeginDt);
+                        leadObj.BidOpenDateTime__c      = (item.opengDt == null || item.opengDt == '') ? null : Datetime.valueOf(item.opengDt);
+                        leadObj.BidCloseDateTime__c     = (item.bidClseDt == null || item.bidClseDt == '') ? null : Datetime.valueOf(item.bidClseDt);
+                        leadObj.BidOpenPlace__c         = item.opengPlce;
                         // if (item.bidWgrnteeRcptClseDt <> null && item.bidWgrnteeRcptClseDt <> '') {
                         //     if (item.bidWgrnteeRcptClseDt.length() == 16) {
                         //         leadObj.BidQualifyRegistCloseDateTime__c = Datetime.valueOf(item.bidWgrnteeRcptClseDt + ':00');
@@ -102,19 +108,19 @@ global without sharing class IF_SFDC_DATA_REQ_NARA_TENDER_DETAIL2 {
                         // }else {
                         //     leadObj.BidQualifyRegistCloseDateTime__c = null;
                         // }
-                        leadObj.AssignBudgetAmountCurrency__c =  (item.asignBdgtAmt == null || item.asignBdgtAmt == '') ? null : Decimal.valueOf(item.asignBdgtAmt);
-                        leadObj.bsnsDivNm__c = item.bidNtceClsfc;
-                        leadobj.PblancDate__c = item.rgstDt <> null ? Date.valueOf(item.rgstDt) : null;
-                        leadobj.ntceSpecDocUrl1__c = item.ntceSpecDocUrl1;
-                        leadobj.ntceSpecDocUrl2__c = item.ntceSpecDocUrl2;
-                        leadobj.ntceSpecDocUrl3__c = item.ntceSpecDocUrl3;
-                        leadobj.ntceSpecDocUrl4__c = item.ntceSpecDocUrl4;
-                        leadobj.ntceSpecDocUrl5__c = item.ntceSpecDocUrl5;
-                        leadobj.ntceSpecDocUrl6__c = item.ntceSpecDocUrl6;
-                        leadobj.ntceSpecDocUrl7__c = item.ntceSpecDocUrl7;
-                        leadobj.ntceSpecDocUrl8__c = item.ntceSpecDocUrl8;
-                        leadobj.ntceSpecDocUrl9__c = item.ntceSpecDocUrl9;
-                        leadobj.ntceSpecDocUrl10__c = item.ntceSpecDocUrl10;
+                        leadObj.AssignBudgetAmountCurrency__c   =  (item.asignBdgtAmt == null || item.asignBdgtAmt == '') ? null : Decimal.valueOf(item.asignBdgtAmt);
+                        //leadObj.bsnsDivNm__c = item.bidNtceClsfc;
+                        leadobj.rgstDt__c               = item.rgstDt;      //= item.rgstDt <> null ? Date.valueOf(item.rgstDt) : null;
+                        // leadobj.ntceSpecDocUrl1__c = item.ntceSpecDocUrl1;
+                        // leadobj.ntceSpecDocUrl2__c = item.ntceSpecDocUrl2;
+                        // leadobj.ntceSpecDocUrl3__c = item.ntceSpecDocUrl3;
+                        // leadobj.ntceSpecDocUrl4__c = item.ntceSpecDocUrl4;
+                        // leadobj.ntceSpecDocUrl5__c = item.ntceSpecDocUrl5;
+                        // leadobj.ntceSpecDocUrl6__c = item.ntceSpecDocUrl6;
+                        // leadobj.ntceSpecDocUrl7__c = item.ntceSpecDocUrl7;
+                        // leadobj.ntceSpecDocUrl8__c = item.ntceSpecDocUrl8;
+                        // leadobj.ntceSpecDocUrl9__c = item.ntceSpecDocUrl9;
+                        // leadobj.ntceSpecDocUrl10__c = item.ntceSpecDocUrl10;
                         if (workDivision == 'getPrvtBidPblancListInfoServcPPSSrch') {
                             leadObj.bsnsDivNm__c = '민간용역';
                         }else if (workDivision == 'getPrvtBidPblancListInfoThngPPSSrch') {

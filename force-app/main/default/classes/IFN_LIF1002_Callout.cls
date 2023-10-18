@@ -200,7 +200,7 @@ public class IFN_LIF1002_Callout {
             String requestBody = JSON.serialize(reqparam);
             this.logWrap.RequestBody = requestBody;
 
-            HttpResponse response = gateway.webCallout(requestBody,null, true);
+            HttpResponse response = gateway.webCallout(requestBody,null, false);
 
             if(response.getStatusCode() == 200) {
 

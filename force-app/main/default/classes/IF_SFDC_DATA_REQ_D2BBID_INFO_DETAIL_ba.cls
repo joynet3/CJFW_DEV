@@ -112,7 +112,7 @@ global with sharing class IF_SFDC_DATA_REQ_D2BBID_INFO_DETAIL_ba implements Data
                     CJFW_BiddingInformation__c uptLead = uptLeadMap.get(bidNo);
 
                     uptLead.PIC__c                   = input.response.body.item.chargerNm;
-                    //uptLead.Status = 'New';
+                    //uptLead.Status = 'New';   //2023.10.16 : 사용안함
                     uptLead.Phone__c                 = input.response.body.item.chargerCttpc;
                     uptLead.Company__c               = input.response.body.item.ornt;
                     uptLead.BidNoticeStatus__c       = input.response.body.item.pblancSe;   //공고구분
@@ -169,7 +169,7 @@ global with sharing class IF_SFDC_DATA_REQ_D2BBID_INFO_DETAIL_ba implements Data
 
                         uptLead.pblancDate__c = d;                      //공고 일자
                     }
-                    //uptLead.LeadSource = 'Military';                  //아래 RecordtypeId 로 구분 하느듯?
+                    //uptLead.LeadSource = 'Military';                  //아래 RecordtypeId 로 구분 하는듯? //2023.10.16 : 사용안함
                     uptLead.BudgetAmount__c          = input.response.body.item.budgetAmount <> null ? Decimal.valueOf(input.response.body.item.budgetAmount) : null;   //예산금액
                     uptLead.BidDeterminMethod__c     = input.response.body.item.sucbidrDecsnMth;        //낙찰자 결정방법
                     uptLead.excutTy__c               = input.response.body.item.excutTy;                //집행유형
@@ -197,7 +197,7 @@ global with sharing class IF_SFDC_DATA_REQ_D2BBID_INFO_DETAIL_ba implements Data
                     //objLead.setOptions(dmlOpts);
 
                     objLead.PIC__c               = input.response.body.item.chargerNm;
-                    //objLead.Status = 'New';
+                    //objLead.Status = 'New';   //2023.10.16 : 사용안함
                     objLead.Phone__c             = input.response.body.item.chargerCttpc;
                     objLead.Company__c           = input.response.body.item.ornt;
                     objLead.BidNoticeStatus__c   = input.response.body.item.pblancSe;
@@ -251,7 +251,7 @@ global with sharing class IF_SFDC_DATA_REQ_D2BBID_INFO_DETAIL_ba implements Data
                         );
                         objLead.pblancDate__c = d;
                     }
-                    //objLead.LeadSource = 'Military';
+                    //objLead.LeadSource = 'Military';  //2023.10.16 : 사용안함
                     objLead.BudgetAmount__c         = input.response.body.item.budgetAmount <> null ? Decimal.valueOf(input.response.body.item.budgetAmount) : null;
                     objLead.BidDeterminMethod__c    = input.response.body.item.sucbidrDecsnMth;
                     objLead.excutTy__c              = input.response.body.item.excutTy;

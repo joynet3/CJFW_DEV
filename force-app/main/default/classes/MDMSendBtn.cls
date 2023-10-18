@@ -1,8 +1,8 @@
 /**
- * @description       : MDM 고객정보 전송
+ * @description       : MDM 고객정보 전송 
  * @author            : ChangeMeIn@UserSettingsUnder.SFDoc
  * @group             : 
- * @last modified on  : 09-22-2023
+ * @last modified on  : 10-17-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
 **/
 public without sharing class MDMSendBtn {
@@ -40,7 +40,6 @@ public without sharing class MDMSendBtn {
      * @return DataWrapper
      *         
     **/
-
     @AuraEnabled
 	public static DataWrapper doSendMDM(String recordId) {
         String strStatus = 'SUCCESS';
@@ -94,7 +93,7 @@ public without sharing class MDMSendBtn {
                 WHERE   MDMRegRequestCustomer__c =:recordId
             ];
 
-            /* 대유 주석
+            /* [대유주석]
             List<MDMRegRequestBank__c> listMDMBank = new List<MDMRegRequestBank__c>();
 
             listMDMBank = [
@@ -113,13 +112,13 @@ public without sharing class MDMSendBtn {
                 MDMRegRequestCustomer__c objTarget = listMDMCustomer[0];
 
                 objUpdateAccount.Id = objTarget.Account__c;
-                //objUpdateAccount.ExtId__c = objTarget.Account__c;
+                // [대유주석] objUpdateAccount.ExtId__c = objTarget.Account__c;
 
-                objInput.INSTANCEID = CommonUtil.nullToBlank(objTarget.INSTANCEID__c);                      /* dev & prod : INSTANCEID__c 값이 있는게 없음 => 빈값을 넣어주고 있음 */
-                objInput.PROCID = CommonUtil.nullToBlank(objTarget.PROCID__c);                              /* MD-01-01-01(본점), MD-01-01-10(판매처), 관리처는 확인 필요*/
-                objInput.REQACTORID = CommonUtil.nullToBlank(objTarget.REQACTORID__c);                      /* 요청자 사원번호 세팅 */
-                objInput.PV_CRMNO = CommonUtil.nullToBlank(objTarget.Account__c);                           /* AccountID : component.set('v.objCustomer.Account__c', objOpportunity.AccountId); */
-                // 2022-12-13 빈값으로 변경                
+                objInput.INSTANCEID = CommonUtil.nullToBlank(objTarget.INSTANCEID__c);                      /** dev & prod : INSTANCEID__c 값이 있는게 없음 => 빈값을 넣어주고 있음 */
+                objInput.PROCID = CommonUtil.nullToBlank(objTarget.PROCID__c);                              /** MD-01-01-01(본점), MD-01-01-10(판매처), 관리처는 확인 필요*/
+                objInput.REQACTORID = CommonUtil.nullToBlank(objTarget.REQACTORID__c);                      /** 요청자 사원번호 세팅 */
+                objInput.PV_CRMNO = CommonUtil.nullToBlank(objTarget.Account__c);                           /** AccountID : component.set('v.objCustomer.Account__c', objOpportunity.AccountId); */
+                // [대유주석] 2022-12-13 빈값으로 변경                
                 objInput.PV_KUNNR = '';
                 objInput.PV_OLDCD = CommonUtil.nullToBlank(objTarget.PV_OLDCD__c);
                 objInput.PV_NAME1 = CommonUtil.nullToBlank(objTarget.PV_NAME1__c);
@@ -143,13 +142,13 @@ public without sharing class MDMSendBtn {
                 objInput.PV_VKGRP = CommonUtil.nullToBlank(objTarget.PV_VKGRP__c);
                 objInput.PVVF_VKGRP = CommonUtil.nullToBlank(objTarget.PVVF_VKGRP__c);
                 objInput.PVN_VKGRP = CommonUtil.nullToBlank(objTarget.PV_VKGRP__c);
-                //objInput.PVO_VKGRP = CommonUtil.nullToBlank(objTarget.PVO_VKGRP__c);
+                // [대유주석] objInput.PVO_VKGRP = CommonUtil.nullToBlank(objTarget.PVO_VKGRP__c);
                 objInput.PVRA_VKGRP = CommonUtil.nullToBlank(objTarget.PVRA_VKGRP__c);
                 
                 objInput.PV_PERNR = CommonUtil.nullToBlank(objTarget.PV_PERNR__c);
                 objInput.PVVF_PERNR = CommonUtil.nullToBlank(objTarget.PVVF_PERNR__c);
                 objInput.PVN_PERNR = CommonUtil.nullToBlank(objTarget.PV_PERNR__c);
-                //objInput.PVO_PERNR = CommonUtil.nullToBlank(objTarget.PVO_PERNR__c);
+                // [대유주석] objInput.PVO_PERNR = CommonUtil.nullToBlank(objTarget.PVO_PERNR__c);
                 objInput.PVRA_PERNR = CommonUtil.nullToBlank(objTarget.PVRA_PERNR__c);
 
                 objInput.PV_ADMINMA = CommonUtil.nullToBlank(objTarget.PV_ADMINMA__c);
@@ -157,7 +156,7 @@ public without sharing class MDMSendBtn {
                 objInput.PV_LOGISCENTER = CommonUtil.nullToBlank(objTarget.PV_LOGISCENTER__c);
                 objInput.PVVF_LOGISCENTER = CommonUtil.nullToBlank(objTarget.PVVF_LOGISCENTER__c);
                 objInput.PVN_LOGISCENTER = CommonUtil.nullToBlank(objTarget.PV_LOGISCENTER__c);
-                //objInput.PVO_LOGISCENTER = CommonUtil.nullToBlank(objTarget.PVO_LOGISCENTER__c);                
+                // [대유주석] objInput.PVO_LOGISCENTER = CommonUtil.nullToBlank(objTarget.PVO_LOGISCENTER__c);                
                 objInput.PVRA_LOGISCENTER = CommonUtil.nullToBlank(objTarget.PVRA_LOGISCENTER__c);
 
                 objInput.PV_STCDT = CommonUtil.nullToBlank(objTarget.PV_STCDT__c);
@@ -191,19 +190,19 @@ public without sharing class MDMSendBtn {
                 objInput.PV_CUHR1 = CommonUtil.nullToBlank(objTarget.PV_CUHR1__c);
                 objInput.PVVF_CUHR1 = CommonUtil.nullToBlank(objTarget.PVVF_CUHR1__c);
                 objInput.PVN_CUHR1 = CommonUtil.nullToBlank(objTarget.PV_CUHR1__c);
-                //objInput.PVO_CUHR1 = CommonUtil.nullToBlank(objTarget.PVO_CUHR1__c);
+                // [대유주석] objInput.PVO_CUHR1 = CommonUtil.nullToBlank(objTarget.PVO_CUHR1__c);
                 objInput.PVRA_CUHR1 = CommonUtil.nullToBlank(objTarget.PVRA_CUHR1__c);
 
                 objInput.PV_KONDA = CommonUtil.nullToBlank(objTarget.PV_KONDA__c);
                 objInput.PVVF_KONDA = CommonUtil.nullToBlank(objTarget.PVVF_KONDA__c);
                 objInput.PVN_KONDA = CommonUtil.nullToBlank(objTarget.PV_KONDA__c);
-                //objInput.PVO_KONDA = CommonUtil.nullToBlank(objTarget.PVO_KONDA__c);
+                // [대유주석] objInput.PVO_KONDA = CommonUtil.nullToBlank(objTarget.PVO_KONDA__c);
                 objInput.PVRA_KONDA = CommonUtil.nullToBlank(objTarget.PVRA_KONDA__c);
 
                 objInput.PV_KVGR1 = CommonUtil.nullToBlank(objTarget.PV_KVGR1__c);
                 objInput.PVVF_KVGR1 = CommonUtil.nullToBlank(objTarget.PVVF_KVGR1__c);
                 objInput.PVN_KVGR1 = CommonUtil.nullToBlank(objTarget.PV_KVGR1__c);
-                //objInput.PVO_KVGR1 = CommonUtil.nullToBlank(objTarget.PVO_KVGR1__c);
+                // [대유주석] objInput.PVO_KVGR1 = CommonUtil.nullToBlank(objTarget.PVO_KVGR1__c);
                 objInput.PVRA_KVGR1 = CommonUtil.nullToBlank(objTarget.PVRA_KVGR1__c);
 
                 objInput.PV_WAERS = CommonUtil.nullToBlank(objTarget.PV_WAERS__c);
@@ -220,7 +219,7 @@ public without sharing class MDMSendBtn {
                 objInput.PV_OLD_BIZPLACE_NEW = CommonUtil.nullToBlank(objTarget.PV_OLD_BIZPLACE_NEW__c);
                 objInput.PVVF_OLD_BIZPLACE_NEW = CommonUtil.nullToBlank(objTarget.PVVF_OLD_BIZPLACE_NEW__c);
                 objInput.PVN_OLD_BIZPLACE_NEW = CommonUtil.nullToBlank(objTarget.PV_OLD_BIZPLACE_NEW__c);
-                //objInput.PVO_OLD_BIZPLACE_NEW = CommonUtil.nullToBlank(objTarget.PVO_OLD_BIZPLACE_NEW__c);
+                // [대유주석] objInput.PVO_OLD_BIZPLACE_NEW = CommonUtil.nullToBlank(objTarget.PVO_OLD_BIZPLACE_NEW__c);
                 objInput.PVRA_OLD_BIZPLACE_NEW = CommonUtil.nullToBlank(objTarget.PVRA_OLD_BIZPLACE_NEW__c);
 
                 objInput.PV_SHAPE = CommonUtil.nullToBlank(objTarget.PV_SHAPE__c);
@@ -333,7 +332,7 @@ public without sharing class MDMSendBtn {
                     objInput.PV_MANAGER_INFO = PV_MANAGER_INFO;
                 }
 
-                /* 대유주석
+                /* [대유주석]
                 List<MDMBank> PV_BANK_INFO = new List<MDMBank>();
 
                 if(listMDMBank <> null && listMDMBank.size() > 0) {
@@ -370,8 +369,8 @@ public without sharing class MDMSendBtn {
                 System.debug('===========> strJsonRequestBody : '+strJsonRequestBody);
 
                 if(response.getStatusCode() == 200) {
-                    /* IF_MDM_SFDC_RES_ACCOUNT  */
-                    /* 
+                    /** IF_MDM_SFDC_RES_ACCOUNT  */
+                    /** 
                      * global class Input {
                      *  public List<Item> data;
                      *  public String transaction_Id;
@@ -407,8 +406,8 @@ public without sharing class MDMSendBtn {
                         objNewResult.MDMRegRequestCustomer__c = objTarget.Id;
                         objNewResult.INSTANCEID__c = objResponse.INSTANCEID;
                         objNewResult.PV_CRMNO__c = objResponse.PV_CRMNO;
-                        // 2023-02-01 최초 승인요청시 검토(PROC)로 전송되어 혼란이 있어 요청완료로 변경 진행
-                        //objNewResult.WF_STATUS__c = objResponse.WF_STATUS;
+                        // [대유주석] 2023-02-01 최초 승인요청시 검토(PROC)로 전송되어 혼란이 있어 요청완료로 변경 진행
+                        // [대유주석] objNewResult.WF_STATUS__c = objResponse.WF_STATUS;
                         objNewResult.WF_STATUS__c = 'REQ';
                         
                         if(objResponse.WF_ACTOR <> null && objResponse.WF_ACTOR.size() > 0) {
@@ -451,7 +450,7 @@ public without sharing class MDMSendBtn {
 
                         System.debug('==================> objUpdateAccount : '+JSON.serialize(objUpdateAccount));
 
-                        /* 대유주석
+                        /* [대유주석]
                         if(objUpdateAccount.Id <> null) {
                             System.debug('==================> objUpdateAccount Update');
                             update objUpdateAccount;
@@ -671,7 +670,7 @@ public without sharing class MDMSendBtn {
 
         @AuraEnabled
         public List<MDMContact> PV_MANAGER_INFO {get;set;}
-        /* 대유주석
+        /* [대유주석]
         @AuraEnabled
         public List<MDMBank> PV_BANK_INFO {get;set;}
         */
@@ -689,7 +688,7 @@ public without sharing class MDMSendBtn {
         @AuraEnabled public String PV_EMAIL_VK {get;set;}
 	}
 
-    /* 대유주석
+    /* [대유주석]
     public class MDMBank {
         @AuraEnabled public String INSTANCEID {get;set;}
         @AuraEnabled public String PV_NO {get;set;}

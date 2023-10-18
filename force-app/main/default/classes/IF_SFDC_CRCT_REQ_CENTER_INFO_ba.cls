@@ -4,6 +4,9 @@
  * @group             : 
  * @last modified on  : 03-14-2023
  * @last modified by  : admin
+ * 
+ * @last modified on  : 2023.10.12
+ * @last modified by  : sancho     Lead -> 　CJFW_PublicBiddingInformation__c
 **/
 global with sharing class IF_SFDC_CRCT_REQ_CENTER_INFO_ba implements Database.Batchable<SObject>, Database.Stateful, Database.AllowsCallouts {
 
@@ -58,7 +61,7 @@ global with sharing class IF_SFDC_CRCT_REQ_CENTER_INFO_ba implements Database.Ba
         String strCode = '0000';
         String strMessage = '';
 
-        List<Lead> listData = new List<Lead>();
+        List<CJFW_PublicBiddingInformation__c> listData = new List<CJFW_PublicBiddingInformation__c>();
         LogWrapper LogWrapper = new LogWrapper();
         LogWrapper.requestTime = Datetime.now();
 
@@ -100,37 +103,37 @@ global with sharing class IF_SFDC_CRCT_REQ_CENTER_INFO_ba implements Database.Ba
                     System.debug('=========================> 2');                
                     IF_SFDC_CRCT_REQ_CENTER_INFO_sc.Input input = (IF_SFDC_CRCT_REQ_CENTER_INFO_sc.Input) JSON.deserialize(strJSON, IF_SFDC_CRCT_REQ_CENTER_INFO_sc.Input.class);
                     System.debug('=========================> 3');
-                    Id recordId = Schema.SObjectType.LEAD.getRecordTypeInfosByDeveloperName().get('KindergartenLead').getRecordTypeId();
+                    Id recordId = Schema.SObjectType.CJFW_PublicBiddingInformation__c.getRecordTypeInfosByDeveloperName().get('ChildCenter').getRecordTypeId();
 
                     IF_SFDC_CRCT_REQ_CENTER_INFO_sc.Res inputRes = input.response;
 
                     if(inputRes <> null && inputRes.item <> null && inputRes.item.size() > 0) {
                         for (IF_SFDC_CRCT_REQ_CENTER_INFO_sc.Items obj : input.response.item) {
                             
-                            Lead objLead = new Lead();
+                            CJFW_PublicBiddingInformation__c objLead = new CJFW_PublicBiddingInformation__c();
             
                             // objLead.BidNoticeSource__c = '어린이집 정보 공개 포털';
-                            objLead.LastName = obj.CRREPNAME <> null && obj.CRREPNAME <> '' ? obj.CRREPNAME : obj.crname;
-                            objLead.Status = 'New';
-                            objLead.Company = obj.crname;
-                            objLead.Latitude = obj.la <> null && obj.la <> '' ? Decimal.valueOf(obj.la) : null;
-                            objLead.Longitude = obj.lo <> null && obj.lo <> '' ? Decimal.valueOf(obj.lo) : null;
-                            objLead.Phone = obj.crtelno;
-                            objLead.Fax = obj.crfaxno;
-                            objLead.Website = obj.crhome;
-                            objLead.KindergartenCode__c = obj.stcode;
-                            objLead.KindergartenType__c = obj.crtypename;
-                            objLead.AuthorizedCapacity__c = Integer.valueOf(obj.crcapat);
-                            objLead.NumberofChildren__c = Integer.valueOf(obj.crchcnt);
-                            objLead.TemporarilyCloseStartDate__c = obj.crpausebegindt <> null && obj.crpausebegindt <> '' ? Date.valueOf(obj.crpausebegindt) : null;
-                            objLead.TemporarilyCloseEndDate__c = obj.crpauseenddt <> null && obj.crpauseenddt <> '' ? Date.valueOf(obj.crpauseenddt) : null;
-                            objLead.CloseDate__c = obj.crabldt <> null && obj.crabldt <> '' ? Date.valueOf(obj.crabldt) : null;
-                            objLead.Databasedate__c = obj.datastdrdt <> null && obj.datastdrdt <> '' ? Date.valueOf(obj.datastdrdt) : null;
-                            objLead.AddressDetails__c = obj.craddr;
-                            //objLead.Address__c = obj.sigunname <> null ? obj.sidoname +' '+obj.sigunname : obj.sidoname;
-                            objLead.PostalCode__c = obj.zipcode;
-                            objLead.AuthorizationDate__c = obj.crcnfmdt <> null && obj.crcnfmdt <> '' ? Date.valueOf(obj.crcnfmdt) : null;
-                            objLead.RecordtypeId = recordId;
+                            objLead.Name                    = obj.CRREPNAME <> null && obj.CRREPNAME <> '' ? obj.CRREPNAME : obj.crname;
+                            //objLead.Status = 'New';
+                            //objLead.Company = obj.crname;
+                            objLead.Location__Latitude__s   = obj.la <> null && obj.la <> '' ? Decimal.valueOf(obj.la) : null;
+                            objLead.Location__Longitude__s  = obj.lo <> null && obj.lo <> '' ? Decimal.valueOf(obj.lo) : null;
+                            objLead.Phone__c                = obj.crtelno;
+                            objLead.Fax__c                  = obj.crfaxno;
+                            objLead.Homepage__c             = obj.crhome;
+                            objLead.ChildCenterCode__c      = obj.stcode;
+                            objLead.ChildCenterType__c      = obj.crtypename;
+                            objLead.AuthorizedCapacity__c   = Integer.valueOf(obj.crcapat);
+                            objLead.NumberofChildren__c     = Integer.valueOf(obj.crchcnt);
+                            objLead.TemporarilyCloseStartDate__c    = obj.crpausebegindt <> null && obj.crpausebegindt <> '' ? Date.valueOf(obj.crpausebegindt) : null;
+                            objLead.TemporarilyCloseEndDate__c      = obj.crpauseenddt <> null && obj.crpauseenddt <> '' ? Date.valueOf(obj.crpauseenddt) : null;
+                            objLead.CloseDate__c            = obj.crabldt <> null && obj.crabldt <> '' ? Date.valueOf(obj.crabldt) : null;
+                            objLead.Databasedate__c         = obj.datastdrdt <> null && obj.datastdrdt <> '' ? Date.valueOf(obj.datastdrdt) : null;
+                            objLead.AddressDetails__c       = obj.craddr;
+                            //objLead.Address__c = obj.sigunname <> null ? obj.sidoname +' '+obj.sigunname : obj.sidoname;  //2023.10.18 왜 막아 놨지? 
+                            objLead.PostalCode__c           = obj.zipcode;
+                            objLead.AuthorizationDate__c    = obj.crcnfmdt <> null && obj.crcnfmdt <> '' ? Date.valueOf(obj.crcnfmdt) : null;
+                            objLead.RecordtypeId            = recordId;
                             listData.add(objLead);
                         }
                     }
@@ -141,7 +144,7 @@ global with sharing class IF_SFDC_CRCT_REQ_CENTER_INFO_ba implements Database.Ba
                 System.debug('failsidolist === ' + failSidoList);
             }
             
-            upsert listData KindergartenCode__c;
+            upsert listData ChildCenterCode__c;
 
         }catch(Exception e) {
             strStatus = 'ERROR';

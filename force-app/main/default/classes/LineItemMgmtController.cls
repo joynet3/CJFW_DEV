@@ -270,12 +270,15 @@ public without sharing class LineItemMgmtController {
         System.debug('# LineItemMgmtController # doSearchAI ');
         String searchKey  = String.valueOf(mapParam.get('searchKey'));
         String selectedCenter  = String.valueOf(mapParam.get('selectedCenter'));
+        String biz_dept_cd  = String.valueOf(mapParam.get('biz_dept_cd'));
+
 
         Map<String,Object> objInput = new Map<String,Object>();
         List<String> strlist = new List<String>();
         strlist.add(searchKey);
         objInput.put('total_count',1); 
-        objInput.put('option','cate'); 
+        objInput.put('lgs_ctr_cd',selectedCenter); 
+        objInput.put('biz_dept_cd',biz_dept_cd); 
         objInput.put('input_data', strlist); 
         
         List<String> listAIEntryCode = new List<String>();

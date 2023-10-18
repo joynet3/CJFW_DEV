@@ -11,8 +11,8 @@
 
  * @author            : eunyoung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 10-12-2023
- * @last modified by  : jieun.lee3@dkbmc.com
+ * @last modified on  : 10-18-2023
+ * @last modified by  : eunyoung.choi@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
  * 1.0   08-24-2023   eunyoung.choi@dkbmc.com   Initial Version 작성
@@ -20,6 +20,8 @@
 public with sharing class ReportFormController {
     // public static Decimal versionCheck;
     public static String SaveDataList;
+
+    public Account accountInfo {get;set;}
 
     public String opportunityId { get; set; }
     public String incomeExpensesId { get; set;} // 예상손익 id
@@ -37,46 +39,87 @@ public with sharing class ReportFormController {
     public String accountName { get; set; }
     public String savedAccountName { get; set; }
 
-    /* picklist 값 가져오기 위한 선언 */
-    public String selectedCollateral { get; set; }
-    public String selectedPayment { get; set; }
+    /* picklist 저장된 값 가져오기 위한 선언 */
+    public String selectedCollateral { get; set; } // 담보제공종류
+    public String selectedPayment { get; set; }    // 결제수단종류 
+    public String selectedContract { get; set; }   //계약서 종류
 
     /* picklist */
-    public List<SelectOption> paymentPickList { get; set; }    // 결제수단종류 
     public List<SelectOption> collateralPickList { get; set; } // 담보제공종류
-
-    /* 계산로직 test */
-/*     public Decimal input1 { get; set; }
-    public Decimal input2 { get; set; }
-    public Decimal result { get; set; } */
+    public List<SelectOption> paymentPickList { get; set; }    // 결제수단종류 
+    public List<SelectOption> contractPickList { get; set; } // 계약서종류
 
     /* 날짜형식변환 */
     public String collateralPeriod { get; set; } // 담보 제공 기간
     public String contractPaymentDate { get; set; } // 약정결제일
-
-/*     public void saveAccount() {
-        savedAccountName = accountName;
-    } */
-
-/*     public void multiply() {
-        result = input1 * input2;
-    } */
-
-/*     public void passValueToController(){
-        fieldValue = selectedPayment;
-        system.debug('fieldValue' + fieldValue);
-    } */
-    
+    public String initialDate { get; set; } // 초도일자
+    public String contractStartDate { get; set; } // 계약시작
+    public String contractEndDate { get; set; } // 계약종료
 
     /* 
     컨트롤러가 호출되면 돌아가는 부분 
+    순서 잘 맞추기
     */
     public ReportFormController() {
-        getPicklistValues(); 
-        getIncomeExpenses(); // oppty 값 담아주는 메소드 
-        getExpectManager();
-        getDistributeCost(); // 물류비관리 값 가져오기 
+        getPicklistValues(); // picklist label/value 값 담기 [1]
+        getAccountInfo();    // 고객사 정보 가져오기 [2]
+        getIncomeExpenses(); // 신규개설품의 obj 값 가져오기 [3]
+        getExpectManager();  // 품의서 관리자 작성 obj 값 가져오기 [4] 
+        getDistributeCost(); // 물류비관리 값 가져오기 [5]
     }
+
+    /* 
+    Oppty 에 있는 Account 값을 가져오는 메소드
+    */
+   public void getAccountInfo() {
+
+    opportunityId = ApexPages.currentPage().getParameters().get('opportunityId');
+    incomeExpensesId = ApexPages.currentPage().getParameters().get('incomeExpensesId');
+    showtable = ApexPages.currentPage().getParameters().get('showtable');
+
+    System.debug('# opportunityId ->' + opportunityId );
+    System.debug('# incomeExpensesId ->' + incomeExpensesId );
+    System.debug('# showtable ->' + showtable );
+
+    
+    // 기회 레코드에서 계정 ID 가져오기
+    Id accountId = [SELECT AccountId FROM Opportunity WHERE Id = :opportunityId LIMIT 1].AccountId;
+    
+    if (accountId != null) {
+        // 계정 정보를 쿼리
+        accountInfo = [SELECT 
+                            Id,
+                            Name,
+                            RepresentativeName__c,
+                            BusinessPath__c, // picklist 너무 많아서 텍스트로 입력하는것으로
+                            SalesMonthly__c, // 포뮬라
+                            OurSales__c, // currency
+                            Address__c,
+                            Phone ,
+                            PV_EXISTSUP__c 
+                        FROM Account 
+                        WHERE Id = :accountId 
+                    ];
+
+        String[] defaultValSet = new String[] {
+            'RepresentativeName__c',
+            'BusinessPath__c',
+            'Address__c',
+            'PV_EXISTSUP__c'
+        };
+
+        for (String defaultSet : defaultValSet) {
+            Object fieldValue = accountInfo.get(defaultSet);
+            // 필드 값이 null이면 기본값을 공백
+            if (fieldValue == null)  fieldValue = ''; 
+            accountInfo.put(defaultSet, fieldValue);
+        }
+
+        System.debug('# 잘 가져왔니 ?->' + accountInfo );
+    } else {
+        System.debug('# 계정 ID를 찾을 수 없습니다.');
+    }
+}
 
 
     /* 
@@ -86,12 +129,15 @@ public with sharing class ReportFormController {
 
        Schema.DescribeFieldResult collateralResult = CJFW_ExpectedIncomeExpenses__c.CollateralType__c.getDescribe();
        Schema.DescribeFieldResult paymentPick = CJFW_ExpectedIncomeExpenses__c.PaymentMethod__c.getDescribe(); // 추가 
+       Schema.DescribeFieldResult contractTypePick = CJFW_ExpectedIncomeExpenses__c.ContractType__c.getDescribe(); // 계약서종류 
        
        List<Schema.PicklistEntry> collateralValues = collateralResult.getPicklistValues();
        List<Schema.PicklistEntry> paymentValues = paymentPick.getPicklistValues();
+       List<Schema.PicklistEntry> contractValues = contractTypePick.getPicklistValues();
 
        collateralPickList = new List<SelectOption>();
        paymentPickList = new List<SelectOption>();
+       contractPickList = new List<SelectOption>();
 
         for (Schema.PicklistEntry picklistValue : collateralValues) {
             collateralPickList.add(new SelectOption(picklistValue.getLabel(), picklistValue.getValue()));
@@ -99,6 +145,10 @@ public with sharing class ReportFormController {
 
         for (Schema.PicklistEntry picklistValue : paymentValues) {
             paymentPickList.add(new SelectOption(picklistValue.getLabel(), picklistValue.getValue()));
+        }
+
+        for (Schema.PicklistEntry picklistValue : contractValues) {
+            contractPickList.add(new SelectOption(picklistValue.getLabel(), picklistValue.getValue()));
         }
 
     }
@@ -111,13 +161,13 @@ public with sharing class ReportFormController {
 
         System.debug('# ReportFormController # getIncomeExpenses');
         
-        opportunityId = ApexPages.currentPage().getParameters().get('opportunityId');
-        incomeExpensesId = ApexPages.currentPage().getParameters().get('incomeExpensesId');
-        showtable = ApexPages.currentPage().getParameters().get('showtable');
+        //opportunityId = ApexPages.currentPage().getParameters().get('opportunityId');
+        //incomeExpensesId = ApexPages.currentPage().getParameters().get('incomeExpensesId');
+        //showtable = ApexPages.currentPage().getParameters().get('showtable');
 
-        System.debug('# opportunityId ->' + opportunityId );
-        System.debug('# incomeExpensesId ->' + incomeExpensesId );
-        System.debug('# showtable ->' + showtable );
+        //System.debug('# opportunityId ->' + opportunityId );
+        //System.debug('# incomeExpensesId ->' + incomeExpensesId );
+        //System.debug('# showtable ->' + showtable );
 
         try {
             String query = 'SELECT Id, ' +
@@ -151,7 +201,24 @@ public with sharing class ReportFormController {
             'SalesSupportExpect__c, ' +
             'IsReportCheck__c, ' +
             'ContractDepreciationRate__c, ' +
-            'IncentiveSupport__c ' +
+            'Summary__c, ' +
+            'ContractStartDate__c, ' +
+            'ContractEndDate__c, ' +
+            'ContractType__c, ' +
+            'ClientCompanyName__c, ' + // 거래처현황 관련 필드 추가 
+            'RepresentativeName__c, ' +  
+            'BusinessPath__c, ' +  
+            'SalesMonthly__c, ' +  
+            'OurSales__c, ' +  
+            'Address__c, ' +  
+            'RepresentativePhone__c, ' +  
+            'PV_EXISTSUP__c, ' +  
+            'ExceptionPrice__c, ' +  
+            'Center__c, ' +  
+            'IncentiveSupport__c, ' +
+            'ImprovementPlanDetails__c, ' +
+            'OtherSupportDetail__c, ' + // 기타 지원세부 내역
+            'InitialDate__c ' + // 초도일자
             'FROM CJFW_ExpectedIncomeExpenses__c';
 
             if (incomeExpensesId != null) {
@@ -211,22 +278,73 @@ public with sharing class ReportFormController {
             IncomeExpensesInfo.put(defaultSet, fieldValue);
         }
 
+        selectedCollateral = IncomeExpensesInfo.CollateralType__c; // 담보종류
+        selectedPayment = IncomeExpensesInfo.PaymentMethod__c; // 결제수단 
+        selectedContract = IncomeExpensesInfo.ContractType__c	; // 계약서종류 
+
         // ContractPaymentDate__c 필드를 yyyy-MM-dd 형식의 문자열로 변환
         String collateralPeriodString = String.valueOf(IncomeExpensesInfo.collateralPeriod__c);
         String contractPaymentDateString = String.valueOf(IncomeExpensesInfo.contractPaymentDate__c); 
+        String initialDateString = String.valueOf(IncomeExpensesInfo.InitialDate__c); // 초도일자 
+        String contractStartString = String.valueOf(IncomeExpensesInfo.ContractStartDate__c); // 계약시작일자
+        String contractEndString = String.valueOf(IncomeExpensesInfo.ContractEndDate__c); // 계약종료일자 
 
         collateralPeriod = collateralPeriodString != null ? collateralPeriodString.substring(0, 10) : null;
         contractPaymentDate = contractPaymentDateString != null ? contractPaymentDateString.substring(0, 10) : null;
+        initialDate = initialDateString != null ? initialDateString.substring(0, 10) : null;
+        contractStartDate = contractStartString != null ? contractStartString.substring(0, 10) : null;
+        contractEndDate = contractEndString != null ? contractEndString.substring(0, 10) : null;
 
-        selectedCollateral = IncomeExpensesInfo.CollateralType__c; // 담보종류
-        selectedPayment = IncomeExpensesInfo.PaymentMethod__c; // 결제수단 
 
-        System.debug('# paymentPickList ->' + paymentPickList ); 
-        System.debug('# collateralPickList ->' + collateralPickList ); 
-        System.debug('# 담보제공 날짜 ->' + collateralPeriod ); 
-        System.debug('# 채권 날짜 ->' + contractPaymentDate ); 
-        System.debug('# 담보종류 ->' + selectedCollateral ); 
-        System.debug('# 결제수단 ->' + selectedPayment ); 
+       // System.debug('# paymentPickList ->' + paymentPickList ); 
+       // System.debug('# collateralPickList ->' + collateralPickList ); 
+       // System.debug('# 담보제공 날짜 ->' + collateralPeriod ); 
+       // System.debug('# 채권 날짜 ->' + contractPaymentDate ); 
+       // System.debug('# 담보종류 ->' + selectedCollateral ); 
+       // System.debug('# 결제수단 ->' + selectedPayment ); 
+
+
+        // 2. 거래처 현황 account info 값을 참고로 IncomeExpensesInfo 에 담아주기 : IncomeExpensesInfo 필드에 값이 있는지 먼저 체크 > 값이 없으면 accountInfo 에서 값 땡겨옴
+
+        // 거래처명 (text)
+        if( IncomeExpensesInfo.ClientCompanyName__c == '' ){
+            IncomeExpensesInfo.put('ClientCompanyName__c', accountInfo.get('Name') );
+        }
+        // 대표자명 (text)
+        if(IncomeExpensesInfo.RepresentativeName__c == '' ){
+            IncomeExpensesInfo.put('RepresentativeName__c', accountInfo.get('RepresentativeName__c') );
+        }
+        // 경로 
+        if(IncomeExpensesInfo.BusinessPath__c == '' ){
+            IncomeExpensesInfo.put('BusinessPath__c', accountInfo.get('BusinessPath__c') );
+        }
+        // 전체외형 (decimal)
+        if(IncomeExpensesInfo.SalesMonthly__c == 0 ){
+            IncomeExpensesInfo.put('SalesMonthly__c', accountInfo.get('SalesMonthly__c') );
+        }
+        // 당사규모 (decimal)
+        if(IncomeExpensesInfo.OurSales__c == 0 ){
+            IncomeExpensesInfo.put('OurSales__c', accountInfo.get('OurSales__c') );
+        }
+        // 초도일자 (Account에 정보없음) 
+
+        // 주소 (text)
+        if( IncomeExpensesInfo.Address__c == '' || IncomeExpensesInfo.Address__c == null ){
+            IncomeExpensesInfo.put('Address__c', accountInfo.get('Address__c') );
+        }
+        // 연락처 (decimal)
+        if(IncomeExpensesInfo.RepresentativePhone__c == '' || IncomeExpensesInfo.RepresentativePhone__c == null ){
+            IncomeExpensesInfo.put('RepresentativePhone__c', accountInfo.get('Phone') );
+        }
+        // 기존납품처 
+        if(IncomeExpensesInfo.PV_EXISTSUP__c == '' || IncomeExpensesInfo.PV_EXISTSUP__c == null ){
+            IncomeExpensesInfo.put('PV_EXISTSUP__c', accountInfo.get('PV_EXISTSUP__c') );
+        }
+        // 단가/예외가 (Account에 정보없음) 
+        // 센터 (Account에 정보없음) 
+        // 3. 거래처 상세내용 
+
+        System.debug('# accountInfo  ->' + accountInfo ); 
     }
 
 
@@ -362,10 +480,70 @@ public with sharing class ReportFormController {
             String collateralPeriod = (String)dataMap.get('collateral-period');
             String contractPeriod = (String)dataMap.get('contract-payment-period');
 
+            // 거래처 화면에서 받아온 데이터 예상손익 object 에 저장 
+            // expectIncome.ClientCompanyName__c = dataMap.containsKey('accountName') ? (String) dataMap.get('accountName') : expectIncome.ClientCompanyName__c;
+            // expectIncome.RepresentativeName__c = dataMap.containsKey('ownerName') ? (String) dataMap.get('ownerName') : expectIncome.RepresentativeName__c;
+            // expectIncome.BusinessPath__c = dataMap.containsKey('accountChannel') ? (String) dataMap.get('accountChannel') : expectIncome.BusinessPath__c;
+            
+            // 개요
+            if (dataMap.containsKey('summary')) { 
+                expectIncome.Summary__c = (String) dataMap.get('summary');
+            }
+            // 저장 
+            if (dataMap.containsKey('accountName')) { // 거래처명 (text)
+                expectIncome.ClientCompanyName__c = (String) dataMap.get('accountName');
+            }
+            if (dataMap.containsKey('ownerName')) { // 대표자명 (text)
+                expectIncome.RepresentativeName__c = (String) dataMap.get('ownerName');
+            }
+            if (dataMap.containsKey('accountChannel')) { // 경로 (text)
+                expectIncome.BusinessPath__c = (String) dataMap.get('accountChannel');
+            }
+            if (dataMap.containsKey('outwardEntire')) { // 전체외형 (decimal)
+                expectIncome.SalesMonthly__c = convertToDecimal(dataMap.get('outwardEntire'));
+            }
+            if (dataMap.containsKey('outwardCompanySize')) { // 당사규모 (decimal)
+                expectIncome.OurSales__c = convertToDecimal(dataMap.get('outwardCompanySize'));
+            }
+            if (dataMap.containsKey('firstDraft')) { // 초도일자 (date)
+                expectIncome.InitialDate__c = Date.valueOf(((String) dataMap.get('firstDraft')));
+            }
+            if (dataMap.containsKey('accountAddress')) { // 주소 (text)
+                expectIncome.Address__c = (String) dataMap.get('accountAddress');
+            }
+            if (dataMap.containsKey('accountPhone')) { // 연락처 (phone)
+                expectIncome.RepresentativePhone__c = (String)dataMap.get('accountPhone');
+            }
+            if (dataMap.containsKey('existGoods')) { // 기존납품처 (text)
+                expectIncome.PV_EXISTSUP__c = (String) dataMap.get('existGoods');
+            }
+            if (dataMap.containsKey('exceptionPrice')) { // 단가/예외가 (decimal)
+                expectIncome.ExceptionPrice__c = convertToDecimal(dataMap.get('exceptionPrice')) ;
+            }
+            if (dataMap.containsKey('existCenter')) { // 센터
+                expectIncome.Center__c = (String)dataMap.get('existCenter') ;
+            }
+
+            if (dataMap.containsKey('otherDetail')) { // 기타 세부 내역
+                expectIncome.OtherSupportDetail__c = (String)dataMap.get('otherDetail') ;
+            }
+            
+            
+            //expectIncome.BusinessPath__c = (String)dataMap.get('accountChannel');
+            //expectIncome.SalesMonthly__c = convertToDecimal(dataMap.get('outwardEntire'));
+            //expectIncome.OurSales__c = convertToDecimal(dataMap.get('outwardCompanySize'));
+            //expectIncome.InitialDate__c = convertToDecimal(dataMap.get('firstDraft'));
+            //expectIncome.Address__c = (String)dataMap.get('accountAddress');
+            //expectIncome.RepresentativePhone__c = (String)dataMap.get('accountPhone');
+            //expectIncome.PV_EXISTSUP__c = (String)dataMap.get('existGoods');
+            //expectIncome.ExceptionPrice__c = convertToDecimal(dataMap.get('exceptionPrice'));
+            //expectIncome.Center__c = (String)dataMap.get('existCenter');
+
             if(collateralPeriod <> null && contractPeriod <> '') {
                 Date collateralPeriodDate = Date.valueOf(collateralPeriod); // 담보제공기간
                 expectIncome.CollateralPeriod__c = collateralPeriodDate;
             }
+
             if(contractPeriod <> null && contractPeriod <> '') {
                 Date contractPeriodDate = Date.valueOf(contractPeriod); // 약정결제일
                 expectIncome.ContractPaymentDate__c = contractPeriodDate;
@@ -427,7 +605,7 @@ public with sharing class ReportFormController {
     /* 
     Decimal 값으로 변환하기위해 사용되는 메소드
     */
-    public static Decimal convertToDecimal(Object objValue) {
+    public static Decimal convertToDecimal(Object objValue) {  
         Decimal decimalValue = 0.0; // 기본값 설정
     
         if (objValue != null) {

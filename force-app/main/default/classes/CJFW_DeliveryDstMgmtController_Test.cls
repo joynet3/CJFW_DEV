@@ -10,13 +10,21 @@ public with sharing class CJFW_DeliveryDstMgmtController_Test {
     @isTest
     static void test1() {
 
-        Id recordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByName().get('Existing Customer').getRecordTypeId();
-        
+        Id accRecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByName().get('Existing Customer').getRecordTypeId();
+        Id mailRecordTypeId = Schema.SObjectType.MailRecipientMaster__c.getRecordTypeInfosByName().get('물류센터 담당자 설정').getRecordTypeId();
+
         Account acc = new Account(
             Name = 'testAccount',
-            RecordTypeId = recordTypeId
+            RecordTypeId = accRecordTypeId
         );
         insert acc;
+
+        MailRecipientMaster__c mailmaster = new MailRecipientMaster__c(
+            RecordTypeId = mailRecordTypeId,
+            MailAddress__c = 'test@test.com',
+            LogisticsCenter__c = '장성센터'
+        );
+        insert mailmaster;
 
         CJFW_DeliveryDestinationMgmt__c mgmt = new CJFW_DeliveryDestinationMgmt__c(
             LogisticsCenter__c = '장성센터',

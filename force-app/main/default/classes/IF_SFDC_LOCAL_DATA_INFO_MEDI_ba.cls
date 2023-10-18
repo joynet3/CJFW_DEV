@@ -29,7 +29,7 @@ global with sharing class IF_SFDC_LOCAL_DATA_INFO_MEDI_ba implements Database.Ba
     Map<String,String> localToSiDoMap = new Map<String,String>();
     Set<String> instCodeSet = new Set<String>();
     List<String> upsertFailList = new List<String>();
-    Id recordIdEx = Schema.SObjectType.Lead.getRecordTypeInfosByDeveloperName().get('LeadLocalData').getRecordTypeId();
+    Id recordIdEx = Schema.SObjectType.CJFW_PublicBiddingInformation__c.getRecordTypeInfosByDeveloperName().get('Local').getRecordTypeId();
 
     global IF_SFDC_LOCAL_DATA_INFO_MEDI_ba(List<String> upsertFailList) {
         this.upsertFailList = upsertFailList;
@@ -99,7 +99,7 @@ global with sharing class IF_SFDC_LOCAL_DATA_INFO_MEDI_ba implements Database.Ba
     global void execute(Database.BatchableContext BC, List<String> scope) {
         System.debug('=========================' + scope[0] + '\'th execute');
         String getRequest = '';
-        List<Lead> upsertLeadList = new List<Lead>();
+        List<CJFW_PublicBiddingInformation__c> upsertLeadList = new List<CJFW_PublicBiddingInformation__c>();
         
         getRequest += '?authKey=' + authKey.KeyValue__c;
         if (authKey.DateRange__c <> null) {
@@ -135,111 +135,84 @@ global with sharing class IF_SFDC_LOCAL_DATA_INFO_MEDI_ba implements Database.Ba
                         if(objRows <> null && objRows.row <> null && objRows.row.size() > 0) {
                             for (IF_SFDC_LOCAL_DATA_INFO_MEDI_ba.Item item : objRows.row) {
                                 
-                                Lead leadObj = new Lead();
-                                System.debug(item.bplcNm + ', ' + item.opnSvcId + ' : ' + item.opnSvcNm);
-                                //공통 제공항목
-                                leadObj.LocationState__c = localToSiGunGuMap.get(item.opnSfTeamCode);
-                                leadObj.LocationStateProvince__c = localToSiDoMap.get(item.opnSfTeamCode);
-                                leadObj.mgtNo__c = item.mgtNo;
-                                leadObj.opnSvcId__c = item.opnSvcId;
-                                leadObj.updateGbn__c = item.updateGbn;
-                                leadObj.updateDt__c = item.updateDt <> null && item.updateDt <> '' ? Datetime.valueOf(item.updateDt) : null;
-                                leadObj.opnSvcNm__c = item.opnSvcNm;
-                                leadObj.Company = item.bplcNm;
-                                leadObj.LastName = item.bplcNm;
-                                leadObj.sitePostNo__c = item.sitePostNo;
-                                leadObj.siteWhlAddr__c = item.siteWhlAddr;
-                                leadObj.PostalCode__c = item.rdnPostNo;
-                                leadObj.Address__c = item.rdnWhlAddr;
-                                leadObj.siteArea__c = item.siteArea <> null && item.siteArea <> '' ? Decimal.valueOf(item.siteArea.replaceAll(',','')) : null;
+                                CJFW_PublicBiddingInformation__c leadObj = new CJFW_PublicBiddingInformation__c();
+                                leadObj.LocationStateProvince__c    = localToSiGunGuMap.get(item.opnSfTeamCode); //leadObj.LocationState__c = localToSiGunGuMap.get(item.opnSfTeamCode);   //PickList
+                                leadObj.mgtNo__c                    = item.mgtNo;
+                                leadObj.opnSvcId__c                 = item.opnSvcId;
+                                leadObj.updateGbn__c                = item.updateGbn;
+                                leadObj.updateDt__c                 = item.updateDt <> null && item.updateDt <> '' ? Datetime.valueOf(item.updateDt) : null;
+                                leadObj.opnSvcNm__c                 = item.opnSvcNm;
+                                leadObj.Name                        = item.bplcNm;
+                                //leadObj.Company = item.bplcNm;
+                                //leadObj.LastName = item.bplcNm;
+                                leadObj.sitePostNo__c               = item.sitePostNo;
+                                leadObj.siteWhlAddr__c              = item.siteWhlAddr;
+                                leadObj.PostalCode__c               = item.rdnPostNo;   //도로명우편번호
+                                leadObj.Address__c                  = item.rdnWhlAddr;
+                                leadObj.siteArea__c                 = item.siteArea <> null && item.siteArea <> '' ? Decimal.valueOf(item.siteArea.replaceAll(',','')) : null;
                                 if (item.apvPermYmd <> null && item.apvPermYmd <> '') {
-                                    Date dt = Date.newInstance(
-                                    Integer.valueOf(item.apvPermYmd.substring(0,4))
-                                    , Integer.valueOf(item.apvPermYmd.substring(5,7))
-                                    , Integer.valueOf(item.apvPermYmd.substring(8,10))
-                                    );
-                                leadObj.apvPermYmd__c = Date.newInstance(dt.year(), dt.month(), dt.day());
+                                    Date dt = Date.newInstance(Integer.valueOf(item.apvPermYmd.substring(0,4)), Integer.valueOf(item.apvPermYmd.substring(5,7)), Integer.valueOf(item.apvPermYmd.substring(8,10)));
+                                    leadObj.apvPermYmd__c           = Date.newInstance(dt.year(), dt.month(), dt.day());
                                 }
                                 if (item.apvCancelYmd <> null && item.apvCancelYmd <> '') {
-                                    Date dt = Date.newInstance(
-                                    Integer.valueOf(item.apvCancelYmd.substring(0,4))
-                                    , Integer.valueOf(item.apvCancelYmd.substring(5,7))
-                                    , Integer.valueOf(item.apvCancelYmd.substring(8,10))
-                                    );
-                                leadObj.apvCancelYmd__c = Date.newInstance(dt.year(), dt.month(), dt.day());
+                                    Date dt = Date.newInstance(Integer.valueOf(item.apvCancelYmd.substring(0,4)), Integer.valueOf(item.apvCancelYmd.substring(5,7)), Integer.valueOf(item.apvCancelYmd.substring(8,10)));
+                                    leadObj.apvCancelYmd__c         = Date.newInstance(dt.year(), dt.month(), dt.day());
                                 }
                                 if (item.dcbYmd <> null && item.dcbYmd <> '') {
-                                    Date dt = Date.newInstance(
-                                    Integer.valueOf(item.dcbYmd.substring(0,4))
-                                    , Integer.valueOf(item.dcbYmd.substring(5,7))
-                                    , Integer.valueOf(item.dcbYmd.substring(8,10))
-                                    );
-                                leadObj.dcbYmd__c = Date.newInstance(dt.year(), dt.month(), dt.day());
+                                    Date dt = Date.newInstance(Integer.valueOf(item.dcbYmd.substring(0,4)), Integer.valueOf(item.dcbYmd.substring(5,7)), Integer.valueOf(item.dcbYmd.substring(8,10)));
+                                    leadObj.dcbYmd__c               = Date.newInstance(dt.year(), dt.month(), dt.day());
                                 }
                                 if (item.clgStdt <> null && item.clgStdt <> '') {
-                                    Date dt = Date.newInstance(
-                                    Integer.valueOf(item.clgStdt.substring(0,4))
-                                    , Integer.valueOf(item.clgStdt.substring(5,7))
-                                    , Integer.valueOf(item.clgStdt.substring(8,10))
-                                    );
-                                leadObj.clgStdt__c = Date.newInstance(dt.year(), dt.month(), dt.day());
+                                    Date dt = Date.newInstance(Integer.valueOf(item.clgStdt.substring(0,4)), Integer.valueOf(item.clgStdt.substring(5,7)), Integer.valueOf(item.clgStdt.substring(8,10)));
+                                    leadObj.clgStdt__c              = Date.newInstance(dt.year(), dt.month(), dt.day());
                                 }
                                 if (item.clgEnddt <> null && item.clgEnddt <> '') {
-                                    Date dt = Date.newInstance(
-                                    Integer.valueOf(item.clgEnddt.substring(0,4))
-                                    , Integer.valueOf(item.clgEnddt.substring(5,7))
-                                    , Integer.valueOf(item.clgEnddt.substring(8,10))
-                                    );
-                                leadObj.clgEnddt__c = Date.newInstance(dt.year(), dt.month(), dt.day());
+                                    Date dt = Date.newInstance(Integer.valueOf(item.clgEnddt.substring(0,4)), Integer.valueOf(item.clgEnddt.substring(5,7)), Integer.valueOf(item.clgEnddt.substring(8,10)));
+                                    leadObj.clgEnddt__c             = Date.newInstance(dt.year(), dt.month(), dt.day());
                                 }
                                 if (item.ropnYmd <> null && item.ropnYmd <> '') {
-                                    Date dt = Date.newInstance(
-                                    Integer.valueOf(item.ropnYmd.substring(0,4))
-                                    , Integer.valueOf(item.ropnYmd.substring(5,7))
-                                    , Integer.valueOf(item.ropnYmd.substring(8,10))
-                                    );
-                                leadObj.ropnYmd__c = Date.newInstance(dt.year(), dt.month(), dt.day());
+                                    Date dt = Date.newInstance(Integer.valueOf(item.ropnYmd.substring(0,4)), Integer.valueOf(item.ropnYmd.substring(5,7)), Integer.valueOf(item.ropnYmd.substring(8,10)));
+                                    leadObj.ropnYmd__c              = Date.newInstance(dt.year(), dt.month(), dt.day());
                                 }
                                 if (item.lastModTs <> null && item.lastModTs <> '') {
                                     Datetime dt = Datetime.newInstance(
-                                    Integer.valueOf(item.lastModTs.substring(0,4))
-                                    ,Integer.valueOf(item.lastModTs.substring(5,7))
-                                    ,Integer.valueOf(item.lastModTs.substring(8,10))
-                                    ,Integer.valueOf(item.lastModTs.substring(11,13))
-                                    ,Integer.valueOf(item.lastModTs.substring(14,16))
-                                    , Integer.valueOf(item.lastModTs.substring(17,19))
+                                        Integer.valueOf(item.lastModTs.substring(0,4))
+                                        ,Integer.valueOf(item.lastModTs.substring(5,7))
+                                        ,Integer.valueOf(item.lastModTs.substring(8,10))
+                                        ,Integer.valueOf(item.lastModTs.substring(11,13))
+                                        ,Integer.valueOf(item.lastModTs.substring(14,16))
+                                        , Integer.valueOf(item.lastModTs.substring(17,19))
                                     );
-                                leadObj.lastModTs__c = Datetime.newInstance(dt.year(), dt.month(),
-                                    dt.day(), dt.hour(), dt.minute(), dt.second()); 
+                                    leadObj.lastModTs__c            = Datetime.newInstance(dt.year(), dt.month(),dt.day(), dt.hour(), dt.minute(), dt.second());
                                 }
-                                leadObj.trdStateNm__c = item.trdStateNm;
-                                leadObj.dtlStateNm__c = item.dtlStateNm;
-                                leadObj.x__c = item.x;
-                                leadObj.y__c = item.y;
-                                leadObj.BusinessConditions__c = item.uptaeNm;
-                                leadObj.Phone = item.siteTel;
-                                //상세 제공항목
-                                leadObj.bdngOwnSeNm__c = item.bdngOwnSeNm;
-                                leadObj.fctyOwkEpCnt__c = item.fctyOwkEpCnt <> null  && item.fctyOwkEpCnt <> '' ? Decimal.valueOf(item.fctyOwkEpCnt) : null;
-                                leadObj.fctyPdtJobEpCnt__c = item.fctyOwkEpCnt <> null  && item.fctyPdtJobEpCnt <> '' ? Decimal.valueOf(item.fctyPdtJobEpCnt) : null;
-                                leadObj.fctySilJobEpCnt__c = item.fctySilJobEpCnt <> null  && item.fctySilJobEpCnt <> '' ? Decimal.valueOf(item.fctySilJobEpCnt) : null;
-                                leadObj.wtrSplyFacilSeNm__c = item.wtrSplyFacilSeNm;
-                                leadObj.manEipCnt__c = item.manEipCnt <> null  && item.manEipCnt <> '' ? Decimal.valueOf(item.manEipCnt) : null;
-                                leadObj.multUsnUpsoYn__c = item.multUsnUpsoYn <> 'Y' ? false : true;
-                                leadObj.lvSeNm__c = item.lvSeNm;
-                                leadObj.isreAm__c = item.isreAm <> null  && item.isreAm <> '' ? Decimal.valueOf(item.isreAm) : null;
-                                leadObj.hoffEpCnt__c = item.hoffEpCnt <> null  && item.hoffEpCnt <> '' ? Decimal.valueOf(item.hoffEpCnt) : null;
-                                leadObj.facilTotScp__c = item.facilTotScp <> null  && item.facilTotScp <> '' ? Decimal.valueOf(item.facilTotScp) : null;
-                                leadObj.wmEipCnt__c = item.wmEipCnt <> null  && item.wmEipCnt <> '' ? Decimal.valueOf(item.wmEipCnt) : null;
-                                leadObj.trdpJubnSeNm__c = item.trdpJubnSeNm;
-                                leadObj.monAm__c = item.monAm <> null  && item.monAm <> '' ? Decimal.valueOf(item.monAm) : null;
-                                leadObj.sntUptaeNm__c = item.sntUptaeNm;
-                                leadObj.jtUpsoMainEdf__c = item.jtUpsoMainEdf;
-                                leadObj.jtUpsoAsgnNo__c = item.jtUpsoAsgnNo;
-                                leadObj.totEpNum__c = item.totEpNum <> null  && item.totEpNum <> '' ? Decimal.valueOf(item.totEpNum) : null;
-                                leadObj.Website = item.homepage;
-                                leadObj.LeadSource = '지방행정인허가';
-                                leadObj.Status = 'New';
+                                leadObj.trdStateNm__c               = item.trdStateNm;
+                                leadObj.dtlStateNm__c               = item.dtlStateNm;
+                                leadObj.x__c                        = item.x;
+                                leadObj.y__c                        = item.y;
+                                leadObj.BusinessConditions__c       = item.uptaeNm;
+                                leadObj.Phone__c                    = item.siteTel;
+
+                                leadObj.bdngOwnSeNm__c              = item.bdngOwnSeNm;
+                                leadObj.fctyOwkEpCnt__c             = item.fctyOwkEpCnt <> null  && item.fctyOwkEpCnt <> '' ? Decimal.valueOf(item.fctyOwkEpCnt) : null;
+                                leadObj.fctyPdtJobEpCnt__c          = item.fctyOwkEpCnt <> null  && item.fctyPdtJobEpCnt <> '' ? Decimal.valueOf(item.fctyPdtJobEpCnt) : null;
+                                leadObj.fctySilJobEpCnt__c          = item.fctySilJobEpCnt <> null  && item.fctySilJobEpCnt <> '' ? Decimal.valueOf(item.fctySilJobEpCnt) : null;
+                                leadObj.wtrSplyFacilSeNm__c         = item.wtrSplyFacilSeNm;
+                                leadObj.manEipCnt__c                = item.manEipCnt <> null  && item.manEipCnt <> '' ? Decimal.valueOf(item.manEipCnt) : null;
+                                leadObj.multUsnUpsoYn__c            = item.multUsnUpsoYn <> 'Y' ? false : true;
+                                leadObj.lvSeNm__c                   = item.lvSeNm;
+                                leadObj.isreAm__c                   = item.isreAm <> null  && item.isreAm <> '' ? Decimal.valueOf(item.isreAm) : null;
+                                leadObj.hoffEpCnt__c                = item.hoffEpCnt <> null  && item.hoffEpCnt <> '' ? Decimal.valueOf(item.hoffEpCnt) : null;
+                                leadObj.facilTotScp__c              = item.facilTotScp <> null  && item.facilTotScp <> '' ? Decimal.valueOf(item.facilTotScp) : null;
+                                leadObj.wmEipCnt__c                 = item.wmEipCnt <> null  && item.wmEipCnt <> '' ? Decimal.valueOf(item.wmEipCnt) : null;
+                                leadObj.trdpJubnSeNm__c             = item.trdpJubnSeNm;
+                                leadObj.monAm__c                    = item.monAm <> null  && item.monAm <> '' ? Decimal.valueOf(item.monAm) : null;
+                                leadObj.sntUptaeNm__c               = item.sntUptaeNm;
+                                leadObj.jtUpsoMainEdf__c            = item.jtUpsoMainEdf;
+                                leadObj.jtUpsoAsgnNo__c             = item.jtUpsoAsgnNo;
+                                leadObj.totEpNum__c                 = item.totEpNum <> null  && item.totEpNum <> '' ? Decimal.valueOf(item.totEpNum) : null;
+                                leadObj.Homepage__c                 = item.homepage;
+                                //leadObj.LeadSource                  = '지방행정인허가';
+                                //leadObj.Status = 'New';
                                 leadObj.RecordTypeId = recordIdEx;
                                 upsertLeadList.add(leadObj);
                                 

@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : doyeon.kim@dkbmc.com
  * @group             : 
- * @last modified on  : 10-13-2023
+ * @last modified on  : 10-16-2023
  * @last modified by  : doyeon.kim@dkbmc.com
 **/
 public with sharing class CJFW_NewLineItemMgmtController {
@@ -56,7 +56,7 @@ public with sharing class CJFW_NewLineItemMgmtController {
             listQuoteLineItem = [SELECT    QuoteId__c, Month__c, LogisticsCenter__c, ProductCode__c, ProductName__c,
                                            ProductCategoryCode__c, ProductCategoryLName__c, ProductCategoryMName__c,
                                            CountryOfOriginName__c, StorageCondition__c, UnitPrice__c, BasePurchasePrice__c,
-                                           TaxTypeName__c, ProfitMargin__c, Product2Id__c, QuantityUnitOfMeasure__c,
+                                           TaxTypeName__c, ProfitMargin__c, Product2Id__c, QuantityUnitOfMeasure__c, TakedAmount__c,
                                            UnitPriceWithVAT__c, VAT__c, SortOrder__c,
                                            UnitConversion__c, ProductWeight__c //단위환산, 중량
                                         //    Product2Id__r.Name,  Product2Id__r.bas_unit_cd__c, Product2Id__r.strg_cond_cd__c, 
@@ -667,4 +667,64 @@ public with sharing class CJFW_NewLineItemMgmtController {
                                    WHERE Id =: rowId ];
         return productList;
     } 
+
+    /**
+    * 검색엔진 IF 호출
+    *
+    *@param  params Map<String,Object>
+        {
+            keyword: '우유'             (필수)
+            ,pageSize: '3'              (필수)
+            ,orderCriterion: 'desc'     (선택) 기본값:asc
+            ,page: '1'                  (선택) 기본값:1
+        }
+    *@return  Map<String,Object> 사용되는 params 와 제품 코드 집합, 총 사이즈
+    *@example 
+        Map<String,Object> params = new Map<String,Object>();
+        params.put('keyword', '우유');
+        params.put('pageSize', '3');
+        Map<String,Object> result = CJFW_NewLineItemMgmtController.doSendSearchEngine(params);
+    */
+    @AuraEnabled
+    public static Map<String,Object> doSendSearchEngine(Map<String,Object> params){
+        try {
+            Map<String,Object> result = new Map<String,Object>();
+            result.put('params', params);
+            String keyword = (String) params.get('keyword');
+            String pageSize = (String) params.get('pageSize');
+            String orderCriterion = 'asc';
+            if(params.get('orderCriterion') != null) orderCriterion = (String) params.get('orderCriterion');
+            String page = '1';
+            if(params.get('page') != null) page = (String) params.get('page');
+
+            IFN_LIF1002_SE001_MD001.SE001RequstWrapper ifParams = new IFN_LIF1002_SE001_MD001.SE001RequstWrapper();
+            result.put('ifParams', ifParams);
+            IFN_LIF1002_SE001_MD001 cont = new IFN_LIF1002_SE001_MD001();
+            
+            String interfaceId = 'IFN_LIF1002_SE001_MD001';
+            ifParams.searchSp = '02'; // 02 : 상품조회
+            
+            ifParams.keywd      = keyword;
+            ifParams.page       = page;       // 페이지
+            ifParams.pageSize   = pageSize; // 페이지별 리스트 갯수
+            ifParams.order      = 'gd_bd_kw'; // gd_bd_kw : 상품명 정렬, brd_nm : 브랜드명 정렬 , reg_dt : 등록일 정렬
+            ifParams.order_mt   = orderCriterion; // asc , desc 
+
+            Set<String> productCodeSet = new Set<String>();
+
+            IFN_LIF1002_SE001_MD001.SE001_01ResultWrapper res = cont.callout(ifParams);
+            if(!'9999'.equals(res.code)) {
+                result.put('totalSize', res.total);
+                for(IFN_LIF1002_SE001_MD001.SearchLst searchDatum : res.search) {
+                    productCodeSet.add(searchDatum.gd_no);
+                }
+            }
+
+            result.put('productCodeSet', productCodeSet);
+
+            return result;
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage() + ' (Line : ' + e.getLineNumber() + ')');
+        }
+    }
 }

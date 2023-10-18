@@ -2,7 +2,7 @@
  * @description       : 배송처 관리 (작성 완료시 이메일 발송)
  * @author            : yejoo.lee@dkbmc.com
  * @group             : 
- * @last modified on  : 10-13-2023
+ * @last modified on  : 10-16-2023
  * @last modified by  : yejoo.lee@dkbmc.com
  * @since 2023-10-11  내용 작성
 **/
@@ -85,6 +85,7 @@ public with sharing class CJFW_DeliveryDstMgmtController {
 
             resultMap.put('STATUS', 'S');
             resultMap.put('emailResult', emailResult);
+            System.debug('emailResult : ' + emailResult);
 
         } catch (Exception e) {
             resultMap.put('STATUS', 'E');

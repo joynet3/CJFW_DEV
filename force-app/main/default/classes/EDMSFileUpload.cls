@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : ChangeMeIn@UserSettingsUnder.SFDoc
  * @group             : 
- * @last modified on  : 10-12-2023
+ * @last modified on  : 10-16-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
 **/
 public without sharing class EDMSFileUpload {
@@ -13,7 +13,7 @@ public without sharing class EDMSFileUpload {
      * @return DataWrapper
      *          - strStatus : 상태
      *          - strMessage : 메시지
-     *          - listSelectType : EDMS File Type__c Picklist value 정보
+     *          - listSelectType : EDMS File Type__c Picklist value 정보 (계약서원본, 사업자등록증, 인감증명서(개인/법인), 법인등기부 등본, 장려금약정서, 사용인감계, 개인정보활용동의서, 상계처리약정서, 계약이행완료확인서, 계약해지합의서, 관리처등록의뢰서)
      * 
     **/
     @AuraEnabled
@@ -25,12 +25,13 @@ public without sharing class EDMSFileUpload {
 
         try {
 
-            List<Map<String, String>> listSelectType = CommonUtil.getPickListValues('EDMSFile__c', 'Type__c', false);
+            List<Map<String, String>> listSelectType = CommonUtil.getPickListValues('EDMSFile__c', 'Type__c', false); 
 
             objWrapper.listSelectType = listSelectType;
 
+            system.debug('EDMSFileUpload.doInit()');
             system.debug('listSelectType ' + JSON.serialize(listSelectType));
-            /*
+            /* 대유주석
             List<EDMSFile__c> listEMDSFile = new List<EDMSFile__c>();
 
             listEMDSFile = [
@@ -68,6 +69,12 @@ public without sharing class EDMSFileUpload {
     public static DataWrapper doGetEDMSList(String recordId, String strType) {
         String strStatus = 'SUCCESS';
         String strMessage = '';
+        //[Page2]
+        String strTypeLabel = '';
+
+        system.debug('doGetEDMSList');
+        system.debug('recordId ' + recordId);
+        system.debug('strType ' + strType);
 
         DataWrapper objWrapper = new DataWrapper();
 
@@ -76,8 +83,12 @@ public without sharing class EDMSFileUpload {
         try {
             List<EDMSFile__c> listEDMSFile = new List<EDMSFile__c>();
 
-            for(EDMSFile__c obj : [
-                SELECT  Id, TargetId__c, Type__c, Name, fileExt__c, DownloadURL__c
+            /** [P2]
+             * Type__c 으로 toLabel(Type__c) 가져오는 Map 추가 (AlertMsg때문에)
+             */
+
+            for(EDMSFile__c obj : [                                                              
+                SELECT  Id, TargetId__c, Type__c, Name, fileExt__c, DownloadURL__c, FM_Type__c
                 FROM    EDMSFile__c
                 WHERE   TargetId__c =:recordId
                 AND     Type__c =:strType
@@ -93,8 +104,12 @@ public without sharing class EDMSFileUpload {
                 objFileWrapper.fileName = obj.Name;
                 objFileWrapper.downloadURL = obj.DownloadURL__c;
                 objFileWrapper.SFDCID = obj.Id;
+                /**[P2] TypeLabel Name */
+                strTypeLabel = obj.FM_Type__c;
+                objFileWrapper.typeLabel = strTypeLabel;
 
                 System.debug('============> obj.fileExt__c : '+obj.fileExt__c);
+                System.debug('============>[P2] strTypeLabel : '+strTypeLabel);
 
                 String iconName = '';
 
@@ -120,6 +135,7 @@ public without sharing class EDMSFileUpload {
                 objFileWrapper.iconName = 'doctype:'+iconName;
 
                 listFileWrapper.add(objFileWrapper);
+                system.debug('[[P2] listFileWrapper' + json.serialize(listFileWrapper));
             }
 
         }catch(Exception e) {
@@ -131,7 +147,7 @@ public without sharing class EDMSFileUpload {
         System.debug('===============> strMessage : '+strMessage);
 
         objWrapper.listFileWrapper = listFileWrapper;
-
+        system.debug('[[P2] listFileWrapper' + json.serialize(objWrapper.listFileWrapper));
         objWrapper.strStatus = strStatus;
         objWrapper.strMessage = strMessage;
 
@@ -150,6 +166,7 @@ public without sharing class EDMSFileUpload {
     **/
     @AuraEnabled
     public static DataWrapper doCreatedFileURL(String documentId) {
+        system.debug('doCreatedFileURL ' + documentId);
         String strStatus = 'SUCCESS';
         String strMessage = '';
 
@@ -174,7 +191,7 @@ public without sharing class EDMSFileUpload {
 
             Set<String> setEvidenceExtension = new Set<String>{'WAV', 'MP3', 'WMA', 'JPG', 'JPEG', 'GIF', 'TIF', 'PDF', 'DER'};
 
-            /*
+            /* 대유주석
             if(setEvidenceExtension.contains(strFileExtension)) {
                 if((strFileExtension == 'WAV' || strFileExtension == 'MP3' || strFileExtension == 'WMA') && intContentSize > 300000) {
                     isValidationError = true;
@@ -501,6 +518,9 @@ public without sharing class EDMSFileUpload {
         public String downloadURL {get;set;}
         @AuraEnabled
         public String SFDCID {get;set;}
+        /** [P2] */
+        @AuraEnabled
+        public String typeLabel {get;set;}
         
     }
 

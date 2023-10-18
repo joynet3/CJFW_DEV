@@ -2,7 +2,7 @@
  * @description       : 관리처-분할 Controller
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 10-13-2023
+ * @last modified on  : 10-18-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -651,6 +651,8 @@ public with sharing class CJFW_MDMManagementController {
                     accCodeSet.add(acc.DeliveryGroup__c);
                     accCodeSet.add(acc.ShipmentArea__c);
             }
+            system.debug('accountList' + json.serialize(accountList));
+            system.debug('accCodeSet' + json.serialize(accCodeSet));
 
             List<MDMReferenceCode__c> mdmReferenceCodeList = [SELECT Id, Name, Code__c FROM MDMReferenceCode__c WHERE code__c =: accCodeSet];
 
@@ -660,6 +662,8 @@ public with sharing class CJFW_MDMManagementController {
                     codeToIdMap.put(mdmCode.Code__c, mdmCode.id);
                 }
                 
+            system.debug('mdmReferenceCodeList' + json.serialize(mdmReferenceCodeList));
+            system.debug('codeToIdMap 뭐가나오니' + codeToIdMap.get('1'));
             // User의 사번필드(ResponsibilityAMA__c)로 User 조회해서 Id값 알아내기
             Set<String> accUserSet = new Set<String>();
             for(Account acc :accountList){
@@ -752,6 +756,8 @@ public with sharing class CJFW_MDMManagementController {
                 mdmRequest.PVRA_CUHR1__c                               = acc?.CustomerRouteFromDate__c;   
                 mdmRequest.PV_KONDA__c                                 = acc?.PriceGroup__c;
                 mdmRequest.PV_KONDA_lu__c                              = codeToIdMap.get(acc?.PriceGroup__c);    
+                system.debug('mdmRequest.PV_KONDA__c ' + mdmRequest.PV_KONDA__c);
+                system.debug('mdmRequest.PV_KONDA_lu__c ' + mdmRequest.PV_KONDA_lu__c);
                 mdmRequest.PVRA_KONDA__c                               = acc?.PriceGroupFromDate__c;   
                 mdmRequest.PV_KVGR1__c                                 = acc?.UnitPriceGroup__c;    
                 mdmRequest.PV_KVGR1_lu__c                              = codeToIdMap.get(acc?.UnitPriceGroup__c);        
@@ -766,6 +772,7 @@ public with sharing class CJFW_MDMManagementController {
                 mdmRequest.PV_ZTERM_VV__c                              = acc?.TermsOfPayment__c;
                 mdmRequest.PV_ZTERM_VV_lu__c                           = codeToIdMap.get(acc?.TermsOfPayment__c);  
                 mdmRequest.PV_DSTRHISTREGYN__c                         = acc?.DisHisRegType__c;   
+                system.debug('mdmRequest.PV_DSTRHISTREGYN__c ' + mdmRequest.PV_DSTRHISTREGYN__c);
                 mdmRequest.PV_OLD_BIZPLACE_NEW__c                      = acc?.CustomerPath__c;
                 mdmRequest.PV_OLD_BIZPLACE_NEW_lu__c                   = codeToIdMap.get(acc?.CustomerPath__c);  
                 mdmRequest.PVRA_OLD_BIZPLACE_NEW__c                    = acc?.CustomerPathFromDate__c;   

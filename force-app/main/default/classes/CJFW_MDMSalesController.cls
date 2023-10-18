@@ -1,8 +1,8 @@
 /**
- * @description       : 
+ * @description       : 판매처필드에 맞게 삭제 및 추가 완료
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 10-10-2023
+ * @last modified on  : 10-17-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -402,9 +402,13 @@ public with sharing class CJFW_MDMSalesController {
                                                 ,IsInitialDeliveryFTFInspection__c
                                                 ,InitialDeliveryContact__c
                                                 ,InitialDeliveryDescription__c
-                                                ,PV_TEMPTARGET__c //여기까지 영업기회
-                                                ,PaymentAccountCode__c // 지급처코드 [판매처 추가]
-                                                ,ShippingAccountCode__c
+                                                ,PV_TEMPTARGET__c        //여기까지 영업기회
+                                                ,PaymentAccountCode__c   // 지급처코드 [판매처 추가] : 추가는 완료
+                                                ,ShippingAccountCode__c  // 청구처코드 [판매처 추가]
+                                                ,IsDeposit__c            // 입금여부(FS만 사용)
+                                                ,CreditManagement__c     // 여신관리(고객향
+                                                ,ContractRocationDate__c // 약정회전일
+                                                ,Shape__c                // 외형(정원)
                                                 ,(SELECT id, Name, AccountId, Email, Phone, MobilePhone, Department, PV_PAFKT_VK__c, Gender__c, Fax, OtherInfo__c, OwnerId, PV_KNVKGB__c FROM Contacts)
                                             FROM Account WHERE Id =: accountId LIMIT 1];
 
@@ -518,7 +522,7 @@ public with sharing class CJFW_MDMSalesController {
 
             // Account를 MDMRegRequestContact__c 매핑하여 리턴
             for(Account acc : accountList){
-                MDMRegRequestCustomer__c mdmRequest = new MDMRegRequestCustomer__c    ();
+                MDMRegRequestCustomer__c mdmRequest = new MDMRegRequestCustomer__c();
                 
                 // Default
                 mdmRequest.Account__c                                  = acc?.Id;	
@@ -636,13 +640,22 @@ public with sharing class CJFW_MDMSalesController {
                 mdmRequest.PV_TEMPTARGET__c                            = acc?.PV_TEMPTARGET__c;   
                 mdmRequest.EditRequestDate__c                          = Date.today();
 
-                // //지급처
-                // mdmRequest.PV_PAYCUST__c = getCustomerId(acc?.PaymentAccountCode__c);
-                // mdmRequest.PV_PAYCUST_lu__c = getCustomerId(acc?.PaymentAccountCode__c);
-                // //청구처
-                // mdmRequest.PV_CHARGECUST__c   = getCustomerId(acc?.ShippingAccountCode__c);
-                // mdmRequest.PV_CHARGECUST_lu__c   = getCustomerId(acc?.ShippingAccountCode__c);
+                /** 판매처 필드 추가 완료*/
+                //지급처
+                mdmRequest.PV_PAYCUST__c                               = acc?.PaymentAccountCode__c;
+                if(mdmRequest.PV_CHARGECUST__c != null){
+                    mdmRequest.PV_PAYCUST_lu__c                            = getAccountCustomerId(acc?.PaymentAccountCode__c);}     
+                // 청구처
+                mdmRequest.PV_CHARGECUST__c                            = acc?.ShippingAccountCode__c;
+                if(mdmRequest.PV_CHARGECUST__c != null){
+                    mdmRequest.PV_CHARGECUST_lu__c                         = getAccountCustomerId(acc?.ShippingAccountCode__c);}
 
+                mdmRequest.PV_VRSDG__c                                  = acc?.IsDeposit__c;                   // 입금여부(FS만 사용)
+                mdmRequest.PV_KDGRP__c                                  = acc?.CreditManagement__c;            // 여신관리(고객향)
+                mdmRequest.PV_KULTG__c                                  = acc?.ContractRocationDate__c;        // 약정회전일
+                mdmRequest.PV_SHAPE__c                                  = acc?.Shape__c;                       // 외형(정원)
+
+                
                 objWrapper.objMDMRegReqCustomer = mdmRequest;
             }
         }catch(Exception e){
@@ -872,12 +885,26 @@ public with sharing class CJFW_MDMSalesController {
         }
         return objWrapper;
     }
+    
+    /**
+    * =======================================================================================================================
+    * @description : 지급처 OR 청구처 code(=CustomerId) 넣으면 해당 Account의 Id 알아내기
+    * 
+    * @params      : X
+    * @return      : `Date`
+    * =======================================================================================================================
+    */
+    @AuraEnabled
+    public static String getAccountCustomerId(String customerId) {
+            Account accCustomerId = [SELECT id,name FROM account WHERE CustomerID__c =: customerId];
+       return (accCustomerId != null) ? accCustomerId.Id : null;
+    }
     /**
     * =======================================================================================================================
     * @description : 전화번호에 - 하이픈 넣기
     * 
     * @params      : X
-    * @return      : `Date`
+    * @return      : `String`
     * =======================================================================================================================
     */
     @AuraEnabled
@@ -970,7 +997,7 @@ public with sharing class CJFW_MDMSalesController {
     public static String getCustomerId(String accountId) {
       Account acc = [SELECT Id, CustomerID__c FROM account WHERE Id =:accountId];
 
-      return acc.Id;
+      return acc.CustomerID__c;
     }
     /**
     * =======================================================================================================================

@@ -40,7 +40,6 @@ public without sharing class Opportunity_tr extends TriggerHandler {
         doSetAutoRecordType();
         doSetName();
         doCheckClone();
-        
     }   
 
     public override void afterInsert() {
@@ -226,4 +225,7 @@ public without sharing class Opportunity_tr extends TriggerHandler {
             update opptyContractUpdate;
         }
     }
+
+
+
 }

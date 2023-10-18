@@ -2,17 +2,21 @@
  * @description       : 
  * @author            : seol.kim@dkbmc.com
  * @group             : 
- * @last modified on  : 10-11-2023
- * @last modified by  : seol.kim@dkbmc.com
+ * @last modified on  : 10-18-2023
+ * @last modified by  : yejoo.lee@dkbmc.com
 **/
 public with sharing class CJFW_CategoryFileController {
     @AuraEnabled(cacheable=true)
     public static List<ContentVersion> getFileList(String category, Id recordId){
         try {
             
+            if(category == '파일'){
+                category = null;
+            }
+
             //category가 "계약 참고자료"일 때 파일을 가져오기
             if (category == '계약 참고자료') {
-  
+
                 List<ContentDocumentLink> ContentDocumentLinkList = [SELECT Id, 
                                                                             LinkedEntityId, 
                                                                             ContentDocumentId                    
@@ -92,6 +96,10 @@ public with sharing class CJFW_CategoryFileController {
     public static void updateContentVersion(String uploadedFiles , String category){
         try {
             Map<String, Object> valuesMap = new Map<String, Object>();
+
+            if(category == '파일'){
+                category = null;
+            }
             
             List<ContentVersion> contentVersionsToUpdate = new List<ContentVersion>();
             for(Object obj : (List<Object>)JSON.deserializeUntyped(uploadedFiles)){
