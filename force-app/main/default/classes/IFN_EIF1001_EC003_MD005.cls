@@ -5,7 +5,6 @@
  * @Date : 2023-08-31
  * @Version : 1.0
  * @Description : KaKao AT 전송
- *                Salesforce -> 중계서버 -> Comm.one(메시징시스템)
  * @Modified : 
  * ----------------------------------------------
  *  NO | Date       | Modifier       | Description
@@ -31,12 +30,9 @@ public class IFN_EIF1001_EC003_MD005 {
             IFN_EIF1001_Callout callout = new IFN_EIF1001_Callout(this.interfaceId, 'Real');
             calloutResult = callout.getResponse(this.interfaceId, param);
 
-            // Target Object 확정 후 코드 처리 필요
             if('S'.equals(calloutResult.result)) {
-                // 메시지 전송 결과값 정상 수신
 
             } else {
-                // 인터페이스 처리 오류 Or Http 오류 결과 수신
 
             }
         } catch (Exception e) {
@@ -68,7 +64,7 @@ public class IFN_EIF1001_EC003_MD005 {
         public String header {get;set;}
         public Integer price {get;set;}
         public String currency_type {get;set;}
-        public String ad_flag {get;set;}    // 친구톡 전용
+        public String ad_flag {get;set;}
         public EC003RequstAttachment attachment {get;set;}
         public EC003RequstSupplement supplement {get;set;}
         public EC003RequstFailback failback_data {get;set;}
@@ -78,7 +74,7 @@ public class IFN_EIF1001_EC003_MD005 {
         public List<EC003RequstButton> button {get;set;}
         public EC003RequstItemHighlight item_highlight {get;set;}
         public EC003RequstItem item {get;set;}
-        public EC003RequstImage image {get;set;}    // 친구톡 이미지 속성 데이터
+        public EC003RequstImage image {get;set;}
     }
 
     public class EC003RequstButton{
@@ -112,8 +108,7 @@ public class IFN_EIF1001_EC003_MD005 {
         public String description {get;set;}
     }
 
-    // 친구톡 전용
-    public class EC003RequstImage{ 
+    public class EC003RequstImage{
         public String img_url {get;set;}
         public String img_link {get;set;}
     }

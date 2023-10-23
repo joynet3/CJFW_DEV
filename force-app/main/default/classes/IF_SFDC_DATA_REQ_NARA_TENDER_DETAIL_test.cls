@@ -21,7 +21,7 @@ public class IF_SFDC_DATA_REQ_NARA_TENDER_DETAIL_test {
             objIFMaster.WebserviceType__c = 'REST';
             objIFMaster.Method__c = 'GET';
             objIFMaster.ContentType__c = 'application/json';
-            objIFMaster.Endpoint__c = 'http://apis.data.go.kr/1230000/BidPublicInfoService03';
+            objIFMaster.Endpoint__c = 'http://apis.data.go.kr/1230000/BidPublicInfoService04';
             
             listIFMaster.add(objIFMaster);
         }

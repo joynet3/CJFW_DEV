@@ -4,6 +4,9 @@
  * @group             : 
  * @last modified on  : 01-31-2023
  * @last modified by  : AhnTaeJin(tj.ahn@daeunextier.com)
+ * 
+ * @last modified on  : 10-17-2023
+ * @last modified by  : sancho : Lead -> CJFW_BiddingInformation__c
 **/
 global without sharing class IF_SFDC_DATA_REQ_NARA_TENDER_DETAIL {
 
@@ -199,7 +202,8 @@ global without sharing class IF_SFDC_DATA_REQ_NARA_TENDER_DETAIL {
                 inputStr.substring(4,11);
             }
             //업무구분
-            getRquest += '/' + workDivision;
+            //getRquest += '/' + workDivision;
+            getRquest += '/' + workDivision + '01';     //2023.10.19 : BidPublicInfoService03 -> BidPublicInfoService04 upgrade 하며, 작업구분에도 01 이 붙는다. 화면 컨트롤 에서 넘어 오는데, 이를 처리 할 마땅한 방법이 없다.
             getRquest += '?inqryDiv=2';
             getRquest += '&type=json';
             if(sourceSiteChk == '1'){

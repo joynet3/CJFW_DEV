@@ -4,8 +4,11 @@
  * @group             : 
  * @last modified on  : 03-08-2023
  * @last modified by  : admin
+ * 
+ * @last modified on  : 10-20-2023
+ * @last modified by  : sancho : Lead -> CJFW_BiddingInformation__c
 **/
-global without sharing class IF_SFDC_DATA_REQ_NARA_TENDER_LICENSE_ba implements Database.Batchable<Lead>, Database.Stateful, Database.AllowsCallouts {
+global without sharing class IF_SFDC_DATA_REQ_NARA_TENDER_LICENSE_ba implements Database.Batchable<CJFW_BiddingInformation__c>, Database.Stateful, Database.AllowsCallouts {
     
     IFMaster__c ifMasterObj = [SELECT Id, Name, ContentType__c, Endpoint__c, Method__c FROM IFMaster__c WHERE Name = 'IF_SFDC_DATA_REQ_NARA_TENDER_LICENSE'];
     API_Authenticationkey__mdt authKey = [select KeyValue__c, DateRange__c, MasterLabel from API_Authenticationkey__mdt where DeveloperName = 'Data_Key'];
@@ -51,11 +54,13 @@ global without sharing class IF_SFDC_DATA_REQ_NARA_TENDER_LICENSE_ba implements 
     /***********************************************************************************************************
     *  Bacth   : start
     *  내용    : 나라장터 Lead 조회
+    *            Lead -> CJFW_BiddingInformation__c / bidNtceOrd__c -> SubNumber__c
     ************************************************************************************************************/
-    global Iterable<Lead> start(Database.BatchableContext bc) {
-        List<Lead> updateLeadList = [
-            SELECT Id, prtcptPsblRgnNm__c, lmtGrpNo__c, lmtSno__c, lcnsLmtNm__c, permsnIndstrytyList__c, bsnsDivNm__c, BidNoticeNumber__c, bidNtceOrd__c
-            FROM Lead
+    global Iterable<CJFW_BiddingInformation__c> start(Database.BatchableContext bc) {
+        List<CJFW_BiddingInformation__c> updateLeadList = [
+            SELECT Id, prtcptPsblRgnNm__c, lmtGrpNo__c, lmtSno__c, lcnsLmtNm__c, permsnIndstrytyList__c, bsnsDivNm__c
+                 , BidNoticeNumber__c, bidNtceOrd__c, SubNumber__c
+            FROM CJFW_BiddingInformation__c
             WHERE Id IN :joinLeadIdSet
         ];
 
@@ -66,7 +71,7 @@ global without sharing class IF_SFDC_DATA_REQ_NARA_TENDER_LICENSE_ba implements 
     *  Bacth   : execute
     *  내용    : 나라장터 업종제한 API 호출 및 Lead update
     ************************************************************************************************************/
-    global void execute(Database.BatchableContext bc, List<Lead> scope) {
+    global void execute(Database.BatchableContext bc, List<CJFW_BiddingInformation__c> scope) {
         
         String result = '';
         String strStatus = 'SUCCESS';
@@ -80,15 +85,15 @@ global without sharing class IF_SFDC_DATA_REQ_NARA_TENDER_LICENSE_ba implements 
         LogWrapper LogWrapper = new LogWrapper();
         LogWrapper.requestTime = Datetime.now();
         
-        getRquest += '/getBidPblancListInfoLicenseLimit';
+        getRquest += '/getBidPblancListInfoLicenseLimit01';
         getRquest += '?inqryDiv=2';
         getRquest += '&type=json';
         getRquest += '&bidNtceNo=' + EncodingUtil.urlEncode((scope[0].BidNoticeNumber__c).substringBeforeLast('-'), 'UTF-8');
-        if (Integer.valueOf(scope[0].bidNtceOrd__c) < 10) {
-            Integer ord = Integer.valueOf(scope[0].bidNtceOrd__c);
+        if (Integer.valueOf(scope[0].SubNumber__c) < 10) {          //2023.10.20 bidNtceOrd__c -> SubNumber__c
+            Integer ord = Integer.valueOf(scope[0].SubNumber__c);
             getRquest += '&bidNtceOrd=0' + String.valueOf(ord);
         }else {
-            getRquest += '&bidNtceOrd=' + scope[0].bidNtceOrd__c;
+            getRquest += '&bidNtceOrd=' + scope[0].SubNumber__c;
         }
         getRquest += '&pageNo='+pageNo;
         getRquest += '&numOfRows=200';

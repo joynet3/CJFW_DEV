@@ -149,7 +149,7 @@ public without sharing class EmailAlert implements NotiAlert{
                 email.setHTMLBody(sendDatum.setMessage(template.htmlValue));
             }
 
-            if(sendDatum.getIsTargetObjectId()) {
+            if(sendDatum.getIsTargetObjectId() && sendDatum.getToAddresses().size() == 1) {
                 String recipientId = new List<String>(sendDatum.getToAddresses())[0];
                 email.setTargetObjectId(recipientId);
                 email.setTreatTargetObjectAsRecipient(true);

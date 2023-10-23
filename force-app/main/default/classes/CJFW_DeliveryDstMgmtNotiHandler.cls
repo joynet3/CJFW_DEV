@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : yejoo.lee@dkbmc.com
  * @group             : 
- * @last modified on  : 10-05-2023
+ * @last modified on  : 10-20-2023
  * @last modified by  : yejoo.lee@dkbmc.com
 **/
 public with sharing class CJFW_DeliveryDstMgmtNotiHandler extends NotiHandler{
@@ -32,6 +32,8 @@ public with sharing class CJFW_DeliveryDstMgmtNotiHandler extends NotiHandler{
             emailTemplate.setTemplateId('DeliveryDstMgmtNotiEmailTemplete'); //Email 일 경우 Developer API 명
             emailTemplate.setFieldsMap(new Map<String, String>{'0'=>userMgmtMap.get(userId)});
             emailTemplate.setIsTargetObjectId(true);
+            // emailTemplate.setIsSaveAsActivity(true);
+            // emailTemplate.setTargetId(mgmtList[0].Id);
             emailTemplate.setToAddresses(new Set<String>{userId});
             emailTemplateList.add(emailTemplate);
         }

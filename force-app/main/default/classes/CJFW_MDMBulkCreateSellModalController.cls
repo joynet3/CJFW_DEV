@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 10-12-2023
+ * @last modified on  : 10-18-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -68,6 +68,36 @@ public with sharing class CJFW_MDMBulkCreateSellModalController {
 
       return saveResult;
   } 
+  
+  public static List<String> getAllFieldNames(String sObjectName) {
+        List<String> fieldNames = new List<String>();
+        
+        // sObject의 토큰을 가져옵니다.
+        Schema.SObjectType sObjectType = Schema.getGlobalDescribe().get(sObjectName);
+        
+        // null 체크
+        if(sObjectType == null) {
+            System.debug('sObject not found: ' + sObjectName);
+            return fieldNames;
+        }
+        
+        // 모든 필드의 맵을 가져옵니다.
+        Map<String, Schema.SObjectField> fieldMap = sObjectType.getDescribe().fields.getMap();
+        
+        // 필드 이름들을 목록에 추가합니다.
+        for(String fieldName : fieldMap.keySet()) {
+            fieldNames.add(fieldName);
+        }
+        
+        system.debug('fieldNames ' + fieldNames);
+
+        return fieldNames;
+    }
+
+// // 사용 예:
+// List<String> accountFields = getAllFieldNames('Account');
+// System.debug(accountFields);
+
 
   public class SaveResult{
       @AuraEnabled public String status{get;set;}

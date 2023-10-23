@@ -119,6 +119,7 @@ public with sharing class CJFW_Survey {
                 SurveyQuestion__c IN :questionIdSet
             and
                 SurveyOption__c IN :optionIdSet
+            order by SurveyQuestion__r.Order__c, SurveyQuestion__r.Name
         ];
 
         for(CJFW_SurveyFollowUp__c sfu : followUpList) {
@@ -204,7 +205,7 @@ public with sharing class CJFW_Survey {
         Map<String,Object> answerMap = this.getSurveyResult(this.responseId);
 
         List<Question> parentQuestionList = new List<Question>();
-
+        this.questionList.sort();
         for(Question qWrapper : this.questionList) {
             //최상위 부모에서 자식 질문 삭제
             //if(!qWrapper.isChild) {
@@ -464,9 +465,14 @@ public with sharing class CJFW_Survey {
         */
         public Integer compareTo(Object compareTo) {
             Question compareToQ = (Question)compareTo;
-            if (no == compareToQ.no) return 0;
+
             if (no > compareToQ.no) return 1;
-            return -1;        
+            else if(no < compareToQ.no) return -1;        
+
+            // if(content > compareToQ.content) return 1;
+            // else if(content < compareToQ.content) return -1;
+
+            return 0;
         }
     }
 

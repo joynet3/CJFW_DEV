@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : yejoo.lee@dkbmc.com
  * @group             : 
- * @last modified on  : 10-06-2023
+ * @last modified on  : 10-20-2023
  * @last modified by  : yejoo.lee@dkbmc.com
 **/
 @isTest
@@ -65,7 +65,7 @@ public with sharing class CJFW_DeliveryDstMgmtNotiEmailBatch_Test {
             LogisticsCenter__c = '장성센터',
             Account__c = acc.Id,
             LoadingInfo__c = '적온적재',
-            OrderForm__c = '당사 웹',
+            // OrderForm__c = '당사 웹',
             ContactName__c = '릴리',
             Phone__c = '010-123-1234',
             InitialDate__c = System.today()
@@ -88,7 +88,7 @@ public with sharing class CJFW_DeliveryDstMgmtNotiEmailBatch_Test {
             LogisticsCenter__c = '장성센터',
             Account__c = acc.Id,
             LoadingInfo__c = '적온적재',
-            OrderForm__c = '당사 웹',
+            // OrderForm__c = '당사 웹',
             ContactName__c = '릴리',
             Phone__c = '010-123-1234',
             InitialDate__c = System.today()

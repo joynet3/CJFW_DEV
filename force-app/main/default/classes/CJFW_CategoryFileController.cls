@@ -2,90 +2,123 @@
  * @description       : 
  * @author            : seol.kim@dkbmc.com
  * @group             : 
- * @last modified on  : 10-18-2023
- * @last modified by  : yejoo.lee@dkbmc.com
+ * @last modified on  : 10-20-2023
+ * @last modified by  : seol.kim@dkbmc.com
 **/
 public with sharing class CJFW_CategoryFileController {
     @AuraEnabled(cacheable=true)
-    public static List<ContentVersion> getFileList(String category, Id recordId){
+    public static List<ContentVersion> getFileList(String category, Id recordId, String searchTerm){
         try {
-            
+            System.debug('category ==> ' + category);     
+            System.debug('recordId ==> ' + recordId);     
+
+
             if(category == '파일'){
                 category = null;
             }
 
-            //category가 "계약 참고자료"일 때 파일을 가져오기
-            if (category == '계약 참고자료') {
 
-                List<ContentDocumentLink> ContentDocumentLinkList = [SELECT Id, 
-                                                                            LinkedEntityId, 
-                                                                            ContentDocumentId                    
-                                                                        FROM ContentDocumentLink                  
-                                                                        WHERE LinkedEntityId IN (SELECT Id FROM Opportunity) //전체 opp 조회
-                                                                    ];
-                                                                    System.debug('ContentDocumentLinkList: ' + ContentDocumentLinkList);                                                
+            String contentDocumentLinkQuery = 'SELECT Id, ' +
+                                                    'LinkedEntityId, ' +
+                                                    'ContentDocumentId ' +
+                                                'FROM ContentDocumentLink';
 
-                Set<Id> contentDocumentIds = new Set<Id>();
-                for (ContentDocumentLink link : ContentDocumentLinkList) {
-                    contentDocumentIds.add(link.ContentDocumentId);
-                    System.debug('contentDocumentIds: ' + contentDocumentIds);
-                    
+
+            String contentVersionQuery = 'SELECT Id, ' +
+                                                'VersionData, ' +
+                                                'FileType, ' +
+                                                'Title, ' +
+                                                'FileExtension, ' +
+                                                'ContentDocumentId, ' +
+                                                'CreatedDate, ' +
+                                                'ContentSize, ' +
+                                                'LastModifiedDate, ' +
+                                                'CreatedBy.Name ' +
+                                            'FROM ContentVersion';
+
+            if (searchTerm != null) {
+                // 검색어가 있을 때의 처리
+                searchTerm = '%' + searchTerm + '%'; // 검색어 형식을 처리
+                System.debug('searchTerm: ' + searchTerm);
+
+                if (category == '계약 참고자료') {
+                    contentDocumentLinkQuery += ' WHERE LinkedEntityId IN (SELECT Id FROM Opportunity) ';
+                    List<ContentDocumentLink> ContentDocumentLinkList = Database.query(contentDocumentLinkQuery);
+                    System.debug('쿼리실행 ==> ' + ContentDocumentLinkList);    
+    
+                    Set<Id> ContentDocumentIds = new Set<Id>();
+                    for (ContentDocumentLink link : ContentDocumentLinkList) {
+                        ContentDocumentIds.add(link.ContentDocumentId);
+                        System.debug('계약참고자료 아이디 ==> ' + ContentDocumentIds);         
+                    }
+    
+                    contentVersionQuery += ' WHERE Category__c = :category ' +
+                                            ' AND ContentDocumentId IN :ContentDocumentIds ' +
+                                            ' AND Title LIKE :searchTerm ' +
+                                            ' ORDER BY LastModifiedDate ASC';
+    
+                    List<ContentVersion> ContentVersionList = Database.query(contentVersionQuery);   
+                    System.debug('쿼리실행 2 ==> ' + ContentVersionList);                 
+                    return ContentVersionList;
+    
+                }else {
+                    contentDocumentLinkQuery += ' WHERE LinkedEntityId = :recordId';
+                    List<ContentDocumentLink> ContentDocumentLinkList = Database.query(contentDocumentLinkQuery);
+                    // ContentDocumentLink와 ContentDocument를 연결해줄 ID값 찾기
+                    Set<Id> ContentDocumentIds = new Set<Id>();
+                    for(ContentDocumentLink cdl : ContentDocumentLinkList){
+                        ContentDocumentIds.add(cdl.ContentDocumentId); 
+                    }
+                    contentVersionQuery += ' WHERE Category__c = :category ' +
+                                            ' AND ContentDocumentId IN :ContentDocumentIds ' +
+                                            ' AND Title LIKE :searchTerm ' +
+                                            ' ORDER BY LastModifiedDate ASC';
+                    List<ContentVersion> ContentVersionList = Database.query(contentVersionQuery);
+                    System.debug('기본 ==> ' + ContentVersionList);       
+                    return ContentVersionList;
                 }
-
-                List<ContentVersion> cvList =  [SELECT Id, 
-                                                        VersionData, 
-                                                        FileType, 
-                                                        Title, 
-                                                        FileExtension,
-                                                        ContentDocumentId, 
-                                                        CreatedDate,
-                                                        ContentSize, 
-                                                        LastModifiedDate,
-                                                        CreatedBy.Name
-                                                FROM ContentVersion
-                                                WHERE Category__c =: category
-                                                AND ContentDocumentId =: contentDocumentIds
-                                                ORDER BY LastModifiedDate ASC
-                                                ];
-                System.debug('조건: ' + cvList);
-                return cvList;  
 
             } else {
-                List<ContentDocumentLink> ContentDocumentLinkList = [SELECT Id, 
-                                                                            LinkedEntityId, 
-                                                                            ContentDocumentId                    
-                                                                        FROM ContentDocumentLink                  
-                                                                        WHERE LinkedEntityId =: recordId
-                                                                    ];
-                
-                // ContentDocumentLink와 ContentDocument를 연결해줄 ID값 찾기
-                Set<Id> ContentDocumentIds = new Set<Id>();
-                for(ContentDocumentLink cdl : ContentDocumentLinkList){
-                    ContentDocumentIds.add(cdl.ContentDocumentId); 
-                }
-
-                List<ContentVersion> cvList =  [SELECT Id, 
-                                                        VersionData, 
-                                                        FileType, 
-                                                        Title, 
-                                                        FileExtension,
-                                                        ContentDocumentId, 
-                                                        CreatedDate,
-                                                        ContentSize, 
-                                                        LastModifiedDate,
-                                                        CreatedBy.Name
-                                                FROM ContentVersion
-                                                WHERE Category__c =: category
-                                                AND ContentDocumentId IN: ContentDocumentIds
-                                                ORDER BY LastModifiedDate ASC
-                                                ];
-                System.debug('기본: ' + cvList);
+                // 검색어가 없을 때의 처리
+                if (category == '계약 참고자료') {
+                    contentDocumentLinkQuery += ' WHERE LinkedEntityId IN (SELECT Id FROM Opportunity) ';
+                    List<ContentDocumentLink> ContentDocumentLinkList = Database.query(contentDocumentLinkQuery);
+                    System.debug('쿼리실행 ==> ' + ContentDocumentLinkList);    
     
-                return cvList;           
+                    Set<Id> ContentDocumentIds = new Set<Id>();
+                    for (ContentDocumentLink link : ContentDocumentLinkList) {
+                        ContentDocumentIds.add(link.ContentDocumentId);
+                        System.debug('계약참고자료 아이디 ==> ' + ContentDocumentIds);         
+                    }
+    
+                    contentVersionQuery += ' WHERE Category__c = :category ' +
+                                            ' AND ContentDocumentId IN :ContentDocumentIds ' +
+                                            ' ORDER BY LastModifiedDate ASC';
+    
+                    List<ContentVersion> ContentVersionList = Database.query(contentVersionQuery);   
+                    System.debug('쿼리실행 2 ==> ' + ContentVersionList);                 
+                    return ContentVersionList;
+    
+                }else {
+                    contentDocumentLinkQuery += ' WHERE LinkedEntityId = :recordId';
+                    List<ContentDocumentLink> ContentDocumentLinkList = Database.query(contentDocumentLinkQuery);
+                    // ContentDocumentLink와 ContentDocument를 연결해줄 ID값 찾기
+                    Set<Id> ContentDocumentIds = new Set<Id>();
+                    for(ContentDocumentLink cdl : ContentDocumentLinkList){
+                        ContentDocumentIds.add(cdl.ContentDocumentId); 
+                    }
+                    contentVersionQuery += ' WHERE Category__c = :category ' +
+                                            ' AND ContentDocumentId IN :ContentDocumentIds ' +
+                                            ' ORDER BY LastModifiedDate ASC';
+                    List<ContentVersion> ContentVersionList = Database.query(contentVersionQuery);
+                    System.debug('기본 ==> ' + ContentVersionList);       
+                    return ContentVersionList;
+
                 
             }
 
-            
+            }
+
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
         }

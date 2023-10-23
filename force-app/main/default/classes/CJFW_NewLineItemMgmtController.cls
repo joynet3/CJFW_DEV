@@ -53,12 +53,35 @@ public with sharing class CJFW_NewLineItemMgmtController {
         
         if ( sObjectName == 'Quote'){
 
-            listQuoteLineItem = [SELECT    QuoteId__c, Month__c, LogisticsCenter__c, ProductCode__c, ProductName__c,
-                                           ProductCategoryCode__c, ProductCategoryLName__c, ProductCategoryMName__c,
-                                           CountryOfOriginName__c, StorageCondition__c, UnitPrice__c, BasePurchasePrice__c,
-                                           TaxTypeName__c, ProfitMargin__c, Product2Id__c, QuantityUnitOfMeasure__c, TakedAmount__c,
-                                           UnitPriceWithVAT__c, VAT__c, SortOrder__c,
-                                           UnitConversion__c, ProductWeight__c //단위환산, 중량
+            listQuoteLineItem = [SELECT    
+                                        QuoteId__c
+                                        , Month__c
+                                        , LogisticsCenter__c
+                                        , ProductCode__c
+                                        , ProductName__c
+                                        , ProductCategoryLName__c
+                                        , ProductCategoryLCode__c
+                                        , ProductCategoryMName__c
+                                        , ProductCategoryMCode__c
+                                        , ProductCategorySubName__c
+                                        , ProductCategorySubCode__c
+                                        , CountryOfOriginName__c
+                                        , CountryOfOrigin__c
+                                        , StorageCondition__c
+                                        , StorageConditionName__c
+                                        , UnitPrice__c
+                                        , BasePurchasePrice__c
+                                        , TaxTypeName__c
+                                        , ProfitMargin__c
+                                        , Product2Id__c
+                                        , QuantityUnitOfMeasure__c
+                                        , TakedAmount__c
+                                        , UnitPriceWithVAT__c
+                                        , VAT__c
+                                        , SortOrder__c
+                                        , UnitConversion__c
+                                        , ProductWeight__c //단위환산, 중량
+                                        , Barcode__c
                                         //    Product2Id__r.Name,  Product2Id__r.bas_unit_cd__c, Product2Id__r.strg_cond_cd__c, 
                                  FROM      CJFW_QuoteLineItem__c
                                  WHERE     QuoteId__c = :recordId
@@ -98,8 +121,8 @@ public with sharing class CJFW_NewLineItemMgmtController {
         
         listCategory  = [ SELECT   Id, Name, gd_cls_lvl_dpt__c, upp_gd_cls_id__c, IsActive__c, gd_cls_id__c
                            FROM     ProductCategory__c 
-                           WHERE    gd_cls_lvl_dpt__c  IN ('1','2') 
-                           AND      gd_cls_id__c NOT IN ('59','60','80','81') // 230929 최은영 : 대분류 필터 추가 
+                           WHERE    
+                           gd_cls_id__c NOT IN ('59','60','80','81') // 230929 최은영 : 대분류 필터 추가 
                            AND      IsActive__c = true
                            ORDER BY gd_cls_lvl_dpt__c, gd_cls_id__c ASC
                         ];       
@@ -188,6 +211,10 @@ public with sharing class CJFW_NewLineItemMgmtController {
         String objUser  = String.valueOf(mapParam.get('objUser'));
         String strSearchInput  = String.valueOf(mapParam.get('strSearchInput'));
 
+        Set<String> productCodeSet;
+        if(mapParam.get('productCodeSet') != null) productCodeSet = (Set<String>) JSON.deserialize(JSON.serialize(mapParam.get('productCodeSet')), Set<String>.class);
+    
+
         System.debug(' objUser ->'+ objUser );
         System.debug(' mapParam ->'+ mapParam );
         System.debug(' strSearchInput ->'+ strSearchInput );
@@ -203,12 +230,17 @@ public with sharing class CJFW_NewLineItemMgmtController {
         query += ' WHERE    lgs_ctr__c = \'' + selectedCenter + '\' ' ;
         query += '   AND    Product2.isActive = true ' ; 
 
+        
+
         /* 속도이슈 개선사항  */
         if(strSearchInput == null || strSearchInput =='' ){
             System.debug(' 상품검색  없을때 ' );
         }else{
             System.debug(' 상품검색  있을때 ' );
-            query += '   AND Product2.Name LIKE \'%' + strSearchInput + '%\''; 
+            if(productCodeSet == null )
+                query += '   AND Product2.Name LIKE \'%' + strSearchInput + '%\''; 
+            else 
+                query += '   AND Product2.gd_no__c IN :productCodeSet '; //검색엔진으로 쿼리 한 결과
         }
         /* 속도이슈 개선사항  */
 
@@ -245,6 +277,7 @@ public with sharing class CJFW_NewLineItemMgmtController {
 
         Map<String, Object> mapInitData = new Map<String, Object>{           
             'listAllEntry' => listPriceBookEntry
+            ,'query' => query
         };
 
         return mapInitData;
@@ -421,7 +454,10 @@ public with sharing class CJFW_NewLineItemMgmtController {
         String query = '';
         String queryCnt = ''; 
         query += 'SELECT    Id, Name, ProductCode, Product2.gd_no__c, UnitPrice, toLabel(Product2.bas_unit_cd__c), toLabel(Product2.migr_orinat_cd__c), toLabel(Product2.strg_cond_cd__c), Product2.taxt_cl_cd__c, Product2.lgs_ctr_id__c, ';
-        query += '          Product2.fm_TaxType__c, Product2.fm_LAR_CLS_NM__c,Product2.fm_MID_CLS_NM__c, Product2.fm_XSM_CLS_CD__c';
+        query += '          Product2.fm_TaxType__c, Product2.fm_LAR_CLS_NM__c, Product2.fm_LAR_CLS_ID__c , Product2.fm_MID_CLS_ID__c , Product2.fm_MID_CLS_NM__c';
+        query += '          ,Product2.fm_SML_CLS_NM__c ,Product2.fm_SML_CLS_CD__c ,Product2.fm_XSM_CLS_NM__c , Product2.fm_XSM_CLS_CD__c';
+        query += '          ,Product2.box_ctcnt_qty__c';
+        
         query += '          , ' + selectedMonth + '__c, Old' + selectedMonth + '__c ';
         query += '  FROM    PriceBookEntry ';
         query += ' WHERE    ProductCode IN : listTargetEntryCode';
@@ -700,7 +736,7 @@ public with sharing class CJFW_NewLineItemMgmtController {
             IFN_LIF1002_SE001_MD001.SE001RequstWrapper ifParams = new IFN_LIF1002_SE001_MD001.SE001RequstWrapper();
             result.put('ifParams', ifParams);
             IFN_LIF1002_SE001_MD001 cont = new IFN_LIF1002_SE001_MD001();
-            
+
             String interfaceId = 'IFN_LIF1002_SE001_MD001';
             ifParams.searchSp = '02'; // 02 : 상품조회
             
@@ -710,10 +746,17 @@ public with sharing class CJFW_NewLineItemMgmtController {
             ifParams.order      = 'gd_bd_kw'; // gd_bd_kw : 상품명 정렬, brd_nm : 브랜드명 정렬 , reg_dt : 등록일 정렬
             ifParams.order_mt   = orderCriterion; // asc , desc 
 
+            // System.debug(
+            //     JSON.serializePretty(ifParams)
+            // );
+
             Set<String> productCodeSet = new Set<String>();
 
             IFN_LIF1002_SE001_MD001.SE001_01ResultWrapper res = cont.callout(ifParams);
-            if(!'9999'.equals(res.code)) {
+            System.debug(
+                JSON.serializePretty(res)
+            );
+            if(!'9999'.equals(res.err_cd)) {
                 result.put('totalSize', res.total);
                 for(IFN_LIF1002_SE001_MD001.SearchLst searchDatum : res.search) {
                     productCodeSet.add(searchDatum.gd_no);
@@ -725,6 +768,74 @@ public with sharing class CJFW_NewLineItemMgmtController {
             return result;
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage() + ' (Line : ' + e.getLineNumber() + ')');
+        }
+    }
+
+    /**
+    * 대분류, 중분류, 소분류 디펜던시 정보 가져오기
+    *
+    *@param  categoryLv 
+    *@param  selectedCategoryCode
+    *@return  Map<String,Object>
+    */
+    @AuraEnabled
+    public static Map<String,Object> getProductCategoryDependency(String categoryLv, String selectedCategoryCode, List<String> listCategoryCodeSet){
+        try {
+            Map<String,Object> result = new Map<String,Object>();
+
+            List<Map<String,Object>> categoryOptionList = new List<Map<String,Object>>();
+
+            List<ProductCategory__c> categoryList  = [ 
+                    SELECT   Id, Name, gd_cls_lvl_dpt__c, upp_gd_cls_id__c, IsActive__c, gd_cls_id__c
+                    FROM     ProductCategory__c 
+                    WHERE    gd_cls_lvl_dpt__c  = :categoryLv
+                    AND      ProductCategory__r.gd_cls_id__c = :selectedCategoryCode
+                    AND      IsActive__c = true
+                    ORDER BY gd_cls_lvl_dpt__c, gd_cls_id__c ASC
+            ];       
+    
+            for(ProductCategory__c category : categoryList) {
+                categoryOptionList.add(
+                    new Map<String, Object>{
+                        'label'=>category.Name
+                        ,'value'=>category.gd_cls_id__c
+                    }
+                );
+            }
+
+            result.put('categoryOptionList' , categoryOptionList);
+            return result;
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
+    /**
+    * 견적서 Item Defualt Field List
+    *
+    *@return  Map<String,Object>
+    */
+    @AuraEnabled
+    public static Map<String,Object> getQuoteLineItemDefaultFieldList(){
+        try {
+            Map<String,Object> result = new Map<String,Object>();
+            Set<String> defaultFieldSet = new Set<String>();
+
+            COMM_Util.SchemaInfo thisSchema = new COMM_Util.SchemaInfo('CJFW_QuoteLineItem__c');
+            
+            Schema.FieldSet fieldSet = thisSchema.getFieldSetMap().get('quotelineitemdefualtfield');
+            for(Schema.FieldSetMember fielSetMemInfo : fieldSet.getFields()) {
+                defaultFieldSet.add(
+                    fielSetMemInfo.getFieldPath()
+                );
+            }
+            // System.debug(
+            //     JSON.serializePretty(defaultFieldSet)  
+            // );
+            result.put('defaultFieldSet' , defaultFieldSet);
+            return result;
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
         }
     }
 }

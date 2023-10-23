@@ -14,7 +14,7 @@ global class IF_SFDC_DATA_REQ_NARA_TENDER_INFO_sc implements Schedulable {
         ];
         Set<Id> nextBatchLeadSet = new Set<Id>();
         // 기타조회
-        IF_SFDC_DATA_REQ_NARA_TENDER_INFO_ba b5 = new IF_SFDC_DATA_REQ_NARA_TENDER_INFO_ba(keywordList, 'getBidPblancListInfoEtcPPSSrch', 0, nextBatchLeadSet, null, null);
+        IF_SFDC_DATA_REQ_NARA_TENDER_INFO_ba b5 = new IF_SFDC_DATA_REQ_NARA_TENDER_INFO_ba(keywordList, 'getBidPblancListInfoEtcPPSSrch01', 0, nextBatchLeadSet, null, null);
         
         Database.executeBatch(b5, 1);
     }

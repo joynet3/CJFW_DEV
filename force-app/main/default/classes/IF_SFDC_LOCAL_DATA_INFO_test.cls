@@ -39,6 +39,11 @@ public with sharing class IF_SFDC_LOCAL_DATA_INFO_test {
         sc3.execute(null);
         sc2.execute(null);
         sc.execute(null);
+
+        List<String> upsertFailList = new List<String>();
+        IF_SFDC_LOCAL_DATA_INFO_MEDI_ba b = new IF_SFDC_LOCAL_DATA_INFO_MEDI_ba(upsertFailList);
+        Database.executeBatch(b,1);
+        
         Test.stopTest();
     }
 

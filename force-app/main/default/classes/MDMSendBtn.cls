@@ -4,6 +4,12 @@
  * @group             : 
  * @last modified on  : 10-17-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
+ * MDM 고객정보 전송 관련 
+    - MDMSendBtn(IF_SFDC_MDM_REG_ACCOUNT) : MDM 고객정보 전송
+    - MDMRegRequestCustomer__c
+    - MDMRegRequestContact__c
+	- Account
+	- MDMRegRequestResult__c
 **/
 public without sharing class MDMSendBtn {
     /** 
@@ -53,7 +59,7 @@ public without sharing class MDMSendBtn {
 
             /* 관리처 필드 추가해야 함 */
             listMDMCustomer = [
-                SELECT  Id, Account__c,
+                SELECT  Id, Account__c,                 
                         INSTANCEID__c, PROCID__c, REQACTORID__c, PV_CRMNO__c, PV_KUNNR__c, PV_OLDCD__c, PV_NAME1__c, 
                         PV_NAME_G__c, PV_NAME2__c, PV_KTOKD__c, PV_CUSTTYPE__c, PV_STCD2__c, PV_STCD3__c, PV_STCD4__c, 
                         PV_GFORM__c, PV_J_1KFREPRE__c, PV_STCD1__c, PV_J_1KFTBUS__c, PV_J_1KFTIND__c, PV_TELF1__c, PV_TELFX__c, 
@@ -87,7 +93,7 @@ public without sharing class MDMSendBtn {
 
             listMDMContact = [
                 SELECT  Id, Contact__c,
-                        INSTANCEID__c, PV_NO__c, PV_NAME1_VK__c, PV_KNVKGB__c, PV_TELF1_VK__c,
+                        INSTANCEID__c, PV_NO__c, PV_NAME1_VK__c, PV_KNVKGB__c, PV_TELF1_VK__c,         /** dev & prod : INSTANCEID__c 값이 있는게 없음 => 빈값을 넣어주고 있음 */
                         PV_ABTNR_VK__c, PV_PAFKT_VK__c, PV_TALKT_VK__c, PV_EMAIL_VK__c
                 FROM    MDMRegRequestContact__c
                 WHERE   MDMRegRequestCustomer__c =:recordId
@@ -309,17 +315,18 @@ public without sharing class MDMSendBtn {
 
                         Contact objUpdateContact = new Contact();
 
-                        objUpdateContact.Id = objMDMCon.Contact__c;
-                        objUpdateContact.ExtId__c = objInput.PV_CRMNO+'_'+objMDMCon.PV_NO__c;
-
+                        objUpdateContact.Id        = objMDMCon.Contact__c; 
+                        objUpdateContact.ExtId__c  = objInput.PV_CRMNO+'_'+objMDMCon.PV_NO__c;  /** PV_CRMNO(정의서에 없음) : dev & prod  값이 있는게 없음 => 빈값을 넣어주고 있음 
+                                                                                                   PV_NO__c(No.)          : dev : 1만O, 2는없음 & prod : 1, 2 둘다 있음 */
+                                                                                                
                         listUpdateContact.add(objUpdateContact);
 
                         MDMContact objMDMContact = new MDMContact();
 
-                        objMDMContact.INSTANCEID = CommonUtil.nullToBlank(objMDMCon.INSTANCEID__c);
-                        objMDMContact.PV_NO = CommonUtil.nullToBlank(objMDMCon.PV_NO__c);
+                        objMDMContact.INSTANCEID  = CommonUtil.nullToBlank(objMDMCon.INSTANCEID__c);
+                        objMDMContact.PV_NO       = CommonUtil.nullToBlank(objMDMCon.PV_NO__c);
                         objMDMContact.PV_NAME1_VK = CommonUtil.nullToBlank(objMDMCon.PV_NAME1_VK__c);
-                        objMDMContact.PV_KNVKGB = CommonUtil.nullToBlank(objMDMCon.PV_KNVKGB__c);
+                        objMDMContact.PV_KNVKGB   = CommonUtil.nullToBlank(objMDMCon.PV_KNVKGB__c);
                         objMDMContact.PV_TELF1_VK = CommonUtil.nullToBlank(objMDMCon.PV_TELF1_VK__c);
                         objMDMContact.PV_ABTNR_VK = CommonUtil.nullToBlank(objMDMCon.PV_ABTNR_VK__c);
                         objMDMContact.PV_PAFKT_VK = CommonUtil.nullToBlank(objMDMCon.PV_PAFKT_VK__c);
@@ -358,6 +365,16 @@ public without sharing class MDMSendBtn {
                 }
                 */
 
+                /**
+                * Name              : IF_SFDC_MDM_REG_ACCOUNT	
+                * InterfaceId__c    : IF_SFDC_MDM_REG_ACCOUNT
+                * Type__c           : Outbound
+                * WebserviceType__c : REST
+                * Endpoint__c       : https://gwmsqa.ifresh.co.kr/gwms/crm/mdm/customer/reg	
+                * Method__c         : POST  
+                * ContentType__c    : application/json
+                */
+
                 IFUtil ifutilWrapper = new IFUtil('IF_SFDC_MDM_REG_ACCOUNT');
                                             /*  MDMCustomer objInput = new MDMCustomer(); */
                 String strJsonRequestBody = JSON.serialize(objInput);
@@ -369,65 +386,45 @@ public without sharing class MDMSendBtn {
                 System.debug('===========> strJsonRequestBody : '+strJsonRequestBody);
 
                 if(response.getStatusCode() == 200) {
-                    /** IF_MDM_SFDC_RES_ACCOUNT  */
-                    /** 
-                     * global class Input {
-                     *  public List<Item> data;
-                     *  public String transaction_Id;
-                     *  public String total_page;
-                     *  public String page_no;
-                     *  public String is_last;
-                     * }
-                     * global class Item {
-                     *  public String err_cd;
-                     *  public String err_msg_ctt;        
-                     *  public String INSTANCEID;
-                     *  //public String WF_INSTANCEID;
-                     *  public String PV_CRMNO;
-                     *  public String WF_STATUS;
-                     *  public List<Actor> WF_ACTOR;
-                     *  public List<NextActor> WF_NEXTACTOR;
-                     *  public String WF_DATE;
-                     *  public String WF_DESCRIPTION;
-                     * }
-                     */
+                 
                     IF_MDM_SFDC_RES_ACCOUNT.Item objResponse = (IF_MDM_SFDC_RES_ACCOUNT.Item)JSON.deserialize(responseBody,  IF_MDM_SFDC_RES_ACCOUNT.Item.class);
 
                     System.debug('=================> objResponse : '+JSON.serialize(objResponse));
 
                     if(objResponse.err_cd == 'S') {
                         MDMRegRequestCustomer__c objUpdateTarget = new MDMRegRequestCustomer__c();
-                        objUpdateTarget.Id =  objTarget.Id;
-                        objUpdateTarget.Status__c = 'InProgress';
+                        objUpdateTarget.Id =  objTarget.Id;                                             /** 전송 보낸 MDMRegRequestCustomer__c Id */
+                        objUpdateTarget.Status__c = 'InProgress';                                       /** 전송상태(Status__c) : 처리중  
+                                                                                                            Approved : 승인, InProgress : 처리중, Rejected : 반려, Waiting : 대기*/
 
                         MDMRegRequestResult__c objNewResult = new MDMRegRequestResult__c();
 
-                        objNewResult.ExtId__c = objResponse.PV_CRMNO+'_'+objResponse.INSTANCEID;
+                        objNewResult.ExtId__c = objResponse.PV_CRMNO+'_'+objResponse.INSTANCEID;        /** PV_CRMNO : AccountId , INSTANCEID__c : 무슨값인지 모르겠음 ex)PI00770794*/
                         objNewResult.MDMRegRequestCustomer__c = objTarget.Id;
                         objNewResult.INSTANCEID__c = objResponse.INSTANCEID;
-                        objNewResult.PV_CRMNO__c = objResponse.PV_CRMNO;
+                        objNewResult.PV_CRMNO__c = objResponse.PV_CRMNO;                                /** PV_CRMNO : AccountId */
                         // [대유주석] 2023-02-01 최초 승인요청시 검토(PROC)로 전송되어 혼란이 있어 요청완료로 변경 진행
                         // [대유주석] objNewResult.WF_STATUS__c = objResponse.WF_STATUS;
                         objNewResult.WF_STATUS__c = 'REQ';
                         
-                        if(objResponse.WF_ACTOR <> null && objResponse.WF_ACTOR.size() > 0) {
+                        if(objResponse.WF_ACTOR <> null && objResponse.WF_ACTOR.size() > 0) {           /** 요청/승인자(WF_ACTOR) */
                             String strWFActor = '';
 
                             for(IF_MDM_SFDC_RES_ACCOUNT.Actor objA : objResponse.WF_ACTOR) {
-                                strWFActor += objA.NAME+'('+objA.EMPLOYEE_NUM+')'+'|';
+                                strWFActor += objA.NAME+'('+objA.EMPLOYEE_NUM+')'+'|';                  /** ex) 강동훈님(257194)	 */
                             }
 
                             if(strWFActor.length() > 0) {
-                                strWFActor = strWFActor.substring(0, (strWFActor.length()-1));
+                                strWFActor = strWFActor.substring(0, (strWFActor.length()-1));  
                             }
                             objNewResult.WF_ACTOR__c = strWFActor;
                         }
 
-                        if(objResponse.WF_NEXTACTOR <> null && objResponse.WF_NEXTACTOR.size() > 0) {
+                        if(objResponse.WF_NEXTACTOR <> null && objResponse.WF_NEXTACTOR.size() > 0) {   /** 다음 승인자(WF_NEXTACTOR) */
                             String strNEXTWFActor = '';
 
                             for(IF_MDM_SFDC_RES_ACCOUNT.NextActor objA : objResponse.WF_NEXTACTOR) {
-                                strNEXTWFActor += objA.NAME+'('+objA.EMPLOYEE_NUM+')'+'|';
+                                strNEXTWFActor += objA.NAME+'('+objA.EMPLOYEE_NUM+')'+'|';              /** ex) 기준정보관리(254971)|이민지님(256278)|변성환님(831441)|주효린님(258544)|박수혜님(258856)|안제헌님(WDE1093203)|황진주님(WDE2192008)|기준정보관리자() */
                             }
 
                             if(strNEXTWFActor.length() > 0) {
@@ -441,7 +438,7 @@ public without sharing class MDMSendBtn {
                         objNewResult.WF_DESCRIPTION__c = objResponse.WF_DESCRIPTION;
 
                         System.debug('==================> 1');
-
+                        /** MDMRegRequestCustomer__c의 Id(objTarget.Id) 와 전송상태(Status__c) 업데이트 */
                         update objUpdateTarget;
 
                         System.debug('==================> 2');
@@ -459,8 +456,9 @@ public without sharing class MDMSendBtn {
 
                         System.debug('==================> listUpdateContact : '+JSON.serialize(listUpdateContact));
 
-                        if(listUpdateContact <> null && listUpdateContact.size() > 0) {
+                        if(listUpdateContact <> null && listUpdateContact.size() > 0) { 
                             System.debug('==================> listUpdateContact Update');
+                            /** Contact의 Id(objMDMCon.Contact__c) 랑 ExtId__c(objInput.PV_CRMNO+'_'+objMDMCon.PV_NO__c) 업데이트 */
                             update listUpdateContact;
                         }
 
