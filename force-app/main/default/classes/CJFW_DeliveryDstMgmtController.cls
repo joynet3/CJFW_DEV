@@ -24,10 +24,11 @@ public with sharing class CJFW_DeliveryDstMgmtController {
             String query = ' SELECT '
                         // +     ' Id '
                         +      allFieldString
+                        +  '   , Account__r.Name '
                         +  ' FROM CJFW_DeliveryDestinationMgmt__c '
                         +  ' WHERE Id =:recordId ';
 
-            System.debug('query :: ' + query);
+            // System.debug('query :: ' + query);
             List<CJFW_DeliveryDestinationMgmt__c> scope = Database.query(query);
 
             // CJFW_DeliveryDstMgmtCtrlNotiHandler 에서 가공 -> Dyanamic 으로 변경 23-10-23

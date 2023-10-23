@@ -409,7 +409,7 @@
                 String s2 = subReturn.substringBetween('(', ')');
                 System.debug('s2 =====> ' + s2.remove(' '));*/
 
-                QuoteFileCreateController.doCreateFile(recordId, fileType, listSelected);
+                CJFW_QuoteFileCreateNewController.doCreateFile(recordId, fileType, listSelected);
             }
 
             if (sendYN == 'Y') {

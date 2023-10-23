@@ -78,7 +78,7 @@ public with sharing class ReportFormController {
         getPicklistValues(); // picklist label/value 값 담기 [1]
         //getAccountInfo();    // 고객사 정보 가져오기 [2]
         //getIncomeExpenses(); // 신규개설품의 obj 값 가져오기 [3]
-        //getExpectManager();  // 품의서 관리자 작성 obj 값 가져오기 [4] 
+        getExpectManager();  // 품의서 관리자 작성 obj 값 가져오기 [4] 
         //getDistributeCost(); // 물류비관리 값 가져오기 [5]
 
         getIncomeExpensesTest();
@@ -696,6 +696,9 @@ public with sharing class ReportFormController {
                DistributionCost__c, 
                LaborCost__c, 
                GroupCommonCost__c, 
+               GroupCommonCostExclusive__c, 
+               GroupCommonCostGeneral__c, 
+               PromotionFee__c, 
                CardFee__c, 
                CollateralFee__c, 
                ChefFee__c, 
@@ -705,12 +708,15 @@ public with sharing class ReportFormController {
                HeadOffice__c, 
                SU__c, 
                Source__c 
-        FROM CJFW_ExpectedIncomeManager__c WHERE StartDate__c <= TODAY ];
+        FROM CJFW_ExpectedIncomeManager__c WHERE StartDate__c <= TODAY LIMIT 1];
 
         String[] defaultValSet = new String[] {
             'DistributionCost__c',
             'LaborCost__c',
             'GroupCommonCost__c',
+            'GroupCommonCostExclusive__c',
+            'GroupCommonCostGeneral__c',
+            'PromotionFee__c',
             'CardFee__c',
             'CollateralFee__c',
             'ChefFee__c',
@@ -720,8 +726,8 @@ public with sharing class ReportFormController {
 
         for (String defaultSet : defaultValSet) {
             Object fieldValue = IncomeManager.get(defaultSet);
-            // 필드 값이 null이면 기본값을 0 으로 설정
-            if (fieldValue == null)  fieldValue = 0; 
+            // 필드 값이 null이면 기본값을 0.00 으로 설정
+            if (fieldValue == null)  fieldValue = 0.00; 
             IncomeManager.put(defaultSet, fieldValue);
         }
 

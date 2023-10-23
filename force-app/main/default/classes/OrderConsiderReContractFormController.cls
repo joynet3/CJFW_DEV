@@ -434,8 +434,32 @@ public with sharing class OrderConsiderReContractFormController {
             if (dataMap.containsKey('collateralType')) { // 담보종류
                 expectIncome.CollateralType__c = (String) dataMap.get('collateralType');
             }
+            if (dataMap.containsKey('collateralAmount')) { //담보금액
+                expectIncome.CollateralAmount__c = convertToDecimal(dataMap.get('collateralAmount'));
+            }
             if (dataMap.containsKey('collateralPeriod') && dataMap.get('collateralPeriod') !='') { // 담보기간
                 expectIncome.CollateralPeriod__c = Date.valueOf(((String) dataMap.get('collateralPeriod')));
+            }
+            if (dataMap.containsKey('creditLoanAmount')) { //신용여신금액
+                expectIncome.CreditLoanAmount__c = convertToDecimal(dataMap.get('creditLoanAmount'));
+            }
+            if (dataMap.containsKey('salesFeeGeneral')) { //AS-IS일반
+                expectIncome.SalesFeeGeneral__c = convertToDecimal(dataMap.get('salesFeeGeneral'));
+            }
+            if (dataMap.containsKey('salesFeeExclusive')) { //AS-IS전용
+                expectIncome.SalesFeeExclusive__c = convertToDecimal(dataMap.get('salesFeeExclusive'));
+            }
+            if (dataMap.containsKey('salesFeeCountryside')) { //AS-IS지방
+                expectIncome.SalesFeeCountryside__c = convertToDecimal(dataMap.get('salesFeeCountryside'));
+            }
+            if (dataMap.containsKey('salesFeeGeneralTOBE')) { //TO-BE일반
+                expectIncome.SalesFeeGeneralTOBE__c = convertToDecimal(dataMap.get('salesFeeGeneralTOBE'));
+            }
+            if (dataMap.containsKey('salesFeeExclusiveTOBE')) { //TO-BE전용
+                expectIncome.SalesFeeExclusiveTOBE__c = convertToDecimal(dataMap.get('salesFeeExclusiveTOBE'));
+            }
+            if (dataMap.containsKey('salesFeeCountrysideTOBE')) { ///TO-BE지방
+                expectIncome.SalesFeeCountrysideTOBE__c = convertToDecimal(dataMap.get('salesFeeCountrysideTOBE'));
             }
             if (dataMap.containsKey('loanManage')) { // 여신관리
                 expectIncome.LoanManage__c = (String) dataMap.get('loanManage');

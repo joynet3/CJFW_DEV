@@ -127,7 +127,9 @@ public with sharing class NotiEmailTemplate extends NotiTemplate{
                 //System.debug('targetField:: '+targetField);
                 String targetValue = this.fieldsMap.get(field);
                 if(String.isNotBlank(targetValue))
-                msg = msg.replaceAll(targetField, targetValue);
+                   msg = msg.replaceAll(targetField, targetValue);
+                else
+                   msg = msg.replaceAll(targetField, '');
             }
             //System.debug('end. msg::'+msg);
         }

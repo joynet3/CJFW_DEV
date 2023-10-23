@@ -7,7 +7,6 @@
 **/
 public with sharing class CJFW_DeliveryDstMgmtCtrlNotiHandler extends NotiHandler{
     public override void manuFactureNoti(Object targetObject) {
-        
         List<CJFW_DeliveryDestinationMgmt__c> mgmtList = (List<CJFW_DeliveryDestinationMgmt__c>) targetObject;
         List<NotiEmailTemplate> emailTemplateList = new List<NotiEmailTemplate>();
 
@@ -32,6 +31,7 @@ public with sharing class CJFW_DeliveryDstMgmtCtrlNotiHandler extends NotiHandle
                 attachmentMap.put(link.LinkedEntityId, new Set<String>{ link.ContentDocument.LatestPublishedVersionId });
             }
         }
+        System.debug('attachmentMap : ' + attachmentMap);
 
         /*
             # 메일 수신인 => Map<String(LogisticsCenter__c),Set(emails)>
@@ -50,19 +50,20 @@ public with sharing class CJFW_DeliveryDstMgmtCtrlNotiHandler extends NotiHandle
                 centerMailMap.put(mail.LogisticsCenter__c, new Set<String>{ mail.MailAddress__c });
             }
         }
+        System.debug('centerMailMap : ' + centerMailMap);
 
         /*
             # 이메일 발송
             1. 수신자 email 기준 
             2. 알림 개인화 RecordId 기준
         */
-        Map<String,Set<String>> recipientIdListMap = new Map<String,Set<String>>();
-        for(CJFW_DeliveryDestinationMgmt__c target : mgmtList) {
-            if(centerMailMap.get(target.LogisticsCenter__c) != null){
-                recipientIdListMap.put(target.Id, centerMailMap.get(target.LogisticsCenter__c));
-            }
-        }
-
+        // Map<String,Set<String>> recipientIdListMap = new Map<String,Set<String>>();
+        // for(CJFW_DeliveryDestinationMgmt__c target : mgmtList) {
+        //     if(centerMailMap.get(target.LogisticsCenter__c) != null){
+        //         recipientIdListMap.put(target.Id, centerMailMap.get(target.LogisticsCenter__c));
+        //     }
+        // }
+        // System.debug('recipientIdListMap : ' + recipientIdListMap);
 
         //Email Templete Setting
         for (CJFW_DeliveryDestinationMgmt__c mgmt : mgmtList) {
@@ -70,11 +71,36 @@ public with sharing class CJFW_DeliveryDstMgmtCtrlNotiHandler extends NotiHandle
             emailTemplate.setTemplateId('DeliveryDstMgmtEmailTemplate'); //Email 일 경우 Developer API 명
             
             String richTextFieldContent = mgmt.Photo__c;
+            String convertRichTextContent ='';
+            if(richTextFieldContent != null){
+                Matcher matcher = pattern.compile('<img(.+?)>').matcher(mgmt.Photo__c);
 
-            String convertRichTextContent = blobToImg(mgmt.Photo__c, mgmt.Photo__c);
+                while ( matcher.find() ) {
+                    // get the image tag html
+                    String imageTag = matcher.group();
+                    System.debug( 'imageTag=' + imageTag );
+
+                    String imageURL = imageTag.substringBetween( ' src="', '"' );
+                    System.debug( 'imageURL=' + imageURL );
+
+                    String decodedURL = imageURL.unescapeHtml4();
+                    System.debug( 'decodedURL=' + decodedURL );
+
+                    PageReference page = new PageReference( decodedURL );
+                    Blob b = page.getContent();
+                    System.debug( 'blob=' + b );
+                    
+                    string strImageBase64 = EncodingUtil.base64Encode(b);
+                    System.debug('data:image/png;Base64,' + strImageBase64);
+                    
+                    convertRichTextContent += '<img src="data:image/png;base64,' + strImageBase64 + '">';
+                    System.debug('test:' + convertRichTextContent);
+                    
+                }
+            }
 
             emailTemplate.setFieldsMap(new Map<String, String>{ //Field Mapping
-                '0' => mgmt.Account__c,
+                '0' => mgmt.Account__r.Name,
                 '1' => mgmt.FM_CustomerID__c,
                 '2' => mgmt.ContactName__c,
                 '3' => mgmt.Phone__c,
@@ -99,55 +125,21 @@ public with sharing class CJFW_DeliveryDstMgmtCtrlNotiHandler extends NotiHandle
                 '22' => mgmt.CenterRemark__c
             });
 
-            emailTemplate.setIsTargetObjectId(true);
+            // emailTemplate.setIsTargetObjectId(true);
             emailTemplate.setIsSaveAsActivity(true);//Acticity 기록
             emailTemplate.setTargetId(mgmt.Id);
 
             emailTemplate.setAttachmentIds(attachmentMap.get(mgmt.Id));//첨부파일
-            emailTemplate.setToAddresses(recipientIdListMap.get(mgmt.Id)); //물류센터 담당자
+            emailTemplate.setToAddresses(centerMailMap.get(mgmt.LogisticsCenter__c)); //물류센터 담당자
+            // emailTemplate.setToAddresses(new Set<String>{'yejoo1.lee@cj.net'});
             
             emailTemplateList.add(emailTemplate);
         }
 
+        System.debug('emailTemplateList : ' + emailTemplateList);
 
         //발송할 채널별 Email Template List 대입
         categorySendDataListMap.put('Email', emailTemplateList);
-
     }
 
-    private static String blobToImg(String txtStr, String richStr){
-        System.debug('txtStr => ' + txtStr);
-        String res = txtStr;
-        Integer i = 1;
-
-        Matcher imgMatcher = Pattern.compile('<img(.+?)>').matcher(res);
-        Matcher richImgMatcher = Pattern.compile('<img(.+?)>').matcher(richStr);
-        List<String> richImgList = new List<String>();
-        while(richImgMatcher.find()){
-            richImgList.add(richImgMatcher.group());
-        }
-
-        System.debug('richImgList => ' + richImgList);
-
-        Integer groupIndex = 0;
-        System.debug('res : ' + res);
-        while(imgMatcher.find()){
-            System.debug('groupIndex => ' + groupIndex);
-            String matchTag = imgMatcher.group();
-
-            if((matchTag).indexOf('unselectable=\"on\"') > 0 && (matchTag).indexOf('data-cui-image=\"true\"') > 0){
-                res = (res).replaceFirst(matchTag, richImgList.get(groupIndex) + '</img>');
-                groupIndex++;
-            } else if((matchTag).indexOf('unselectable=\"on\" data-cui-image=\"true\"') < 0){
-                i = matchTag.indexOf('unselectable=\"on\" data-cui-image=\"true\"');
-                break;
-            }
-
-            System.debug('res => ' + res);
-        }
-
-        System.debug('FINAL => ' + res);
-
-        return res;
-    }
 }
