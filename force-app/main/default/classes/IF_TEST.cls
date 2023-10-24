@@ -70,6 +70,7 @@ public with sharing class IF_TEST {
         // Integer totalSize = Database.countQuery(query_total)
         // System.debug(totalSize);
 
+        
 
     }
 }

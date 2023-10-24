@@ -88,33 +88,37 @@ public class IFN_LIF1002_SE001_MD001 {
      * 조회 결과 
      */
     public class SearchLst {
+        public String id {get;set;}        
+        public String gd_no {get;set;}
+        public String gd_bd_kw {get;set;}
+        public String gd_bd {get;set;}
         public String migr_orinat_cd_nm {get;set;}
         public String strg_cond_cd_nm {get;set;}
-        public String migr_orinat_cd {get;set;}
-        public String gd_cls_id1 {get;set;}
-        public String id {get;set;}
+        public String migr_orinat_cd {get;set;}        
         public String taxt_cl_cd_nm {get;set;}
-        public String gd_bd_kw {get;set;}
         public String strg_cond_cd {get;set;}
         public String upd_dt {get;set;} 
         public String sale_unit_cd {get;set;}
         public String co_id {get;set;} 
         public String box_ctcnt_qty {get;set;}
-        public String gd_cls_id3 {get;set;}
-        public String gd_cls_id2 {get;set;}
-        public String gd_cls_id4 {get;set;}
-        public String gd_cls_nm3 {get;set;}
-        public String gd_cls_nm2 {get;set;}
-        public String gd_cls_nm4 {get;set;}
         public String img_url {get;set;}
         public String taxt_cl_cd {get;set;}
-        public String gd_cls_nm1 {get;set;}
+        public String brd_nm {get;set;}        
+        public String gd_cls_nm {get;set;}
         public String gd_cls_id {get;set;}
-        public String gd_no {get;set;}
-        public String brd_nm {get;set;}
-        public String gd_bd {get;set;}
+        public String gd_cls_id1 {get;set;}
+        public String gd_cls_id2 {get;set;}
+        public String gd_cls_id3 {get;set;}
+        public String gd_cls_id4 {get;set;}
+        public String gd_cls_nm1 {get;set;}
+        public String gd_cls_nm2 {get;set;}
+        public String gd_cls_nm3 {get;set;}
+        public String gd_cls_nm4 {get;set;}
+        public String cnt {get;set;}
+
                 
     }    
+
 
 
 }

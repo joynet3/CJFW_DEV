@@ -238,6 +238,12 @@ global with sharing class IF_SFDC_LOCAL_DATA_INFO_MEDI_ba implements Database.Ba
             IF_SFDC_LOCAL_DATA_INFO_MEDI_ba ba = new IF_SFDC_LOCAL_DATA_INFO_MEDI_ba(upsertFailList);
             Database.executeBatch(ba, 1);
         }
+
+
+        String currentClassName = String.valueOf(this).substring(0, String.valueOf(this).indexOf(':'));
+         //스케줄 체크
+         IFN_Util.NextScheduleCheck(currentClassName);
+
     }
 
 
