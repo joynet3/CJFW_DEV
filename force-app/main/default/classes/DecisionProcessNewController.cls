@@ -58,7 +58,7 @@ public without sharing class DecisionProcessNewController {
         Boolean isIFError = false;
         try {
             String DocType = objDecisionProcess.Type__c; 
-            if ( DocType == 'CRM001' || DocType == 'CRM002' || DocType == 'CRM003' || DocType == 'CRM004' || DocType == 'CRM005' || DocType == 'CRM006'){
+            if ( DocType == 'CRM001' || DocType == 'CRM002' || DocType == 'CRM003' || DocType == 'CRM004' || DocType == 'CRM005' || DocType == 'CRM008'){
                
                 // I/F 파라미터 셋팅
                 Map<String, Object> mapInput = new Map<String, Object>();
@@ -82,8 +82,8 @@ public without sharing class DecisionProcessNewController {
                 // 5) 오픈품의서 CRM005
                 } else if ( DocType == 'CRM005' ){
                     file = new pagereference('/apex/ESM_OpenApproval');
-                // 6) (급식/헬씨) 신규개설 및 재계약 CRM006
-                } else if ( DocType == 'CRM006' ){
+                // 6) (급식/헬씨) 신규개설 및 재계약 CRM008
+                } else if ( DocType == 'CRM008' ){
                     file = new pagereference('/apex/CJFW_CreateNewReport');
                 }
 

@@ -59,7 +59,7 @@ global without sharing class IF_SFDC_DATA_REQ_NARA_TENDER_LICENSE_ba implements 
     global Iterable<CJFW_BiddingInformation__c> start(Database.BatchableContext bc) {
         List<CJFW_BiddingInformation__c> updateLeadList = [
             SELECT Id, prtcptPsblRgnNm__c, lmtGrpNo__c, lmtSno__c, lcnsLmtNm__c, permsnIndstrytyList__c, bsnsDivNm__c
-                 , BidNoticeNumber__c, bidNtceOrd__c, SubNumber__c
+                 , BidNoticeNumber__c, SubNumber__c
             FROM CJFW_BiddingInformation__c
             WHERE Id IN :joinLeadIdSet
         ];

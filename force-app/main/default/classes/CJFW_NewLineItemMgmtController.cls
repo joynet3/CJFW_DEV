@@ -63,6 +63,8 @@ public with sharing class CJFW_NewLineItemMgmtController {
                                         , ProductCategoryLCode__c
                                         , ProductCategoryMName__c
                                         , ProductCategoryMCode__c
+                                        , ProductCategorySName__c
+                                        , ProductCategorySCode__c
                                         , ProductCategorySubName__c
                                         , ProductCategorySubCode__c
                                         , CountryOfOriginName__c
@@ -75,13 +77,13 @@ public with sharing class CJFW_NewLineItemMgmtController {
                                         , ProfitMargin__c
                                         , Product2Id__c
                                         , QuantityUnitOfMeasure__c
-                                        , TakedAmount__c
                                         , UnitPriceWithVAT__c
                                         , VAT__c
                                         , SortOrder__c
                                         , UnitConversion__c
-                                        , ProductWeight__c //단위환산, 중량
-                                        , Barcode__c
+                                        , ProductWeight__c              // 중량
+                                        , Barcode__c                    // 바코드 정보
+                                        , BoxQuantity__c
                                         //    Product2Id__r.Name,  Product2Id__r.bas_unit_cd__c, Product2Id__r.strg_cond_cd__c, 
                                  FROM      CJFW_QuoteLineItem__c
                                  WHERE     QuoteId__c = :recordId
@@ -790,6 +792,7 @@ public with sharing class CJFW_NewLineItemMgmtController {
                     FROM     ProductCategory__c 
                     WHERE    gd_cls_lvl_dpt__c  = :categoryLv
                     AND      ProductCategory__r.gd_cls_id__c = :selectedCategoryCode
+                    AND      gd_cls_id__c IN :listCategoryCodeSet
                     AND      IsActive__c = true
                     ORDER BY gd_cls_lvl_dpt__c, gd_cls_id__c ASC
             ];       

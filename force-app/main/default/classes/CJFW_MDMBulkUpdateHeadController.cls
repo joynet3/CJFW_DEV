@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 10-20-2023
+ * @last modified on  : 10-24-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkUpdateHeadController {
@@ -44,6 +44,34 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
         // 이름이 null값이 되지 않도록 null일 경우 기존 값을 찾아서 기입해 줄 Map 생성
         Map<String, String> nameMaps = getNameOfNull(mdmCustomer);
 
+        // 각종 ID 필요한 MDMReferenceCode__c 조회해서 Id값 가지고 오기
+        Set<String> codeSet = new Set<String>();
+        for(MDMRegRequestCustomer__c mdm : mdmCustomer){
+            codeSet.add(mdm.PV_VKGRP__c);
+            codeSet.add(mdm.PV_STCDT__c);
+            codeSet.add(mdm.PV_VBUND__c);
+            codeSet.add(mdm.PV_LAND1__c);
+            codeSet.add(mdm.PV_REGIO__c);
+            codeSet.add(mdm.PV_ZUAWA__c);
+            codeSet.add(mdm.PV_AKONT__c);
+            codeSet.add(mdm.PV_CUHR1__c);
+            codeSet.add(mdm.PV_KONDA__c);
+            codeSet.add(mdm.PV_KVGR1__c);
+            codeSet.add(mdm.CurrencyIsoCode);
+            codeSet.add(mdm.PV_ZTERM_VV__c);
+            codeSet.add(mdm.PV_OLD_BIZPLACE_NEW__c);
+        }
+        
+        List<MDMReferenceCode__c> referenceCodeList = [SELECT Id, Name, Code__c FROM MDMReferenceCode__c WHERE code__c = :codeSet];
+
+        // Key : code , value : Id
+        Map<String, String> codeToIdMap = new Map<String, String>();
+        for(MDMReferenceCode__c mdmCode :referenceCodeList){ 
+            System.debug('mdmCode => ' + mdmCode);
+            codeToIdMap.put(mdmCode.Code__c, mdmCode.id);
+        }
+        System.debug('codeToIdMap => ' + codeToIdMap);
+
         try {
             
             if(mdmCustomer != null){
@@ -62,14 +90,6 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
                 
                 for (MDMRegRequestCustomer__c mdm : mdmCustomer) {
                     MDMRegRequestCustomer__c mdmRequest = new MDMRegRequestCustomer__c();
-                    // system.debug('안녕하세요 ' + mdmRequestbulk.id);
-                    // system.debug('MDM 고객 ID => ' + mdm.PV_KUNNR); // 고객 ID
-                    // system.debug('MDM 고객명 => ' + mdm.PV_NAME1); // 고객명
-                    // system.debug('MDM 법적상태 => ' + mdm.PV_GFORM); // 법적상태
-                    // system.debug('MDM 대표자이름 => ' + mdm.PV_J_1KFREPRE); // 대표자이름
-                    // system.debug('MDM 대표자생년월일 => ' + mdm.PV_STCD1); // 대표자생년월일
-                    // system.debug('MDM 업태 => ' + mdm.PV_J_1KFTBUS); // 업태
-                    // system.debug('MDM 레코드유형 => ' + recordIdEx); // 레코드 유형
 
                     mdmRequest.RecordTypeId             =      String.isBlank(type) ? null : recordIdEx;
                     mdmRequest.PV_KUNNR__c              =      String.isBlank(mdm.PV_KUNNR__c) ? null : mdm.PV_KUNNR__c;
@@ -91,41 +111,41 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
                     mdmRequest.PV_TELFX__c              =      String.isBlank(mdm.PV_TELFX__c) ? null : mdm.PV_TELFX__c;
                     mdmRequest.PV_PAYCUST__c            =      String.isBlank(mdm.PV_PAYCUST__c) ? null : mdm.PV_PAYCUST__c;
                     mdmRequest.PV_CHARGECUST__c         =      String.isBlank(mdm.PV_CHARGECUST__c) ? null : mdm.PV_CHARGECUST__c;
-                    mdmRequest.PV_VKGRP__c              =      String.isBlank(mdm.PV_VKGRP__c) ? null : mdm.PV_VKGRP__c;
+                    mdmRequest.PV_VKGRP__c              =      String.isBlank(mdm.PV_VKGRP__c) ? null : codeToIdMap.get(mdm?.PV_VKGRP__c);
                     mdmRequest.PV_PERNR__c              =      String.isBlank(mdm.PV_PERNR__c) ? null : mdm.PV_PERNR__c;
                     mdmRequest.PV_ADMINMA__c            =      String.isBlank(mdm.PV_ADMINMA__c) ? null : mdm.PV_ADMINMA__c;
-                    mdmRequest.PV_STCDT__c              =      String.isBlank(mdm.PV_STCDT__c) ? null : mdm.PV_STCDT__c;
+                    mdmRequest.PV_STCDT__c              =      String.isBlank(mdm.PV_STCDT__c) ? null : codeToIdMap.get(mdm?.PV_STCDT__c);
                     mdmRequest.PV_FITYP__c              =      String.isBlank(mdm.PV_FITYP__c) ? null : mdm.PV_FITYP__c;
                     mdmRequest.PV_HDOFFICEYN__c         =      mdm.PV_HDOFFICEYN__c;
                     mdmRequest.PV_SUBSIDIARYYN__c       =      mdm.PV_SUBSIDIARYYN__c;
-                    mdmRequest.PV_VBUND__c              =      String.isBlank(mdm.PV_VBUND__c) ? null : mdm.PV_VBUND__c;
-                    mdmRequest.PV_LAND1__c              =      String.isBlank(mdm.PV_LAND1__c) ? null : mdm.PV_LAND1__c;
+                    mdmRequest.PV_VBUND__c              =      String.isBlank(mdm.PV_VBUND__c) ? null : codeToIdMap.get(mdm?.PV_VBUND__c);
+                    mdmRequest.PV_LAND1__c              =      String.isBlank(mdm.PV_LAND1__c) ? null : codeToIdMap.get(mdm?.PV_LAND1__c);
                     mdmRequest.PV_KNVKTYPE__c           =      String.isBlank(mdm.PV_KNVKTYPE__c) ? null : mdm.PV_KNVKTYPE__c;
                     mdmRequest.PV_CLOSEDT__c            =      mdm.PV_CLOSEDT__c;
-                    mdmRequest.PV_REGIO__c              =      String.isBlank(mdm.PV_REGIO__c) ? null : mdm.PV_REGIO__c;
+                    mdmRequest.PV_REGIO__c              =      String.isBlank(mdm.PV_REGIO__c) ? null : codeToIdMap.get(mdm?.PV_REGIO__c);
                     mdmRequest.PV_ADRES_ROADADDR1__c    =      String.isBlank(mdm.PV_ADRES_ROADADDR1__c) ? null : mdm.PV_ADRES_ROADADDR1__c;
                     mdmRequest.PV_ADRES_ROADADDR2__c    =      String.isBlank(mdm.PV_ADRES_ROADADDR2__c) ? null : mdm.PV_ADRES_ROADADDR2__c;
                     mdmRequest.PV_ADRES_ADDR1__c        =      String.isBlank(mdm.PV_ADRES_ADDR1__c) ? null : mdm.PV_ADRES_ADDR1__c;
                     mdmRequest.PV_ADRES_ADDR2__c        =      String.isBlank(mdm.PV_ADRES_ADDR2__c) ? null : mdm.PV_ADRES_ADDR2__c;
                     mdmRequest.PV_BUSAB__c              =      String.isBlank(mdm.PV_BUSAB__c) ? null : mdm.PV_BUSAB__c;
                     mdmRequest.PV_CESSION_KZ__c         =      String.isBlank(mdm.PV_CESSION_KZ__c) ? null : mdm.PV_CESSION_KZ__c;
-                    mdmRequest.PV_ZUAWA__c              =      String.isBlank(mdm.PV_ZUAWA__c) ? null : mdm.PV_ZUAWA__c;
-                    mdmRequest.PV_AKONT__c              =      String.isBlank(mdm.PV_AKONT__c) ? null : mdm.PV_AKONT__c;
+                    mdmRequest.PV_ZUAWA__c              =      String.isBlank(mdm.PV_ZUAWA__c) ? null : codeToIdMap.get(mdm?.PV_ZUAWA__c);
+                    mdmRequest.PV_AKONT__c              =      String.isBlank(mdm.PV_AKONT__c) ? null : codeToIdMap.get(mdm?.PV_AKONT__c);
                     mdmRequest.PV_FDGRV__c              =      String.isBlank(mdm.PV_FDGRV__c) ? null : mdm.PV_FDGRV__c;
                     mdmRequest.PV_VRSDG__c              =      String.isBlank(mdm.PV_VRSDG__c) ? null : mdm.PV_VRSDG__c;
                     mdmRequest.PV_TAXKDD__c             =      String.isBlank(mdm.PV_TAXKDD__c) ? null : mdm.PV_TAXKDD__c;
                     mdmRequest.PV_KATR5__c              =      String.isBlank(mdm.PV_KATR5__c) ? null : mdm.PV_KATR5__c;
-                    mdmRequest.PV_CUHR1__c              =      String.isBlank(mdm.PV_CUHR1__c) ? null : mdm.PV_CUHR1__c;
-                    mdmRequest.PV_KONDA__c              =      String.isBlank(mdm.PV_KONDA__c) ? null : mdm.PV_KONDA__c;
-                    mdmRequest.PV_KVGR1__c              =      String.isBlank(mdm.PV_KVGR1__c) ? null : mdm.PV_KVGR1__c;
+                    mdmRequest.PV_CUHR1__c              =      String.isBlank(mdm.PV_CUHR1__c) ? null : codeToIdMap.get(mdm?.PV_CUHR1__c);
+                    mdmRequest.PV_KONDA__c              =      String.isBlank(mdm.PV_KONDA__c) ? null : codeToIdMap.get(mdm?.PV_KONDA__c);
+                    mdmRequest.PV_KVGR1__c              =      String.isBlank(mdm.PV_KVGR1__c) ? null : codeToIdMap.get(mdm?.PV_KVGR1__c);
                     mdmRequest.CurrencyIsoCode          =      String.isBlank(mdm.CurrencyIsoCode) ? null : mdm.CurrencyIsoCode;
                     mdmRequest.PV_KDGRP__c              =      String.isBlank(mdm.PV_KDGRP__c) ? null : mdm.PV_KDGRP__c;
                     mdmRequest.PV_KVGR2__c              =      String.isBlank(mdm.PV_KVGR2__c) ? null : mdm.PV_KVGR2__c;
                     mdmRequest.PV_VACCPRTEXCYN__c       =      mdm.PV_VACCPRTEXCYN__c;
-                    mdmRequest.PV_ZTERM_VV__c           =      String.isBlank(mdm.PV_ZTERM_VV__c) ? null : mdm.PV_ZTERM_VV__c;
+                    mdmRequest.PV_ZTERM_VV__c           =      String.isBlank(mdm.PV_ZTERM_VV__c) ? null : codeToIdMap.get(mdm?.PV_ZTERM_VV__c);
                     mdmRequest.PV_DSTRHISTREGYN__c      =      String.isBlank(mdm.PV_DSTRHISTREGYN__c) ? null : mdm.PV_DSTRHISTREGYN__c;
                     mdmRequest.PV_KULTG__c              =      String.isBlank(mdm.PV_KULTG__c) ? null : mdm.PV_KULTG__c;
-                    mdmRequest.PV_OLD_BIZPLACE_NEW__c   =      String.isBlank(mdm.PV_OLD_BIZPLACE_NEW__c) ? null : mdm.PV_OLD_BIZPLACE_NEW__c;
+                    mdmRequest.PV_OLD_BIZPLACE_NEW__c   =      String.isBlank(mdm.PV_OLD_BIZPLACE_NEW__c) ? null : codeToIdMap.get(mdm?.PV_OLD_BIZPLACE_NEW__c);
                     mdmRequest.PV_SHAPE__c              =      String.isBlank(mdm.PV_SHAPE__c) ? null : mdm.PV_SHAPE__c;
                     mdmRequest.PV_DELIGROUP__c          =      String.isBlank(mdm.PV_DELIGROUP__c) ? null : mdm.PV_DELIGROUP__c;
                     
@@ -192,6 +212,19 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
             }
         }
         return labels;
+    }
+
+    /**
+    * =======================================================================================================================
+    * @description : code만 알고있는 필드들을 이용해 Name을 가져오기 (inputv__Field 에 넣어줘야 함, 이 필드는 object의 필드가X) 
+    * 
+    * @params      : List<String> codes
+    * @return      : `List<MDMReferenceCode__c>`
+    * =======================================================================================================================
+    */
+    @AuraEnabled 
+    public static List<MDMReferenceCode__c> getReferenceNamesByCodes(List<String> codes){
+        return [SELECT Id, Name, CODE__c  FROM MDMReferenceCode__c WHERE CODE__c IN :codes];
     }
 
     public class SaveResult{

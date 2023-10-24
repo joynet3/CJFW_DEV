@@ -1,4 +1,3 @@
-
 /**                                     
  * @Class : IFX_PMDS_WEEKPRICE_SearchQueueable_TEST                     
  * @Description : 원료시황 주별 가격정보 호출 Queueable test class                      

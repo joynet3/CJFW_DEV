@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : yejoo.lee@dkbmc.com
  * @group             : 
- * @last modified on  : 10-23-2023
+ * @last modified on  : 10-24-2023
  * @last modified by  : yejoo.lee@dkbmc.com
 **/
 public with sharing class CJFW_DeliveryDstMgmtCtrlNotiHandler extends NotiHandler{
@@ -10,16 +10,16 @@ public with sharing class CJFW_DeliveryDstMgmtCtrlNotiHandler extends NotiHandle
         List<CJFW_DeliveryDestinationMgmt__c> mgmtList = (List<CJFW_DeliveryDestinationMgmt__c>) targetObject;
         List<NotiEmailTemplate> emailTemplateList = new List<NotiEmailTemplate>();
 
-        Set<String> mgmtIds = new Set<String>();
-        for (CJFW_DeliveryDestinationMgmt__c mgmt : mgmtList) {
-                mgmtIds.add(mgmt.Id);
-        }
-
         /*
             # GET 첨부파일 Version => Map<Id(mgmt), Set(VersionIds)>
             1. ContentDocumentLink : LinkedEntityId(mgmtId), ContentDocumentId
             2. ContentDocument : LatestPublishedVersionId
         */
+        Set<String> mgmtIds = new Set<String>();
+        for (CJFW_DeliveryDestinationMgmt__c mgmt : mgmtList) {
+            mgmtIds.add(mgmt.Id);
+        }
+
         Map<Id, Set<String>> attachmentMap = new Map<Id, Set<String>>();
         List<ContentDocumentLink> linkList = [SELECT Id, LinkedEntityId, ContentDocumentId, ContentDocument.LatestPublishedVersionId 
                                                 FROM ContentDocumentLink 
@@ -32,6 +32,93 @@ public with sharing class CJFW_DeliveryDstMgmtCtrlNotiHandler extends NotiHandle
             }
         }
         System.debug('attachmentMap : ' + attachmentMap);
+
+        /*
+            # Rich Text Img 처리 => Map<Id(mgmt), String(url)>
+            1. ContentVersion : title, PathOnClient, VersionData(Blob)
+            2. ContentDistribution : ContentDownloadUrl
+            3. ContentDocumentLink 업데이트
+        */
+
+        // 1. ContentVersion 생성
+        List<ContentVersion> cvList = new List<ContentVersion>();
+        for (CJFW_DeliveryDestinationMgmt__c mgmt : mgmtList) {
+            List<String> contentList = new List<String>();
+            if(mgmt.Photo__c != null){//Rich Text
+                Matcher matcher = pattern.compile('<img(.+?)>').matcher(mgmt.Photo__c);
+                while ( matcher.find() ) {
+                    String imageTag = matcher.group();
+                    // System.debug( 'imageTag=' + imageTag );
+                    String imageURL = imageTag.substringBetween( ' src="', '"' );
+                    // System.debug( 'imageURL=' + imageURL );
+                    String decodedURL = imageURL.unescapeHtml4();
+                    // System.debug( 'decodedURL=' + decodedURL );
+                    PageReference page = new PageReference( decodedURL );
+                    Blob b = page.getContent();
+                    // System.debug( 'blob=' + b );
+
+                    ContentVersion cv = new ContentVersion(
+                        title = '배송정보 납품장소',
+                        PathOnClient = '배송정보 납품장소.png',
+                        VersionData = b,
+                        MgmtId__c = mgmt.Id
+                    );
+                    cvList.add(cv);
+                }
+            }
+        }
+        insert cvList;
+        
+        // 2. ContentDistribution 생성 (Public Link 생성 : ContentDownloadUrl)
+        Set<String> cvIdSet = new Set<String>();
+        List<ContentDistribution> cdbList = new List<ContentDistribution>();
+        for (ContentVersion cv : cvList) {
+            cvIdSet.add(cv.Id);
+            
+            ContentDistribution cdb = new ContentDistribution (
+                ContentVersionId = cv.Id,
+                Name = cv.Title,
+                PreferencesAllowViewInBrowser = true,
+                PreferencesLinkLatestVersion =true
+            );
+            cdbList.add(cdb);
+        }
+        insert cdbList;
+
+        //List 정보
+        cvList = [SELECT Id, ContentDocumentId, MgmtId__c FROM ContentVersion WHERE Id IN :cvIdSet];
+        cdbList = [SELECT Id, ContentVersion.MgmtId__c, ContentDownloadUrl, ContentVersionId FROM ContentDistribution WHERE ContentVersionId IN :cvIdSet];
+        
+        //이미지 태그 가공
+        Map<String, List<String>> imgUrlMap = new Map<String, List<String>>();
+        for (ContentDistribution cdb : cdbList) {
+            if(imgUrlMap.containsKey(cdb.ContentVersion.MgmtId__c)){
+                imgUrlMap.get(cdb.ContentVersion.MgmtId__c).add('<img src=\"' + cdb.ContentDownloadUrl + '\">');
+            }else{
+                imgUrlMap.put(cdb.ContentVersion.MgmtId__c, new List<String>{'<img src=\"' + cdb.ContentDownloadUrl + '\">'});
+            }
+        }
+
+        // 3. Record Id 랑 Link
+        Set<String> cdIdSet = new Set<String>();
+        for (ContentVersion cv : cvList) {
+            cdIdSet.add(cv.ContentDocumentId);
+        }
+
+        List<ContentDocumentLink> richfilelinkList = [SELECT Id, ContentDocumentId, ContentDocument.LatestPublishedVersion.MgmtId__c, LinkedEntityId 
+                                                        FROM contentdocumentLink
+                                                        WHERE ContentDocumentId IN :cdIdSet];
+        List<ContentDocumentLink> insertLinkList = new List<ContentDocumentLink>();
+        
+        for (ContentDocumentLink l : richfilelinkList) {
+            ContentDocumentLink link = new ContentDocumentLink(
+                LinkedEntityId = l.ContentDocument.LatestPublishedVersion.MgmtId__c,
+                ContentDocumentId = l.ContentDocumentId
+            );
+            insertLinkList.add(link);
+        }
+        System.debug('updateLinkList:' +insertLinkList);
+        insert insertLinkList;
 
         /*
             # 메일 수신인 => Map<String(LogisticsCenter__c),Set(emails)>
@@ -57,6 +144,7 @@ public with sharing class CJFW_DeliveryDstMgmtCtrlNotiHandler extends NotiHandle
             1. 수신자 email 기준 
             2. 알림 개인화 RecordId 기준
         */
+
         // Map<String,Set<String>> recipientIdListMap = new Map<String,Set<String>>();
         // for(CJFW_DeliveryDestinationMgmt__c target : mgmtList) {
         //     if(centerMailMap.get(target.LogisticsCenter__c) != null){
@@ -69,34 +157,45 @@ public with sharing class CJFW_DeliveryDstMgmtCtrlNotiHandler extends NotiHandle
         for (CJFW_DeliveryDestinationMgmt__c mgmt : mgmtList) {
             NotiEmailTemplate emailTemplate = new NotiEmailTemplate();
             emailTemplate.setTemplateId('DeliveryDstMgmtEmailTemplate'); //Email 일 경우 Developer API 명
-            
-            String richTextFieldContent = mgmt.Photo__c;
-            String convertRichTextContent ='';
-            if(richTextFieldContent != null){
+
+            String modifiedRichText = '';
+            if(mgmt.Photo__c != null){            
+                String richText = mgmt.Photo__c;
+                
+                // 새로운 <img src= 태그들의 리스트
+                List<String> newImgTags = imgUrlMap.get(mgmt.Id);
+
                 Matcher matcher = pattern.compile('<img(.+?)>').matcher(mgmt.Photo__c);
-
-                while ( matcher.find() ) {
-                    // get the image tag html
-                    String imageTag = matcher.group();
-                    System.debug( 'imageTag=' + imageTag );
-
-                    String imageURL = imageTag.substringBetween( ' src="', '"' );
-                    System.debug( 'imageURL=' + imageURL );
-
-                    String decodedURL = imageURL.unescapeHtml4();
-                    System.debug( 'decodedURL=' + decodedURL );
-
-                    PageReference page = new PageReference( decodedURL );
-                    Blob b = page.getContent();
-                    System.debug( 'blob=' + b );
+                
+                Integer lastIndex = 0;
+                Integer newImgTagIndex = 0;
+                
+                while (matcher.find()) {
+                    Integer matchStartIndex = matcher.start();
+                    Integer matchEndIndex = matcher.end();
+                
+                    // 이전 일치하지 않은 부분을 결과 문자열에 추가
+                    modifiedRichText += richText.substring(lastIndex, matchStartIndex);
+                
+                    // 새로운 <img src= 태그 추가
+                    String newImgTag = newImgTags[newImgTagIndex];
+                    modifiedRichText += newImgTag;
+                
+                    lastIndex = matchEndIndex;
                     
-                    string strImageBase64 = EncodingUtil.base64Encode(b);
-                    System.debug('data:image/png;Base64,' + strImageBase64);
-                    
-                    convertRichTextContent += '<img src="data:image/png;base64,' + strImageBase64 + '">';
-                    System.debug('test:' + convertRichTextContent);
-                    
+                     // 다음 대체 태그 인덱스 계산
+                    if (newImgTagIndex < newImgTags.size() - 1) {
+                        newImgTagIndex++;
+                    } else {
+                        // 대체할 이미지가 더 이상 없으면 처음으로 돌아감
+                        newImgTagIndex = 0;
+                    }
                 }
+                
+                // 나머지 일치하지 않은 부분을 결과 문자열에 추가
+                modifiedRichText += richText.substring(lastIndex);
+                
+                System.debug('modifiedRichText: ' + modifiedRichText);
             }
 
             emailTemplate.setFieldsMap(new Map<String, String>{ //Field Mapping
@@ -113,7 +212,8 @@ public with sharing class CJFW_DeliveryDstMgmtCtrlNotiHandler extends NotiHandle
                 '10' => mgmt.Key__c,
                 '11' => mgmt.InspectionYN__c,
                 '12' => mgmt.Inspector__c,
-                '13' => convertRichTextContent,//사진파일
+                // '13' => imgUrlMap.get(mgmt.Id),//사진파일
+                '13' => modifiedRichText,//사진파일
                 '14' => mgmt.DeliveryLocation__c,
                 '15' => mgmt.LoadingInfo__c,
                 '16' => mgmt.Condition__c,
@@ -131,7 +231,7 @@ public with sharing class CJFW_DeliveryDstMgmtCtrlNotiHandler extends NotiHandle
 
             emailTemplate.setAttachmentIds(attachmentMap.get(mgmt.Id));//첨부파일
             emailTemplate.setToAddresses(centerMailMap.get(mgmt.LogisticsCenter__c)); //물류센터 담당자
-            // emailTemplate.setToAddresses(new Set<String>{'yejoo1.lee@cj.net'});
+            // emailTemplate.setToAddresses(new Set<String>{'yejoo.lee@dkbmc.com'});
             
             emailTemplateList.add(emailTemplate);
         }

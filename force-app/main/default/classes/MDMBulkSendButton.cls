@@ -110,6 +110,7 @@ public with sharing class MDMBulkSendButton {
                     objInputList.add(objInput);
                 }
                     
+                
                 IFUtil ifutilWrapper      = new IFUtil('IF_SFDC_MDM_REG_ACCOUNT');
                 String strJsonRequestBody  = JSON.serialize(objInputList);
 

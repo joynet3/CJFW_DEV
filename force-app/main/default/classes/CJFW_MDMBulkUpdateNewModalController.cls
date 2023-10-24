@@ -2,14 +2,14 @@
  * @description       : 
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 10-23-2023
+ * @last modified on  : 10-24-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
- * 1.0   10-23-2023   joohyeon.jang@dkbmc.com   Initial Version
+ * 1.0   10-24-2023   joohyeon.jang@dkbmc.com   Initial Version
 **/
-public with sharing class CjfwMDMBulkCreateNewModalController {
-    public CjfwMDMBulkCreateNewModalController(ApexPages.StandardSetController controller){
+public with sharing class CJFW_MDMBulkUpdateNewModalController {
+    public CJFW_MDMBulkUpdateNewModalController(ApexPages.StandardSetController controller){
     }
 
      /**
@@ -21,8 +21,8 @@ public with sharing class CjfwMDMBulkCreateNewModalController {
     public static List<workflow__c> getCategoryLevel1() {
         try {
             List<workflow__c> categoryLevel1 = new List<workflow__c>();
-            String p2BulkCreateLevel1 = '1';
-            categoryLevel1 = [SELECT Id, Name, P2BulkCreateLargeCode__c , P2BulkCreateLevel__c, Page2ProcessId__c FROM workflow__c WHERE P2BulkCreateLevel__c = :p2BulkCreateLevel1 ORDER BY Page2ProcessId__c asc];
+            String p2BulkUpdateLevel1 = '1';
+            categoryLevel1 = [SELECT Id, Name, P2BulkUpdateLargeCode__c , P2BulkUpdateLevel__c, Page2ProcessId__c FROM workflow__c WHERE P2BulkUpdateLevel__c = :p2BulkUpdateLevel1 ORDER BY Page2ProcessId__c asc];
             
             return categoryLevel1;
             
@@ -45,7 +45,7 @@ public with sharing class CjfwMDMBulkCreateNewModalController {
         try {
             List<workflow__c> categoryLevel2 = new List<workflow__c>();
             String p2BulkCraeteLevel2 = '2';
-			categoryLevel2 = [SELECT Id, Name, P2BulkCreateMidCategory__c, P2BulkCreateLevel__c FROM workflow__c WHERE P2BulkCreateLevel__c = :p2BulkCraeteLevel2 AND P2BulkCreateLargeCode__c = :page2LargeCode];
+			categoryLevel2 = [SELECT Id, Name, P2BulkUpdateMidCategory__c, P2BulkUpdateLevel__c FROM workflow__c WHERE P2BulkUpdateLevel__c = :p2BulkCraeteLevel2 AND P2BulkUpdateLargeCode__c = :page2LargeCode];
             
             return categoryLevel2;
             
@@ -65,8 +65,8 @@ public with sharing class CjfwMDMBulkCreateNewModalController {
         try {
             List<workflow__c> categoryLevel3 = new List<workflow__c>();
             String page2CatLevel3 = '3';
-            categoryLevel3 = [SELECT Id, Name, P2BulkCreateMidCategory__c, P2BulkCreateLevel__c 
-                              FROM workflow__c WHERE P2BulkCreateLevel__c = :page2CatLevel3];
+            categoryLevel3 = [SELECT Id, Name, P2BulkUpdateMidCategory__c, P2BulkUpdateLevel__c 
+                              FROM workflow__c WHERE P2BulkUpdateLevel__c = :page2CatLevel3];
             
             return categoryLevel3;
         } catch (Exception e) {

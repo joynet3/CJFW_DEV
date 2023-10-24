@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : yeonji.lim@dkbmc.com
  * @group             : 
- * @last modified on  : 10-23-2023
+ * @last modified on  : 10-24-2023
  * @last modified by  : yeonji.lim@dkbmc.com
 **/
 public with sharing class OrderConsiderReContractFormController {
@@ -44,13 +44,21 @@ public with sharing class OrderConsiderReContractFormController {
     
     /* 생성자 */
     public OrderConsiderReContractFormController() {
-        this.opportunityId = '0060w00000D8yoKAAR';      //테스트를 위한 아이디값
-        this.incomeExpensesId = 'a1lH2000001NWe6IAG';   //테스트를 위한 아이디값
+        // this.opportunityId = '0060w00000D8yoKAAR';      //테스트를 위한 아이디값
+        // this.incomeExpensesId = 'a1lH2000001NWe6IAG';   //테스트를 위한 아이디값
+        this.opportunityId = ApexPages.currentPage().getParameters().get('opportunityId');
+        this.incomeExpensesId = ApexPages.currentPage().getParameters().get('incomeExpensesId');
+        this.showtable = ApexPages.currentPage().getParameters().get('showtable');
 
-        getPicklistValues(); // picklist label/value 값 담기
-        getOpptyInfo();     //담당자 정보 가져오기
-        getAccountInfo();    // 고객사 정보 가져오기
-        getIncomeExpenses(); // 신규개설품의 obj 값 가져오기
+        System.debug('# opportunityId ->' + opportunityId );
+        System.debug('# incomeExpensesId ->' + incomeExpensesId );
+        System.debug('# showtable ->' + showtable );
+
+
+        getPicklistValues();    // picklist label/value 값 담기
+        getOpptyInfo();         // 담당자 정보 가져오기
+        getAccountInfo();       // 고객사 정보 가져오기
+        getIncomeExpenses();    // 신규개설품의 obj 값 가져오기
     }
 
     /* 
@@ -107,7 +115,6 @@ public with sharing class OrderConsiderReContractFormController {
     Oppty 에 있는 Account 값을 가져오는 메소드
     */
     public void getOpptyInfo() {
-        System.debug('opportunityId = '+ opportunityId);
         
         Opportunity getOppty = [SELECT Id, Name, Owner.TeamLabel__c, Owner.Name
                             FROM Opportunity
@@ -115,8 +122,8 @@ public with sharing class OrderConsiderReContractFormController {
         ];
 
         // System.debug('#oppty => '+ oppty);
-        System.debug('#getOppty.Owner.teamlable__c => '+ getOppty.Owner.TeamLabel__c);
-        System.debug('#getOppty.Owner.Name => '+ getOppty.Owner.Name);
+        // System.debug('#getOppty.Owner.teamlable__c => '+ getOppty.Owner.TeamLabel__c);
+        // System.debug('#getOppty.Owner.Name => '+ getOppty.Owner.Name);
         
         // 필드 값이 null일 경우 빈값으로 처리
         getOppty.Owner.TeamLabel__c = getOppty.Owner.TeamLabel__c != null ? getOppty.Owner.TeamLabel__c : ''; 
@@ -128,17 +135,15 @@ public with sharing class OrderConsiderReContractFormController {
     Oppty 에 있는 Account 값을 가져오는 메소드
     */
    public void getAccountInfo() {
-        System.debug('# opportunityId ->' + opportunityId );
-        System.debug('# incomeExpensesId ->' + incomeExpensesId );
-        System.debug('# showtable ->' + showtable );
+        // System.debug('# opportunityId ->' + opportunityId );
+        // System.debug('# incomeExpensesId ->' + incomeExpensesId );
+        // System.debug('# showtable ->' + showtable );
 
         
         // 기회 레코드에서 계정 ID 가져오기 
         Id accountId = [SELECT AccountId FROM Opportunity WHERE Id = :opportunityId LIMIT 1].AccountId;
-        // 	0010w0000115nxvAAA
 
         if (accountId != null) {
-            // 계정 정보를 쿼리
             accountInfo = [SELECT 
                                 Id,
                                 Name,
@@ -169,11 +174,11 @@ public with sharing class OrderConsiderReContractFormController {
     }
 
     /* 
-    예산손익(CJFW_ExpectedIncomeExpenses__c) 에서 값 가져오기
+    신규개설품의(CJFW_ExpectedIncomeExpenses__c) 에서 값 가져오기
     VF Page 초기호출시  
     */
     public void getIncomeExpenses() {
-        System.debug('# ReportFormController # getIncomeExpenses');
+        System.debug('# ReportFormController # getIncomeExpenses  ==================================');
         
         try {
             String query = 'SELECT Id, ' +
@@ -215,6 +220,18 @@ public with sharing class OrderConsiderReContractFormController {
             'ContractPaymentDate__c, ' +            //약정결제일
             'ContractType__c, ' +                   //계약서 종류
 
+            'Sales__c, ' +                           //수주가이드 매출
+            'ExclusiveSaveSkuSales__c, ' +           //전용저장 sku매출
+            'DropSize__c, ' +                        //회당 Drop Size
+            'AverageSales__c, ' +                    //점당 평균매출
+            'DeliveryNumber__c, ' +                  //배송 횟수
+            'ContributionMargin__c, ' +              //공헌이익%
+            'KgExclusiveProduct__c, ' +              //전용상품
+            'KgGeneralProduct__c, ' +                //일반상품
+            'KgTotalAmount__c, ' +                   //KG단가 계
+            'SkuReleaseEa__c,' +                    //출고단위 EA
+            'SkuReleaseBox__c, ' +                  //출고단위 BOX
+
             'SalesMoreThousand__c, ' +              //매출액 1천이상
             'SalesMoreFiveHundred__c, ' +           //매출액 5백이상
             'SalesLessFiveHundred__c, ' +           //매출액 5백미만
@@ -222,7 +239,21 @@ public with sharing class OrderConsiderReContractFormController {
             'StoreMoreThousand__c, ' +              //점포수 1천이상
             'StoreMoreFiveHundred__c, ' +           //점포수 5백이상
             'StoreLessFiveHundred__c, ' +           //점포수 5백미만
-            'StoreLessThreeHundred__c ' +           //점포수 3백미만
+            'StoreLessThreeHundred__c, ' +           //점포수 3백미만
+
+            'FrozenMonth__c, ' +                    //냉동(30일)
+            'FrozenTwoMonth__c, ' +                 //냉동(60일)
+            'FrozenThreeMonth__c, ' +               //냉동(90일)
+            'FrozenFourMonth__c, ' +                //냉동(120일)
+            'RefrigerationMonth__c, ' +             //냉장(30일)
+            'RefrigerationTwoMonth__c, ' +          //냉장(60일)
+            'RefrigerationThreeMonth__c, ' +        //냉장(90일)
+            'RefrigerationFourMonth__c, ' +         //냉장(120일)
+            'TemperatureMonth__c, ' +               //상온(30일)
+            'TemperatureTwoMonth__c, ' +            //상온(60일)
+            'TemperatureThreeMonth__c, ' +          //상온(90일)
+            'TemperatureFourMonth__c ' +           //상온(120일)
+
             'FROM CJFW_ExpectedIncomeExpenses__c';
 
             if (incomeExpensesId != null) {
@@ -256,7 +287,7 @@ public with sharing class OrderConsiderReContractFormController {
             System.debug('trace => ' + e.getStackTraceString());
         }
 
-        System.debug('IncomeExpensesInfo 결과 = '+ IncomeExpensesInfo);
+        System.debug('IncomeExpensesInfo 쿼리결과 = '+ IncomeExpensesInfo);
 
         /* number 타입 갑이 없을 경우 0.00으로 초기값 세팅 */
         String[] defaultValSet = new String[] {
@@ -266,6 +297,13 @@ public with sharing class OrderConsiderReContractFormController {
             'SalesFeeGeneralTOBE__c',            //TO-BE일반
             'SalesFeeExclusiveTOBE__c',          //TO-BE전용
             'SalesFeeCountrysideTOBE__c',        //TO-BE지방
+
+            'Sales__c',                          //매출
+            'ExclusiveSaveSkuSales__c',          //전용저장 sku매출
+            'DropSize__c',                       //회당 Drop Size
+            'AverageSales__c',                   //점당 평균매출
+            'ContributionMargin__c',             //공헌이익%
+
             'SalesMoreThousand__c',              //매출액 1천이상
             'SalesMoreFiveHundred__c',           //매출액 5백이상
             'SalesLessFiveHundred__c',           //매출액 5백미만
@@ -286,7 +324,27 @@ public with sharing class OrderConsiderReContractFormController {
             'StoreMoreThousand__c',              //점포수 1천이상
             'StoreMoreFiveHundred__c',           //점포수 5백이상
             'StoreLessFiveHundred__c',           //점포수 5백미만
-            'StoreLessThreeHundred__c'           //점포수 3백미만
+            'StoreLessThreeHundred__c',          //점포수 3백미만
+
+            'DeliveryNumber__c',                 //배송 횟수
+            'KgExclusiveProduct__c',             //전용상품
+            'KgGeneralProduct__c',               //일반상품
+            'KgTotalAmount__c',                  //계
+            'SkuReleaseBox__c',                  //출고단위 BOX
+            'SkuReleaseEa__c',                    //출고단위 EA
+
+            'FrozenMonth__c' ,                    //냉동(30일)
+            'FrozenTwoMonth__c',                  //냉동(60일)
+            'FrozenThreeMonth__c',                //냉동(90일)
+            'FrozenFourMonth__c',                 //냉동(120일)
+            'RefrigerationMonth__c',              //냉장(30일)
+            'RefrigerationTwoMonth__c',           //냉장(60일)
+            'RefrigerationThreeMonth__c',         //냉장(90일)
+            'RefrigerationFourMonth__c',          //냉장(120일)
+            'TemperatureMonth__c',                //상온(30일)
+            'TemperatureTwoMonth__c',             //상온(60일)
+            'TemperatureThreeMonth__c',           //상온(90일)
+            'TemperatureFourMonth__c'             //상온(120일)
         };
         for (String defaultSet : defaultValPerSet) {
             Object fieldPerValue = IncomeExpensesInfo.get(defaultSet);
@@ -300,8 +358,8 @@ public with sharing class OrderConsiderReContractFormController {
         String initialDateString = String.valueOf(IncomeExpensesInfo.InitialDate__c); // 초도일자 
         String contractStartString = String.valueOf(IncomeExpensesInfo.ContractStartDate__c); // 계약시작일자
         String contractEndString = String.valueOf(IncomeExpensesInfo.ContractEndDate__c); // 계약종료일자 
-        String collateralPeriodString = String.valueOf(IncomeExpensesInfo.collateralPeriod__c); // 담보기간
-        String contractPaymentDateString = String.valueOf(IncomeExpensesInfo.contractPaymentDate__c);   //약정결제일
+        String collateralPeriodString = String.valueOf(IncomeExpensesInfo.CollateralPeriod__c); // 담보기간
+        String contractPaymentDateString = String.valueOf(IncomeExpensesInfo.ContractPaymentDate__c);   //약정결제일
 
         initialDate = initialDateString != null ? initialDateString.substring(0, 10) : null;
         contractStartDate = contractStartString != null ? contractStartString.substring(0, 10) : null;
@@ -368,6 +426,7 @@ public with sharing class OrderConsiderReContractFormController {
             }
 
             expectIncome.saveResult__c = DataList;
+            expectIncome.ReportType__c = 'CRM010';  //품의서 종류에 따라 타입설정 (CRM010: 외식SU 재계약 품의서)
 
             /* ===== 1. 개요 ===== */
             if (dataMap.containsKey('keyMan')) { // keyMan
@@ -424,6 +483,7 @@ public with sharing class OrderConsiderReContractFormController {
                 expectIncome.PV_EXISTSUP__c = (String) dataMap.get('existGoods');
             }
 
+        
             /* ===== 3. 거래 상세내용 ===== */
             if (dataMap.containsKey('contractStartDate') && dataMap.get('contractStartDate') !='') { // 계약기간시작
                 expectIncome.ContractStartDate__c = Date.valueOf(((String) dataMap.get('contractStartDate')));
@@ -474,7 +534,40 @@ public with sharing class OrderConsiderReContractFormController {
                 expectIncome.ContractType__c = (String) dataMap.get('contractType');
             }
             
-
+            /* ===== 4. 수주가이드 충족 여부 ===== */     
+            if (dataMap.containsKey('sales')) { // 매출
+                expectIncome.Sales__c = convertToDecimal(dataMap.get('sales'));
+            }
+            if (dataMap.containsKey('exclusiveSaveSkuSales')) { //전용 저장 SKU 매출
+                expectIncome.ExclusiveSaveSkuSales__c = convertToDecimal(dataMap.get('exclusiveSaveSkuSales'));
+            }
+            if (dataMap.containsKey('dropSize')) { // 회당 Drop Size
+                expectIncome.DropSize__c = convertToDecimal(dataMap.get('dropSize'));
+            }
+            if (dataMap.containsKey('averageSales')) { // 점당 평균매출매출
+                expectIncome.AverageSales__c = convertToDecimal(dataMap.get('averageSales'));
+            }
+            if (dataMap.containsKey('deliveryNumber')) { // 배송 횟수
+                expectIncome.DeliveryNumber__c = convertToDecimal(dataMap.get('deliveryNumber'));
+            }
+            if (dataMap.containsKey('contributionMargin')) { // 공헌이익%
+                expectIncome.ContributionMargin__c = convertToDecimal(dataMap.get('contributionMargin'));
+            }
+            if (dataMap.containsKey('kgExclusiveProduct')) { // 전용상품
+                expectIncome.KgExclusiveProduct__c = convertToDecimal(dataMap.get('kgExclusiveProduct'));
+            }
+            if (dataMap.containsKey('kgGeneralProduct')) { // 일반상품
+                expectIncome.KgGeneralProduct__c = convertToDecimal(dataMap.get('kgGeneralProduct'));
+            }
+            if (dataMap.containsKey('kgTotalAmount')) { // 계
+                expectIncome.KgTotalAmount__c = convertToDecimal(dataMap.get('kgTotalAmount'));
+            }
+            if (dataMap.containsKey('skuReleaseBox')) { // 출고단위 BOX
+                expectIncome.SkuReleaseBox__c = convertToDecimal(dataMap.get('skuReleaseBox'));
+            }
+            if (dataMap.containsKey('skuReleaseEa')) { // 출고단위 EA
+                expectIncome.SkuReleaseEa__c = convertToDecimal(dataMap.get('skuReleaseEa'));
+            }
 
             /* ===== 7. 점당 매출액 ===== */
             if (dataMap.containsKey('salesMoreThousand')) { // 매출액 첫번째 칸
@@ -501,6 +594,46 @@ public with sharing class OrderConsiderReContractFormController {
             if (dataMap.containsKey('storeLessThreeHundred')) { // 점포수 네번째 칸
                 expectIncome.StoreLessThreeHundred__c = convertToDecimal(dataMap.get('storeLessThreeHundred'));
             }
+            
+            
+            /* ===== 8-2. 전용SKU 재고 회전일 ===== */
+            if (dataMap.containsKey('frozenMonth')) { // 냉동(30일)
+                expectIncome.FrozenMonth__c = convertToDecimal(dataMap.get('frozenMonth'));
+            }
+            if (dataMap.containsKey('frozenTwoMonth')) { // 냉동(60일)
+                expectIncome.FrozenTwoMonth__c = convertToDecimal(dataMap.get('frozenTwoMonth'));
+            }
+            if (dataMap.containsKey('frozenThreeMonth')) { // 냉동(90일)
+                expectIncome.FrozenThreeMonth__c = convertToDecimal(dataMap.get('frozenThreeMonth'));
+            }
+            if (dataMap.containsKey('frozenFourMonth')) { // 냉동(120일)
+                expectIncome.FrozenFourMonth__c = convertToDecimal(dataMap.get('frozenFourMonth'));
+            }
+            if (dataMap.containsKey('refrigerationMonth')) { // 냉장(30일)
+                expectIncome.RefrigerationMonth__c = convertToDecimal(dataMap.get('refrigerationMonth'));
+            }
+            if (dataMap.containsKey('refrigerationTwoMonth')) { // 냉장(60일)
+                expectIncome.RefrigerationTwoMonth__c = convertToDecimal(dataMap.get('refrigerationTwoMonth'));
+            }
+            if (dataMap.containsKey('refrigerationThreeMonth')) { // 냉장(90일)
+                expectIncome.RefrigerationThreeMonth__c = convertToDecimal(dataMap.get('refrigerationThreeMonth'));
+            }
+            if (dataMap.containsKey('refrigerationFourMonth')) { // 냉장(120일)
+                expectIncome.RefrigerationFourMonth__c = convertToDecimal(dataMap.get('refrigerationFourMonth'));
+            }
+            if (dataMap.containsKey('temperatureMonth')) { // 상온(30일)
+                expectIncome.TemperatureMonth__c = convertToDecimal(dataMap.get('temperatureMonth'));
+            }
+            if (dataMap.containsKey('temperatureTwoMonth')) { // 상온(60일)
+                expectIncome.TemperatureTwoMonth__c = convertToDecimal(dataMap.get('temperatureTwoMonth'));
+            }
+            if (dataMap.containsKey('temperatureThreeMonth')) { // 상온(90일)
+                expectIncome.TemperatureThreeMonth__c = convertToDecimal(dataMap.get('temperatureThreeMonth'));
+            }
+            if (dataMap.containsKey('temperatureFourMonth')) { // 상온(120일)
+                expectIncome.TemperatureFourMonth__c = convertToDecimal(dataMap.get('temperatureFourMonth'));
+            }
+
 
             upsert expectIncome;
             return 'success';
@@ -514,6 +647,44 @@ public with sharing class OrderConsiderReContractFormController {
         }
 
     }
+
+    /* 
+    품의지정 버튼 클릭시 , 품의지정 check 
+    : 기존 품의지정된 내역은 삭제 후 신규 품의지정된 1개만 품의체크
+    */
+   @RemoteAction
+   public static String ReportCheck(String incomeExpensesId , String opportunityId ){
+
+       try{
+           //CJFW_ExpectedIncomeExpenses__c RemoveList = [SELECT Id, IsReportCheck__c FROM CJFW_ExpectedIncomeExpenses__c WHERE Opportunity__c =: opportunityId AND Id != :incomeExpensesId];
+           List<CJFW_ExpectedIncomeExpenses__c> RemoveList = [SELECT Id, IsReportCheck__c FROM CJFW_ExpectedIncomeExpenses__c WHERE Opportunity__c = :opportunityId AND Id != :incomeExpensesId];
+           CJFW_ExpectedIncomeExpenses__c checkList = [SELECT Id, IsReportCheck__c FROM CJFW_ExpectedIncomeExpenses__c WHERE  Id = :incomeExpensesId];
+
+           if(RemoveList <> null ){
+               for(CJFW_ExpectedIncomeExpenses__c data : RemoveList) {
+                   data.IsReportCheck__c = false;
+               }
+               update RemoveList;
+           }
+
+           if(checkList <> null){
+               checkList.IsReportCheck__c =true;
+               System.debug(' checkList ' + checkList );
+               update checkList;
+           }
+
+           return 'success';
+
+       }catch (Exception e) {
+
+           String errorMessage = e.getMessage(); // 에러 메시지
+           String errorStackTrace = e.getStackTraceString(); // 에러 스택 트레이스
+
+           System.debug('에러 메시지: ' + errorMessage);
+           System.debug('에러 라인: ' + errorStackTrace);
+           return 'error';
+       }
+   }
 
     /* 
     Decimal 값으로 변환하기위해 사용되는 메소드

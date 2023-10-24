@@ -28,12 +28,45 @@ public with sharing class IFN_sancho_test {
         
         //1차에서 사용한 스케쥴 등록법. - NEAT 학교급식(농수산식품공사)는 기존 개발안이므로 기존 폼 유지한다.
         IF_SFDC_DATA_REQ_EAT_BID_INFO_sc sch = new IF_SFDC_DATA_REQ_EAT_BID_INFO_sc();
-        system.schedule('IF_SFDC_DATA_REQ_EAT_BID_INFO_sc 학교급식 NEAT 02시00분', '0 10 16 * * ?', sch);
+        //system.schedule('IF_SFDC_DATA_REQ_EAT_BID_INFO_sc 학교급식 NEAT 02시00분', '0 10 16 * * ?', sch);
         system.schedule('IF_SFDC_DATA_REQ_EAT_BID_INFO_sc 학교급식 NEAT 02시00분', '0 0 02 * * ?', sch);
 
-
+        //전용유
         IFN_EIF1001_FS001_MD001 b = new IFN_EIF1001_FS001_MD001();
         Database.executeBatch(b, 1);
+
+        //전용유 신규 스케쥴 등록 
+        IFN_EIF1001_FS001_MD001_sc EIF1001_FS001 = new IFN_EIF1001_FS001_MD001_sc();
+        system.schedule('IFN_EIF1001_FS001_MD001_sc 식약청 전용유 01:05', '0 30 01 * * ?', EIF1001_FS001);
+
+        //기존 어린이집/지방인허가/나라장터
+        /* - 운영 Scheduled Jobs
+        IF_SFDC_CRCT_REQ_CENTER_INFO_sc 어린이집정보공개포털 01:30	            CJ Freshway	2023. 2. 7. 오전 11:26	2023. 10. 24. 오전 1:30	2023. 10. 25. 오전 1:30	예약된 Apex
+        IF_SFDC_LOCAL_DATA_INFO_sc 지방인허가정보 05시00분	                    Interface	2023. 2. 5. 오후 5:28	2023. 10. 24. 오전 5:00	2023. 10. 25. 오전 5:00	예약된 Apex
+        IF_SFDC_DATA_REQ_NARA_TENDER_INFO_sc 나라장터 입찰공고(기타) 03시00분	Interface	2023. 2. 5. 오후 5:24	2023. 10. 24. 오전 3:00	2023. 10. 25. 오전 3:00	예약된 Apex
+        IF_SFDC_DATA_REQ_NARA_TENDER_FRGC_sc 나라장터 입찰공고(외자) 03시30분	Interface	2023. 2. 5. 오후 5:24	2023. 10. 24. 오전 3:30	2023. 10. 25. 오전 3:30	예약된 Apex
+        IF_SFDC_DATA_REQ_NARA_TENDER_SERVC_sc 나라장터 입찰공고(용역) 04시00분	Interface	2023. 2. 5. 오후 5:24	2023. 10. 24. 오전 4:00	2023. 10. 25. 오전 4:00	예약된 Apex
+        IF_SFDC_DATA_REQ_NARA_TENDER_THNG_sc 나라장터 입찰공고(물품) 04시30분
+        */
+
+        IF_SFDC_CRCT_REQ_CENTER_INFO_sc crct = new IF_SFDC_CRCT_REQ_CENTER_INFO_sc();
+        system.schedule('IF_SFDC_CRCT_REQ_CENTER_INFO_sc 어린이집정보공개포털 01:30', '0 30 01 * * ?', crct);
+
+        IF_SFDC_LOCAL_DATA_INFO_sc local_info = new IF_SFDC_LOCAL_DATA_INFO_sc();
+        system.schedule('IF_SFDC_LOCAL_DATA_INFO_sc 지방인허가정보 05시00분',                       '0 00 05 * * ?', local_info);
+
+        IF_SFDC_DATA_REQ_NARA_TENDER_INFO_sc nara_info = new IF_SFDC_DATA_REQ_NARA_TENDER_INFO_sc();
+        system.schedule('IF_SFDC_DATA_REQ_NARA_TENDER_INFO_sc 나라장터 입찰공고(기타) 03시00분',    '0 00 03 * * ?', nara_info);
+
+        IF_SFDC_DATA_REQ_NARA_TENDER_FRGC_sc nara_frgc = new IF_SFDC_DATA_REQ_NARA_TENDER_FRGC_sc();
+        system.schedule('IF_SFDC_DATA_REQ_NARA_TENDER_FRGC_sc 나라장터 입찰공고(외자) 03시30분',    '0 30 03 * * ?', nara_frgc);
+
+        IF_SFDC_DATA_REQ_NARA_TENDER_SERVC_sc nara_serv = new IF_SFDC_DATA_REQ_NARA_TENDER_SERVC_sc();
+        system.schedule('IF_SFDC_DATA_REQ_NARA_TENDER_SERVC_sc 나라장터 입찰공고(용역) 04시00분',   '0 00 04 * * ?', nara_serv);
+
+        IF_SFDC_DATA_REQ_NARA_TENDER_THNG_sc nara_thng = new IF_SFDC_DATA_REQ_NARA_TENDER_THNG_sc();
+        system.schedule('IF_SFDC_DATA_REQ_NARA_TENDER_THNG_sc 나라장터 입찰공고(물품) 04시30분',    '0 30 04 * * ?', crct);
+
 
     }
 
