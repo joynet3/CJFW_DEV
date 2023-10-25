@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 10-18-2023
+ * @last modified on  : 10-25-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -19,51 +19,54 @@ public with sharing class CJFW_MDMBulkCreateSellModalController {
    * CRM 오브젝트 = wrapper class다 
    * contact < 스탠다드 오브젝트 
    */
-  @AuraEnabled
-  public static SaveResult doSave(List<MDMRequest> mdmCustomer)
+  @AuraEnabled                  // List<MDMRequest> mdmCustomer
+  public static SaveResult doSave(List<MDMRegRequestCustomer__c> customerList)
   {
-     String recordTypeName = 'MDMChild';  
-     String MDMRecordTypeId = '';  
-    system.debug('#CJFW_MDMBulkCreateHeadController >>>doSave ');
-    MDMRecordTypeId = Schema.SObjectType.MDMRegRequestCustomer__c.getRecordTypeInfosByDeveloperName().get(recordTypeName).getRecordTypeId();
+    system.debug('gd');
+    system.debug(customerList);
+
     SaveResult saveResult = new SaveResult();
+
+    String recordTypeName = 'MDMChild';     // 판매처
+    String MDMRecordTypeId = '';  
+    String Status = 'Waiting';              // 이거
+    system.debug('#CJFW_MDMBulkCreateHeadController >>>doSave ');
+    MDMRecordTypeId = Schema.SObjectType.MDMRegRequestCustomer__c.getRecordTypeInfosByDeveloperName().get(recordTypeName).getRecordTypeId(); // 이거
     // aura  String 으로 넘어와서 JSON.des
     // mdmCustomer obj =  JSON.deserialize(mdmCustomer, 래퍼클래스명.class);
-    system.debug('>>>doSave # mdmCustomer ' + JSON.serialize(mdmCustomer));
+    // system.debug('>>>doSave # mdmCustomer ' + JSON.serialize(mdmCustomer));
     //값을 나눠서 값이 없으면 안되는친구들
     //값이 없어도 되는친구들 
     try {
-        if(mdmCustomer != null){    
+        if(customerList != null){    
             MDMRegRequestBulkCustomer__c mdmRequestbulk = new MDMRegRequestBulkCustomer__c();
             //bulk 첫번째 => (0번째 Name) + 외 ( )건;
             // 얘가
-        //   mdmRequestbulk.Name	                                = '저장TEST.';
-            mdmRequestbulk.Name = mdmCustomer[0].Name + ' 외 ' + mdmCustomer.size() + '건';
+            //   mdmRequestbulk.Name	                                = '저장TEST.';
+            mdmRequestbulk.Name = customerList[0].PV_NAME1__c + ' 외 ' + customerList.size() + '건';
             mdmRequestbulk.RequestType__c = 'Create';
             insert mdmRequestbulk;
+
             saveResult.customerId = mdmRequestbulk.id;
             
-            for (MDMRequest mdm : mdmCustomer) {
-                MDMRegRequestCustomer__c mdmRequest = new MDMRegRequestCustomer__c();
-                system.debug('안녕하세요 ' + mdmRequestbulk.id);
-                system.debug('mdm.name ' + mdm.name);
-                system.debug('mdm.name ' + mdm.BusinessNumber);
-                system.debug('mdm.name ' + mdm.CEOName);
-                
-                mdmRequest.PV_NAME1__c                   =      String.isBlank(mdm.Name) ? null : mdm.Name;
-                mdmRequest.PV_STCD2__c                   =      String.isBlank(mdm.BusinessNumber) ? null : mdm.BusinessNumber;
-                mdmRequest.PV_J_1KFREPRE__c              =      String.isBlank(mdm.CEOName) ? null : mdm.CEOName;
-                mdmRequest.recordTypeId                  =      MDMRecordTypeId;
-                mdmRequest.MDMRegRequestBulkCustomer__c  =      mdmRequestbulk.id;
-                mdmRequest.PV_CUSTTYPE__c                =      'C02';
-                system.debug('mdmRequest ' + mdmRequest);
-                insert mdmRequest;
+            for(MDMRegRequestCustomer__c customerObj : customerList)
+            {
+                customerObj.MDMRegRequestBulkCustomer__c = mdmRequestbulk.id;
+                customerObj.recordTypeId = MDMRecordTypeId;
+                customerObj.Status__c = Status;
             }
+            insert customerList;
+
             saveResult.status = 'S';
             saveResult.massage = '성공 하였습니다.';
         }
       } catch (Exception e) {
           saveResult.error = e.getMessage() +', '+ e.getLineNumber();
+          saveResult.status = 'F';
+          saveResult.massage = '실패 하였습니다.';
+          
+          throw new AuraHandledException(e.getMessage()+ ', '+ e.getLineNumber());
+
       }
 
       return saveResult;

@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : yeonji.lim@dkbmc.com
  * @group             : 
- * @last modified on  : 10-24-2023
+ * @last modified on  : 10-25-2023
  * @last modified by  : yeonji.lim@dkbmc.com
 **/
 public with sharing class OrderConsiderReContractFormController {
@@ -13,6 +13,7 @@ public with sharing class OrderConsiderReContractFormController {
     public Decimal versionCheck { get; set; }
     public Boolean reportCheck { get; set; }
     public String showtable { get; set; }
+    public String reportType { get; set; } // 품의서 유형
 
     /* 가져온 데이터 담는 object */
     public Opportunity opptyInfo {get;set;}
@@ -49,10 +50,12 @@ public with sharing class OrderConsiderReContractFormController {
         this.opportunityId = ApexPages.currentPage().getParameters().get('opportunityId');
         this.incomeExpensesId = ApexPages.currentPage().getParameters().get('incomeExpensesId');
         this.showtable = ApexPages.currentPage().getParameters().get('showtable');
+        this.reportType = ApexPages.currentPage().getParameters().get('type');
 
         System.debug('# opportunityId ->' + opportunityId );
         System.debug('# incomeExpensesId ->' + incomeExpensesId );
         System.debug('# showtable ->' + showtable );
+        System.debug('# reportType ->' + reportType );
 
 
         getPicklistValues();    // picklist label/value 값 담기
@@ -257,9 +260,9 @@ public with sharing class OrderConsiderReContractFormController {
             'FROM CJFW_ExpectedIncomeExpenses__c';
 
             if (incomeExpensesId != null) {
-                query += ' WHERE id = :incomeExpensesId ';
+                query += ' WHERE id = :incomeExpensesId AND ReportType__c =:reportType ';
             }else if (opportunityId != null) {
-                query += ' WHERE Opportunity__c = :opportunityId ';
+                query += ' WHERE Opportunity__c = :opportunityId AND ReportType__c =:reportType';
             }
 
             if(showtable =='true'){
@@ -404,10 +407,11 @@ public with sharing class OrderConsiderReContractFormController {
     @RemoteAction
     public static String saveIncomeExpenses(String DataList, String opportunityId, Decimal versionCheck, String incomeExpensesId) {
         try {
-            System.debug('DataList ' + DataList);
-            System.debug('opportunityId ' + opportunityId);
-            System.debug('versionCheck ' + versionCheck);
-            System.debug('incomeExpensesId ' + incomeExpensesId);
+            System.debug('saveIncomeExpenses DataList ' + DataList);
+            System.debug('saveIncomeExpenses opportunityId ' + opportunityId);
+            System.debug('saveIncomeExpenses versionCheck ' + versionCheck);
+            System.debug('saveIncomeExpenses incomeExpensesId ' + incomeExpensesId);
+            // System.debug('saveIncomeExpenses reportType ' + reportType);
             
             Map<String, Object> dataMap = (Map<String, Object>) JSON.deserializeUntyped(DataList);
             System.debug('넘어온 데이터! ' + dataMap);

@@ -2,7 +2,7 @@
  * @description       :
  * @author            : sunkyung.choi@dkbmc.com
  * @group             :
- * @last modified on  : 10-23-2023
+ * @last modified on  : 10-25-2023
  * @last modified by  : sunkyung.choi@dkbmc.com
 **/
 public with sharing class CJFW_Survey_tr extends TriggerHandler {
@@ -39,16 +39,40 @@ public with sharing class CJFW_Survey_tr extends TriggerHandler {
         doCloneInsert();
     }
     private void doClone() {
-        system.debug('doClone  START');
-        List<CJFW_Survey__c> newSurveys = listNew;
-        System.debug('1111111: >>' + newSurveys);
+        System.debug('doClone START');
+        List<CJFW_Survey__c> newSurveys = listNew;  
+    
         for (CJFW_Survey__c newSurvey : newSurveys) {
-            newSurvey.Version__c = newSurvey.Version__c + 1;
-            newSurvey.ParentSurvey__c = newSurvey.getCloneSourceId();
-
+            // 기존 레코드의 Active__c 값을 false로 설정
+            CJFW_Survey__c sourceSurvey = [SELECT Id, Active__c FROM CJFW_Survey__c WHERE Id = :newSurvey.getCloneSourceId()];
+            if (sourceSurvey != null) {
+                sourceSurvey.Active__c = false;
+                update sourceSurvey; // 기존 레코드 업데이트
+            }
+    
+            // 복제된 레코드의 Active__c 값을 true로 설정
+            newSurvey.Active__c = true;
+    
+            // 나머지 로직을 처리 (Version__c 업데이트 등)
+            Id check = newSurvey.getCloneSourceId();
+            System.debug('확인중 >>>>' + check);
+            if (newSurvey.isClone()) {
+                if (newSurvey.ParentSurvey__c == null) {
+                    newSurvey.ParentSurvey__c = newSurvey.getCloneSourceId();    
+                }
+                newSurvey.Version__c = newSurvey.Version__c + 1;
+            } else {
+                newSurvey.Version__c = 1;
+            }
         }
-
+    
+        // 복제된 레코드 업데이트
+        update newSurveys;
     }
+    
+
+    
+
     private void doCloneInsert() {
         system.debug('doCloneInsert  START');
         List<CJFW_Survey__c> newSurveys = listNew;

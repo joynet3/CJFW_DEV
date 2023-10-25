@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : doyeon.kim@dkbmc.com
  * @group             : 
- * @last modified on  : 10-24-2023
+ * @last modified on  : 10-25-2023
  * @last modified by  : doyeon.kim@dkbmc.com
 **/
 @isTest
@@ -29,8 +29,8 @@ public with sharing class CJFW_QuoteFileCreateNewController_Test {
         Quote quote = new Quote(
             Name = 'testQuote',
             OpportunityId = '0060w00000C0e8zAAB',
-            EffectiveStartDate__c = date.valueOf('2023-10-24'),
-            ExpirationDate = date.valueOf('2023-10-24'),
+            EffectiveStartDate__c = date.valueOf('2023-10-30'),
+            ExpirationDate = date.valueOf('2023-10-30'),
             // Discount = '0',
             // GrandTotal = '1234',
             OwnerId = testUser.Id
@@ -64,18 +64,21 @@ public with sharing class CJFW_QuoteFileCreateNewController_Test {
 
         CJFW_QuoteFileCreateNewController testTmp = new CJFW_QuoteFileCreateNewController();
         
-        String saveType = 'PDF';
         Id recordId = quote.Id;
+        String saveType = 'PDF';
         String listSelectedSave = 'ProductCode__c,ProductName__c,BasePurchasePrice__c,UnitPriceWithVAT__c,QuantityUnitOfMeasure__c,CountryOfOriginName__c,StorageConditionName__c';
-        
+        Quote objQuote = quote;
+        User objOwner = testUser;
         PageReference pdf = new pagereference('/apex/CJFW_QuotePDFCreateNew');
         pdf.getParameters().put('Id', recordId ); 
         pdf.getParameters().put('listSelectedField', listSelectedSave );
         Test.setCurrentPage(pdf);
         
-        System.assertEquals(recordId, testTmp.recordId, '일치');//('testTmp.recordId = '+testTmp.recordId);
-        System.debug('testTmp.objQuote = '+testTmp.objQuote);
-        System.debug('testTmp.objOwner = '+testTmp.objOwner);
+        System.assertEquals(recordId, testTmp.recordId, 'testTmp.recordId 확인');
+        System.assertEquals(objQuote.Id, testTmp.objQuote.Id, 'testTmp.objQuote 확인');
+        System.assertEquals(objOwner.Id, testTmp.objOwner.Id, 'testTmp.objOwner 확인');
+        // System.assertEquals(objOwner.Id, testTmp.objOwner.Id, 'testTmp.objOwner 확인');
+        // System.debug('testTmp.objOwner = '+testTmp.objOwner);
         System.debug('testTmp.mapField = '+testTmp.mapField);
         System.debug('testTmp.listSelectedField = '+testTmp.listSelectedField);
         System.debug('testTmp.ExcelColummLength = '+testTmp.ExcelColummLength);

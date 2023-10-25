@@ -5,7 +5,7 @@
 
  * @author            : seol.kim@dkbmc.com
  * @group             : 
- * @last modified on  : 10-24-2023
+ * @last modified on  : 10-25-2023
  * @last modified by  : seol.kim@dkbmc.com
 **/
 public with sharing class OrderConsiderFormController {
@@ -57,7 +57,7 @@ public with sharing class OrderConsiderFormController {
         System.debug('# opportunityId ->' + opportunityId );
         System.debug('# incomeExpensesId ->' + incomeExpensesId );
         System.debug('# showtable ->' + showtable );
-        
+
         getPicklistValues(); // picklist label/value 값 담기
         getOpptyInfo();     //담당자 정보 가져오기
         getAccountInfo();    // 고객사 정보 가져오기
@@ -151,7 +151,6 @@ public with sharing class OrderConsiderFormController {
         
         // 기회 레코드에서 계정 ID 가져오기 
         Id accountId = [SELECT AccountId FROM Opportunity WHERE Id = :opportunityId LIMIT 1].AccountId;
-        // 	0010w0000115nxvAAA
 
         if (accountId != null) {
             // 계정 정보를 쿼리
@@ -240,17 +239,17 @@ public with sharing class OrderConsiderFormController {
             'KgExclusiveProduct__c, ' +              //전용상품
             'KgGeneralProduct__c, ' +                //일반상품
             'KgTotalAmount__c, ' +                   //계
-            'SkuReleaseEa__c,' +                    //출고단위 EA
-            'SkuReleaseBox__c, ' +                  //출고단위 BOX
+            'SkuReleaseEa__c,' +                     //출고단위 EA
+            'SkuReleaseBox__c, ' +                   //출고단위 BOX
 
-            'SalesMoreThousand__c, ' +              //매출액 1천이상
-            'SalesMoreFiveHundred__c, ' +           //매출액 5백이상
-            'SalesLessFiveHundred__c, ' +           //매출액 5백미만
-            'SalesLessThreeHundred__c, ' +          //매출액 3백미만
-            'StoreMoreThousand__c, ' +              //점포수 1천이상
-            'StoreMoreFiveHundred__c, ' +           //점포수 5백이상
-            'StoreLessFiveHundred__c, ' +           //점포수 5백미만
-            'StoreLessThreeHundred__c ' +           //점포수 3백미만      
+            'SalesMoreThousand__c, ' +               //매출액 1천이상
+            'SalesMoreFiveHundred__c, ' +            //매출액 5백이상
+            'SalesLessFiveHundred__c, ' +            //매출액 5백미만
+            'SalesLessThreeHundred__c, ' +           //매출액 3백미만
+            'StoreMoreThousand__c, ' +               //점포수 1천이상
+            'StoreMoreFiveHundred__c, ' +            //점포수 5백이상
+            'StoreLessFiveHundred__c, ' +            //점포수 5백미만
+            'StoreLessThreeHundred__c ' +            //점포수 3백미만      
 
             ' FROM CJFW_ExpectedIncomeExpenses__c';
 
@@ -295,10 +294,12 @@ public with sharing class OrderConsiderFormController {
             'SalesFeeGeneralTOBE__c',            //TO-BE일반
             'SalesFeeExclusiveTOBE__c',          //TO-BE전용
             'SalesFeeCountrysideTOBE__c',        //TO-BE지방
+
             'SalesMoreThousand__c',              //매출액 1천이상
             'SalesMoreFiveHundred__c',           //매출액 5백이상
             'SalesLessFiveHundred__c',           //매출액 5백미만
             'SalesLessThreeHundred__c',           //매출액 3백미만
+
             'Sales__c',                          //수주가이드 매출
             'ExclusiveSaveSkuSales__c',          //전용저장 sku매출
             'DropSize__c',                       //회당 Drop Size
@@ -321,7 +322,8 @@ public with sharing class OrderConsiderFormController {
             'StoreMoreThousand__c',              //점포수 1천이상
             'StoreMoreFiveHundred__c',           //점포수 5백이상
             'StoreLessFiveHundred__c',           //점포수 5백미만
-            'StoreLessThreeHundred__c',          //점포수 3백미만           
+            'StoreLessThreeHundred__c',          //점포수 3백미만    
+                   
             'DeliveryNumber__c',                 //배송 횟수
             'KgExclusiveProduct__c',             //전용상품
             'KgGeneralProduct__c',               //일반상품
@@ -354,10 +356,10 @@ public with sharing class OrderConsiderFormController {
 
         /* pickList 저장된 값 가져오기 */
         selectedBrandChannel = IncomeExpensesInfo.BrandChannel__c;  // 브랜드 경로
-        selectedCollateral = IncomeExpensesInfo.CollateralType__c; // 담보종류
-        selectedLoanManage = IncomeExpensesInfo.LoanManage__c	;       // 여신관리
+        selectedCollateral = IncomeExpensesInfo.CollateralType__c;  // 담보종류
+        selectedLoanManage = IncomeExpensesInfo.LoanManage__c	;   // 여신관리
         selectedPayment = IncomeExpensesInfo.PaymentMethod__c;      // 결제수단 
-        selectedContract = IncomeExpensesInfo.ContractType__c	; // 계약서종류 
+        selectedContract = IncomeExpensesInfo.ContractType__c	;   // 계약서종류 
 
         /* 2. 거래처 현황 account info 값을 참고로 IncomeExpensesInfo 에 담아주기 
             -> IncomeExpensesInfo 필드에 값이 있는지 먼저 체크 > 값이 없으면 accountInfo 에서 값 땡겨옴 */
@@ -381,9 +383,6 @@ public with sharing class OrderConsiderFormController {
         System.debug('# 품의서정보  ->' + IncomeExpensesInfo ); 
     }
 
-
-
-
     /* 
     CJFW_OrderConsiderNewForm (VF Page) 에서 입력받은 값 update   
     */
@@ -406,12 +405,14 @@ public with sharing class OrderConsiderFormController {
             } else { // insert 
                 System.debug('insert ★-> ');
                 expectIncome = new CJFW_ExpectedIncomeExpenses__c();
-                expectIncome.Version__c = versionCheck; // 필수값
+                expectIncome.Version__c = versionCheck;      // 필수값
                 expectIncome.Opportunity__c = opportunityId; //필수값
                 if(versionCheck == 1) expectIncome.IsReportCheck__c = true; // 초기 insert 시에 품의지정 default 세팅
             }
 
             expectIncome.saveResult__c = DataList;
+            expectIncome.ReportType__c = 'CRM009';  //품의서 종류에 따라 타입설정 (CRM009: 외식SU 계약 품의서)
+           
 
             /* ===== 1. 개요 ===== */
             if (dataMap.containsKey('keyMan')) { // keyMan
@@ -580,9 +581,6 @@ public with sharing class OrderConsiderFormController {
             if (dataMap.containsKey('storeLessThreeHundred')) { // 점포수 네번째 칸
                 expectIncome.StoreLessThreeHundred__c = convertToDecimal(dataMap.get('storeLessThreeHundred'));
             }
-
-
-
 
             upsert expectIncome;
             return 'success';

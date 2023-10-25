@@ -11,7 +11,7 @@
 
  * @author            : eunyoung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 10-23-2023
+ * @last modified on  : 10-24-2023
  * @last modified by  : eunyoung.choi@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -28,6 +28,7 @@ public with sharing class ReportFormController {
     public Decimal versionCheck { get; set; }
     public Boolean reportCheck { get; set; }
     public String showtable { get; set; }
+    public String reportType { get; set; }
 
     public String fieldValue { get; private set; }
 
@@ -41,6 +42,8 @@ public with sharing class ReportFormController {
     public Decimal DistributeInDirEast {get;set;} // 동부권-간접
     public Decimal DistributeInDirWest {get;set;} // 서부권-간접
     public Decimal DistributeInDirJeju {get;set;} // 제주권-간접
+
+    public Decimal DistributeSchool {get;set;} // 급식용 
 
     /* 계산값 가져오기 */
     public CJFW_ExpectedIncomeExpenses__c IncomeExpensesInfo {get;set;} //예상손익 
@@ -76,13 +79,15 @@ public with sharing class ReportFormController {
     */
     public ReportFormController() {
         getPicklistValues(); // picklist label/value 값 담기 [1]
-        //getAccountInfo();    // 고객사 정보 가져오기 [2]
-        //getIncomeExpenses(); // 신규개설품의 obj 값 가져오기 [3]
+        getAccountInfo();    // 고객사 정보 가져오기 [2]
+        getIncomeExpenses(); // 신규개설품의 obj 값 가져오기 [3]
         getExpectManager();  // 품의서 관리자 작성 obj 값 가져오기 [4] 
-        //getDistributeCost(); // 물류비관리 값 가져오기 [5]
+        getDistributeCost(); // 물류비관리 값 가져오기 [5]
 
-        getIncomeExpensesTest();
-        getDistributeCostTest();
+
+        // 외식 신규용 
+        //getIncomeExpensesTest();
+        //getDistributeCostTest();
     }
 
     /* 
@@ -94,6 +99,20 @@ public with sharing class ReportFormController {
     incomeExpensesId = ApexPages.currentPage().getParameters().get('incomeExpensesId');
     showtable = ApexPages.currentPage().getParameters().get('showtable');
 
+    String pageReferenceString = ApexPages.currentPage().getUrl();
+    String searchString = '/apex/CJFW_OrderConsiderNewForm_TEST';
+
+    // 테스트용  CJFW_OrderConsiderNewForm_TEST 
+    if (pageReferenceString.contains(searchString)) {
+        opportunityId = '0060w00000D8uikAAB';
+        incomeExpensesId ='a1l0w000001MmAMAA0';
+        showtable ='false';
+        reportType = '외식SU';
+    }else{
+        reportType = '급식SU';
+    }
+
+    System.debug('# 파라미터 확인 ->' + searchString );
     System.debug('# opportunityId ->' + opportunityId );
     System.debug('# incomeExpensesId ->' + incomeExpensesId );
     System.debug('# showtable ->' + showtable );
@@ -245,6 +264,56 @@ public with sharing class ReportFormController {
             'OtherSupportDetail__c, ' + // 기타 지원세부 내역
             'AttachedDocument__c, ' + // 첨부서류
             'OpptyDescription__c, ' + // 특이사항
+            'SalesCapitalExclusive__c, ' + // 외식전용 필드 ↓ :매출 수도권 전용
+            'SalesCapitalGeneral__c, ' + // 매출 수도권 일반
+            'SalesEastExclusive__c, ' + // 매출 동부권 전용
+            'SalesEastGeneral__c, ' + // 매출 동부권 일반
+            'SalesWestExclusive__c, ' + // 매출 서부권 전용
+            'SalesWestGeneral__c, ' + // 매출 서부권 일반 
+            'SalesJejuExclusive__c, ' + // 매출 제주권 전용 
+            'SalesJejuGeneral__c, ' + // 매출 제주권 일반 
+            'SalesSolutionExclusive__c, ' + // 매출 솔루션 전용 
+            'SalesSolutionGeneral__c, ' + // 매출 솔루션 전용 
+            'SalesImproveResultExclusive__c, ' + // 매출 개선실적 전용
+            'SalesImproveResultGeneral__c, ' + // 매출 개선실적 전용
+
+            'SalesProfitCaptialExclusive__c, ' + // 매출이익 수도권 전용
+            'SalesProfitCapitalGeneral__c, ' + // 매출이익 수도권 일반
+            'SalesProfitEastExclusive__c, ' + // 매출이익 동부권 전용
+            'SalesProfitEastGeneral__c, ' + // 매출이익 동부권 일반
+            'SalesProfitWestExclusive__c, ' + // 매출이익 서부권 전용
+            'SalesProfitWestGeneral__c, ' + // 매출이익 서부권 일반
+            'SalesProfitJejuExclusive__c, ' + // 매출이익 제주권 전용
+            'SalesProfitJejuGeneral__c, ' + // 매출이익 제주권 일반
+
+            'ProfitRateCapitalExclusive__c, ' + // 매익률 수도권 전용
+            'ProfitRateEastExclusive__c, ' + // 매익률 동부권 전용
+            'ProfitRateWestExclusive__c, ' + // 매익률 서부권 전용
+            'ProfitRateJejuExclusive__c, ' + // 매익률 제주권 전용
+            'ProfitRateCapitalGeneral__c, ' + // 매익률 수도권 일반
+            'ProfitRateEastGeneral__c, ' + // 매익률 동부권 일반
+            'ProfitRateWestGeneral__c, ' + // 매익률 서부권 일반
+            'ProfitRateJejuGeneral__c, ' + // 매익률 제주권 일반
+            'ProfitRateExclusive__c, ' + // 전용매익률
+            'ProfitRateGeneral__c, ' + // 전용매익률 (지급후)
+
+            'SalesLocationCntCapital__c, ' + // 매익률 수도권 판매처수
+            'SalesLocationCntEast__c, ' + // 매익률 동부권 판매처수
+            'SalesLocationCntWest__c, ' + // 매익률 서부권 판매처수
+            'SalesLocationCntJeju__c, ' + // 매익률 제주권 판매처수
+
+            'SalesPerStoreCapital__c, ' + // 매익률 수도권 점당매출
+            'SalesPerStoreEast__c, ' + // 매익률 동부권 점당매출
+            'SalesPerStoreWest__c, ' + // 매익률 서부권 점당매출
+            'SalesPerStoreJeju__c, ' + // 매익률 제주권 점당매출
+
+            'DropSizeCapital__c, ' + // 매익률 수도권 DROP-SIZE
+            'DropSizeEast__c, ' + // 매익률 동부권 DROP-SIZE
+            'DropSizeWest__c, ' + // 매익률 서부권 DROP-SIZE
+            'DropSizeJeju__c, ' + // 매익률 제주권 DROP-SIZE
+            'DeliveryCnt__c, ' + // 배송횟수
+
+
             'InitialDate__c ' + // 초도일자
             'FROM CJFW_ExpectedIncomeExpenses__c';
 
@@ -632,9 +701,13 @@ public with sharing class ReportFormController {
     /* 
     CJFW_OrderConsiderNewForm_TEST 용 개발 : 물류비 가져오기 
      */
-    public void getDistributeCostTest() {
+    public void getDistributeCost() {
         System.debug('# ReportFormController # getDistributeCostTest ');
 
+        // 파람값 들어오면 변경예정 231024
+        //String ReportType1 ='외식SU';
+        //String ReportType2 ='급식SU';
+        
         try{
 
             List<CJFW_DistributionCost__c> DistributeCostList  = [
@@ -646,29 +719,33 @@ public with sharing class ReportFormController {
                     Cost__c, 
                     HeadOffice__c, 
                     SU__c 
-                FROM CJFW_DistributionCost__c WHERE StartDate__c <= TODAY AND HeadOffice__c ='외식SU' ];
+                FROM CJFW_DistributionCost__c WHERE StartDate__c <= TODAY AND HeadOffice__c =: reportType ];
 
             system.debug('DistributeCost 외식용 -> ' +  DistributeCostList );
 
             // 본부별 최대 8개까지 존재가능한 물류비값을 각각 담아주기 
             for(CJFW_DistributionCost__c record : DistributeCostList){
 
-                if(record.Region__c =='수도권' && record.Type__c  =='직접'){ // Distribute list 안에 CapDirect로 담아주고 싶어 
-                    DistributeDirCap = record.Cost__c;
-                }else if(record.Region__c =='수도권' && record.Type__c  =='간접'){
-                    DistributeInDirCap = record.Cost__c;
-                }else if(record.Region__c =='동부권' && record.Type__c  =='직접'){
-                    DistributeDirEast = record.Cost__c;
-                }else if(record.Region__c =='동부권' && record.Type__c  =='간접'){
-                    DistributeInDirEast = record.Cost__c;
-                }else if(record.Region__c =='서부권' && record.Type__c  =='직접'){
-                    DistributeDirWest = record.Cost__c;
-                }else if(record.Region__c =='서부권' && record.Type__c  =='간접'){
-                    DistributeInDirWest = record.Cost__c;
-                }else if(record.Region__c =='제주권' && record.Type__c  =='직접'){
-                    DistributeDirJeju = record.Cost__c;
-                }else if(record.Region__c =='제주권' && record.Type__c  =='간접'){
-                    DistributeInDirJeju = record.Cost__c;
+                if(reportType == '외식SU'){
+                    if(record.Region__c =='수도권' && record.Type__c  =='직접'){ // Distribute list 안에 CapDirect로 담아주고 싶어 
+                        DistributeDirCap = record.Cost__c;
+                    }else if(record.Region__c =='수도권' && record.Type__c  =='간접'){
+                        DistributeInDirCap = record.Cost__c;
+                    }else if(record.Region__c =='동부권' && record.Type__c  =='직접'){
+                        DistributeDirEast = record.Cost__c;
+                    }else if(record.Region__c =='동부권' && record.Type__c  =='간접'){
+                        DistributeInDirEast = record.Cost__c;
+                    }else if(record.Region__c =='서부권' && record.Type__c  =='직접'){
+                        DistributeDirWest = record.Cost__c;
+                    }else if(record.Region__c =='서부권' && record.Type__c  =='간접'){
+                        DistributeInDirWest = record.Cost__c;
+                    }else if(record.Region__c =='제주권' && record.Type__c  =='직접'){
+                        DistributeDirJeju = record.Cost__c;
+                    }else if(record.Region__c =='제주권' && record.Type__c  =='간접'){
+                        DistributeInDirJeju = record.Cost__c;
+                    }
+                }else if(reportType == '급식SU'){
+                    DistributeSchool =record.Cost__c;
                 }
             }
 
@@ -736,7 +813,7 @@ public with sharing class ReportFormController {
     /* 
     물류비관리(CJFW_DistributionCost__c) 에서 값 가져오기 
      */
-    public void getDistributeCost() {
+    public void getDistributeCost_before() {
         System.debug('# ReportFormController # getDistributeCost');
 
         DistributeCost = [
@@ -748,7 +825,7 @@ public with sharing class ReportFormController {
                    Cost__c, 
                    HeadOffice__c, 
                    SU__c 
-            FROM CJFW_DistributionCost__c WHERE StartDate__c <= TODAY];
+            FROM CJFW_DistributionCost__c WHERE StartDate__c <= TODAY ];
 
         String[] defaultValSet = new String[] {
             'Cost__c'
