@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 10-24-2023
+ * @last modified on  : 10-26-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 public with sharing class CJFW_MDMExcelChooseColumnController {
@@ -45,25 +45,20 @@ public with sharing class CJFW_MDMExcelChooseColumnController {
 
         String typeApi = null;
 
-        switch on type {
-            when '본점' {
-                typeApi = 'MDMParent';
-            }
-            when '판매처' {
-                typeApi = 'MDMChild';
-            }
-            when '분할관리처' {
-                typeApi = 'MDMManagement';
-            }
-            when '배송관리처' {
-                typeApi = 'MDMDelievery';
-            }
-            when '2차관리처' {
-                typeApi = 'MDM2ndManagement';
-            }
+        if (type == '본점') {
+            typeApi = 'MDMParent';
+        } else if (type == '판매처') {
+            typeApi = 'MDMChild';
+        } else if (type == '관리처-분할') {
+            typeApi = 'MDMManagement';
+        } else if (type == '관리처-배송') {
+            typeApi = 'MDMDelievery';
+        } else if (type == '관리처-2차') {
+            typeApi = 'MDM2ndManagement';
         }
 
-        typeApi = 'MDMParent';
+        System.debug('## type => ' + type);
+        System.debug('## typeApi => ' + typeApi);
 
         String strQuery = 'SELECT MasterLabel FROM AccountApplicableField__mdt';
         strQuery += ' WHERE AccountType__r.DeveloperName = \'' + typeApi + '\'';

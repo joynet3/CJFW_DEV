@@ -4,6 +4,9 @@
  * @group             : 
  * @last modified on  : 12-27-2022
  * @last modified by  : AhnTaeJin(tj.ahn@daeunextier.com)
+ * 
+ * @last modified on  : 2023.10.25
+ * @last modified by  : sancho - 의료 추가.
 **/
 global with sharing class IF_SFDC_LOCAL_DATA_INFO_sc implements Schedulable{
     global IF_SFDC_LOCAL_DATA_INFO_sc() {
@@ -17,6 +20,9 @@ global with sharing class IF_SFDC_LOCAL_DATA_INFO_sc implements Schedulable{
         Database.executeBatch(ba,1);
         Database.executeBatch(ba2,1);
         Database.executeBatch(ba3,1);
+
+        IF_SFDC_LOCAL_DATA_INFO_MEDI_ba ba4 = new IF_SFDC_LOCAL_DATA_INFO_MEDI_ba(upsertFailList);
+        Database.executeBatch(ba4,1);
     }
 
     global class Input {

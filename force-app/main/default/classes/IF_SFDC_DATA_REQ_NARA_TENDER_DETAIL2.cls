@@ -79,7 +79,7 @@ global without sharing class IF_SFDC_DATA_REQ_NARA_TENDER_DETAIL2 {
                         leadObj.PIC__c                  = (item.ofclNm == null || item.ofclNm == '') ? item.ntceInsttNm : item.ofclNm;
                         leadObj.Company__c          = item.ntceInsttNm;   //2023.10.17: 원래 Lead 에서는 leadObj.ntceInsttNm__c 이렇게 별도로 있으나, 오브젝트 분리하며 company 에 합친다.
                         //leadObj.Status = 'New';               //2023.10.17 사용안함
-                        leadobj.Phone__c                = item.ofclTelNo;
+                        leadObj.Phone__c                = item.ofclTelNo;
                         leadObj.Email__c                = item.ofclEmail;
                         //leadObj.LeadSource = 'NaraMarket';      //2023.10.17 사용안함
                         leadObj.BidNoticeStatus__c      = item.ntceDivNm;
@@ -110,7 +110,7 @@ global without sharing class IF_SFDC_DATA_REQ_NARA_TENDER_DETAIL2 {
                         // }
                         leadObj.AssignBudgetAmountCurrency__c   =  (item.asignBdgtAmt == null || item.asignBdgtAmt == '') ? null : Decimal.valueOf(item.asignBdgtAmt);
                         //leadObj.bsnsDivNm__c = item.bidNtceClsfc;
-                        leadobj.rgstDt__c               = item.rgstDt;      //= item.rgstDt <> null ? Date.valueOf(item.rgstDt) : null;
+                        leadObj.rgstDt__c               = item.rgstDt;      //= item.rgstDt <> null ? Date.valueOf(item.rgstDt) : null;
                         // leadobj.ntceSpecDocUrl1__c = item.ntceSpecDocUrl1;
                         // leadobj.ntceSpecDocUrl2__c = item.ntceSpecDocUrl2;
                         // leadobj.ntceSpecDocUrl3__c = item.ntceSpecDocUrl3;

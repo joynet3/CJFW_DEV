@@ -90,7 +90,10 @@ public with sharing class CJFW_NewLineItemMgmtController {
                                  ORDER BY  SortOrder__c
                                  ];
 
-            objQuote = [SELECT  Id, Pricebook2Id, Account.CustomerID__c
+            objQuote = [SELECT  Id
+                                , Pricebook2Id
+                                , Account.CustomerID__c
+                                , Opportunity.StageName
                         FROM    Quote
                         WHERE   Id = :recordId
                         ];

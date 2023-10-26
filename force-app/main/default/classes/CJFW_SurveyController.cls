@@ -10,7 +10,9 @@
 *
 *@author 진현욱
 *@since 2023-09-20  설문지 Edit 버전 추가
+*@since 2023-10-26  설문지를 Opportunity 에서 작성할 경우 Oppty 의 AccountId 도 Survey Response 에 등록
 */
+
 public with sharing class CJFW_SurveyController {
     public CJFW_SurveyController() {
 
@@ -137,6 +139,17 @@ public with sharing class CJFW_SurveyController {
                             response.Account__c = recordId;
                         }when 'Opportunity' {
                             response.Opportunity__c = recordId;
+
+                            List<Opportunity> optyList = [
+                                select 
+                                    id,
+                                    AccountId
+                                from Opportunity
+                                where 
+                                    Id = :recordId
+                            ];
+
+                            response.Account__c = optyList[0].AccountId;
                         }
                     }
 

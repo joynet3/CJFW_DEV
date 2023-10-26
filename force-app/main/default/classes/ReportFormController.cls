@@ -11,7 +11,7 @@
 
  * @author            : eunyoung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 10-24-2023
+ * @last modified on  : 10-26-2023
  * @last modified by  : eunyoung.choi@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -84,10 +84,6 @@ public with sharing class ReportFormController {
         getExpectManager();  // 품의서 관리자 작성 obj 값 가져오기 [4] 
         getDistributeCost(); // 물류비관리 값 가져오기 [5]
 
-
-        // 외식 신규용 
-        //getIncomeExpensesTest();
-        //getDistributeCostTest();
     }
 
     /* 
@@ -98,6 +94,7 @@ public with sharing class ReportFormController {
     opportunityId = ApexPages.currentPage().getParameters().get('opportunityId');
     incomeExpensesId = ApexPages.currentPage().getParameters().get('incomeExpensesId');
     showtable = ApexPages.currentPage().getParameters().get('showtable');
+    reportType = ApexPages.currentPage().getParameters().get('type');
 
     String pageReferenceString = ApexPages.currentPage().getUrl();
     String searchString = '/apex/CJFW_OrderConsiderNewForm_TEST';
@@ -116,6 +113,7 @@ public with sharing class ReportFormController {
     System.debug('# opportunityId ->' + opportunityId );
     System.debug('# incomeExpensesId ->' + incomeExpensesId );
     System.debug('# showtable ->' + showtable );
+    System.debug('# reportType ->' + reportType );
 
     
     // 기회 레코드에서 계정 ID 가져오기
@@ -313,7 +311,6 @@ public with sharing class ReportFormController {
             'DropSizeJeju__c, ' + // 매익률 제주권 DROP-SIZE
             'DeliveryCnt__c, ' + // 배송횟수
 
-
             'InitialDate__c ' + // 초도일자
             'FROM CJFW_ExpectedIncomeExpenses__c';
 
@@ -456,253 +453,12 @@ public with sharing class ReportFormController {
         System.debug('# 품의서정보  ->' + IncomeExpensesInfo ); 
     }
 
-    /* 
-    CJFW_OrderConsiderNewForm_TEST 용 개발 
-    */
-    public void getIncomeExpensesTest() {
-
-        System.debug('# ReportFormController # getIncomeExpenses');
-
-        opportunityId = '0060w00000D8uikAAB'; // 테스트용 하드코딩 
-
-        try {
-            String query = 'SELECT Id, ' +
-            'Version__c, ' +
-            'ExpectSales__c, ' +
-            'Opportunity__c, ' +
-            'ResultExpectSales__c, ' +
-            'ResultExpectRate__c, ' +
-            'ExpectContributionProfit__c, ' +
-            'ExpectContributionProfitRate__c, ' +
-            'SupportFeeRate__c, ' +
-            'ExpectSalesProfit__c, ' +
-            'ExpectSalesProfitRate__c, ' +
-            'CollateralAmount__c, ' +
-            'CollateralType__c, ' +
-            'ExpectProfit__c, ' +
-            'CollateralPeriod__c, ' +
-            'CreditLoanAmount__c, ' +
-            'ContractDepreciationSupport__c, ' +
-            'SalesFeeSupport__c, ' +
-            'DonationSupport__c, ' +
-            'OtherSupport__c, ' +
-            'PaymentMethod__c, ' +
-            'ContractPaymentDate__c, ' +
-            'ChefSupportCnt__c, ' +
-            'FarmSupportExpect__c, ' +
-            'MarineSupportExpect__c, ' +
-            'LivestockSupportExpect__c, ' +
-            'ManufactureSupportExpect__c, ' +
-            'NonFoodSupportExpect__c, ' +
-            'SalesSupportExpect__c, ' +
-            'IsReportCheck__c, ' +
-            'ContractDepreciationRate__c, ' +
-            'Summary__c, ' +
-            'ContractStartDate__c, ' +
-            'ContractEndDate__c, ' +
-            'ContractType__c, ' +
-            'ClientCompanyName__c, ' + // 거래처현황 관련 필드 추가 
-            'RepresentativeName__c, ' +  
-            'BusinessPath__c, ' +  
-            'SalesMonthly__c, ' +  
-            'OurSales__c, ' +  
-            'Address__c, ' +  
-            'RepresentativePhone__c, ' +  
-            'PV_EXISTSUP__c, ' +  
-            'ExceptionPrice__c, ' +  
-            'Center__c, ' +  
-            'IncentiveSupport__c, ' +
-            'ImprovementPlanDetails__c, ' +
-            'OtherSupportDetail__c, ' + // 기타 지원세부 내역
-            'AttachedDocument__c, ' + // 첨부서류
-            'OpptyDescription__c, ' + // 특이사항
-
-            'SalesCapitalExclusive__c, ' + // 외식전용 필드 ↓ :매출 수도권 전용
-            'SalesCapitalGeneral__c, ' + // 매출 수도권 일반
-            'SalesEastExclusive__c, ' + // 매출 동부권 전용
-            'SalesEastGeneral__c, ' + // 매출 동부권 일반
-            'SalesWestExclusive__c, ' + // 매출 서부권 전용
-            'SalesWestGeneral__c, ' + // 매출 서부권 일반 
-            'SalesJejuExclusive__c, ' + // 매출 제주권 전용 
-            'SalesJejuGeneral__c, ' + // 매출 제주권 일반 
-            'SalesSolutionExclusive__c, ' + // 매출 솔루션 전용 
-            'SalesSolutionGeneral__c, ' + // 매출 솔루션 전용 
-            'SalesImproveResultExclusive__c, ' + // 매출 개선실적 전용
-            'SalesImproveResultGeneral__c, ' + // 매출 개선실적 전용
-
-            'SalesProfitCaptialExclusive__c, ' + // 매출이익 수도권 전용
-            'SalesProfitCapitalGeneral__c, ' + // 매출이익 수도권 일반
-            'SalesProfitEastExclusive__c, ' + // 매출이익 동부권 전용
-            'SalesProfitEastGeneral__c, ' + // 매출이익 동부권 일반
-            'SalesProfitWestExclusive__c, ' + // 매출이익 서부권 전용
-            'SalesProfitWestGeneral__c, ' + // 매출이익 서부권 일반
-            'SalesProfitJejuExclusive__c, ' + // 매출이익 제주권 전용
-            'SalesProfitJejuGeneral__c, ' + // 매출이익 제주권 일반
-
-
-            'ProfitRateCapitalExclusive__c, ' + // 매익률 수도권 전용
-            'ProfitRateEastExclusive__c, ' + // 매익률 동부권 전용
-            'ProfitRateWestExclusive__c, ' + // 매익률 서부권 전용
-            'ProfitRateJejuExclusive__c, ' + // 매익률 제주권 전용
-            'ProfitRateCapitalGeneral__c, ' + // 매익률 수도권 일반
-            'ProfitRateEastGeneral__c, ' + // 매익률 동부권 일반
-            'ProfitRateWestGeneral__c, ' + // 매익률 서부권 일반
-            'ProfitRateJejuGeneral__c, ' + // 매익률 제주권 일반
-            'ProfitRateExclusive__c, ' + // 전용매익률
-            'ProfitRateGeneral__c, ' + // 전용매익률 (지급후)
-
-            'SalesLocationCntCapital__c, ' + // 매익률 수도권 판매처수
-            'SalesLocationCntEast__c, ' + // 매익률 동부권 판매처수
-            'SalesLocationCntWest__c, ' + // 매익률 서부권 판매처수
-            'SalesLocationCntJeju__c, ' + // 매익률 제주권 판매처수
-
-            'SalesPerStoreCapital__c, ' + // 매익률 수도권 점당매출
-            'SalesPerStoreEast__c, ' + // 매익률 동부권 점당매출
-            'SalesPerStoreWest__c, ' + // 매익률 서부권 점당매출
-            'SalesPerStoreJeju__c, ' + // 매익률 제주권 점당매출
-
-            'DropSizeCapital__c, ' + // 매익률 수도권 DROP-SIZE
-            'DropSizeEast__c, ' + // 매익률 동부권 DROP-SIZE
-            'DropSizeWest__c, ' + // 매익률 서부권 DROP-SIZE
-            'DropSizeJeju__c, ' + // 매익률 제주권 DROP-SIZE
-
-            //'SalesProfitCaptialExclusive__c, ' + // 매익이익(수수료지급후) 수도권
-            //'SalesProfitEastExclusive__c, ' + // 매익이익(수수료지급후) 동부권
-            //'SalesProfitWestExclusive__c, ' + // 매익이익(수수료지급후) 서부권
-            //'SalesProfitJejuExclusive__c, ' + // 매익이익(수수료지급후) 제주권
-
-            'DeliveryCnt__c, ' + // 배송횟수
-
-
-            'InitialDate__c ' + // 초도일자
-            'FROM CJFW_ExpectedIncomeExpenses__c';
-
-            if (incomeExpensesId != null) {
-                query += ' WHERE id = :incomeExpensesId ';
-            }else if (opportunityId != null) {
-                query += ' WHERE Opportunity__c = :opportunityId ';
-            }
-
-            if(showtable =='true'){
-                query += ' ORDER BY IsReportCheck__c DESC LIMIT 1';
-            }else{
-                query += ' ORDER BY Version__c DESC LIMIT 1';
-            }
-
-
-            // query += ' ORDER BY Version__c DESC LIMIT 1';
-
-            System.debug('# query ->' + query );
-            List<CJFW_ExpectedIncomeExpenses__c> incomeExpensesList = Database.query(query);
-
-            if (!incomeExpensesList.isEmpty()) {
-                IncomeExpensesInfo = incomeExpensesList[0];
-                versionCheck = ( incomeExpensesList[0].Version__c ) + 1 ;
-                reportCheck = ( incomeExpensesList[0].IsReportCheck__c );
-            } else {
-                versionCheck = 1;
-                IncomeExpensesInfo = new CJFW_ExpectedIncomeExpenses__c();
-            }
-
-        }catch (QueryException e) {
-            IncomeExpensesInfo = new CJFW_ExpectedIncomeExpenses__c(); // 빈 레코드로 초기화
-        }
-
-        System.debug('IncomeExpensesInfo '+ IncomeExpensesInfo);
-
-        //값이 없어도 ↓ 추가하면 디폴트값 세팅가능 
-        String[] defaultValSet = new String[] {
-            'ContractDepreciationSupport__c',
-            'IncentiveSupport__c',
-            'SalesFeeSupport__c',
-            'DonationSupport__c',
-            'OtherSupport__c',
-            'ChefSupportCnt__c',
-            'FarmSupportExpect__c',
-            'MarineSupportExpect__c',
-            'LivestockSupportExpect__c',
-            'ManufactureSupportExpect__c',
-            'NonFoodSupportExpect__c',
-            'SalesSupportExpect__c',
-            'CollateralAmount__c',
-            'CreditLoanAmount__c',
-            'SalesCapitalExclusive__c', // 외식 매출 전용 
-            'SalesEastExclusive__c',
-            'SalesWestExclusive__c',
-            'SalesJejuExclusive__c',
-            'SalesCapitalGeneral__c', // 외식 매출 일반
-            'SalesEastGeneral__c', 
-            'SalesWestGeneral__c', 
-            'SalesSolutionExclusive__c', 
-            'SalesSolutionGeneral__c', 
-            'SalesImproveResultExclusive__c', 
-            'SalesImproveResultGeneral__c', 
-            'SalesProfitCaptialExclusive__c', 
-            'SalesProfitEastExclusive__c', 
-            'SalesProfitWestExclusive__c', 
-            'SalesProfitJejuExclusive__c', 
-            'SalesProfitCapitalGeneral__c', 
-            'SalesProfitEastGeneral__c', 
-            'SalesProfitWestGeneral__c', 
-            'SalesProfitJejuGeneral__c', 
-            'ProfitRateCapitalExclusive__c', 
-            'ProfitRateEastExclusive__c', 
-            'ProfitRateWestExclusive__c', 
-            'ProfitRateJejuExclusive__c', 
-            'ProfitRateCapitalGeneral__c', 
-            'ProfitRateEastGeneral__c', 
-            'ProfitRateWestGeneral__c', 
-            'ProfitRateJejuGeneral__c', 
-            'SalesLocationCntCapital__c',  
-            'SalesLocationCntEast__c', 
-            'SalesLocationCntWest__c',  
-            'SalesLocationCntJeju__c',  
-            'SalesPerStoreCapital__c',  // 점당매출 
-            'SalesPerStoreEast__c',  
-            'SalesPerStoreWest__c',  
-            'SalesPerStoreJeju__c',  
-            'DropSizeCapital__c',  // Drop-Size
-            'DropSizeEast__c',  
-            'DropSizeWest__c',  
-            'DropSizeJeju__c',  
-            'ProfitRateExclusive__c',  //전용 매익률
-            'ProfitRateGeneral__c',  //전용 매익률(지급후)
-            'SalesJejuGeneral__c' 
-        };
-
-        for (String defaultSet : defaultValSet) {
-            Object fieldValue = IncomeExpensesInfo.get(defaultSet);
-
-            if (fieldValue == null) fieldValue = 0.00; 
-            IncomeExpensesInfo.put(defaultSet, fieldValue);
-        }
-
-        selectedCollateral = IncomeExpensesInfo.CollateralType__c; // 담보종류
-        selectedPayment = IncomeExpensesInfo.PaymentMethod__c; // 결제수단 
-        selectedContract = IncomeExpensesInfo.ContractType__c	; // 계약서종류 
-        selectedDelivery = IncomeExpensesInfo.DeliveryCnt__c	; // 배송횟수
-
-        // ContractPaymentDate__c 필드를 yyyy-MM-dd 형식의 문자열로 변환
-        String collateralPeriodString = String.valueOf(IncomeExpensesInfo.collateralPeriod__c);
-        String contractPaymentDateString = String.valueOf(IncomeExpensesInfo.contractPaymentDate__c); 
-        String initialDateString = String.valueOf(IncomeExpensesInfo.InitialDate__c); // 초도일자 
-        String contractStartString = String.valueOf(IncomeExpensesInfo.ContractStartDate__c); // 계약시작일자
-        String contractEndString = String.valueOf(IncomeExpensesInfo.ContractEndDate__c); // 계약종료일자 
-
-        collateralPeriod = collateralPeriodString != null ? collateralPeriodString.substring(0, 10) : null;
-        contractPaymentDate = contractPaymentDateString != null ? contractPaymentDateString.substring(0, 10) : null;
-        initialDate = initialDateString != null ? initialDateString.substring(0, 10) : null;
-        contractStartDate = contractStartString != null ? contractStartString.substring(0, 10) : null;
-        contractEndDate = contractEndString != null ? contractEndString.substring(0, 10) : null;
-
-        system.debug('IncomeExpensesInfo >>> ' + IncomeExpensesInfo);
-    }
 
     /* 
-    CJFW_OrderConsiderNewForm_TEST 용 개발 : 물류비 가져오기 
+    CJFW_OrderConsiderNewForm_TEST 용 개발 : 물류비 가져오기 ( 추후 삭제예정 )
      */
     public void getDistributeCost() {
-        System.debug('# ReportFormController # getDistributeCostTest ');
+        System.debug('# ReportFormController # getDistributeCost ');
 
         // 파람값 들어오면 변경예정 231024
         //String ReportType1 ='외식SU';
@@ -849,11 +605,12 @@ public with sharing class ReportFormController {
     @RemoteAction
     public static String saveIncomeExpenses(String DataList, String opportunityId, Decimal versionCheck, String incomeExpensesId) {
         System.debug('데이터 save !!!');
-        try {
+        try { 
+
             System.debug('DataList ' + DataList);
             System.debug('opportunityId ' + opportunityId);
             System.debug('versionCheck ' + versionCheck);
-            System.debug('incomeExpensesId ' + incomeExpensesId);
+            System.debug('incomeExpensesId ' + incomeExpensesId); 
             
             Map<String, Object> dataMap = (Map<String, Object>) JSON.deserializeUntyped(DataList);
             System.debug('넘어온 데이터! ' + dataMap);
@@ -870,38 +627,29 @@ public with sharing class ReportFormController {
                 expectIncome.Opportunity__c = opportunityId; // 필수값
                 if(versionCheck == 1) expectIncome.IsReportCheck__c = true; // 초기 insert 시에 품의지정 default 세팅
             }
+
             expectIncome.saveResult__c = DataList;
 
             expectIncome.CollateralType__c = (String)dataMap.get('detail-collateral-kind') != null ? (String)dataMap.get('detail-collateral-kind') : ''; // 담보제공 종류
             expectIncome.PaymentMethod__c = (String)dataMap.get('payment-picklist') != null ? (String)dataMap.get('payment-picklist') : ''; // 결제수단 종류
-
             expectIncome.CreditLoanAmount__c = convertToDecimal(dataMap.get('detail-creditLoan-amount')); // 신용여신금액 
-
             expectIncome.ContractDepreciationSupport__c = convertToDecimal(dataMap.get('detail-deprec-amount'));
             expectIncome.IncentiveSupport__c = convertToDecimal(dataMap.get('detail-incentive-amount'));
             expectIncome.SalesFeeSupport__c = convertToDecimal(dataMap.get('detail-fee-amount'));
             expectIncome.DonationSupport__c = convertToDecimal(dataMap.get('detail-donation-amount'));
             expectIncome.OtherSupport__c = convertToDecimal(dataMap.get('detail-other-amount'));
-
             expectIncome.FarmSupportExpect__c = convertToDecimal(dataMap.get('farm-before'));  //농산 지원 월예상 
             expectIncome.MarineSupportExpect__c = convertToDecimal(dataMap.get('marin-before')); //수산 지원 월예상
             expectIncome.LivestockSupportExpect__c = convertToDecimal(dataMap.get('livestock-before')); // 축산 지원 월예상
             expectIncome.ManufactureSupportExpect__c = convertToDecimal(dataMap.get('manufacture-before')); // 가공식품 지원 월예상
             expectIncome.NonFoodSupportExpect__c = convertToDecimal(dataMap.get('nonfood-before')); // 비식품 지원 월예상
-
             expectIncome.SalesSupportExpect__c = convertToDecimal(dataMap.get('sales-support')); // 매출이익률
             expectIncome.CollateralAmount__c = convertToDecimal(dataMap.get('detail-collateral-amount')); // 담보제공금액 
-
             expectIncome.ChefSupportCnt__c = convertToDecimal(dataMap.get('chef-support')); // 쉐프지원 
 
             String collateralPeriod = (String)dataMap.get('collateral-period');
             String contractPeriod = (String)dataMap.get('contract-payment-period');
 
-            // 거래처 화면에서 받아온 데이터 예상손익 object 에 저장 
-            // expectIncome.ClientCompanyName__c = dataMap.containsKey('accountName') ? (String) dataMap.get('accountName') : expectIncome.ClientCompanyName__c;
-            // expectIncome.RepresentativeName__c = dataMap.containsKey('ownerName') ? (String) dataMap.get('ownerName') : expectIncome.RepresentativeName__c;
-            // expectIncome.BusinessPath__c = dataMap.containsKey('accountChannel') ? (String) dataMap.get('accountChannel') : expectIncome.BusinessPath__c;
-            
             // 개요
             if (dataMap.containsKey('summary')) { 
                 expectIncome.Summary__c = (String) dataMap.get('summary');
@@ -942,7 +690,6 @@ public with sharing class ReportFormController {
             if (dataMap.containsKey('existCenter')) { // 센터
                 expectIncome.Center__c = (String)dataMap.get('existCenter') ;
             }
-
             if (dataMap.containsKey('otherDetail')) { // 기타 세부 내역
                 expectIncome.OtherSupportDetail__c = (String)dataMap.get('otherDetail') ;
             }
@@ -955,35 +702,140 @@ public with sharing class ReportFormController {
             if (dataMap.containsKey('attachDoc')) { // 첨부파일
                 expectIncome.AttachedDocument__c = (String)dataMap.get('attachDoc') ;
             }
-
             if (dataMap.containsKey('contract-payment-period') && dataMap.get('contract-payment-period') !='') { // 약정결제일
                 expectIncome.ContractPaymentDate__c = Date.valueOf(((String) dataMap.get('contract-payment-period')));
             }
-            
             if (dataMap.containsKey('collateral-period') && dataMap.get('collateral-period') !='') { // 담보제공기간
                 expectIncome.CollateralPeriod__c = Date.valueOf(((String) dataMap.get('collateral-period')));
             }
-            
-            
-            //expectIncome.BusinessPath__c = (String)dataMap.get('accountChannel');
-            //expectIncome.SalesMonthly__c = convertToDecimal(dataMap.get('outwardEntire'));
-            //expectIncome.OurSales__c = convertToDecimal(dataMap.get('outwardCompanySize'));
-            //expectIncome.InitialDate__c = convertToDecimal(dataMap.get('firstDraft'));
-            //expectIncome.Address__c = (String)dataMap.get('accountAddress');
-            //expectIncome.RepresentativePhone__c = (String)dataMap.get('accountPhone');
-            //expectIncome.PV_EXISTSUP__c = (String)dataMap.get('existGoods');
-            //expectIncome.ExceptionPrice__c = convertToDecimal(dataMap.get('exceptionPrice'));
-            //expectIncome.Center__c = (String)dataMap.get('existCenter');
 
-            //if(collateralPeriod <> null && contractPeriod <> '') {
-            //    Date collateralPeriodDate = Date.valueOf(collateralPeriod); // 담보제공기간
-            //    expectIncome.CollateralPeriod__c = collateralPeriodDate;
-            //}
+            // -------------------------------------------외식(신규) / 예상손익 저장 추가-------------------------------------------
 
-            //if(contractPeriod <> null && contractPeriod <> '') {
-            //    Date contractPeriodDate = Date.valueOf(contractPeriod); // 약정결제일
-            //    expectIncome.ContractPaymentDate__c = contractPeriodDate;
-            //}
+            if (dataMap.containsKey('salesCapEx')) { // 매출-전용 : 수도권 
+                expectIncome.SalesCapitalExclusive__c = convertToDecimal(dataMap.get('salesCapEx'));
+            }
+            if (dataMap.containsKey('salesEastEx')) { // 매출-전용 : 동부권 
+                expectIncome.SalesEastExclusive__c = convertToDecimal(dataMap.get('salesEastEx'));
+            }
+            if (dataMap.containsKey('salesWestEx')) { // 매출-전용 : 서부권 
+                expectIncome.SalesWestExclusive__c = convertToDecimal(dataMap.get('salesWestEx'));
+            }
+            if (dataMap.containsKey('salesJejuEx')) { // 매출-전용 : 제주권 
+                expectIncome.SalesWestExclusive__c = convertToDecimal(dataMap.get('salesJejuEx'));
+            }
+            if (dataMap.containsKey('salesCapGen')) { // 매출-일반 : 수도권 
+                expectIncome.SalesCapitalGeneral__c = convertToDecimal(dataMap.get('salesCapGen'));
+            }
+            if (dataMap.containsKey('salesEastGen')) { // 매출-일반 : 동부권 
+                expectIncome.SalesEastGeneral__c = convertToDecimal(dataMap.get('salesEastGen'));
+            }
+            if (dataMap.containsKey('salesWestGen')) { // 매출-일반 : 서부권 
+                expectIncome.SalesWestGeneral__c = convertToDecimal(dataMap.get('salesWestGen'));
+            }
+            if (dataMap.containsKey('salesJejuGen')) { // 매출-일반 : 제주권 
+                expectIncome.SalesJejuGeneral__c = convertToDecimal(dataMap.get('salesJejuGen'));
+            }
+            if (dataMap.containsKey('salesProfitCapEx')) { // 매출이익(수수료 지급 後)-전용 : 수도권 
+                expectIncome.SalesProfitCaptialExclusive__c = convertToDecimal(dataMap.get('salesProfitCapEx'));
+            }
+            if (dataMap.containsKey('salesProfitEastEx')) { // 매출이익(수수료 지급 後)-전용 : 동부권 
+                expectIncome.SalesProfitEastExclusive__c = convertToDecimal(dataMap.get('salesProfitEastEx'));
+            }
+            if (dataMap.containsKey('salesProfitWestEx')) { // 매출이익(수수료 지급 後)-전용 : 서부권 
+                expectIncome.SalesProfitWestExclusive__c = convertToDecimal(dataMap.get('salesProfitWestEx'));
+            }
+            if (dataMap.containsKey('salesProfitJejuEx')) { // 매출이익(수수료 지급 後)-전용 : 제주권 
+                expectIncome.SalesProfitJejuExclusive__c = convertToDecimal(dataMap.get('salesProfitJejuEx'));
+            }
+            if (dataMap.containsKey('salesProfitCapGen')) { // 매출이익(수수료 지급 後)-일반 : 수도권 
+                expectIncome.SalesProfitCapitalGeneral__c = convertToDecimal(dataMap.get('salesProfitCapGen'));
+            }
+            if (dataMap.containsKey('salesProfitEastGen')) { // 매출이익(수수료 지급 後)-일반 : 동부권 
+                expectIncome.SalesProfitEastGeneral__c = convertToDecimal(dataMap.get('salesProfitEastGen'));
+            }
+            if (dataMap.containsKey('salesProfitWestGen')) { // 매출이익(수수료 지급 後)-일반 : 서부권 
+                expectIncome.SalesProfitWestGeneral__c = convertToDecimal(dataMap.get('salesProfitWestGen'));
+            }
+            if (dataMap.containsKey('salesProfitJejuGen')) { // 매출이익(수수료 지급 後)-일반 : 제주권 
+                expectIncome.SalesProfitJejuGeneral__c = convertToDecimal(dataMap.get('salesProfitJejuGen'));
+            }
+            if (dataMap.containsKey('ProfitRateCapEx')) { // 매익률-전용 : 수도권 
+                expectIncome.ProfitRateCapitalExclusive__c = convertToDecimal(dataMap.get('ProfitRateCapEx'));
+            }
+            if (dataMap.containsKey('ProfitRateEastEx')) { // 매익률-전용 : 동부권 
+                expectIncome.ProfitRateEastExclusive__c = convertToDecimal(dataMap.get('ProfitRateEastEx'));
+            }
+            if (dataMap.containsKey('ProfitRateWestEx')) { // 매익률-전용 : 서부권 
+                expectIncome.ProfitRateWestExclusive__c = convertToDecimal(dataMap.get('ProfitRateWestEx'));
+            }
+            if (dataMap.containsKey('ProfitRateJejuEx')) { // 매익률-전용 : 제주권 
+                expectIncome.ProfitRateJejuExclusive__c = convertToDecimal(dataMap.get('ProfitRateJejuEx'));
+            }
+            if (dataMap.containsKey('ProfitRateCapGen')) { // 매익률-일반 : 수도권 
+                expectIncome.ProfitRateCapitalGeneral__c = convertToDecimal(dataMap.get('ProfitRateCapGen'));
+            }
+            if (dataMap.containsKey('ProfitRateEastGen')) { // 매익률-일반 : 동부권 
+                expectIncome.ProfitRateEastGeneral__c = convertToDecimal(dataMap.get('ProfitRateEastGen'));
+            }
+            if (dataMap.containsKey('ProfitRateWestGen')) { // 매익률-일반 : 서부권 
+                expectIncome.ProfitRateWestGeneral__c = convertToDecimal(dataMap.get('ProfitRateWestGen'));
+            }
+            if (dataMap.containsKey('ProfitRateJejuGen')) { // 매익률-일반 : 제주권 
+                expectIncome.ProfitRateJejuGeneral__c = convertToDecimal(dataMap.get('ProfitRateJejuGen'));
+            }
+
+            if (dataMap.containsKey('LocationCntCap')) { // 판매처수 : 수도권 
+                expectIncome.SalesLocationCntCapital__c = convertToDecimal(dataMap.get('LocationCntCap'));
+            }
+            if (dataMap.containsKey('LocationCntEast')) { // 판매처수 : 동부권
+                expectIncome.SalesLocationCntEast__c = convertToDecimal(dataMap.get('LocationCntEast'));
+            }
+            if (dataMap.containsKey('LocationCntWest')) { // 판매처수 : 서부권
+                expectIncome.SalesLocationCntWest__c = convertToDecimal(dataMap.get('LocationCntWest'));
+            }
+            if (dataMap.containsKey('LocationCntJeju')) { // 판매처수 : 제주권
+                expectIncome.SalesLocationCntJeju__c = convertToDecimal(dataMap.get('LocationCntJeju'));
+            }
+
+            if (dataMap.containsKey('PerStoreCap')) { // 점당매출 : 수도권 
+                expectIncome.SalesPerStoreCapital__c = convertToDecimal(dataMap.get('PerStoreCap'));
+            }
+            if (dataMap.containsKey('PerStoreEast')) { // 점당매출 : 동부권
+                expectIncome.SalesPerStoreEast__c = convertToDecimal(dataMap.get('PerStoreEast'));
+            }
+            if (dataMap.containsKey('PerStoreWest')) { // 점당매출 : 서부권
+                expectIncome.SalesPerStoreWest__c = convertToDecimal(dataMap.get('PerStoreWest'));
+            }
+            if (dataMap.containsKey('PerStoreJeju')) { // 점당매출 : 제주권
+                expectIncome.SalesPerStoreJeju__c = convertToDecimal(dataMap.get('PerStoreJeju'));
+            }
+
+            if (dataMap.containsKey('DropSizeCap')) { // DROP - SIZE : 수도권 
+                expectIncome.DropSizeCapital__c = convertToDecimal(dataMap.get('DropSizeCap'));
+            }
+            if (dataMap.containsKey('DropSizeEast')) { // DROP - SIZE : 동부권
+                expectIncome.DropSizeEast__c = convertToDecimal(dataMap.get('DropSizeEast'));
+            }
+            if (dataMap.containsKey('DropSizeWest')) { // DROP - SIZE : 서부권
+                expectIncome.DropSizeWest__c = convertToDecimal(dataMap.get('DropSizeWest'));
+            }
+            if (dataMap.containsKey('DropSizeJeju')) { // DROP - SIZE : 제주권
+                expectIncome.DropSizeJeju__c = convertToDecimal(dataMap.get('DropSizeJeju'));
+            }
+            if (dataMap.containsKey('ProfitRateEx')) { // 전용 매익률
+                expectIncome.ProfitRateExclusive__c = convertToDecimal(dataMap.get('ProfitRateEx'));
+            }
+            if (dataMap.containsKey('ProfitRateGen')) { // 범용 매익률(지급후)
+                expectIncome.ProfitRateGeneral__c = convertToDecimal(dataMap.get('ProfitRateGen'));
+            }
+            if (dataMap.containsKey('selectedDelivery')) { // 범용 매익률(지급후)
+                System.debug(' check  ' + dataMap.containsKey('selectedDelivery') );
+                //expectIncome.DeliveryCnt__c = convertToDecimal(dataMap.get('selectedDelivery'));
+                //expectIncome.DeliveryCnt__c = (String)dataMap.get('selectedDelivery'); // 결제수단 종류
+            }
+
+
+
             
             upsert expectIncome;
             return 'success';

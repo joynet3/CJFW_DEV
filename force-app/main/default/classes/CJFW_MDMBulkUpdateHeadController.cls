@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 10-24-2023
+ * @last modified on  : 10-26-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkUpdateHeadController {
@@ -32,7 +32,7 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
             recordIdEx = Schema.SObjectType.MDMRegRequestCustomer__c.getRecordTypeInfosByDeveloperName().get('MDMParent').getRecordTypeId();
         } else if(type == '판매처') {
             recordIdEx = Schema.SObjectType.MDMRegRequestCustomer__c.getRecordTypeInfosByDeveloperName().get('MDMChild').getRecordTypeId();
-        } else if(type == '관리처') {
+        } else if(type.startsWith('관리처')) {
             recordIdEx = Schema.SObjectType.MDMRegRequestCustomer__c.getRecordTypeInfosByDeveloperName().get('MDMManagement').getRecordTypeId();
         }
         
@@ -60,9 +60,12 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
             codeSet.add(mdm.PV_WAERS__c);
             codeSet.add(mdm.PV_ZTERM_VV__c);
             codeSet.add(mdm.PV_OLD_BIZPLACE_NEW__c);
+            codeSet.remove(null);
         }
         
         List<MDMReferenceCode__c> referenceCodeList = [SELECT Id, Name, Code__c FROM MDMReferenceCode__c WHERE code__c = :codeSet];
+
+        System.debug('# referenceCodeList => ' + referenceCodeList);
 
         // Key : code , value : Id
         Map<String, String> codeToIdMap = new Map<String, String>();
@@ -70,13 +73,19 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
             codeToIdMap.put(mdmCode.Code__c, mdmCode.id);
         }
 
+        System.debug('# codeToIdMap => ' + codeToIdMap);
+
         // 고객의 CustomerId 필드(CustomerId__c)로 조회해서 Id값 알아내기
         Set<String> accSet = new Set<String>();
         for(MDMRegRequestCustomer__c mdm : mdmCustomer){
             accSet.add(mdm.PV_PAYCUST__c);
             accSet.add(mdm.PV_CHARGECUST__c);
+            accSet.remove(null);
         }
+
         List<Account> accList = [SELECT Id, Name, CustomerId__c FROM Account WHERE CustomerId__c = :accSet];
+
+        System.debug('# accList => ' + accList);
         
         // Key :code , value :Id
         Map<String, String> codeToAccIdMap = new Map<String, String>();
@@ -84,19 +93,26 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
             codeToAccIdMap.put(acc.CustomerId__c, acc.Id);
         }
 
+        System.debug('# codeToAccIdMap => ' + codeToAccIdMap);
+
         // User의 사번필드(ResponsibilityAMA__c)로 User 조회해서 Id값 알아내기
         Set<String> accUserSet = new Set<String>();
         for(MDMRegRequestCustomer__c mdm : mdmCustomer){
             accUserSet.add(mdm.PV_PERNR__c);
             accUserSet.add(mdm.PV_ADMINMA__c);
+            accUserSet.remove(null);
         }
         List<User> userList = [SELECT Id, EmployeeNumber FROM User WHERE EmployeeNumber = :accUserSet];
+
+        System.debug('# accUserSet => ' + accUserSet);
         
         // Key :code , value :Id
         Map<String, String> codeToUserIdMap = new Map<String, String>();
         for(User us : userList){ 
             codeToUserIdMap.put(us.EmployeeNumber, us.Id);
         }
+
+        System.debug('# codeToUserIdMap => ' + codeToUserIdMap);
 
         try {
             
@@ -191,6 +207,8 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
                     mdmRequest.PV_OLD_BIZPLACE_NEW_lu__c=      codeToIdMap.get(mdm?.PV_OLD_BIZPLACE_NEW__c);
                     mdmRequest.PV_SHAPE__c              =      String.isBlank(mdm.PV_SHAPE__c) ? null : mdm.PV_SHAPE__c;
                     mdmRequest.PV_DELIGROUP__c          =      String.isBlank(mdm.PV_DELIGROUP__c) ? null : mdm.PV_DELIGROUP__c;
+                    
+                    mdmRequest.RequestType__c           =      'Edit';
                     
                     mdmRequest.MDMRegRequestBulkCustomer__c  = mdmRequestbulk.id;
                     

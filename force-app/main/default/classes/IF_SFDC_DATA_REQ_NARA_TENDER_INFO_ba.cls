@@ -544,6 +544,10 @@ global with sharing class IF_SFDC_DATA_REQ_NARA_TENDER_INFO_ba implements Databa
                                             break;
                                         }
                                     }
+
+                                    //2023.10.25 	Year__c 생성년도 추가 (시스템 날짜 사용)
+                                    leadObj.Year__c                     = String.valueOf(Date.today().year());
+
                                     insertMap.put(leadObj.BidNoticeNumber__c, leadObj);
                                 }
                             }

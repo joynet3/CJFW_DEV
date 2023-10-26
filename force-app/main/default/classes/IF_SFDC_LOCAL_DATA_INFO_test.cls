@@ -33,16 +33,15 @@ public with sharing class IF_SFDC_LOCAL_DATA_INFO_test {
     static void testIF_SFDC_LOCAL_DATA_INFO() {
         Test.startTest();
         Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator());
-        IF_SFDC_LOCAL_DATA_INFO_sc sc = new IF_SFDC_LOCAL_DATA_INFO_sc();
-        IF_SFDC_LOCAL_DATA_INFO_RESTAURANT_sc sc2= new IF_SFDC_LOCAL_DATA_INFO_RESTAURANT_sc();
-        IF_SFDC_LOCAL_DATA_INFO_FOOD_sc sc3= new IF_SFDC_LOCAL_DATA_INFO_FOOD_sc();
+        IF_SFDC_LOCAL_DATA_INFO_sc              sc = new IF_SFDC_LOCAL_DATA_INFO_sc();
+        IF_SFDC_LOCAL_DATA_INFO_RESTAURANT_sc   sc2= new IF_SFDC_LOCAL_DATA_INFO_RESTAURANT_sc();
+        IF_SFDC_LOCAL_DATA_INFO_FOOD_sc         sc3= new IF_SFDC_LOCAL_DATA_INFO_FOOD_sc();
         sc3.execute(null);
         sc2.execute(null);
         sc.execute(null);
 
-        List<String> upsertFailList = new List<String>();
-        IF_SFDC_LOCAL_DATA_INFO_MEDI_ba b = new IF_SFDC_LOCAL_DATA_INFO_MEDI_ba(upsertFailList);
-        Database.executeBatch(b,1);
+        IF_SFDC_LOCAL_DATA_INFO_MEDI_sc         sc4= new IF_SFDC_LOCAL_DATA_INFO_MEDI_sc();
+        sc4.execute(null);
         
         Test.stopTest();
     }

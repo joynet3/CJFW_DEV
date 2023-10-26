@@ -69,6 +69,13 @@ public with sharing class CJFW_QuoteFileCreateNewController_Test {
         String listSelectedSave = 'ProductCode__c,ProductName__c,BasePurchasePrice__c,UnitPriceWithVAT__c,QuantityUnitOfMeasure__c,CountryOfOriginName__c,StorageConditionName__c';
         Quote objQuote = quote;
         User objOwner = testUser;
+        List<CJFW_QuoteLineItem__c> lineItem = [SELECT   Id, QuoteId__c, ProductName__c
+                                                    FROM     CJFW_QuoteLineItem__c
+                                                    WHERE    QuoteId__c = :recordId
+                                                    ORDER BY SortOrder__c ASC
+                                                    LIMIT    10000
+                                                    ];
+        
         PageReference pdf = new pagereference('/apex/CJFW_QuotePDFCreateNew');
         pdf.getParameters().put('Id', recordId ); 
         pdf.getParameters().put('listSelectedField', listSelectedSave );
@@ -77,21 +84,10 @@ public with sharing class CJFW_QuoteFileCreateNewController_Test {
         System.assertEquals(recordId, testTmp.recordId, 'testTmp.recordId 확인');
         System.assertEquals(objQuote.Id, testTmp.objQuote.Id, 'testTmp.objQuote 확인');
         System.assertEquals(objOwner.Id, testTmp.objOwner.Id, 'testTmp.objOwner 확인');
-        // System.assertEquals(objOwner.Id, testTmp.objOwner.Id, 'testTmp.objOwner 확인');
-        // System.debug('testTmp.objOwner = '+testTmp.objOwner);
+        System.assertEquals(lineItem.size(), testTmp.listQuoteLineItem.size(), 'testTmp.listQuoteLineItem 확인');
         System.debug('testTmp.mapField = '+testTmp.mapField);
         System.debug('testTmp.listSelectedField = '+testTmp.listSelectedField);
         System.debug('testTmp.ExcelColummLength = '+testTmp.ExcelColummLength);
-        System.debug('testTmp.listQuoteLineItem = '+testTmp.listQuoteLineItem);
-        // testTmp.recordId = recordId;
-        // // testTmp.recordId = null;
-        // testTmp.objQuote = null;
-        // testTmp.objOwner = null;
-        // // testTmp.objOwner = testUser;
-        // testTmp.mapField = null;
-        // testTmp.listSelectedField = null;
-        // testTmp.ExcelColummLength = null;
-        // testTmp.listQuoteLineItem = null;
 
         CJFW_QuoteFileCreateNewController.getInitData();
 

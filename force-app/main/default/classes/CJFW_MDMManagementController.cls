@@ -2,7 +2,7 @@
  * @description       : 관리처-분할 Controller
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 10-18-2023
+ * @last modified on  : 10-26-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -831,6 +831,13 @@ public with sharing class CJFW_MDMManagementController {
 
         DataWrapper objWrapper = new DataWrapper();
         try{
+            // 요청자 사원번호 세팅위해 조회 함 
+            User objUser =[
+            SELECT Id,  LastName,  EmployeeNumber FROM User
+            WHERE Id =:UserInfo.getUserId()
+            ];
+
+            objWrapper.objUser = objUser;
             List<Account> accountList = [SELECT    Id
                                                 ,  Name                                         // 고객명(영문명 포함)                        
                                                 ,  NameAlias__c                                 // 고객약칭명(변경)
@@ -877,6 +884,8 @@ public with sharing class CJFW_MDMManagementController {
                                             FROM Account 
                                         WHERE Id =: accountId 
                                         LIMIT 1];
+            // 오늘날짜 
+            objWrapper.todayDate = Date.today();                                    
 
             // 고객 주문마감 유형코드
             objWrapper.listCustomerOrderType = CommonUtil.getPickListValues('MDMRegRequestCustomer__c', 'PV_ODCLOSEGB__c', true);
@@ -1200,6 +1209,8 @@ public with sharing class CJFW_MDMManagementController {
         @AuraEnabled public String strObjectType {get;set;}
         /** @description 레코드 Id */
         @AuraEnabled public String MDMRecordTypeId {get;set;}
+        /** @description 레코드 오늘날짜(유효날짜) */
+        @AuraEnabled public Date todayDate {get;set;}
         /** @description 고객 주문마감 유형코드 */
         @AuraEnabled public List<Map<String,String>> listCustomerOrderType {get;set;}
         /** @description 요청자 */

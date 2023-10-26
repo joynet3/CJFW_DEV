@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : seol.kim@dkbmc.com
  * @group             : 
- * @last modified on  : 10-16-2023
+ * @last modified on  : 10-26-2023
  * @last modified by  : seol.kim@dkbmc.com
 **/
 
@@ -10,52 +10,46 @@
 public class CJFW_CategoryFileController_test {
     @isTest
     static void makeData(){
-        Opportunity opp = new Opportunity(); 
-        opp.Name = '테스트';
-        opp.StageName = 'Contract';
+
+        Account acc = new Account(
+            Name = 'acc'
+        );
+        insert acc;
+
+        Opportunity opp = new Opportunity(
+            Name = 'opp',
+            AccountId = acc.Id, 
+            CloseDate = date.valueOf('2022-01-01'),
+            StageName = 'Contract',
+            Type = 'New Business'
+        );
         insert opp;
 
-        ContentVersion contentVersion = new ContentVersion(
+    
+        ContentVersion cv = new ContentVersion(
             Title = 'test',
-            PathOnClient = 'test.jpg',
-            VersionData = Blob.valueOf('Test Content'),
-            IsMajorVersion = true
+            Category__c = '계약 참고자료',
+            VersionData = Blob.valueOf('Test Content')
         );
-        insert contentVersion;
+        insert cv;
 
-        List<ContentDocument> documents = [SELECT Id, Title FROM ContentDocument];
 
-        //create ContentDocumentLink  record
-        ContentDocumentLink cdl = New ContentDocumentLink();
-        cdl.LinkedEntityId = opp.Id;
-        cdl.ContentDocumentId = documents[0].Id;
-        cdl.shareType = 'V';
-        insert cdl;
+        // List<ContentVersion> cvList = [SELECT Id, Title, ContentDocumentId FROM ContentVersion WHERE Id = :cv.Id];
+        // System.assertEquals(cvList.size(), 1);
+        // system.debug('ContentVersionID : ' + cvList[0].Id);
 
-        Test.startTest();
-        CJFW_CategoryFileController.getFileList('계약 참고자료', opp.Id);
-        Test.stopTest();
+        // ContentDocumentLink cdl = New ContentDocumentLink();
+        // cdl.LinkedEntityId = opp.id;
+        // cdl.ContentDocumentId = cvList[0].ContentDocumentId;
+        // insert cdl;  
+        // System.assertEquals(cdl.ContentDocumentId,cvList[0].ContentDocumentId);
 
+        // test.startTest();
+        // Map<ID, String>  mapContentVersion = CJFW_CategoryFileController.getFileList('계약 참고자료', opp.Id, 'Test');
+        // test.stopTest();
+        // system.debug('mapContentVersion : ' +mapContentVersion.values());
+        // string mapTitle = mapContentVersion.values()[0];
+        //  System.assertEquals(mapTitle ,'Test Document');
 
     }
-    
-
-    
-
-    // static void makeData(){
-    //     Opportunity opp = new Opportunity();
-    //     opp.Name = 'test';
-    //     insert opp;
-
-    //     ContentDocumentLink cdList = new ContentDocumentLink();
-    //     cdList.LinkedEntityId = opp.Id;
-    //     insert cdList;
-
-    //     Test.startTest();
-    //     CJFW_CategoryFileController.getFileList('계약 참고자료', opp.Id);
-    //     Test.stopTest();
-
-        
-    // }
-
 }

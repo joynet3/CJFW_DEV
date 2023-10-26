@@ -66,7 +66,7 @@ public class CJFW_CreateNewReportController {
     public static String saveDecision(Map<String,Object> saveData){
         
         System.debug(' 넘어온 데이터  '+ saveData) ;
-
+        
         try {
             DecisionProcess__c decPro = new DecisionProcess__c();
 
@@ -98,7 +98,6 @@ public class CJFW_CreateNewReportController {
             return 'Success'; 
 
         } catch (Exception e) {
-
             System.debug('message => ' + e.getMessage());
             System.debug('trace => ' + e.getStackTraceString());
             return 'Error: ' + e.getMessage(); // 에러 메시지 반환

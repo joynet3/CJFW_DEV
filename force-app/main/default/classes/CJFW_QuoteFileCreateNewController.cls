@@ -122,7 +122,9 @@ public without sharing class CJFW_QuoteFileCreateNewController {
 
                 listTempQuoteLineItem = [SELECT   Id, QuoteId__c, ProductName__c, QuantityUnitOfMeasure__c, ProfitMargin__c,
                                                   CountryOfOriginName__c, TaxTypeName__c, ProductCode__c, Product2Id__c, UnitPriceWithVAT__c, VAT__c,
-                                                  UnitPrice__c, ToLabel(LogisticsCenter__c), ToLabel(Month__c), BasePurchasePrice__c, OldBasePurchasePrice__c, StorageConditionName__c
+                                                  UnitPrice__c, ToLabel(LogisticsCenter__c), ToLabel(Month__c), BasePurchasePrice__c, OldBasePurchasePrice__c, StorageConditionName__c,
+                                                  ProductWeight__c, BoxQuantity__c, UnitConversion__c, Barcode__c, 
+                                                  ProductCategoryLName__c, ProductCategoryMName__c
                                          FROM     CJFW_QuoteLineItem__c
                                          WHERE    QuoteId__c = :recordId
                                          ORDER BY SortOrder__c ASC
@@ -136,7 +138,6 @@ public without sharing class CJFW_QuoteFileCreateNewController {
                 integer listcount = 0;
                 integer totallistsize = listTempQuoteLineItem.size();
 
-
                 if ( !listTempQuoteLineItem.isEmpty()){
                     listQuoteLineItem.add(listTempQuoteLineItem);
                     if (totallistsize == 10000){
@@ -144,7 +145,9 @@ public without sharing class CJFW_QuoteFileCreateNewController {
                         List<CJFW_QuoteLineItem__c> listTempQuoteLineItem2 = new List<CJFW_QuoteLineItem__c>();
                         listTempQuoteLineItem2 = [SELECT   Id, QuoteId__c, ProductName__c, QuantityUnitOfMeasure__c, ProfitMargin__c,
                                                            CountryOfOriginName__c, TaxTypeName__c, ProductCode__c, Product2Id__c, UnitPriceWithVAT__c, VAT__c,
-                                                           UnitPrice__c, ToLabel(LogisticsCenter__c), ToLabel(Month__c), BasePurchasePrice__c, OldBasePurchasePrice__c, StorageConditionName__c
+                                                           UnitPrice__c, ToLabel(LogisticsCenter__c), ToLabel(Month__c), BasePurchasePrice__c, OldBasePurchasePrice__c, StorageConditionName__c,
+                                                           ProductWeight__c, BoxQuantity__c, UnitConversion__c, Barcode__c, 
+                                                           ProductCategoryLName__c, ProductCategoryMName__c
                                                   FROM     CJFW_QuoteLineItem__c
                                                   WHERE    QuoteId__c = :recordId
                                                   AND      SortOrder__c > 10000

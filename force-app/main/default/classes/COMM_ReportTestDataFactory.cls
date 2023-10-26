@@ -2,8 +2,8 @@
  * @description       : 품의서전용 데이터 팩토리 
  * @author            : eunyoung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 10-25-2023
- * @last modified by  : eunyoung.choi@dkbmc.com
+ * @last modified on  : 10-26-2023
+ * @last modified by  : yeonji.lim@dkbmc.com
 **/
 
 global with sharing class COMM_ReportTestDataFactory {
@@ -167,8 +167,9 @@ global with sharing class COMM_ReportTestDataFactory {
     global static CJFW_ExpectedIncomeExpenses__c createExpectedIncome( String OpportunityId ){
         CJFW_ExpectedIncomeExpenses__c ExIncome = new CJFW_ExpectedIncomeExpenses__c(
             Opportunity__c = OpportunityId
-            , Version__c = 1
-           // 아래 추가로 쭉쭉 데이터 만들어주면됨 ( 필수값들은 반드시 데이터 만들어 줘야함 )
+            , Version__c = 1    // 필수값
+            , IsReportCheck__c = false  // 필수값
+           
         );
         return ExIncome;
     }

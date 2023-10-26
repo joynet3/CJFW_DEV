@@ -2,8 +2,8 @@
  * @description       : 
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 10-24-2023
- * @last modified by  : hyeeun.song@dkbmc.com
+ * @last modified on  : 10-26-2023
+ * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
  * 1.0   10-06-2023   joohyeon.jang@dkbmc.com   Initial Version
@@ -293,7 +293,7 @@ public with sharing class CJFW_MDMHeadController {
         String strMessage = '';                             // Error 시 메세지
         String MDMRecordTypeId = '';                        // MDMRegRequestCustomer__c의 '관리처' RecordId
         String strObjectType = 'Account';  // object api명
-        String recordTypeName = 'MDMChild';            // recordType api명
+        String recordTypeName = 'MDMParent';            // recordType api명
 
         system.debug(' ### CJFW_MDMManagementController > getAccountInfo() ');
         system.debug(' >>> accountId ' + accountId);
@@ -670,6 +670,11 @@ public with sharing class CJFW_MDMHeadController {
 
         DataWrapper objWrapper = new DataWrapper();
         try{
+            // 요청자 사원번호 세팅위해 조회 함 
+            User objUser =[
+            SELECT Id,  LastName,  EmployeeNumber FROM User
+            WHERE Id =:UserInfo.getUserId()
+            ];
             List<Account> accountList = [SELECT    Id
                                                 ,  Name                                         // 고객명(영문명 포함)                        
                                                 ,  NameAlias__c                                 // 고객약칭명(변경)

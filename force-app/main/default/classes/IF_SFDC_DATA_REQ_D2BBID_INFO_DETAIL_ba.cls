@@ -116,7 +116,7 @@ global with sharing class IF_SFDC_DATA_REQ_D2BBID_INFO_DETAIL_ba implements Data
                     uptLead.Phone__c                 = input.response.body.item.chargerCttpc;
                     uptLead.Company__c               = input.response.body.item.ornt;
                     uptLead.BidNoticeStatus__c       = input.response.body.item.pblancSe;   //공고구분
-                    uptLead.BidNoticeName__c         = input.response.body.item.bidNm;      //공고명
+                    uptLead.Name = input.response.body.item.bidNm;      //공고명 - uptLead.BidNoticeName__c         = input.response.body.item.bidNm;
                     uptLead.BidMethod__c             = input.response.body.item.bidMth;     //입찰방식
                     uptLead.ContractSignMethod__c    = input.response.body.item.cntrctMth;  //계약방법
                     uptLead.BidStatus__c             = input.response.body.item.bidStle;    //입찰형태
@@ -201,7 +201,7 @@ global with sharing class IF_SFDC_DATA_REQ_D2BBID_INFO_DETAIL_ba implements Data
                     objLead.Phone__c             = input.response.body.item.chargerCttpc;
                     objLead.Company__c           = input.response.body.item.ornt;
                     objLead.BidNoticeStatus__c   = input.response.body.item.pblancSe;
-                    objLead.BidNoticeName__c     = input.response.body.item.bidNm;
+                    objLead.Name     = input.response.body.item.bidNm;  //objLead.BidNoticeName__c     = input.response.body.item.bidNm;
                     objLead.BidMethod__c         = input.response.body.item.bidMth;
                     objLead.ContractSignMethod__c= input.response.body.item.cntrctMth;
                     objLead.BidStatus__c         = input.response.body.item.bidStle;
@@ -266,6 +266,9 @@ global with sharing class IF_SFDC_DATA_REQ_D2BBID_INFO_DETAIL_ba implements Data
                             break;
                         }
                     }
+
+                    //2023.10.25 	Year__c 생성년도 추가 (시스템 날짜 사용)
+                    objLead.Year__c                 = String.valueOf(Date.today().year());
                     insert objLead;
                 }
                         

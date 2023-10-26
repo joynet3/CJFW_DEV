@@ -2,10 +2,14 @@
  * @description       : 
  * @author            : doyeon.kim@dkbmc.com
  * @group             : 
- * @last modified on  : 10-13-2023
+ * @last modified on  : 10-26-2023
  * @last modified by  : yejoo.lee@dkbmc.com
 **/
 public with sharing class CJFW_DeliveryDstMgmtTriggerHandler extends TriggerHandler{
+    
+    static Id userId =UserInfo.getUserId(); 
+    static String profileName = [SELECT Profile.Name FROM User WHERE Id =: userId].Profile.Name;
+
     public CJFW_DeliveryDstMgmtTriggerHandler() {
         system.debug('CJFW_DeliveryDstMgmt Trigger Handler START');
         listNew = (List<CJFW_DeliveryDestinationMgmt__c>) trigger.new;
@@ -21,11 +25,11 @@ public with sharing class CJFW_DeliveryDstMgmtTriggerHandler extends TriggerHand
     private Map<Id, CJFW_DeliveryDestinationMgmt__c> mapOld { get; set; }
 
     public override void beforeUpdate() {
-        doCheckCompletedWhenEdit();
+        if(profileName != 'System Administrator') doCheckCompletedWhenEdit();
     }
     
     public override void beforeDelete() {
-        doCheckCompleted();
+        if(profileName != 'System Administrator') doCheckCompleted();
     }
 
     /***********************************************************************************************************

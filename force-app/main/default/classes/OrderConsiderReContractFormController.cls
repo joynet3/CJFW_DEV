@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : yeonji.lim@dkbmc.com
  * @group             : 
- * @last modified on  : 10-25-2023
+ * @last modified on  : 10-26-2023
  * @last modified by  : yeonji.lim@dkbmc.com
 **/
 public with sharing class OrderConsiderReContractFormController {
@@ -56,12 +56,19 @@ public with sharing class OrderConsiderReContractFormController {
         System.debug('# incomeExpensesId ->' + incomeExpensesId );
         System.debug('# showtable ->' + showtable );
         System.debug('# reportType ->' + reportType );
+        
+        System.debug('#########################################->' + Test.isRunningTest() );
 
-
-        getPicklistValues();    // picklist label/value 값 담기
-        getOpptyInfo();         // 담당자 정보 가져오기
-        getAccountInfo();       // 고객사 정보 가져오기
-        getIncomeExpenses();    // 신규개설품의 obj 값 가져오기
+        // test Class에서 객체 생성시 다른 메소드들이 실행되지 않게 분기처리
+        if(Test.isRunningTest()){
+            System.debug('test code 실행중');
+        }else{
+            System.debug('실제 환경에서 실행할 로직');
+            getPicklistValues();    // picklist label/value 값 담기
+            getOpptyInfo();         // 담당자 정보 가져오기
+            getAccountInfo();       // 고객사 정보 가져오기
+            getIncomeExpenses();    // 신규개설품의 obj 값 가져오기
+        }
     }
 
     /* 
@@ -115,7 +122,7 @@ public with sharing class OrderConsiderReContractFormController {
      }
 
     /* 
-    Oppty 에 있는 Account 값을 가져오는 메소드
+    Oppty 에 있는 Owner 정보 가져오는 메소드
     */
     public void getOpptyInfo() {
         
@@ -260,7 +267,7 @@ public with sharing class OrderConsiderReContractFormController {
             'FROM CJFW_ExpectedIncomeExpenses__c';
 
             if (incomeExpensesId != null) {
-                query += ' WHERE id = :incomeExpensesId AND ReportType__c =:reportType ';
+                query += ' WHERE id = :incomeExpensesId';
             }else if (opportunityId != null) {
                 query += ' WHERE Opportunity__c = :opportunityId AND ReportType__c =:reportType';
             }
@@ -405,13 +412,15 @@ public with sharing class OrderConsiderReContractFormController {
     CJFW_NewOpenReport_ProfitReview (VF Page) 에서 입력받은 값 update   
     */
     @RemoteAction
-    public static String saveIncomeExpenses(String DataList, String opportunityId, Decimal versionCheck, String incomeExpensesId) {
+    public static String saveIncomeExpenses(String DataList, String opportunityId, Decimal versionCheck, String incomeExpensesId, String reportType) {
         try {
             System.debug('saveIncomeExpenses DataList ' + DataList);
             System.debug('saveIncomeExpenses opportunityId ' + opportunityId);
             System.debug('saveIncomeExpenses versionCheck ' + versionCheck);
             System.debug('saveIncomeExpenses incomeExpensesId ' + incomeExpensesId);
-            // System.debug('saveIncomeExpenses reportType ' + reportType);
+            System.debug('saveIncomeExpenses reportType ' + reportType);
+
+
             
             Map<String, Object> dataMap = (Map<String, Object>) JSON.deserializeUntyped(DataList);
             System.debug('넘어온 데이터! ' + dataMap);
@@ -430,7 +439,7 @@ public with sharing class OrderConsiderReContractFormController {
             }
 
             expectIncome.saveResult__c = DataList;
-            expectIncome.ReportType__c = 'CRM010';  //품의서 종류에 따라 타입설정 (CRM010: 외식SU 재계약 품의서)
+            expectIncome.ReportType__c = reportType;  //품의서 종류에 따라 타입설정 (CRM010: 외식SU 재계약 품의서)
 
             /* ===== 1. 개요 ===== */
             if (dataMap.containsKey('keyMan')) { // keyMan
@@ -477,8 +486,8 @@ public with sharing class OrderConsiderReContractFormController {
             if (dataMap.containsKey('outwardDifference')) { // 차이
                 expectIncome.OutwardDifference__c = (String) dataMap.get('outwardDifference');
             }
-            if (dataMap.containsKey('firstDraft') && dataMap.get('firstDraft') !='') { // 초도일자 (date)
-                expectIncome.InitialDate__c = Date.valueOf(((String) dataMap.get('firstDraft')));
+            if (dataMap.containsKey('initialDate') && dataMap.get('initialDate') !='') { // 초도일자 (date)
+                expectIncome.InitialDate__c = Date.valueOf(((String) dataMap.get('initialDate')));
             }
             if (dataMap.containsKey('accountAddress')) { // 주소 (text)
                 expectIncome.Address__c = (String) dataMap.get('accountAddress');
@@ -660,7 +669,6 @@ public with sharing class OrderConsiderReContractFormController {
    public static String ReportCheck(String incomeExpensesId , String opportunityId ){
 
        try{
-           //CJFW_ExpectedIncomeExpenses__c RemoveList = [SELECT Id, IsReportCheck__c FROM CJFW_ExpectedIncomeExpenses__c WHERE Opportunity__c =: opportunityId AND Id != :incomeExpensesId];
            List<CJFW_ExpectedIncomeExpenses__c> RemoveList = [SELECT Id, IsReportCheck__c FROM CJFW_ExpectedIncomeExpenses__c WHERE Opportunity__c = :opportunityId AND Id != :incomeExpensesId];
            CJFW_ExpectedIncomeExpenses__c checkList = [SELECT Id, IsReportCheck__c FROM CJFW_ExpectedIncomeExpenses__c WHERE  Id = :incomeExpensesId];
 
@@ -680,12 +688,8 @@ public with sharing class OrderConsiderReContractFormController {
            return 'success';
 
        }catch (Exception e) {
-
-           String errorMessage = e.getMessage(); // 에러 메시지
-           String errorStackTrace = e.getStackTraceString(); // 에러 스택 트레이스
-
-           System.debug('에러 메시지: ' + errorMessage);
-           System.debug('에러 라인: ' + errorStackTrace);
+           System.debug('에러 메시지: ' + e.getMessage());
+           System.debug('에러 라인: ' + e.getStackTraceString());
            return 'error';
        }
    }
@@ -694,7 +698,7 @@ public with sharing class OrderConsiderReContractFormController {
     Decimal 값으로 변환하기위해 사용되는 메소드
     */
     public static Decimal convertToDecimal(Object objValue) {  
-        Decimal decimalValue = 0.0; // 기본값 설정
+        Decimal decimalValue = 0.00; // 기본값 설정
     
         if (objValue != null || objValue != '') {
             if (objValue instanceof Decimal) {

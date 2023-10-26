@@ -2,7 +2,7 @@
  * @description       : 판매처필드에 맞게 삭제 및 추가 완료
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 10-17-2023
+ * @last modified on  : 10-26-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -687,6 +687,11 @@ public with sharing class CJFW_MDMSalesController {
 
         DataWrapper objWrapper = new DataWrapper();
         try{
+                // 요청자 사원번호 세팅위해 조회 함 
+                User objUser =[
+                    SELECT Id,  LastName,  EmployeeNumber FROM User
+                    WHERE Id =:UserInfo.getUserId()
+                    ]; 
             List<Account> accountList = [SELECT    Id
                                                 ,  Name                                         // 고객명(영문명 포함)                        
                                                 ,  NameAlias__c                                 // 고객약칭명(변경)

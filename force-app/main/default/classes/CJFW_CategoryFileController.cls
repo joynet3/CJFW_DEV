@@ -2,27 +2,23 @@
  * @description       : 
  * @author            : seol.kim@dkbmc.com
  * @group             : 
- * @last modified on  : 10-20-2023
- * @last modified by  : seol.kim@dkbmc.com
+ * @last modified on  : 10-26-2023
+ * @last modified by  : yejoo.lee@dkbmc.com
 **/
 public with sharing class CJFW_CategoryFileController {
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled
     public static List<ContentVersion> getFileList(String category, Id recordId, String searchTerm){
         try {
             System.debug('category ==> ' + category);     
             System.debug('recordId ==> ' + recordId);     
 
-
             if(category == '파일'){
                 category = null;
             }
-
-
             String contentDocumentLinkQuery = 'SELECT Id, ' +
                                                     'LinkedEntityId, ' +
                                                     'ContentDocumentId ' +
                                                 'FROM ContentDocumentLink';
-
 
             String contentVersionQuery = 'SELECT Id, ' +
                                                 'VersionData, ' +
@@ -39,7 +35,7 @@ public with sharing class CJFW_CategoryFileController {
             if (searchTerm != null) {
                 // 검색어가 있을 때의 처리
                 searchTerm = '%' + searchTerm + '%'; // 검색어 형식을 처리
-                System.debug('searchTerm: ' + searchTerm);
+                System.debug('검색어 있을때 : ' + searchTerm);
 
                 if (category == '계약 참고자료') {
                     contentDocumentLinkQuery += ' WHERE LinkedEntityId IN (SELECT Id FROM Opportunity) ';
@@ -71,10 +67,11 @@ public with sharing class CJFW_CategoryFileController {
                     }
                     contentVersionQuery += ' WHERE Category__c = :category ' +
                                             ' AND ContentDocumentId IN :ContentDocumentIds ' +
-                                            ' AND Title LIKE :searchTerm ' +
+                                            ' AND Title LIKE :searchTerm ' + 
                                             ' ORDER BY LastModifiedDate ASC';
                     List<ContentVersion> ContentVersionList = Database.query(contentVersionQuery);
-                    System.debug('기본 ==> ' + ContentVersionList);       
+                    System.debug('ContentVersionList ==> ' + ContentVersionList);       
+                    System.debug('ContentVersionList size ==> ' + ContentVersionList.size());       
                     return ContentVersionList;
                 }
 
@@ -113,9 +110,7 @@ public with sharing class CJFW_CategoryFileController {
                     List<ContentVersion> ContentVersionList = Database.query(contentVersionQuery);
                     System.debug('기본 ==> ' + ContentVersionList);       
                     return ContentVersionList;
-
-                
-            }
+                }
 
             }
 

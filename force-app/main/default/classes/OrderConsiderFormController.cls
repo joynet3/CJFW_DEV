@@ -5,7 +5,7 @@
 
  * @author            : seol.kim@dkbmc.com
  * @group             : 
- * @last modified on  : 10-25-2023
+ * @last modified on  : 10-26-2023
  * @last modified by  : seol.kim@dkbmc.com
 **/
 public with sharing class OrderConsiderFormController {
@@ -16,6 +16,8 @@ public with sharing class OrderConsiderFormController {
     public Decimal versionCheck { get; set; }
     public Boolean reportCheck { get; set; }
     public String showtable { get; set; }
+    public String reportType { get; set; } // 품의서 유형
+
 
     /* 가져온 데이터 담는 object */
     public Opportunity opptyInfo {get;set;}
@@ -53,15 +55,27 @@ public with sharing class OrderConsiderFormController {
         this.opportunityId = ApexPages.currentPage().getParameters().get('opportunityId');
         this.incomeExpensesId = ApexPages.currentPage().getParameters().get('incomeExpensesId');
         this.showtable = ApexPages.currentPage().getParameters().get('showtable');
+        this.reportType = ApexPages.currentPage().getParameters().get('type');
+
 
         System.debug('# opportunityId ->' + opportunityId );
         System.debug('# incomeExpensesId ->' + incomeExpensesId );
         System.debug('# showtable ->' + showtable );
+        System.debug('# reportType ->' + reportType );
 
-        getPicklistValues(); // picklist label/value 값 담기
-        getOpptyInfo();     //담당자 정보 가져오기
-        getAccountInfo();    // 고객사 정보 가져오기
-        getIncomeExpenses(); // 신규개설품의 obj 값 가져오기
+
+        System.debug('#########################################->' + Test.isRunningTest() );
+
+        // test Class에서 객체 생성시 다른 메소드들이 실행되지 않게 분기처리
+        if(Test.isRunningTest()){
+            System.debug('test code 실행중');
+        }else{
+            System.debug('실제 환경에서 실행할 로직');
+            getPicklistValues();    // picklist label/value 값 담기
+            getOpptyInfo();         // 담당자 정보 가져오기
+            getAccountInfo();       // 고객사 정보 가져오기
+            getIncomeExpenses();    // 신규개설품의 obj 값 가져오기
+        }
     }
 
     /* 
@@ -191,7 +205,6 @@ public with sharing class OrderConsiderFormController {
         System.debug('# ReportFormController # getIncomeExpenses');
         try {
             String query = ' SELECT Id, ' +
-
             'Version__c, ' +                        
             'IsReportCheck__c, ' +                        
             'KeyMan__c, ' +                         //키맨    
@@ -256,7 +269,7 @@ public with sharing class OrderConsiderFormController {
             if (incomeExpensesId != null) {
                 query += ' WHERE id = :incomeExpensesId ';
             }else if (opportunityId != null) {
-                query += ' WHERE Opportunity__c = :opportunityId ';
+                query += ' WHERE Opportunity__c = :opportunityId AND ReportType__c =:reportType';
             }
 
             if(showtable =='true'){
@@ -387,12 +400,14 @@ public with sharing class OrderConsiderFormController {
     CJFW_OrderConsiderNewForm (VF Page) 에서 입력받은 값 update   
     */
     @RemoteAction
-    public static String saveIncomeExpenses(String DataList, String opportunityId, Decimal versionCheck, String incomeExpensesId) {
+    public static String saveIncomeExpenses(String DataList, String opportunityId, Decimal versionCheck, String incomeExpensesId, String reportType) {
         try {
             System.debug('DataList ' + DataList);
             System.debug('opportunityId ' + opportunityId);
             System.debug('versionCheck ' + versionCheck);
             System.debug('incomeExpensesId ' + incomeExpensesId);
+            System.debug('saveIncomeExpenses reportType ' + reportType);
+
             
             Map<String, Object> dataMap = (Map<String, Object>) JSON.deserializeUntyped(DataList);
             System.debug('넘어온 데이터! ' + dataMap);
@@ -411,7 +426,7 @@ public with sharing class OrderConsiderFormController {
             }
 
             expectIncome.saveResult__c = DataList;
-            expectIncome.ReportType__c = 'CRM009';  //품의서 종류에 따라 타입설정 (CRM009: 외식SU 계약 품의서)
+            expectIncome.ReportType__c = reportType;  //품의서 종류에 따라 타입설정 (CRM009: 외식SU 계약 품의서)
            
 
             /* ===== 1. 개요 ===== */
@@ -459,8 +474,8 @@ public with sharing class OrderConsiderFormController {
             if (dataMap.containsKey('outwardDifference')) { // 차이
                 expectIncome.OutwardDifference__c = (String) dataMap.get('outwardDifference');
             }
-            if (dataMap.containsKey('firstDraft') && dataMap.get('firstDraft') !='') { // 초도일자 (date)
-                expectIncome.InitialDate__c = Date.valueOf(((String) dataMap.get('firstDraft')));
+            if (dataMap.containsKey('initialDate') && dataMap.get('initialDate') !='') { // 초도일자 (date)
+                expectIncome.InitialDate__c = Date.valueOf(((String) dataMap.get('initialDate')));
             }
             if (dataMap.containsKey('accountAddress')) { // 주소 (text)
                 expectIncome.Address__c = (String) dataMap.get('accountAddress');
@@ -593,6 +608,44 @@ public with sharing class OrderConsiderFormController {
             return 'error';
         }
     }
+
+    /* 
+    품의지정 버튼 클릭시 , 품의지정 check 
+    : 기존 품의지정된 내역은 삭제 후 신규 품의지정된 1개만 품의체크
+    */
+    @RemoteAction
+    public static String ReportCheck(String incomeExpensesId , String opportunityId ){
+ 
+        try{
+            List<CJFW_ExpectedIncomeExpenses__c> RemoveList = [SELECT Id, IsReportCheck__c FROM CJFW_ExpectedIncomeExpenses__c WHERE Opportunity__c = :opportunityId AND Id != :incomeExpensesId];
+            CJFW_ExpectedIncomeExpenses__c checkList = [SELECT Id, IsReportCheck__c FROM CJFW_ExpectedIncomeExpenses__c WHERE  Id = :incomeExpensesId];
+ 
+            if(RemoveList <> null ){
+                for(CJFW_ExpectedIncomeExpenses__c data : RemoveList) {
+                    data.IsReportCheck__c = false;
+                }
+                update RemoveList;
+            }
+ 
+            if(checkList <> null){
+                checkList.IsReportCheck__c =true;
+                System.debug(' checkList ' + checkList );
+                update checkList;
+            }
+ 
+            return 'success';
+ 
+        }catch (Exception e) {
+ 
+            String errorMessage = e.getMessage(); // 에러 메시지
+            String errorStackTrace = e.getStackTraceString(); // 에러 스택 트레이스
+ 
+            System.debug('에러 메시지: ' + errorMessage);
+            System.debug('에러 라인: ' + errorStackTrace);
+            return 'error';
+        }
+    }
+    
     /* 
     Decimal 값으로 변환하기위해 사용되는 메소드
     */

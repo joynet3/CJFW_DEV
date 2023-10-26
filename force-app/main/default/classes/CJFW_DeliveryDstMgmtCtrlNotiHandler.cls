@@ -2,36 +2,13 @@
  * @description       : 
  * @author            : yejoo.lee@dkbmc.com
  * @group             : 
- * @last modified on  : 10-24-2023
+ * @last modified on  : 10-26-2023
  * @last modified by  : yejoo.lee@dkbmc.com
 **/
-public with sharing class CJFW_DeliveryDstMgmtCtrlNotiHandler extends NotiHandler{
+public without sharing class CJFW_DeliveryDstMgmtCtrlNotiHandler extends NotiHandler{
     public override void manuFactureNoti(Object targetObject) {
         List<CJFW_DeliveryDestinationMgmt__c> mgmtList = (List<CJFW_DeliveryDestinationMgmt__c>) targetObject;
         List<NotiEmailTemplate> emailTemplateList = new List<NotiEmailTemplate>();
-
-        /*
-            # GET 첨부파일 Version => Map<Id(mgmt), Set(VersionIds)>
-            1. ContentDocumentLink : LinkedEntityId(mgmtId), ContentDocumentId
-            2. ContentDocument : LatestPublishedVersionId
-        */
-        Set<String> mgmtIds = new Set<String>();
-        for (CJFW_DeliveryDestinationMgmt__c mgmt : mgmtList) {
-            mgmtIds.add(mgmt.Id);
-        }
-
-        Map<Id, Set<String>> attachmentMap = new Map<Id, Set<String>>();
-        List<ContentDocumentLink> linkList = [SELECT Id, LinkedEntityId, ContentDocumentId, ContentDocument.LatestPublishedVersionId 
-                                                FROM ContentDocumentLink 
-                                                WHERE LinkedEntityId IN :mgmtIds];
-        for (ContentDocumentLink link : linkList) {
-            if(attachmentMap.containsKey(link.LinkedEntityId)){
-                attachmentMap.get(link.LinkedEntityId).add(link.ContentDocument.LatestPublishedVersionId);
-            }else{
-                attachmentMap.put(link.LinkedEntityId, new Set<String>{ link.ContentDocument.LatestPublishedVersionId });
-            }
-        }
-        System.debug('attachmentMap : ' + attachmentMap);
 
         /*
             # Rich Text Img 처리 => Map<Id(mgmt), String(url)>
@@ -93,9 +70,9 @@ public with sharing class CJFW_DeliveryDstMgmtCtrlNotiHandler extends NotiHandle
         Map<String, List<String>> imgUrlMap = new Map<String, List<String>>();
         for (ContentDistribution cdb : cdbList) {
             if(imgUrlMap.containsKey(cdb.ContentVersion.MgmtId__c)){
-                imgUrlMap.get(cdb.ContentVersion.MgmtId__c).add('<img src=\"' + cdb.ContentDownloadUrl + '\">');
+                imgUrlMap.get(cdb.ContentVersion.MgmtId__c).add('<img src=\"' + cdb.ContentDownloadUrl + '\" style="width:100%;">');
             }else{
-                imgUrlMap.put(cdb.ContentVersion.MgmtId__c, new List<String>{'<img src=\"' + cdb.ContentDownloadUrl + '\">'});
+                imgUrlMap.put(cdb.ContentVersion.MgmtId__c, new List<String>{'<img src=\"' + cdb.ContentDownloadUrl + '\" style="width:100%;">'});
             }
         }
 
@@ -119,6 +96,29 @@ public with sharing class CJFW_DeliveryDstMgmtCtrlNotiHandler extends NotiHandle
         }
         System.debug('updateLinkList:' +insertLinkList);
         insert insertLinkList;
+
+        /*
+            # GET 첨부파일 Version => Map<Id(mgmt), Set(VersionIds)>
+            1. ContentDocumentLink : LinkedEntityId(mgmtId), ContentDocumentId
+            2. ContentDocument : LatestPublishedVersionId
+        */
+        Set<String> mgmtIds = new Set<String>();
+        for (CJFW_DeliveryDestinationMgmt__c mgmt : mgmtList) {
+            mgmtIds.add(mgmt.Id);
+        }
+
+        Map<Id, Set<String>> attachmentMap = new Map<Id, Set<String>>();
+        List<ContentDocumentLink> linkList = [SELECT Id, LinkedEntityId, ContentDocumentId, ContentDocument.LatestPublishedVersionId 
+                                                FROM ContentDocumentLink 
+                                                WHERE LinkedEntityId IN :mgmtIds];
+        for (ContentDocumentLink link : linkList) {
+            if(attachmentMap.containsKey(link.LinkedEntityId)){
+                attachmentMap.get(link.LinkedEntityId).add(link.ContentDocument.LatestPublishedVersionId);
+            }else{
+                attachmentMap.put(link.LinkedEntityId, new Set<String>{ link.ContentDocument.LatestPublishedVersionId });
+            }
+        }
+        System.debug('attachmentMap : ' + attachmentMap);
 
         /*
             # 메일 수신인 => Map<String(LogisticsCenter__c),Set(emails)>
@@ -227,6 +227,7 @@ public with sharing class CJFW_DeliveryDstMgmtCtrlNotiHandler extends NotiHandle
 
             // emailTemplate.setIsTargetObjectId(true);
             emailTemplate.setIsSaveAsActivity(true);//Acticity 기록
+            emailTemplate.setIsUseOWE(true);//??
             emailTemplate.setTargetId(mgmt.Id);
 
             emailTemplate.setAttachmentIds(attachmentMap.get(mgmt.Id));//첨부파일

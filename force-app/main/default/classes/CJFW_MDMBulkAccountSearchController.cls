@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 10-20-2023
+ * @last modified on  : 10-26-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkAccountSearchController {
@@ -21,8 +21,12 @@ public with sharing class CJFW_MDMBulkAccountSearchController {
             searchCode = 'C01';
         } else if(type == '판매처') {
             searchCode = 'C02';
-        } else if(type == '관리처') {
-            searchCode = 'C03\', \'C04\', \'C11';
+        } else if(type == '관리처-배송') {
+            searchCode = 'C03';
+        } else if(type == '관리처-분할') {
+            searchCode = 'C04';
+        } else if(type == '관리처-2차') {
+            searchCode = 'C11';
         }
 
         searchCode = searchCode.replace(' ', '');

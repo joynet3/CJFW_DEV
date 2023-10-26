@@ -26,6 +26,7 @@ public with sharing class IFN_sancho_test {
      * */
     public void testIf() {
         
+        /************************** 스케쥴 등록 ************************/
         //1차에서 사용한 스케쥴 등록법. - NEAT 학교급식(농수산식품공사)는 기존 개발안이므로 기존 폼 유지한다.
         IF_SFDC_DATA_REQ_EAT_BID_INFO_sc sch = new IF_SFDC_DATA_REQ_EAT_BID_INFO_sc();
         //system.schedule('IF_SFDC_DATA_REQ_EAT_BID_INFO_sc 학교급식 NEAT 02시00분', '0 10 16 * * ?', sch);
@@ -47,13 +48,9 @@ public with sharing class IFN_sancho_test {
         IF_SFDC_DATA_REQ_NARA_TENDER_FRGC_sc 나라장터 입찰공고(외자) 03시30분	Interface	2023. 2. 5. 오후 5:24	2023. 10. 24. 오전 3:30	2023. 10. 25. 오전 3:30	예약된 Apex
         IF_SFDC_DATA_REQ_NARA_TENDER_SERVC_sc 나라장터 입찰공고(용역) 04시00분	Interface	2023. 2. 5. 오후 5:24	2023. 10. 24. 오전 4:00	2023. 10. 25. 오전 4:00	예약된 Apex
         IF_SFDC_DATA_REQ_NARA_TENDER_THNG_sc 나라장터 입찰공고(물품) 04시30분
+
+        IF_SFDC_DATA_REQ_D2BBID_INFO_sc 국방전자조달시스템 입찰공고 01시00분
         */
-
-        IF_SFDC_CRCT_REQ_CENTER_INFO_sc crct = new IF_SFDC_CRCT_REQ_CENTER_INFO_sc();
-        system.schedule('IF_SFDC_CRCT_REQ_CENTER_INFO_sc 어린이집정보공개포털 01:30', '0 30 01 * * ?', crct);
-
-        IF_SFDC_LOCAL_DATA_INFO_sc local_info = new IF_SFDC_LOCAL_DATA_INFO_sc();
-        system.schedule('IF_SFDC_LOCAL_DATA_INFO_sc 지방인허가정보 05시00분',                       '0 00 05 * * ?', local_info);
 
         IF_SFDC_DATA_REQ_NARA_TENDER_INFO_sc nara_info = new IF_SFDC_DATA_REQ_NARA_TENDER_INFO_sc();
         system.schedule('IF_SFDC_DATA_REQ_NARA_TENDER_INFO_sc 나라장터 입찰공고(기타) 03시00분',    '0 00 03 * * ?', nara_info);
@@ -65,8 +62,93 @@ public with sharing class IFN_sancho_test {
         system.schedule('IF_SFDC_DATA_REQ_NARA_TENDER_SERVC_sc 나라장터 입찰공고(용역) 04시00분',   '0 00 04 * * ?', nara_serv);
 
         IF_SFDC_DATA_REQ_NARA_TENDER_THNG_sc nara_thng = new IF_SFDC_DATA_REQ_NARA_TENDER_THNG_sc();
-        system.schedule('IF_SFDC_DATA_REQ_NARA_TENDER_THNG_sc 나라장터 입찰공고(물품) 04시30분',    '0 30 04 * * ?', crct);
+        system.schedule('IF_SFDC_DATA_REQ_NARA_TENDER_THNG_sc 나라장터 입찰공고(물품) 04시30분',    '0 30 04 * * ?', nara_thng);
 
+        IF_SFDC_DATA_REQ_D2BBID_INFO_sc d2bbid_info = new IF_SFDC_DATA_REQ_D2BBID_INFO_sc();
+        system.schedule('IF_SFDC_DATA_REQ_D2BBID_INFO_sc 국방전자조달시스템 입찰공고 01시00분',    '0 00 01 * * ?', d2bbid_info);
+
+        //local 4종 이 안에 다 있다.-----------------------------------------------------------------------------------------------
+        IF_SFDC_LOCAL_DATA_INFO_sc local_info = new IF_SFDC_LOCAL_DATA_INFO_sc();
+        system.schedule('IF_SFDC_LOCAL_DATA_INFO_sc 지방인허가정보 05시00분',                       '0 00 05 * * ?', local_info);
+        //local 4종 이 안에 다 있다.-----------------------------------------------------------------------------------------------
+
+        IF_SFDC_CRCT_REQ_CENTER_INFO_sc crct = new IF_SFDC_CRCT_REQ_CENTER_INFO_sc();
+        system.schedule('IF_SFDC_CRCT_REQ_CENTER_INFO_sc 어린이집정보공개포털 01:30', '0 30 01 * * ?', crct);
+
+        IF_SFDC_KIND_REQ_sc kinder = new IF_SFDC_KIND_REQ_sc();
+        system.schedule('IF_SFDC_KIND_REQ_sc 어린이집정보공개포털 01:40', '0 40 01 * * ?', kinder);
+
+
+        //IF_SFDC_KIND_REQ_sc
+        
+
+        
+        //  ***** Scheduled Jobs 에 등록해서 사용 하려 했으나, 페이징처리 로직과 충돌(미실행, 재등록등)이 까다로원 기존 타 배치양식으로 처리한다. ***** // 2023.10.24
+        //	IFN_ScheduleBatch
+        // List<String> upsertFailList = new List<String>();
+        // IF_SFDC_LOCAL_DATA_INFO_MEDI_ba b = new IF_SFDC_LOCAL_DATA_INFO_MEDI_ba(upsertFailList);
+        // Database.executeBatch(b,1);
+
+
+        /*  batch 직 수행
+        
+        ---- LOCAL 3종  + 1
+        List<String> upsertFailList = new List<String>();
+        IF_SFDC_LOCAL_DATA_INFO_ba ba = new IF_SFDC_LOCAL_DATA_INFO_ba(upsertFailList);
+        IF_SFDC_LOCAL_DATA_INFO_FOOD_ba ba2 = new IF_SFDC_LOCAL_DATA_INFO_FOOD_ba(upsertFailList);
+        IF_SFDC_LOCAL_DATA_INFO_RESTAURANT_ba ba3 = new IF_SFDC_LOCAL_DATA_INFO_RESTAURANT_ba(upsertFailList);
+        Database.executeBatch(ba,1);
+        Database.executeBatch(ba2,1);
+        Database.executeBatch(ba3,1);
+
+        IF_SFDC_LOCAL_DATA_INFO_MEDI_ba ba4 = new IF_SFDC_LOCAL_DATA_INFO_MEDI_ba(upsertFailList);
+        Database.executeBatch(ba4,1);
+        ---- LOCAL 3종  + 1
+
+        //어린이집
+        IF_SFDC_CRCT_REQ_CENTER_INFO_ba b = new IF_SFDC_CRCT_REQ_CENTER_INFO_ba(false,null);
+        Database.executeBatch(b,1);
+        //유치원
+        IF_SFDC_KIND_REQ_BASE_INFO b = new IF_SFDC_KIND_REQ_BASE_INFO(false,null);
+        IF_SFDC_KIND_REQ_SCHOOL_MEAL m = new IF_SFDC_KIND_REQ_SCHOOL_MEAL(false,null);
+        Database.executeBatch(b,1);
+        Database.executeBatch(m,1);
+
+
+        //------------------------------------------------------------------------------------------------------------------
+        List<NaramarketKeyword__mdt> keywordList = [
+            SELECT Keyword__c
+            FROM NaramarketKeyword__mdt
+            WHERE Keyword_Lv__c = 1
+        ];
+        Set<Id> nextBatchLeadSet = new Set<Id>();
+        // 용역조회
+        IF_SFDC_DATA_REQ_NARA_TENDER_INFO_ba b2 = new IF_SFDC_DATA_REQ_NARA_TENDER_INFO_ba(keywordList, 'getBidPblancListInfoServcPPSSrch01', 0, nextBatchLeadSet, null, null);
+        Database.executeBatch(b2, 1);
+        // 외자조회
+        IF_SFDC_DATA_REQ_NARA_TENDER_INFO_ba b3 = new IF_SFDC_DATA_REQ_NARA_TENDER_INFO_ba(keywordList, 'getBidPblancListInfoFrgcptPPSSrch01', 0, nextBatchLeadSet, null, null);
+        Database.executeBatch(b3, 1);
+        // 물품조회
+        IF_SFDC_DATA_REQ_NARA_TENDER_INFO_ba b4 = new IF_SFDC_DATA_REQ_NARA_TENDER_INFO_ba(keywordList, 'getBidPblancListInfoThngPPSSrch01', 0, nextBatchLeadSet, null, null);
+        Database.executeBatch(b4, 1);
+        // 기타조회
+        IF_SFDC_DATA_REQ_NARA_TENDER_INFO_ba b5 = new IF_SFDC_DATA_REQ_NARA_TENDER_INFO_ba(keywordList, 'getBidPblancListInfoEtcPPSSrch01', 0, nextBatchLeadSet, null, null);
+        Database.executeBatch(b5, 1);
+
+
+        // 민간조회
+        IF_SFDC_DATA_REQ_NARA_TENDER_INFO2_ba b6 = new IF_SFDC_DATA_REQ_NARA_TENDER_INFO2_ba(keywordList, 'getPrvtBidPblancListInfoServcPPSSrch', 0, nextBatchLeadSet);
+        IF_SFDC_DATA_REQ_NARA_TENDER_INFO2_ba b7 = new IF_SFDC_DATA_REQ_NARA_TENDER_INFO2_ba(keywordList, 'getPrvtBidPblancListInfoThngPPSSrch', 0, nextBatchLeadSet);
+        IF_SFDC_DATA_REQ_NARA_TENDER_INFO2_ba b8 = new IF_SFDC_DATA_REQ_NARA_TENDER_INFO2_ba(keywordList, 'getPrvtBidPblancListInfoEtcPPSSrch', 0, nextBatchLeadSet);
+    
+        Database.executeBatch(b6, 1);
+        Database.executeBatch(b7, 1);
+        Database.executeBatch(b8, 1);
+        //------------------------------------------------------------------------------------------------------------------
+
+
+
+        */
 
     }
 

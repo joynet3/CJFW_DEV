@@ -293,18 +293,18 @@ global without sharing class IF_SFDC_DATA_REQ_NARA_TENDER_DETAIL {
                                 // leadobj.reNtceYn__c             = item.reNtceYn;
                                 // leadobj.rgstTyNm__c             = item.rgstTyNm;
                                 // leadobj.intrbidYn__c            = item.intrbidYn;
-                                leadobj.bidNtceDt__c            = item.bidNtceDt;
+                                leadObj.bidNtceDt__c            = item.bidNtceDt;
                                 // leadobj.refNo__c                = item.refNo;
                                 // leadobj.ntceInsttCd__c          = item.ntceInsttCd;
                                 // leadobj.ntceInsttNm__c          = item.ntceInsttNm;
                                 // leadobj.exctvNm__c              = item.exctvNm;
                                 // leadobj.cmmnSpldmdAgrmntRcptdocMethd__c     = item.cmmnSpldmdAgrmntRcptdocMethd;
                                 // leadobj.cmmnSpldmdAgrmntClseDt__c           = item.cmmnSpldmdAgrmntClseDt;
-                                leadobj.prdctClsfcLmtYn__c      = item.prdctClsfcLmtYn;
+                                leadObj.prdctClsfcLmtYn__c      = item.prdctClsfcLmtYn;
                                 // leadobj.mnfctYn__c              = item.mnfctYn;
-                                leadobj.totPrdprcNum__c         = item.totPrdprcNum;
-                                leadobj.drwtPrdprcNum__c        = item.drwtPrdprcNum;
-                                leadobj.presmptPrce__c          = item.presmptPrce;             //= item.presmptPrce <> null && item.presmptPrce <> '' ? Decimal.valueOf(item.presmptPrce) : null;
+                                leadObj.totPrdprcNum__c         = item.totPrdprcNum;
+                                leadObj.drwtPrdprcNum__c        = item.drwtPrdprcNum;
+                                leadObj.presmptPrce__c          = item.presmptPrce;             //= item.presmptPrce <> null && item.presmptPrce <> '' ? Decimal.valueOf(item.presmptPrce) : null;
                                 // leadobj.bidPrtcptFeePaymntYn__c = item.bidPrtcptFeePaymntYn;
                                 // leadobj.bidPrtcptFee__c         = item.bidPrtcptFee;
                                 // leadobj.bidGrntymnyPaymntYn__c  = item.bidGrntymnyPaymntYn;
@@ -322,14 +322,14 @@ global without sharing class IF_SFDC_DATA_REQ_NARA_TENDER_DETAIL {
                                 // leadobj.untyNtceNo__c           = item.untyNtceNo;
                                 // leadobj.cmmnSpldmdMethdCd__c    = item.cmmnSpldmdMethdCd;
                                 // leadobj.cmmnSpldmdMethdNm__c    = item.cmmnSpldmdMethdNm;
-                                leadobj.brffcBidprcPermsnYn__c  = item.brffcBidprcPermsnYn;     //= item.brffcBidprcPermsnYn == 'Y' ? true : false;
+                                leadObj.brffcBidprcPermsnYn__c  = item.brffcBidprcPermsnYn;     //= item.brffcBidprcPermsnYn == 'Y' ? true : false;
                                 // leadobj.dsgntCmptYn__c          = item.dsgntCmptYn;
                                 // leadobj.rsrvtnPrceReMkngMthdNm__c = item.rsrvtnPrceReMkngMthdNm;
                                 // leadobj.arsltApplDocRcptMthdNm__c = item.arsltApplDocRcptMthdNm;
                                 // leadobj.arsltApplDocRcptDt__c   = item.arsltApplDocRcptDt;
                                 // leadobj.orderPlanUntyNo__c      = item.orderPlanUntyNo;
                                 // leadobj.sucsfbidLwltRate__c     = item.sucsfbidLwltRate;
-                                leadobj.rgstDt__c               = item.rgstDt;              //= item.rgstDt <> null ? Date.valueOf(item.rgstDt) : null;
+                                leadObj.rgstDt__c               = item.rgstDt;              //= item.rgstDt <> null ? Date.valueOf(item.rgstDt) : null;
                                 // leadobj.bfSpecRgstNo__c         = item.bfSpecRgstNo;
                                 // leadobj.infoBizYn__c            = item.infoBizYn;
                                 // leadobj.sucsfbidMthdCd__c       = item.sucsfbidMthdCd;
@@ -365,7 +365,7 @@ global without sharing class IF_SFDC_DATA_REQ_NARA_TENDER_DETAIL {
                                 // leadobj.d2bMngDmndYear__c       = item.d2bMngDmndYear;
                                 // leadobj.d2bMngDcsnNo__c         = item.d2bMngDcsnNo;
                                 // leadobj.rbidOpengDt__c          = item.rbidOpengDt;
-                                leadobj.VAT__c                  = item.VAT;             //= item.VAT <> null ? Decimal.valueOf(item.VAT) : null;
+                                leadObj.VAT__c                  = item.VAT;             //= item.VAT <> null ? Decimal.valueOf(item.VAT) : null;
                                 // leadobj.indutyVAT__c            = item.indutyVAT;
                                 // leadobj.ntceSpecDocUrl1__c      = item.ntceSpecDocUrl1;
                                 // leadobj.ntceSpecDocUrl2__c      = item.ntceSpecDocUrl2;
@@ -394,6 +394,9 @@ global without sharing class IF_SFDC_DATA_REQ_NARA_TENDER_DETAIL {
                                 // leadobj.chgNtceRsn__c           = item.chgNtceRsn;
 
                                 leadObj.RecordtypeId = d2bRecordId;
+
+                                //2023.10.25 	Year__c 생성년도 추가 (시스템 날짜 사용)
+                                leadObj.Year__c                     = String.valueOf(Date.today().year());
 
                                 leadMap.put(item.d2bMngDmndYear+item.bidNtceNo+item.d2bMngDcsnNo, leadObj);
                             }
@@ -440,18 +443,18 @@ global without sharing class IF_SFDC_DATA_REQ_NARA_TENDER_DETAIL {
                             // leadobj.reNtceYn__c             = item.reNtceYn;
                             // leadobj.rgstTyNm__c             = item.rgstTyNm;
                             // leadobj.intrbidYn__c            = item.intrbidYn;
-                            leadobj.bidNtceDt__c            = item.bidNtceDt;
+                            leadObj.bidNtceDt__c            = item.bidNtceDt;
                             // leadobj.refNo__c                = item.refNo;
                             // leadobj.ntceInsttCd__c          = item.ntceInsttCd;
                             // leadobj.ntceInsttNm__c          = item.ntceInsttNm;
                             // leadobj.exctvNm__c              = item.exctvNm;
                             // leadobj.cmmnSpldmdAgrmntRcptdocMethd__c = item.cmmnSpldmdAgrmntRcptdocMethd;
                             // leadobj.cmmnSpldmdAgrmntClseDt__c = item.cmmnSpldmdAgrmntClseDt;
-                            leadobj.prdctClsfcLmtYn__c      = item.prdctClsfcLmtYn;
+                            leadObj.prdctClsfcLmtYn__c      = item.prdctClsfcLmtYn;
                             //leadobj.mnfctYn__c              = item.mnfctYn;
-                            leadobj.totPrdprcNum__c         = item.totPrdprcNum;
-                            leadobj.drwtPrdprcNum__c        = item.drwtPrdprcNum;
-                            leadobj.presmptPrce__c          = item.presmptPrce; //= item.presmptPrce <> null  && item.presmptPrce <> '' ? Decimal.valueOf(item.presmptPrce) : null;
+                            leadObj.totPrdprcNum__c         = item.totPrdprcNum;
+                            leadObj.drwtPrdprcNum__c        = item.drwtPrdprcNum;
+                            leadObj.presmptPrce__c          = item.presmptPrce; //= item.presmptPrce <> null  && item.presmptPrce <> '' ? Decimal.valueOf(item.presmptPrce) : null;
                             // leadobj.bidPrtcptFeePaymntYn__c = item.bidPrtcptFeePaymntYn;
                             // leadobj.bidPrtcptFee__c         = item.bidPrtcptFee;
                             // leadobj.bidGrntymnyPaymntYn__c  = item.bidGrntymnyPaymntYn;
@@ -468,14 +471,14 @@ global without sharing class IF_SFDC_DATA_REQ_NARA_TENDER_DETAIL {
                             // leadobj.untyNtceNo__c           = item.untyNtceNo;
                             // leadobj.cmmnSpldmdMethdCd__c    = item.cmmnSpldmdMethdCd;
                             // leadobj.cmmnSpldmdMethdNm__c    = item.cmmnSpldmdMethdNm;
-                            leadobj.brffcBidprcPermsnYn__c  = item.brffcBidprcPermsnYn;     //= item.brffcBidprcPermsnYn == 'Y' ? true : false;
+                            leadObj.brffcBidprcPermsnYn__c  = item.brffcBidprcPermsnYn;     //= item.brffcBidprcPermsnYn == 'Y' ? true : false;
                             // leadobj.dsgntCmptYn__c          = item.dsgntCmptYn;
                             // leadobj.rsrvtnPrceReMkngMthdNm__c = item.rsrvtnPrceReMkngMthdNm;
                             // leadobj.arsltApplDocRcptMthdNm__c = item.arsltApplDocRcptMthdNm;
                             // leadobj.arsltApplDocRcptDt__c   = item.arsltApplDocRcptDt;
                             // leadobj.orderPlanUntyNo__c      = item.orderPlanUntyNo;
                             // leadobj.sucsfbidLwltRate__c     = item.sucsfbidLwltRate;
-                            leadobj.rgstDt__c               = item.rgstDt;                  //= item.rgstDt <> null ? Date.valueOf(item.rgstDt) : null;
+                            leadObj.rgstDt__c               = item.rgstDt;                  //= item.rgstDt <> null ? Date.valueOf(item.rgstDt) : null;
                             // leadobj.bfSpecRgstNo__c         = item.bfSpecRgstNo;
                             // leadobj.infoBizYn__c            = item.infoBizYn;
                             // leadobj.sucsfbidMthdCd__c       = item.sucsfbidMthdCd;
@@ -510,7 +513,7 @@ global without sharing class IF_SFDC_DATA_REQ_NARA_TENDER_DETAIL {
                             // leadobj.d2bMngDmndYear__c       = item.d2bMngDmndYear;
                             // leadobj.d2bMngDcsnNo__c         = item.d2bMngDcsnNo;
                             // leadobj.rbidOpengDt__c          = item.rbidOpengDt;
-                            leadobj.VAT__c                  = item.VAT;                     //= item.VAT <> null && item.VAT <> '' ? Decimal.valueOf(item.VAT) : null;
+                            leadObj.VAT__c                  = item.VAT;                     //= item.VAT <> null && item.VAT <> '' ? Decimal.valueOf(item.VAT) : null;
                             // leadobj.indutyVAT__c            = item.indutyVAT;
                             // leadobj.ntceSpecDocUrl1__c      = item.ntceSpecDocUrl1;
                             // leadobj.ntceSpecDocUrl2__c      = item.ntceSpecDocUrl2;
@@ -538,6 +541,9 @@ global without sharing class IF_SFDC_DATA_REQ_NARA_TENDER_DETAIL {
                             // leadobj.d2bMngStdIndstryClsfcCdList__c = item.d2bMngStdIndstryClsfcCdList;
                             // leadobj.chgNtceRsn__c           = item.chgNtceRsn;
                             leadObj.RecordtypeId            = naraRecordId;
+
+                            //2023.10.25 	Year__c 생성년도 추가 (시스템 날짜 사용)
+                            leadObj.Year__c                     = String.valueOf(Date.today().year());
                             
                             leadMap.put(item.bidNtceNo, leadObj);
                         }
