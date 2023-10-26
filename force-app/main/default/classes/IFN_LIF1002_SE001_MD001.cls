@@ -26,9 +26,6 @@ public class IFN_LIF1002_SE001_MD001 {
 
         this.logWrap = new IFN_CommonLog.logWrap(this.interfaceId, 'Real');
         this.commlog = new IFN_CommonLog();
-
-
-        
       
         try {
             
