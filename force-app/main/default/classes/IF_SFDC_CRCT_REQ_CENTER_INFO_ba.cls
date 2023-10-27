@@ -113,7 +113,11 @@ global with sharing class IF_SFDC_CRCT_REQ_CENTER_INFO_ba implements Database.Ba
                             CJFW_PublicBiddingInformation__c objLead = new CJFW_PublicBiddingInformation__c();
             
                             // objLead.BidNoticeSource__c = '어린이집 정보 공개 포털';
-                            objLead.Name                    = obj.CRREPNAME <> null && obj.CRREPNAME <> '' ? obj.CRREPNAME : obj.crname;
+                            
+                            //2023.10.26 - 공식 반대로 함.
+                            //objLead.Name                    = obj.CRREPNAME <> null && obj.CRREPNAME <> '' ? obj.CRREPNAME : obj.crname;
+                            objLead.Name                    = obj.crname <> null && obj.crname <> '' ? obj.crname : obj.CRREPNAME;
+                            
                             //objLead.Status = 'New';
                             //objLead.Company = obj.crname;
                             objLead.Location__Latitude__s   = obj.la <> null && obj.la <> '' ? Decimal.valueOf(obj.la) : null;
@@ -163,9 +167,12 @@ global with sharing class IF_SFDC_CRCT_REQ_CENTER_INFO_ba implements Database.Ba
             LogWrapper.resultMessage = strMessage;
             LogWrapper.responseTime = Datetime.now();
             
-            IFUtil objIF = new IFUtil('IF_SFDC_CRCT_REQ_CENTER_INFO');
-            objIF.setLog(LogWrapper);
+            //IFUtil objIF = new IFUtil('IF_SFDC_CRCT_REQ_CENTER_INFO');
+            //objIF.setLog(LogWrapper);
         }
+        //2023.10.26 모든 동작에서 log 쌓기
+        IFUtil objIF = new IFUtil('IF_SFDC_CRCT_REQ_CENTER_INFO');
+        objIF.setLog(LogWrapper);
     }
 
     /***********************************************************************************************************

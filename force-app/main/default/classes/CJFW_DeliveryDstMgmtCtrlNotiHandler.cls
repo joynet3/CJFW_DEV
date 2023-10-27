@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : yejoo.lee@dkbmc.com
  * @group             : 
- * @last modified on  : 10-26-2023
+ * @last modified on  : 10-27-2023
  * @last modified by  : yejoo.lee@dkbmc.com
 **/
 public without sharing class CJFW_DeliveryDstMgmtCtrlNotiHandler extends NotiHandler{
@@ -207,15 +207,17 @@ public without sharing class CJFW_DeliveryDstMgmtCtrlNotiHandler extends NotiHan
                 '5' => mgmt.FM_MA__c,
                 '6' => mgmt.TotalSize__c,
                 '7' => String.valueOf(mgmt.InitialDate__c),
-                '8' => mgmt.InitialRequestTime__c,
-                '9' => mgmt.InitialRequestAfterTime__c,
+                '8-1' => mgmt.InitialRequestStartTime__c,
+                '8-2' => mgmt.InitialRequestEndTime__c,
+                '9-1' => mgmt.InitialRequestAfterStartTime__c,
+                '9-2' => mgmt.InitialRequestAfterEndTime__c,
                 '10' => mgmt.Key__c,
                 '11' => mgmt.InspectionYN__c,
                 '12' => mgmt.Inspector__c,
                 // '13' => imgUrlMap.get(mgmt.Id),//사진파일
                 '13' => modifiedRichText,//사진파일
                 '14' => mgmt.DeliveryLocation__c,
-                '15' => mgmt.LoadingInfo__c,
+                // '15' => mgmt.LoadingInfo__c, //--> *적재방법 및 장소(사진 첨부)
                 '16' => mgmt.Condition__c,
                 '17' => mgmt.ReturnLocation__c,
                 '18' => mgmt.AllowedVehicle__c,

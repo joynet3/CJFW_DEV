@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 10-10-2023
+ * @last modified on  : 10-27-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -32,6 +32,7 @@ public with sharing class CJFW_MDMReferenceCreateController {
         String S_SELECT = '';
         S_SELECT  ='  SELECT ' 
                   +'  id '
+                  +' ,tolabel(CustomerType__c) CustomerType '
                   +' ,CustomerID__c ' 
                   +' ,Name ' 
                   +' ,CompanyRegisterNumber__c ' 
@@ -64,7 +65,6 @@ public with sharing class CJFW_MDMReferenceCreateController {
                 S_WHERE += ' AND Owner.Name Like :pSearchManagerMA' ;
             }
         }
-
         //String S_ORDER  = ' ORDER BY NAME ASC '; //나중에 검색 조건이 생기면 그때 추가 할 예정임
         
         String S_LIMITS = ' ';
@@ -80,6 +80,7 @@ public with sharing class CJFW_MDMReferenceCreateController {
     public class DataWrapper { 
         @AuraEnabled public String id{get;set;}                    // Account Object Id 
         @AuraEnabled public String customerID{get;set;}            // 고객ID 
+        @AuraEnabled public String customerType{get;set;}          // 고객유형 
         @AuraEnabled public String name{get;set;}                  // 고객명(영문명포함) 
         @AuraEnabled public String companyRegisterNumber{get;set;} // 사업자등록번호 
         @AuraEnabled public String fm_SalesGroup{get;set;}         // 영업그룹 
@@ -95,6 +96,7 @@ public with sharing class CJFW_MDMReferenceCreateController {
         public DataWrapper(Account acc) {
             this.id                     = acc.Id;
             this.customerID             = acc.CustomerID__c;
+            this.customerType           = acc.CustomerType__c;
             this.name                   = acc.Name;
             this.companyRegisterNumber  = acc.CompanyRegisterNumber__c;
             this.fm_SalesGroup          = acc.fm_SalesGroup__c;

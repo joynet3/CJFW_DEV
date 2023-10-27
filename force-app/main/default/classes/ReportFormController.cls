@@ -98,9 +98,15 @@ public with sharing class ReportFormController {
 
     String pageReferenceString = ApexPages.currentPage().getUrl();
     String searchString = '/apex/CJFW_OrderConsiderNewForm_TEST';
+    String testTwo = '/apex/CJFW_OrderConsiderReContractForm_TEST';
 
-    // 테스트용  CJFW_OrderConsiderNewForm_TEST 
+    // 테스트용 (삭제예정)
     if (pageReferenceString.contains(searchString)) {
+        opportunityId = '0060w00000D8uikAAB';
+        incomeExpensesId ='a1l0w000001MmAMAA0';
+        showtable ='false';
+        reportType = '외식SU';
+    }else if(pageReferenceString.contains(testTwo)){
         opportunityId = '0060w00000D8uikAAB';
         incomeExpensesId ='a1l0w000001MmAMAA0';
         showtable ='false';
@@ -828,10 +834,10 @@ public with sharing class ReportFormController {
             if (dataMap.containsKey('ProfitRateGen')) { // 범용 매익률(지급후)
                 expectIncome.ProfitRateGeneral__c = convertToDecimal(dataMap.get('ProfitRateGen'));
             }
-            if (dataMap.containsKey('selectedDelivery')) { // 범용 매익률(지급후)
-                System.debug(' check  ' + dataMap.containsKey('selectedDelivery') );
-                //expectIncome.DeliveryCnt__c = convertToDecimal(dataMap.get('selectedDelivery'));
-                //expectIncome.DeliveryCnt__c = (String)dataMap.get('selectedDelivery'); // 결제수단 종류
+            if (dataMap.containsKey('selectedDelivery')) { // 배송횟수
+                System.debug(' 배송 횟수  ' + dataMap.get('selectedDelivery') );
+                //expectIncome.DeliveryCnt__c = dataMap.get('selectedDelivery');
+                expectIncome.DeliveryCnt__c = (String)dataMap.get('selectedDelivery'); // 결제수단 종류
             }
 
 

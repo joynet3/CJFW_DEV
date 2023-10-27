@@ -169,7 +169,6 @@ global with sharing class COMM_ReportTestDataFactory {
             Opportunity__c = OpportunityId
             , Version__c = 1    // 필수값
             , IsReportCheck__c = false  // 필수값
-           
         );
         return ExIncome;
     }

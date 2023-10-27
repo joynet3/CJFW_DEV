@@ -2,15 +2,14 @@
  * @description       : 
  * @author            : seol.kim@dkbmc.com
  * @group             : 
- * @last modified on  : 10-26-2023
+ * @last modified on  : 10-27-2023
  * @last modified by  : seol.kim@dkbmc.com
 **/
 
 @isTest
 public class CJFW_CategoryFileController_test {
-    @isTest
+    @TestSetup
     static void makeData(){
-
         Account acc = new Account(
             Name = 'acc'
         );
@@ -27,29 +26,67 @@ public class CJFW_CategoryFileController_test {
 
     
         ContentVersion cv = new ContentVersion(
-            Title = 'test',
-            Category__c = '계약 참고자료',
-            VersionData = Blob.valueOf('Test Content')
+            Title = 'Penguins',
+            PathOnClient = 'Penguins.jpg',
+            VersionData = Blob.valueOf('Test Content'),
+            IsMajorVersion = true
         );
         insert cv;
 
+    }
+    @isTest
+    public static void test() {
+        
+        // 테스트 데이터 생성
+        String category = '계약 참고자료';
+        String otherCategory = '파일';
+        
+        Id recordId = [SELECT Id FROM Opportunity Limit 1].Id; 
+        // Id cdlId = [SELECT Id FROM ContentDocumentLink LIMIT 1].Id;    
+        String searchTerm = 'SearchTerm1';
+        String searchNull = null;
+        String cdId = [SELECT Id FROM ContentDocument LIMIT 1].Id;    
+        
+        
+        // contentVersionsToUpdate 리스트를 JSON 형식으로 변환
+        
+        List<ContentVersion> contentVersionsToUpdate = new List<ContentVersion>();
+        List<Object> jsonContentVersions = new List<Object>();
+        for (ContentVersion cvList : contentVersionsToUpdate) {
+            Map<String, Object> cvMap = new Map<String, Object>();
+            cvMap.put(cvList.Category__c, cvList.Id);
+            jsonContentVersions.add(cvMap);
+        }
+        String uploadedFilesJson = JSON.serialize(jsonContentVersions);
+        
 
-        // List<ContentVersion> cvList = [SELECT Id, Title, ContentDocumentId FROM ContentVersion WHERE Id = :cv.Id];
-        // System.assertEquals(cvList.size(), 1);
-        // system.debug('ContentVersionID : ' + cvList[0].Id);
+        // // 1. 업데이트할 ContentVersion 레코드 데이터 설정
+        // List<Map<String, Object>> uploadedFiles = new List<Map<String, Object>>();
+        // Map<String, Object> data = new Map<String, Object>();
+        
+        // // @TestSetup 메서드에서 생성한 데이터를 가져옴
+        // ContentVersion cv = [SELECT Id FROM ContentVersion LIMIT 1];
+        // data.put('contentVersionId', cv.Id);
+        // uploadedFiles.add(data);
+        // String uploadedFilesJson = JSON.serialize(uploadedFiles);
 
-        // ContentDocumentLink cdl = New ContentDocumentLink();
-        // cdl.LinkedEntityId = opp.id;
-        // cdl.ContentDocumentId = cvList[0].ContentDocumentId;
-        // insert cdl;  
-        // System.assertEquals(cdl.ContentDocumentId,cvList[0].ContentDocumentId);
 
-        // test.startTest();
-        // Map<ID, String>  mapContentVersion = CJFW_CategoryFileController.getFileList('계약 참고자료', opp.Id, 'Test');
-        // test.stopTest();
-        // system.debug('mapContentVersion : ' +mapContentVersion.values());
-        // string mapTitle = mapContentVersion.values()[0];
-        //  System.assertEquals(mapTitle ,'Test Document');
 
+        Test.startTest();
+            
+            CJFW_CategoryFileController.getFileList(category, recordId, searchTerm);
+            CJFW_CategoryFileController.getFileList(category, recordId, searchNull);
+            CJFW_CategoryFileController.getFileList(otherCategory, recordId, searchTerm);
+            CJFW_CategoryFileController.getFileList(otherCategory, recordId, searchNull);
+
+            CJFW_CategoryFileController.deleteFile(cdId);
+            CJFW_CategoryFileController.updateContentVersion(uploadedFilesJson, category);
+
+
+
+        Test.stopTest();
+
+
+    
     }
 }

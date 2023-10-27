@@ -699,7 +699,12 @@ public with sharing class OrderConsiderReContractFormController {
     */
     public static Decimal convertToDecimal(Object objValue) {  
         Decimal decimalValue = 0.00; // 기본값 설정
-    
+        
+        // 입력값이 3자리이상일 경우 1,234 숫자사이에 있는 반점 제거 
+        String changeStr = (String)objValue;
+        objValue = changeStr.replace(',', '');
+        
+
         if (objValue != null || objValue != '') {
             if (objValue instanceof Decimal) {
                 decimalValue = (Decimal)objValue;

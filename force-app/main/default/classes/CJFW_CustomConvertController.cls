@@ -2,32 +2,41 @@
  * @description       : 
  * @author            : yejoo.lee@dkbmc.com
  * @group             : 
- * @last modified on  : 10-25-2023
+ * @last modified on  : 10-26-2023
  * @last modified by  : yejoo.lee@dkbmc.com
 **/
 public with sharing class CJFW_CustomConvertController {
 
-    @AuraEnabled(cacheable=true)
-    public static String getSessionId() {
-        return UserInfo.getSessionId();
+    // @AuraEnabled(cacheable=true)
+    // public static String getSessionId() {
+    //     return UserInfo.getSessionId();
+    // }
+
+    public static MetadataService.MetadataPort createService() {
+        MetadataService.MetadataPort service = new MetadataService.MetadataPort();
+        service.SessionHeader = new MetadataService.SessionHeader_element();
+        service.SessionHeader.sessionId = UserInfo.getSessionId();
+        return service;
     }
     
     @AuraEnabled
-    public static Map<String,Object> convert(Map<String, Map<String,Object>> convertInfo, String recordId, String sessionId){
+    public static Map<String,Object> convert(Map<String, Map<String,Object>> convertInfo, String recordId){
         Map<String,Object> resultMap = new  Map<String,Object>();
         
-        resultMap.put('sessionId', sessionId);
+        // resultMap.put('sessionId', sessionId);
 
         //Lead Convert Info
         Map<String, String> accountMappingField = new Map<String, String>();
         Map<String, String> contactMappingField = new Map<String, String>();
         Map<String, String> opportunityMappingField = new Map<String, String>();
         
-        MetadataService.MetadataPort service = new MetadataService.MetadataPort();
-        service.SessionHeader = new MetadataService.SessionHeader_element();
-        service.SessionHeader.sessionId = sessionId;
-        service.CallOptions = new MetadataService.CallOptions_element();
-        service.timeout_x = 120000;
+        // MetadataService.MetadataPort service = new MetadataService.MetadataPort();
+        // service.SessionHeader = new MetadataService.SessionHeader_element();
+        // service.SessionHeader.sessionId = UserInfo.getSessionId();
+        // service.CallOptions = new MetadataService.CallOptions_element();
+        // service.timeout_x = 120000;
+
+        MetadataService.MetadataPort service = createService();
         
         List<MetadataService.LeadConvertSettings> leadConvertSettings = (List<MetadataService.LeadConvertSettings>) service.readMetadata('LeadConvertSettings', new List<String>{'LeadConvertSettings'}).getRecords();
         

@@ -2,20 +2,21 @@
  * @description       : 
  * @author            : jieun.lee3@dkbmc.com
  * @group             : 
- * @last modified on  : 10-25-2023
+ * @last modified on  : 10-26-2023
  * @last modified by  : jieun.lee3@dkbmc.com
 **/
 public with sharing class CJFW_SelectReportTypeController {
 
     /*
-     * Oppty Obj에서 유형 가져오기
+     * cjfwChooseReportTypeModal lwc에서 사용 
+     * Oppty Obj에서 유형, 본부 가져오기
      */
     @AuraEnabled
     public static List<Opportunity> getOpptyType(String Id) {
         try {
             System.debug('Id = ' + Id);
             List<Opportunity> typeData = [
-                SELECT Id, Type
+                SELECT Id, Type, Owner.HeadOffice__c
                 FROM Opportunity
                 WHERE Id =: Id 
             ];

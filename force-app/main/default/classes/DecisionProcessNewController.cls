@@ -31,11 +31,11 @@ public without sharing class DecisionProcessNewController {
     }
 
     /**
-     * FS 사용자 여부에 따른 picklist 구분
+     * FS 사용자의 경우와 General의 경우, General일 경우 본부(외식(신규), 외식(재계약), 급식SU)  picklist 다르게 설정
      */
     @AuraEnabled
     public static List<Opportunity> getOwner(Id recordId, Opportunity objOpportunity){
-        try {List<Opportunity> listOwner = [SELECT Id, RecordType.name , StageName
+        try {List<Opportunity> listOwner = [SELECT Id, RecordType.name , Owner.HeadOffice__c, Type
                                             FROM Opportunity
                                             WHERE Id=:recordId];
             
@@ -55,6 +55,9 @@ public without sharing class DecisionProcessNewController {
     **/
     @AuraEnabled
     public static void doSave(Id recordId, DecisionProcess__c objDecisionProcess) {
+        
+        System.debug('=================================연결 됬나용??!!?!?!?!?!?!?!');
+
         Boolean isIFError = false;
         try {
             String DocType = objDecisionProcess.Type__c; 
