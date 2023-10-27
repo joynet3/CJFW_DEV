@@ -2,8 +2,8 @@
  * @description       : 
  * @author            : seol.kim@dkbmc.com
  * @group             : 
- * @last modified on  : 10-26-2023
- * @last modified by  : yejoo.lee@dkbmc.com
+ * @last modified on  : 10-27-2023
+ * @last modified by  : seol.kim@dkbmc.com
 **/
 public with sharing class CJFW_CategoryFileController {
     @AuraEnabled
@@ -38,7 +38,7 @@ public with sharing class CJFW_CategoryFileController {
                 System.debug('검색어 있을때 : ' + searchTerm);
 
                 if (category == '계약 참고자료') {
-                    contentDocumentLinkQuery += ' WHERE LinkedEntityId IN (SELECT Id FROM Opportunity) ';
+                    contentDocumentLinkQuery += ' WHERE LinkedEntityId IN (SELECT Id FROM CollaborationGroupMember) ';
                     List<ContentDocumentLink> ContentDocumentLinkList = Database.query(contentDocumentLinkQuery);
                     System.debug('쿼리실행 ==> ' + ContentDocumentLinkList);    
     
@@ -147,7 +147,9 @@ public with sharing class CJFW_CategoryFileController {
             update contentVersionsToUpdate;
             
         } catch (Exception e) {
-            throw new AuraHandledException(e.getMessage());
+
+            System.debug('에러 메시지: ' + e.getMessage());
+           System.debug('에러 라인: ' + e.getStackTraceString());
         }
     }
 

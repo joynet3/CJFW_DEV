@@ -449,7 +449,12 @@ public with sharing class QuoteSendEmailController {
                 message.setHtmlBody(contentBody);
                 message.setTargetObjectId(listContactId[0]);        //Contact Id (User는 Activity 추적 X)
                 message.setWhatId(recordId);                        //관련 Object Id
-                message.setSaveAsActivity(true);             //Activity 추가 지정
+                message.setSaveAsActivity(true);                    //Activity 추가 지정
+                
+                //일반사용자 Test
+                // String currEmail = UserInfo.getUserEmail();
+                // message.setReplyTo(currEmail);
+                // message.setSenderDisplayName(currEmail);
 
                 System.debug('message >>> ' + message);
 

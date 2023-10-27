@@ -92,17 +92,9 @@ global with sharing class IF_SFDC_CRCT_REQ_CENTER_INFO_ba implements Database.Ba
                     LogWrapper.responseBody = res.getBody();
 
                     System.debug('=========================> 1');
-                    //String strJSON = XMLParser.xmlToJson(res.getBody());
-                    XMLSerializer XMLObj = new XMLSerializer();
-                    String strJSON = XMLObj.XMLToJSON(res.getBody());
-
-                    if(strJSON.contains(',""')) {
-                        strJSON = strJSON.replaceAll(',""', '');
-                    }
-                    System.debug('===========> strJSON : '+strJSON);
-                    System.debug('=========================> 2');                
+                    String strJSON = XMLParser.xmlToJson(res.getBody());
+                    
                     IF_SFDC_CRCT_REQ_CENTER_INFO_sc.Input input = (IF_SFDC_CRCT_REQ_CENTER_INFO_sc.Input) JSON.deserialize(strJSON, IF_SFDC_CRCT_REQ_CENTER_INFO_sc.Input.class);
-                    System.debug('=========================> 3');
                     Id recordId = Schema.SObjectType.CJFW_PublicBiddingInformation__c.getRecordTypeInfosByDeveloperName().get('ChildCenter').getRecordTypeId();
 
                     IF_SFDC_CRCT_REQ_CENTER_INFO_sc.Res inputRes = input.response;
@@ -110,6 +102,7 @@ global with sharing class IF_SFDC_CRCT_REQ_CENTER_INFO_ba implements Database.Ba
                     if(inputRes <> null && inputRes.item <> null && inputRes.item.size() > 0) {
                         for (IF_SFDC_CRCT_REQ_CENTER_INFO_sc.Items obj : input.response.item) {
                             
+                            System.debug('=========================> 4 sancho obj');
                             CJFW_PublicBiddingInformation__c objLead = new CJFW_PublicBiddingInformation__c();
             
                             // objLead.BidNoticeSource__c = '어린이집 정보 공개 포털';
@@ -161,18 +154,17 @@ global with sharing class IF_SFDC_CRCT_REQ_CENTER_INFO_ba implements Database.Ba
             System.debug('=================> URL  : '+ifMasterObj.EndPoint__c + getParameter);
         }
 
-        if(strStatus == 'ERROR') {
+        //if(strStatus == 'ERROR') {
             LogWrapper.status = strStatus;
             LogWrapper.resultCode = strCode;
             LogWrapper.resultMessage = strMessage;
             LogWrapper.responseTime = Datetime.now();
             
-            //IFUtil objIF = new IFUtil('IF_SFDC_CRCT_REQ_CENTER_INFO');
-            //objIF.setLog(LogWrapper);
-        }
+            IFUtil objIF = new IFUtil('IF_SFDC_CRCT_REQ_CENTER_INFO');
+            objIF.setLog(LogWrapper);
+        //}
         //2023.10.26 모든 동작에서 log 쌓기
-        IFUtil objIF = new IFUtil('IF_SFDC_CRCT_REQ_CENTER_INFO');
-        objIF.setLog(LogWrapper);
+        
     }
 
     /***********************************************************************************************************

@@ -2,7 +2,7 @@
  * @description       : 배송처 관리 (작성 완료시 이메일 발송)
  * @author            : yejoo.lee@dkbmc.com
  * @group             : 
- * @last modified on  : 10-26-2023
+ * @last modified on  : 10-27-2023
  * @last modified by  : yejoo.lee@dkbmc.com
  * @since 2023-10-11  내용 작성
 **/
@@ -28,12 +28,8 @@ public with sharing class CJFW_DeliveryDstMgmtController {
                         +  ' FROM CJFW_DeliveryDestinationMgmt__c '
                         +  ' WHERE Id =:recordId ';
 
-            
-
             // System.debug('query :: ' + query);
             List<CJFW_DeliveryDestinationMgmt__c> scope = Database.query(query);
-
-            
 
             // CJFW_DeliveryDstMgmtCtrlNotiHandler 에서 가공 -> Dyanamic 으로 변경 23-10-23
             Map<String,Object> emailResult = NotificationManager.getInstance()

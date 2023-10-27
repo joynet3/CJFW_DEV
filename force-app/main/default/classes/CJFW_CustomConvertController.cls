@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : yejoo.lee@dkbmc.com
  * @group             : 
- * @last modified on  : 10-26-2023
+ * @last modified on  : 10-27-2023
  * @last modified by  : yejoo.lee@dkbmc.com
 **/
 public with sharing class CJFW_CustomConvertController {
@@ -12,13 +12,35 @@ public with sharing class CJFW_CustomConvertController {
     //     return UserInfo.getSessionId();
     // }
 
-    public static MetadataService.MetadataPort createService() {
+    public static MetadataService.MetadataPort createService(){
         MetadataService.MetadataPort service = new MetadataService.MetadataPort();
         service.SessionHeader = new MetadataService.SessionHeader_element();
-        service.SessionHeader.sessionId = UserInfo.getSessionId();
+        //service.SessionHeader.sessionId = UserInfo.getSessionId();
+        service.SessionHeader.sessionId = getSessionForLightning.getSession();
         return service;
     }
     
+    // public static createObj(String objectName, Map<String,String> mappingField){
+    //     SObjectType objType = Schema.getGlobalDescribe().get(objectName);
+    //     map<String, Schema.SObjectField> fieldMap = objType.getDescribe().fields.getMap();
+    
+    //     for(Integer i = 0; i < cnt; i++){
+    //         Schema.SObjectField field = fieldMap.get(fields[i]);
+    //         Schema.DescribeFieldResult fld = field.getDescribe();
+    //         String fieldType = fld.getType().name();
+    //         Boolean useNative = false;
+    //         //if(values[i] == 'null' || values[i] == 'empty' || values[i] == 'true' || values[i] == 'false' /* || values[i].isNumeric() */ )
+    //         if(values[i] == 'null' || values[i] == 'empty' || values[i] == 'true' || values[i] == 'false' 
+    //             || fieldType == 'INTEGER' || fieldType == 'CURRENCY' || fieldType == 'DOUBLE' 
+    //             || fieldType == 'DATE' || fieldType == 'DATETIME' || fieldType == 'BOOLEAN'){
+    //                 useNative = true;
+    //             }
+    //         if(values[i] == 'empty'){ values[i] = '\'\''; } 
+    //         query += ' AND ' + fields[i] + convertOperator(ops[i]) + (useNative ? values[i] : '\'' + values[i] + '\'');
+    //     }
+    // }
+
+
     @AuraEnabled
     public static Map<String,Object> convert(Map<String, Map<String,Object>> convertInfo, String recordId){
         Map<String,Object> resultMap = new  Map<String,Object>();
@@ -26,7 +48,7 @@ public with sharing class CJFW_CustomConvertController {
         // resultMap.put('sessionId', sessionId);
 
         //Lead Convert Info
-        Map<String, String> accountMappingField = new Map<String, String>();
+        Map<String, String> accountMappingField = new Map<String, String>();//Lead->Account
         Map<String, String> contactMappingField = new Map<String, String>();
         Map<String, String> opportunityMappingField = new Map<String, String>();
         
@@ -47,7 +69,7 @@ public with sharing class CJFW_CustomConvertController {
                 for (MetadataService.ObjectMappingField fieldMapping : objectMapping.mappingFields) {
                     // System.debug('\t' + fieldMapping.inputField + ' -> ' + fieldMapping.outputField);
                     if(mappingObject.outputObject == 'Account'){
-                        accountMappingField.put(fieldMapping.inputField, fieldMapping.outputField);
+                        accountMappingField.put(fieldMapping.inputField, fieldMapping.outputField);//LeadFeild -> AccountFeild
                     } else if (mappingObject.outputObject == 'Contact'){
                         contactMappingField.put(fieldMapping.inputField, fieldMapping.outputField);
                     } else if (mappingObject.outputObject == 'Opportunity'){
@@ -84,6 +106,9 @@ public with sharing class CJFW_CustomConvertController {
             String query = ' SELECT '
                         // +     ' Id '
                         +      allFieldString
+                        +       ', ConvertedAccount__r.Name'
+                        +       ', ConvertedContact__r.Name'
+                        +       ', ConvertedOpportunity__r.Name'
                         +  ' FROM ' + sObjectName
                         +  ' WHERE Id =:recordId ';
             // System.debug('query :: ' + query);
@@ -109,7 +134,7 @@ public with sharing class CJFW_CustomConvertController {
             Map<String, Object> updateConvertObj = new Map<String, Object>();
             updateConvertObj.put('Id', convertObj.get('Id'));
             
-            //1. convert Account
+            //1. Account Convert
             Account acc = new Account();
             Map<String,Object> accountConvertInfo = (Map<String,Object>)convertInfo.get('Account');
             Id accRecordTypeId    = [SELECT Id, Name, DeveloperName FROM RecordType WHERE IsActive = true AND SobjectType = 'Account' AND DeveloperName = 'ProspectiveCustomer'].Id;
@@ -117,8 +142,10 @@ public with sharing class CJFW_CustomConvertController {
             if((Boolean)accountConvertInfo.get('convert')){
                 
                 for (String key : accountMappingField.keySet()) {
-                    String value = accountMappingField.get(key);
-                    acc.put(value, convertObj.get(key));
+                    if(fieldNameList.contains(key)){
+                        String value = accountMappingField.get(key);
+                        acc.put(value, convertObj.get(key));
+                    }
                 }
                 
                 if((Boolean)accountConvertInfo.get('create')){
@@ -130,16 +157,19 @@ public with sharing class CJFW_CustomConvertController {
                 
                 acc.put('RecordTypeId', accRecordTypeId);
                 upsert acc;
+                updateConvertObj.put('Account__c', acc.Id);
                 updateConvertObj.put('ConvertedAccount__c', acc.Id);
             }
             
-            //2. convert Contact
+            //2. Contact Convert
             Contact con = new Contact();
             Map<String,Object> contactConvertInfo = (Map<String,Object>)convertInfo.get('Contact');
             if((Boolean)contactConvertInfo.get('convert')){
                 for (String key : contactMappingField.keySet()) {
-                    String value = contactMappingField.get(key);
-                    con.put(value, convertObj.get(key));
+                    if(fieldNameList.contains(key)){
+                        String value = contactMappingField.get(key);
+                        con.put(value, convertObj.get(key));
+                    }
                 }
                 
                 if((Boolean)contactConvertInfo.get('create')){
@@ -155,41 +185,46 @@ public with sharing class CJFW_CustomConvertController {
                 updateConvertObj.put('ConvertedContact__c', con.Id);
             }
             
-            //3. convert Oppty
-            Opportunity opp = new Opportunity();
+            //3. Oppty Convert
+            Map<String, Object> oppMap = new Map<String,Object>();
             Map<String,Object> opptyConvertInfo = (Map<String,Object>)convertInfo.get('Opportunity');
             Id opptyRecordTypeId    = [SELECT Id, Name, DeveloperName FROM RecordType WHERE IsActive = true AND SobjectType = 'Opportunity' AND DeveloperName = 'General'].Id;
 
             if((Boolean)opptyConvertInfo.get('convert')){
                 for (String key : opportunityMappingField.keySet()) {
-                    String value = opportunityMappingField.get(key);
-                    opp.put(value, convertObj.get(key));
+                    if(fieldNameList.contains(key)){
+                        String value = opportunityMappingField.get(key);
+                        oppMap.put(value, convertObj.get(key));
+                    }
                 }
-                opp.put('StageName','Needs Analysis');
-                opp.put('CloseDate',Date.today().addDays(30));//TODO
+                oppMap.put('StageName','Needs Analysis');
+                oppMap.put('CloseDate',Date.today().addDays(30));//TODO
                 
                 if((Boolean)opptyConvertInfo.get('create')){
                     Map<Object,Object> oppfield = (Map<Object,Object>)opptyConvertInfo.get('fields');
-                    opp.put('Name', oppfield.get('Name'));
-                    opp.put('AccountId', acc.Id);
+                    oppMap.put('Name', oppfield.get('Name'));
+                    oppMap.put('AccountId', acc.Id);
                 } else if(!(Boolean)opptyConvertInfo.get('create')){
                     String convertedId = (String)opptyConvertInfo.get('convertedId');
                     updateConvertObj.put('Id',convertedId);
                 }
 
-                opp.put('RecordTypeId', opptyRecordTypeId);
+                oppMap.put('RecordTypeId', opptyRecordTypeId);
+                String jsonStr = JSON.serialize(oppMap);
+                Opportunity opp = (Opportunity)JSON.deserialize(jsonStr, Opportunity.class);
                 upsert opp;
+
                 updateConvertObj.put('ConvertedOpportunity__c', opp.Id);
             }
             
             //if (condition) {
      		//   throw new Exception('예외 발생');
     		//}
-
+            
+            //4. UPDATE updateConvertObj;
             updateConvertObj.put('IsConverted__c',true);
-            //4. update updateConvertObj;
             String jsonStr = JSON.serialize(updateConvertObj);
-			resultMap.put('jsonStr', jsonStr);
+			// resultMap.put('jsonStr', jsonStr);
             // SObject customObject = (SObject)JSON.deserialize(jsonStr, Sobject.class);
             // update customObject;
             if(sObjectName == 'CJFW_BiddingInformation__c') {
@@ -202,7 +237,9 @@ public with sharing class CJFW_CustomConvertController {
             }
             
             resultMap.put('STATUS', 'S');
-			resultMap.put('updateConvertObj', updateConvertObj);
+
+            convertObjList = Database.query(query);
+			resultMap.put('updateConvertObj', convertObjList[0]);
             
             Database.rollback(sp);            
             // resultMap.put('STATUS', 'S');

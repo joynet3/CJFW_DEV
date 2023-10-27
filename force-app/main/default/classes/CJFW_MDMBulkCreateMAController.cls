@@ -2,8 +2,8 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 10-26-2023
- * @last modified by  : hyeeun.song@dkbmc.com
+ * @last modified on  : 10-27-2023
+ * @last modified by  : joohyeon.jang@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkCreateMAController {
 
@@ -77,7 +77,7 @@ public with sharing class CJFW_MDMBulkCreateMAController {
                     mdmContact.PV_TALKT_VK__c           =      String.isBlank(con.PV_TALKT_VK__c) ? null : con.PV_TALKT_VK__c;
                     mdmContact.PV_EMAIL_VK__c           =      String.isBlank(con.PV_EMAIL_VK__c) ? null : con.PV_EMAIL_VK__c;
                     mdmContact.MDMRegRequestCustomer__c =      nameToIdMap.get(con.MDMRegRequestCustomer__c);
-
+                    
                     contactList.add(mdmContact);
                 }
 

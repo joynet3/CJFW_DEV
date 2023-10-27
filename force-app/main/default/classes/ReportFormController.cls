@@ -11,7 +11,7 @@
 
  * @author            : eunyoung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 10-26-2023
+ * @last modified on  : 10-27-2023
  * @last modified by  : eunyoung.choi@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -73,11 +73,19 @@ public with sharing class ReportFormController {
     public String contractStartDate { get; set; } // 계약시작
     public String contractEndDate { get; set; } // 계약종료
 
+
+    //테스트용 
+    public Contact contact { get; set; }
+    public Account account { get; set; }
+    public AccountContactRelation  acr  { get; set; }
+    public Opportunity  opportunity  { get; set; }
+
     /* 
     컨트롤러가 호출되면 돌아가는 부분 
     순서 잘 맞추기
     */
     public ReportFormController() {
+
         getPicklistValues(); // picklist label/value 값 담기 [1]
         getAccountInfo();    // 고객사 정보 가져오기 [2]
         getIncomeExpenses(); // 신규개설품의 obj 값 가져오기 [3]
@@ -85,7 +93,12 @@ public with sharing class ReportFormController {
         getDistributeCost(); // 물류비관리 값 가져오기 [5]
 
     }
+/*     public void AccountExt(ApexPages.StandardController controller) {
+        Account = new Account();
+    } */
 
+
+    
     /* 
     Oppty 에 있는 Account 값을 가져오는 메소드
     */
@@ -265,6 +278,8 @@ public with sharing class ReportFormController {
             'Center__c, ' +  
             'IncentiveSupport__c, ' +
             'ImprovementPlanDetails__c, ' +
+            'KeyMan__c, ' +             //키맨    
+
             'OtherSupportDetail__c, ' + // 기타 지원세부 내역
             'AttachedDocument__c, ' + // 첨부서류
             'OpptyDescription__c, ' + // 특이사항

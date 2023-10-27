@@ -2,7 +2,7 @@
  * @description       : 관리처-분할 Controller
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 10-26-2023
+ * @last modified on  : 10-27-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -824,7 +824,7 @@ public with sharing class CJFW_MDMManagementController {
         String MDMRecordTypeId = '';                        // MDMRegRequestCustomer__c의 '관리처' RecordId
         String strObjectType = 'Account';  // object api명
         String recordTypeName = 'MDMManagement';            // recordType api명
-
+        
         Id recordIdEx = Schema.SObjectType.MDMRegRequestCustomer__c.getRecordTypeInfosByDeveloperName().get(recordTypeName).getRecordTypeId();
         system.debug('### CJFW_MDMManagementController.getAccountReferenceInfo())');
         system.debug('>>> accountId ' + accountId);
@@ -884,6 +884,9 @@ public with sharing class CJFW_MDMManagementController {
                                             FROM Account 
                                         WHERE Id =: accountId 
                                         LIMIT 1];
+
+            system.debug('accountList ' + json.serialize(accountList[0].customerType__c));
+
             // 오늘날짜 
             objWrapper.todayDate = Date.today();                                    
 

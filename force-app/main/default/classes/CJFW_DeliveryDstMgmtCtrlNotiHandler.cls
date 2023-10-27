@@ -229,7 +229,7 @@ public without sharing class CJFW_DeliveryDstMgmtCtrlNotiHandler extends NotiHan
 
             // emailTemplate.setIsTargetObjectId(true);
             emailTemplate.setIsSaveAsActivity(true);//Acticity 기록
-            emailTemplate.setIsUseOWE(true);//??
+            // emailTemplate.setIsUseOWE(true);//??
             emailTemplate.setTargetId(mgmt.Id);
 
             emailTemplate.setAttachmentIds(attachmentMap.get(mgmt.Id));//첨부파일

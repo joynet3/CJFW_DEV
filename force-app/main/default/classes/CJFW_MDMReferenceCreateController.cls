@@ -15,9 +15,9 @@ public with sharing class CJFW_MDMReferenceCreateController {
      * @return      `String`
      */ 
     @AuraEnabled
-    public static List<DataWrapper> doSearch(String customerId, String customerName, String managerMA){
+    public static List<DataWrapper> doSearch(String customerId, String customerName, String managerMA, String customerType){
         List<DataWrapper> result = new List<DataWrapper>();
-        List<Account>    accList = doSelect(customerId, customerName, managerMA);
+        List<Account>    accList = doSelect(customerId, customerName, managerMA, customerType);
 
         if(!AccList.isEmpty()){
             for(Account acc : accList){
@@ -28,11 +28,16 @@ public with sharing class CJFW_MDMReferenceCreateController {
     }
 
     // 기본조회
-    public static List<Account> doSelect(String customerId, String customerName, String managerMA ){
+    public static List<Account> doSelect(String customerId, String customerName, String managerMA, String customerType){
+        system.debug('customerId '   + customerId);
+        system.debug('customerName ' + customerName);
+        system.debug('managerMA '    + managerMA);
+        system.debug('customerType ' + customerType);
+    
         String S_SELECT = '';
         S_SELECT  ='  SELECT ' 
                   +'  id '
-                  +' ,tolabel(CustomerType__c) CustomerType '
+                  +' ,CustomerType__c '
                   +' ,CustomerID__c ' 
                   +' ,Name ' 
                   +' ,CompanyRegisterNumber__c ' 
@@ -46,7 +51,8 @@ public with sharing class CJFW_MDMReferenceCreateController {
                   +' ,DisHisRegType__c ' 
                   +' FROM Account ';
             
-        String S_WHERE  = ' WHERE CustomerID__c != null';
+        String S_WHERE  = ' WHERE   CustomerType__c IN ( \'' + customerType + '\' ) AND CustomerId__c != NULL ';
+
         system.debug('doSearch');
 
         if(String.isNotBlank(customerId) || String.isNotBlank(customerName) || String.isNotBlank(managerMA)){
@@ -81,7 +87,7 @@ public with sharing class CJFW_MDMReferenceCreateController {
         @AuraEnabled public String id{get;set;}                    // Account Object Id 
         @AuraEnabled public String customerID{get;set;}            // 고객ID 
         @AuraEnabled public String customerType{get;set;}          // 고객유형 
-        @AuraEnabled public String name{get;set;}                  // 고객명(영문명포함) 
+        @AuraEnabled public String name{get;set;}                  // 고객명(영문명포함) z
         @AuraEnabled public String companyRegisterNumber{get;set;} // 사업자등록번호 
         @AuraEnabled public String fm_SalesGroup{get;set;}         // 영업그룹 
         @AuraEnabled public String customerRoute{get;set;}         // 고객분류 
@@ -94,6 +100,7 @@ public with sharing class CJFW_MDMReferenceCreateController {
 
         public DataWrapper(){}
         public DataWrapper(Account acc) {
+            system.debug('acc ' + acc);
             this.id                     = acc.Id;
             this.customerID             = acc.CustomerID__c;
             this.customerType           = acc.CustomerType__c;
