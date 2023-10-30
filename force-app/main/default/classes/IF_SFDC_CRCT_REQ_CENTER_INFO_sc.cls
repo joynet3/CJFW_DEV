@@ -15,10 +15,10 @@ global with sharing class IF_SFDC_CRCT_REQ_CENTER_INFO_sc implements Schedulable
 
         /*
         //11350 : 노원구 - 건수만은거 샘플 1.6메가
-
         //List<String> failSidoList = new List<String>{'11350'};
+
+
         List<String> failSidoList = new List<String>{'11530'};
-        
         IF_SFDC_CRCT_REQ_CENTER_INFO_ba b = new IF_SFDC_CRCT_REQ_CENTER_INFO_ba(true, failSidoList);
         Database.executeBatch(b,1);
 
@@ -57,6 +57,8 @@ global with sharing class IF_SFDC_CRCT_REQ_CENTER_INFO_sc implements Schedulable
         public String crpauseenddt;
         public String crabldt;
         public String datastdrdt;
+
+
     }
 
 }

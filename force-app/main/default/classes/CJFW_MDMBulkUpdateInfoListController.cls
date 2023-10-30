@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 10-25-2023
+ * @last modified on  : 10-30-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkUpdateInfoListController {
@@ -102,8 +102,8 @@ public with sharing class CJFW_MDMBulkUpdateInfoListController {
                 mdmRequest.PV_STCDT_MOD             =      String.isBlank(mdms[i].PV_STCDT__c) ? null : mdms[i].PV_STCDT__c;
                 mdmRequest.PV_FITYP                 =      String.isBlank(accList[i].TaxationType__c) ? null : accList[i].TaxationType__c;
                 mdmRequest.PV_FITYP_MOD             =      String.isBlank(mdms[i].PV_FITYP__c) ? null : mdms[i].PV_FITYP__c;
-                mdmRequest.PV_HDOFFICEYN            =      accList[i].IsHeadShopUseYN__c ? null : accList[i].IsHeadShopUseYN__c;
-                mdmRequest.PV_HDOFFICEYN_MOD        =      mdms[i].PV_HDOFFICEYN__c ? null : mdms[i].PV_HDOFFICEYN__c;
+                mdmRequest.PV_HDOFFICEYN            =      accList[i].IsHeadShopUseYN__c ? accList[i].IsHeadShopUseYN__c : accList[i].IsHeadShopUseYN__c;
+                mdmRequest.PV_HDOFFICEYN_MOD        =      mdms[i].PV_HDOFFICEYN__c ? mdms[i].PV_HDOFFICEYN__c : mdms[i].PV_HDOFFICEYN__c;
                 mdmRequest.PV_SUBSIDIARYYN          =      accList[i].IsAffiliatedcompanyYN__c ? null : accList[i].IsAffiliatedcompanyYN__c;
                 mdmRequest.PV_SUBSIDIARYYN_MOD      =      mdms[i].PV_SUBSIDIARYYN__c ? null : mdms[i].PV_SUBSIDIARYYN__c;
                 mdmRequest.PV_VBUND                 =      String.isBlank(accList[i].AffiliatedCompany__c) ? null : accList[i].AffiliatedCompany__c;

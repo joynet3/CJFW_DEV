@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : yeonji.lim@dkbmc.com
  * @group             : 
- * @last modified on  : 10-26-2023
+ * @last modified on  : 10-27-2023
  * @last modified by  : yeonji.lim@dkbmc.com
 **/
 public with sharing class OrderConsiderReContractFormController {
@@ -282,14 +282,23 @@ public with sharing class OrderConsiderReContractFormController {
             System.debug('# query ->' + query );
             List<CJFW_ExpectedIncomeExpenses__c> incomeExpensesList = Database.query(query);
 
-            if (!incomeExpensesList.isEmpty()) {    //값이 있을때 
+            if (!incomeExpensesList.isEmpty()) {
+                // 품의서 업데이트시 
                 IncomeExpensesInfo = incomeExpensesList[0];
                 versionCheck = ( incomeExpensesList[0].Version__c ) + 1 ;
                 reportCheck = ( incomeExpensesList[0].IsReportCheck__c );
-            } else {    //값이 없을때 
+                if(reportCheck){
+                    versionCheck = versionCheck-1;
+                }
+                //System.debug(' 업데이트 versionCheck ' + versionCheck );
+                //System.debug(' 업데이트 품의지정여부 ' + reportCheck );
+            } else {
+                // 품의서 초기 생성시 
                 versionCheck = 1;
                 IncomeExpensesInfo = new CJFW_ExpectedIncomeExpenses__c();
             }
+
+            System.debug('versionCheck -> '+ versionCheck);
 
         }catch (QueryException e) {
             IncomeExpensesInfo = new CJFW_ExpectedIncomeExpenses__c(); // 빈 레코드로 초기화

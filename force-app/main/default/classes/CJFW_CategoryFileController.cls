@@ -78,7 +78,8 @@ public with sharing class CJFW_CategoryFileController {
             } else {
                 // 검색어가 없을 때의 처리
                 if (category == '계약 참고자료') {
-                    contentDocumentLinkQuery += ' WHERE LinkedEntityId IN (SELECT Id FROM Opportunity) ';
+                    contentDocumentLinkQuery += ' WHERE LinkedEntityId IN ( SELECT CollaborationGroupId FROM CollaborationGroupMember) ';
+
                     List<ContentDocumentLink> ContentDocumentLinkList = Database.query(contentDocumentLinkQuery);
                     System.debug('쿼리실행 ==> ' + ContentDocumentLinkList);    
     
@@ -159,5 +160,18 @@ public with sharing class CJFW_CategoryFileController {
         System.debug('test' + [SELECT Id FROM ContentDocument WHERE Id = :contentDocumentId]);   
     }  
 
+    @AuraEnabled(cacheable=true)
+    public static Boolean isUserMemberOfCollaborationGroup(String groupId) {
+        String userId = UserInfo.getUserId();
+        System.debug('userId ==>' + userId);
+
+        CollaborationGroupMember[] members = [SELECT Id FROM CollaborationGroupMember
+                                                WHERE CollaborationGroupId = :groupId
+                                                AND MemberId  =: userId
+                                                AND CollaborationRole = 'Admin'];
+        return !members.isEmpty();
+    }
+  
+    
 
 }

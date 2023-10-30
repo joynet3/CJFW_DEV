@@ -2,17 +2,16 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 10-26-2023
+ * @last modified on  : 10-30-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkAccountSearchController {
 
     @AuraEnabled(cacheable=true)
-    public static DataWrapper getAccountInfo(String searchWord, String type, Integer pageNumber, Integer pageSize) {
+    public static DataWrapper getAccountInfo(List<Map<String, String>> searchKey, String type, Integer pageNumber, Integer pageSize) {
 
         system.debug('### CJFW_MDMBulkAccountSearchController ###');
         system.debug('>>> getAccountInfo()');
-        system.debug('>>> searchWord ' + searchWord);
         system.debug('>>> type ' + type);
 
         String searchCode = null;
@@ -29,18 +28,48 @@ public with sharing class CJFW_MDMBulkAccountSearchController {
             searchCode = 'C11';
         }
 
+        // 공백 제거 (trim)
         searchCode = searchCode.replace(' ', '');
-
-        String[] codeList = searchCode.split(',');
 
         String strStatus = 'SUCCESS';
         String strMessage = '';
 
-        System.debug('===============> searchWord : '+searchWord);
-        System.debug('===============> searchCode : '+searchCode);
+        System.debug('===============> searchKey : ' + searchKey);
+        System.debug('===============> searchCode : ' + searchCode);
+
+        // Key와 Value 따로 담아 주기
+        List<String> searchKeys = new List<String>();
+        List<String> searchValues = new List<String>();
+        Map<String, String> dateValues = new Map<String, String>();
+
+        for(Map<String, String> data : searchKey) {
+
+            String apiType = data.get('type');
+            String fieldName = data.get('fieldName');
+            String datePoint = data.get('datePoint');
+            String searchWord = data.get('searchKey');
+
+            System.debug('## get param > ' + 'fieldName: ' + fieldName + ', apiType: ' + apiType + ', datePoint: ' + datePoint + ', searchWord: ' + searchWord);
+
+            if(searchWord != null) {
+                searchWord = searchWord.trim();
+            }
+
+            if(searchWord != null && searchWord.length() > 0 && fieldName != 'CreatedDate') {
+                searchKeys.add(fieldName);
+                searchValues.add(searchWord);
+            } else if(searchWord != null && searchWord.length() > 0 && fieldName == 'CreatedDate') {
+                searchWord = searchWord + 'T00:00:00.000+0000'; // UTC
+                dateValues.put(datePoint, searchWord);
+            }
+
+        }
+
+        System.debug('===============> searchKeys : ' + searchKeys);
+        System.debug('===============> searchValues : ' + searchValues);
+        System.debug('===============> dateValues : ' + dateValues);
 
         DataWrapper objWrapper = new DataWrapper();
-
         
         try {
 
@@ -68,8 +97,15 @@ public with sharing class CJFW_MDMBulkAccountSearchController {
             strQuery += ' PV_SALESCUST__c, PV_DELICUST__c, PV_BIZPLCODE__c ';
             strQuery += ' FROM    Account';
             strQuery += ' WHERE   CustomerType__c IN ( \'' + searchCode + '\' ) AND CustomerId__c != NULL ';
-            if(searchWord <> null) {
-                strQuery += ' AND     (Name LIKE \'%' + searchWord + '%\' OR Owner.Name LIKE \'%' + searchWord + '%\')';
+            for(Integer i = 0; i < searchKeys.size(); i++) {
+                strQuery += ' AND ' + searchKeys[i] + ' LIKE \'%' + searchValues[i] + '%\' ';
+            }
+            if(dateValues.size() > 0) {
+                if(dateValues.get('start') != null) {
+                    strQuery += ' AND CreatedDate >= ' + dateValues.get('start');
+                } else if(dateValues.get('end') != null) {
+                    strQuery += ' AND CreatedDate <= ' + dateValues.get('end');
+                }
             }
 
             System.debug('============> strQuery : '+strQuery);

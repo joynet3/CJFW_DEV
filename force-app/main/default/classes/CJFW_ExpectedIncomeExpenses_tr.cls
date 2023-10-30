@@ -2,8 +2,8 @@
  * @description       : 
  * @author            : jieun.lee3@dkbmc.com
  * @group             : 
- * @last modified on  : 09-11-2023
- * @last modified by  : jieun.lee3@dkbmc.com
+ * @last modified on  : 10-30-2023
+ * @last modified by  : yeonji.lim@dkbmc.com
 **/
 
 public without sharing class CJFW_ExpectedIncomeExpenses_tr extends TriggerHandler {
@@ -28,11 +28,13 @@ public without sharing class CJFW_ExpectedIncomeExpenses_tr extends TriggerHandl
         doCheckOne();
     }
 
-    public override void afterUpdate() {}
+    public override void beforeDelete() {
+        recordDelete();
+    }
 
     /***********************************************************************************************************
     *  Trigger : Before Insert, Before Update
-    *  내용    : 예상손익 품의지정 1개만 등록되게 처리
+    *  내용    : 신규개설품의 품의지정 1개만 등록되게 처리
     ************************************************************************************************************/ 
     private void doCheckOne(){
         Set<Id> opportunityIds = new Set<Id>();
@@ -62,5 +64,20 @@ public without sharing class CJFW_ExpectedIncomeExpenses_tr extends TriggerHandl
                 }
             }
         }
+    }
+
+    /***********************************************************************************************************
+    *  Trigger : Before Delete
+    *  내용    : 신규개설품의 품의지정된 레코드 삭제 못하도록 막기
+    ************************************************************************************************************/ 
+    private void recordDelete(){
+        System.debug('품의지정된 레코드 삭제시 Trigger 발동');
+
+        for(CJFW_ExpectedIncomeExpenses__c exIncome : listOld) {
+            if (exIncome.IsReportCheck__c) {
+                exIncome.addError('품의지정된 레코드는 삭제할 수 없습니다.');
+            }
+        }
+        
     }
 }

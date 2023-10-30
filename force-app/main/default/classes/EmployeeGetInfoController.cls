@@ -2,8 +2,8 @@
  * @description       : 
  * @author            : eunyoung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 08-31-2023
- * @last modified by  : eunyoung.choi@dkbmc.com
+ * @last modified on  : 10-30-2023
+ * @last modified by  : hyeeun.song@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
  * 1.0   08-30-2023   eunyoung.choi@dkbmc.com   Initial Version
@@ -26,14 +26,15 @@ public with sharing class EmployeeGetInfoController {
 
         system.debug('searchKey -> ' + searchKeyTerm );
          
-        String queryString = ' SELECT id, Name, Code__c, NameEN__c, NameZH__c ' +
-                              ' FROM CJFW_Employee__c ' + 
-                              ' WHERE Code__c LIKE :searchKeyTerm ';
+        String queryString = ' SELECT id, Name, EmployeeNumber, CJTitle__c, Username, Email ' +
+                              ' FROM User ' + 
+                              ' WHERE EmployeeNumber LIKE :searchKeyTerm ' +
+                              ' OR Name LIKE :searchKeyTerm ';
          
-        List<CJFW_Employee__c> empList = new List<CJFW_Employee__c>();
+        List<User> empList = new List<User>();
         System.debug('query ->  ' + queryString);
         
-        List<CJFW_Employee__c> allEmployees = Database.query(queryString);
+        List<User> allEmployees = Database.query(queryString);
 
         Integer startIndex = (pageNumber - 1) * pageSize;
         Integer endIndex = Math.min(startIndex + pageSize, allEmployees.size());

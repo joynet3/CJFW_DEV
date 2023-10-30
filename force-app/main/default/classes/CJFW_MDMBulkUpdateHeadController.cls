@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 10-26-2023
+ * @last modified on  : 10-30-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkUpdateHeadController {
@@ -118,6 +118,36 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
             codeToUserIdMap.put(us.EmployeeNumber, us.Id);
         }
 
+        // CustomerID로 Boolean 값들 받아서 오기
+        Set<String> custIds = new Set<String>();
+        for(MDMRegRequestCustomer__c mdm : mdmCustomer){
+            custIds.add(mdm.PV_KUNNR__c);
+            custIds.remove(null);
+        }
+
+        List<Account> booleanList = [SELECT Id, PV_BLCKYN__c, IsHeadShopUseYN__c, IsAffiliatedcompanyYN__c, IsPrintVirtualAccount__c, IsFaceToFaceInspectionStatus__c, IsInitialDeliveryFTFInspection__c, IsBusinessPlaceKey__c FROM Account WHERE CustomerID__c = :custIds];
+
+        System.debug('# booleanList => ' + booleanList);
+        
+        // Key : Id , value : boolean
+        Map<String, Boolean> blckYnMap = new Map<String, Boolean>();           // 사용 중지
+        Map<String, Boolean> headShopYnMap = new Map<String, Boolean>();       // 본점 사용 유무
+        Map<String, Boolean> affCompanyYnMap = new Map<String, Boolean>();     // 관계사 여부
+        Map<String, Boolean> accountYnMap = new Map<String, Boolean>();        // 가상 계좌
+        Map<String, Boolean> faceYnMap = new Map<String, Boolean>();           // 대면 검수
+        Map<String, Boolean> bKeyYnMap = new Map<String, Boolean>();           // 업장 Key
+        Map<String, Boolean> isFaceYnMap = new Map<String, Boolean>();           // 초도배송 대면 검수
+
+        for(Account acc : booleanList){ 
+            blckYnMap.put(acc.CustomerId__c, acc.PV_BLCKYN__c);
+            headShopYnMap.put(acc.CustomerId__c, acc.IsHeadShopUseYN__c);
+            affCompanyYnMap.put(acc.CustomerId__c, acc.IsAffiliatedcompanyYN__c);
+            accountYnMap.put(acc.CustomerId__c, acc.IsPrintVirtualAccount__c);
+            faceYnMap.put(acc.CustomerId__c, acc.IsFaceToFaceInspectionStatus__c);
+            bKeyYnMap.put(acc.CustomerId__c, acc.IsBusinessPlaceKey__c);
+            isFaceYnMap.put(acc.CustomerId__c, acc.IsInitialDeliveryFTFInspection__c);
+        }
+
         System.debug('# codeToUserIdMap => ' + codeToUserIdMap);
 
         try {
@@ -152,7 +182,7 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
                     mdmRequest.PV_STCD4__c              =      String.isBlank(mdm.PV_STCD4__c) ? null : mdm.PV_STCD4__c;
                     mdmRequest.PV_GFORM__c              =      String.isBlank(mdm.PV_GFORM__c) ? null : mdm.PV_GFORM__c;
                     mdmRequest.PV_J_1KFREPRE__c         =      String.isBlank(mdm.PV_J_1KFREPRE__c) ? null : mdm.PV_J_1KFREPRE__c;
-                    mdmRequest.PV_BLCKYN__c             =      mdm.PV_BLCKYN__c;
+                    mdmRequest.PV_BLCKYN__c             =      (mdm.PV_BLCKYN__c == null) ? blckYnMap.get(mdm.PV_KUNNR__c) : mdm.PV_BLCKYN__c;
                     mdmRequest.PV_STCD1__c              =      String.isBlank(mdm.PV_STCD1__c) ? null : mdm.PV_STCD1__c;
                     mdmRequest.PV_J_1KFTBUS__c          =      String.isBlank(mdm.PV_J_1KFTBUS__c) ? null : mdm.PV_J_1KFTBUS__c;
                     mdmRequest.PV_J_1KFTIND__c          =      String.isBlank(mdm.PV_J_1KFTIND__c) ? null : mdm.PV_J_1KFTIND__c;
@@ -179,10 +209,10 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
                     mdmRequest.PV_STCDT__c              =      String.isBlank(mdm.PV_STCDT__c) ? null : mdm.PV_STCDT__c;
                     mdmRequest.PV_STCDT_lu__c           =      codeToIdMap.get(mdm?.PV_STCDT__c);
                     mdmRequest.PV_FITYP__c              =      String.isBlank(mdm.PV_FITYP__c) ? null : mdm.PV_FITYP__c;
-                    mdmRequest.PV_HDOFFICEYN__c         =      mdm.PV_HDOFFICEYN__c;
+                    mdmRequest.PV_HDOFFICEYN__c         =      (mdm.PV_HDOFFICEYN__c == null) ? headShopYnMap.get(mdm.PV_KUNNR__c) : mdm.PV_HDOFFICEYN__c;
                     mdmRequest.PV_HKUNNR__c             =      String.isBlank(mdm.PV_HKUNNR__c) ? null : mdm.PV_HKUNNR__c;
                     mdmRequest.PV_HKUNNR_lu__c          =      codeToAccIdMap.get(mdm?.PV_HKUNNR__c);
-                    mdmRequest.PV_SUBSIDIARYYN__c       =      mdm.PV_SUBSIDIARYYN__c;
+                    mdmRequest.PV_SUBSIDIARYYN__c       =      (mdm.PV_SUBSIDIARYYN__c == null) ? affCompanyYnMap.get(mdm.PV_KUNNR__c) : mdm.PV_SUBSIDIARYYN__c;
                     mdmRequest.PV_VBUND__c              =      String.isBlank(mdm.PV_VBUND__c) ? null : mdm.PV_VBUND__c;
                     mdmRequest.PV_VBUND_lu__c           =      codeToIdMap.get(mdm?.PV_VBUND__c);
                     mdmRequest.PV_LAND1__c              =      String.isBlank(mdm.PV_LAND1__c) ? null : mdm.PV_LAND1__c;
@@ -229,7 +259,7 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
                     mdmRequest.PV_KVGR3_BOT__c          =      String.isBlank(mdm.PV_KVGR3_BOT__c) ? null : mdm.PV_KVGR3_BOT__c;
                     mdmRequest.PV_KVGR3_BOT_lu__c       =      codeToIdMap.get(mdm?.PV_KVGR3_BOT__c);
                     mdmRequest.PV_ODCLOSEGB__c          =      String.isBlank(mdm.PV_ODCLOSEGB__c) ? null : mdm.PV_ODCLOSEGB__c;
-                    mdmRequest.PV_VACCPRTEXCYN__c       =      mdm.PV_VACCPRTEXCYN__c;
+                    mdmRequest.PV_VACCPRTEXCYN__c       =      (mdm.PV_VACCPRTEXCYN__c == null) ? accountYnMap.get(mdm.PV_KUNNR__c) : mdm.PV_VACCPRTEXCYN__c;
                     mdmRequest.PV_ZTERM_VV__c           =      String.isBlank(mdm.PV_ZTERM_VV__c) ? null : mdm.PV_ZTERM_VV__c;
                     mdmRequest.PV_ZTERM_VV_lu__c        =      codeToIdMap.get(mdm?.PV_ZTERM_VV__c);
                     mdmRequest.PV_DSTRHISTREGYN__c      =      String.isBlank(mdm.PV_DSTRHISTREGYN__c) ? null : mdm.PV_DSTRHISTREGYN__c;
@@ -239,7 +269,7 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
                     // mdmRequest.PVVF_OLD_BIZPLACE_NEW__c   =      String.isBlank(mdm.PVVF_OLD_BIZPLACE_NEW__c) ? null : mdm.PVVF_OLD_BIZPLACE_NEW__c;
                     // mdmRequest.PVRA_OLD_BIZPLACE_NEW__c   =      String.isBlank(mdm.PVRA_OLD_BIZPLACE_NEW__c) ? null : mdm.PVRA_OLD_BIZPLACE_NEW__c;
                     mdmRequest.PV_SHAPE__c              =      String.isBlank(mdm.PV_SHAPE__c) ? null : mdm.PV_SHAPE__c;
-                    mdmRequest.PV_EXAMYN__c             =      mdm.PV_EXAMYN__c;
+                    mdmRequest.PV_EXAMYN__c             =      (mdm.PV_EXAMYN__c == null) ? faceYnMap.get(mdm.PV_KUNNR__c) : mdm.PV_EXAMYN__c;
                     mdmRequest.PV_SHIPREQTIME__c        =      String.isBlank(mdm.PV_SHIPREQTIME__c) ? null : mdm.PV_SHIPREQTIME__c;
                     mdmRequest.PV_PRODLOADCOND__c       =      String.isBlank(mdm.PV_PRODLOADCOND__c) ? null : mdm.PV_PRODLOADCOND__c;
                     mdmRequest.PV_RETURNLOC__c          =      String.isBlank(mdm.PV_RETURNLOC__c) ? null : mdm.PV_RETURNLOC__c;
@@ -250,14 +280,14 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
                     mdmRequest.PV_DELIGROUP_lu__c       =      codeToIdMap.get(mdm?.PV_DELIGROUP__c);
                     mdmRequest.PV_KATR10__c             =      String.isBlank(mdm.PV_KATR10__c) ? null : mdm.PV_KATR10__c;
                     mdmRequest.PV_KATR10_lu__c          =      codeToIdMap.get(mdm?.PV_KATR10__c);
-                    mdmRequest.PV_KEYYN__c              =      mdm.PV_KEYYN__c;
+                    mdmRequest.PV_KEYYN__c              =      (mdm.PV_KEYYN__c == null) ? bKeyYnMap.get(mdm.PV_KUNNR__c) : mdm.PV_KEYYN__c;
                     mdmRequest.PV_KEYINFO__c            =      String.isBlank(mdm.PV_KEYINFO__c) ? null : mdm.PV_KEYINFO__c;
                     mdmRequest.PV_KXOTD__c              =      mdm.PV_KXOTD__c;
                     mdmRequest.PV_KXOTDTIME__c          =      String.isBlank(mdm.PV_KXOTDTIME__c) ? null : mdm.PV_KXOTDTIME__c;
                     mdmRequest.PV_FDINFO__c             =      mdm.PV_FDINFO__c;
                     mdmRequest.PV_FDREQD__c             =      mdm.PV_FDREQD__c;
                     mdmRequest.PV_FDREQT__c             =      String.isBlank(mdm.PV_FDREQT__c) ? null : mdm.PV_FDREQT__c;
-                    mdmRequest.PV_ISFDFTF__c            =      mdm.PV_ISFDFTF__c;
+                    mdmRequest.PV_ISFDFTF__c            =      (mdm.PV_ISFDFTF__c == null) ? isFaceYnMap.get(mdm.PV_KUNNR__c) : mdm.PV_ISFDFTF__c;
                     mdmRequest.PV_FDCTINFO__c           =      String.isBlank(mdm.PV_FDCTINFO__c) ? null : mdm.PV_FDCTINFO__c;
                     mdmRequest.PV_FDNOTICE__c           =      String.isBlank(mdm.PV_FDNOTICE__c) ? null : mdm.PV_FDNOTICE__c;
                     mdmRequest.PV_SHIPTYPE__c           =      String.isBlank(mdm.PV_SHIPTYPE__c) ? null : mdm.PV_SHIPTYPE__c;

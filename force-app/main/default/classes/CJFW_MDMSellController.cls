@@ -2,13 +2,13 @@
  * @description       : 판매처필드에 맞게 삭제 및 추가 완료
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 10-26-2023
+ * @last modified on  : 10-30-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
  * 1.0   09-25-2023   joohyeon.jang@dkbmc.com   Initial Version
 **/
-public with sharing class CJFW_MDMSellController {
+public with sharing class CJFW_MDMSellController{
     /**
     * =======================================================================================================================
     * @description : [1. MDMRegRequestCustomer__c 생성 시]기본값 셋팅(레코드Id, 고객 주문마감 유형코드, 요청자 사원번호 세팅)
@@ -678,8 +678,8 @@ public with sharing class CJFW_MDMSellController {
         String strStatus = 'SUCCESS';                       // Sccess 시 
         String strMessage = '';                             // Error 시 메세지
         String MDMRecordTypeId = '';                        // MDMRegRequestCustomer__c의 '관리처' RecordId
-        String strObjectType = 'Account';  // object api명
-        String recordTypeName = 'MDMManagement';            // recordType api명
+        String strObjectType = 'Account';                   // object api명
+        String recordTypeName = 'MDMChild';                 // recordType api명
 
         Id recordIdEx = Schema.SObjectType.MDMRegRequestCustomer__c.getRecordTypeInfosByDeveloperName().get(recordTypeName).getRecordTypeId();
         system.debug('### CJFW_MDMManagementController.getAccountReferenceInfo())');
@@ -693,51 +693,101 @@ public with sharing class CJFW_MDMSellController {
                 WHERE Id =:UserInfo.getUserId()
                 ]; 
             objWrapper.objUser = objUser;
-            List<Account> accountList = [SELECT    Id
-                                                ,  Name                                         // 고객명(영문명 포함)                        
-                                                ,  NameAlias__c                                 // 고객약칭명(변경)
-                                                ,  CustomerType__c                              // 고객유형
-                                                ,  LegalStatus__c                               // 법적상태
-                                                ,  BusinessCategory__c                          // 업종
-                                                ,  TaxInvoiceType__c                            // 세금계산서발행유형
-                                                ,  PostalCode__c                                // 우편번호 
-                                                ,  Address__c                                   // 주소>도로명주소(TAB)>도로명주소 =========================> 주소모두가져와야할듯
-                                                ,  AddressDetails__c
-                                                ,  Address2__c
-                                                ,  AddressDetails2__c
-                                                ,  NameKor__c                                   // 고객명(G) / 자국명   
-                                                ,  AccountGroup__c                              // 고객계정그룹
-                                                ,  CompanyRegisterNumber__c                     // 사업자등록번호
-                                                ,  RepresentativeName__c                        // 대표자이름
-                                                ,  BusinessConditions__c                        // 업태
-                                                ,  Phone                                        // 전화번호
-                                                ,  HeadOfficeCode__c                            // 본점코드
-                                                ,  LocationState__c                             // 지역
-                                                ,  SubsidyType__c                               // 장려금유형
-                                                ,  CustomerOrderDeadlineType__c                 // 고객 주문마감 유형코드
-                                                ,  TermsOfPayment__c                            // 지급조건
-                                                ,  CustomerPath__c                              // 경로(사업부)
-                                                ,  ShipmentArea__c                              // 출하권역
-                                                ,  StatementOfDeliveryType__c                   // 납품서유형
-                                                ,  StatementOfDeliveryType2__c                  // 납품서 하단유형
-                                                ,  DisHisRegType__c                             // 유통이력 신고대상 유형
-                                                ,  DeliveryGroup__c                             // 배송그룹
-                                                ,  FWReleaseCenter__c
-                                                ,  CustomerRoute__c
-                                                ,  PV_VKGRP__c
-                                                ,  ParentId
-                                                ,  CountryKeyCode__c
-                                                ,  SalesForm__c
-                                                ,  CustomerStatus__c
-                                                ,  SortKey__c
-                                                ,  MediateAccount__c
-                                                ,  CashManagementGroup__c
-                                                ,  TaxClassification__c
-                                                ,  TaxPaymentMethod__c
-                                                ,  CreditManagement__c
-                                                //, tolabel(DisHisRegType__c) DisHisRegType
+
+            List<Account> accountList = [SELECT  id                                              // 고객
+                                                ,CustomerID__c                                   // 고객ID(화면노출X)
+                                                ,CustomerIDASIS__c                               // 구코드(As-Is)
+                                                ,Name                                            // 고객명(영문명 포함)
+                                                ,NameKor__c                                      // 고객명(G) / 자국명
+                                                ,NameAlias__c                                    // 고객약칭명(변경)
+                                                ,AccountGroup__c                                 // 고객계정그룹
+                                                ,CustomerType__c                                 // 고객유형
+                                                ,CompanyRegisterNumber__c                        // 사업자등록번호
+                                                ,CorporateCode__c                                // 법인코드
+                                                ,SubCompanyRegisterNumber__c                     // 종사업자번호
+                                                ,LegalStatus__c                                  // 법적상태
+                                                ,RepresentativeName__c                           // 대표자이름
+                                                ,RepresentativeBirthDate__c                      // 대표자 생년월일
+                                                ,BusinessConditions__c                           // 업태
+                                                ,BusinessCategory__c                             // 업종
+                                                ,Phone                                           // 전화번호
+                                                ,Fax                                             // 팩스번호
+                                                ,PaymentAccountName__c                           // 지급처(PaymentAccountName__c)
+                                                ,PaymentAccountCode__c                           // 지급처(PaymentAccountCode__c)
+                                                //,X                                             // 지급처(accountId)
+                                                //,X                                             // 지급처 Self 여부
+                                                ,ShippingAccountName__c                          // 청구처(ShippingAccountName__c)
+                                                ,ShippingAccountCode__c                          // 청구처(ShippingAccountCode__c)
+                                                //,X                                             // 청구처(AccountId)
+                                                //,X                                             // 청구처 Self 여부
+                                                ,PV_VKGRP__c                                     // 영업그룹
+                                                ,PVVF_VKGRP__c                                   // 영업그룹(유효기간 관리)
+                                                ,Owner.Lastname                                  // 담당MA                    [담당Ma삭제해야할거같음]
+                                                ,OwnerId                                         // 담당MA(userId)            [담당Ma삭제해야할거같음]
+                                                ,PVVF_PERNR__c                                   // 담당MA(유효기간 관리)
+                                                ,ResponsibilityAMA__c                            // 담당AMA
+                                                ,ResponsibilityAMACode__c                        // 담당AMA(userId)
+                                                ,TaxInvoiceType__c                               // 세금계산서발행유형
+                                                ,TaxationType__c                                 // 과세유형
+                                                ,IsHeadShopUseYN__c                              // 본점사용 유무
+                                                ,HeadOfficeCode__c                               // 본점코드(HeadOfficeCode__c)
+                                                ,HeadOfficeName__c                               // 본점코드(HeadOfficeName__c)
+                                                //,X                                             // 본점코드(id)
+                                                ,IsAffiliatedcompanyYN__c                        // 관계사여부
+                                                ,AffiliatedCompany__c                            // 관계사 코드
+                                                ,CountryKeyCode__c                               // 국가키
+                                                ,PV_KNVKTYPE__c                                  // 주문유형
+                                                ,ShutDownDate__c                                 // 휴폐업일자
+                                                ,LocationState__c                                // 지역
+                                                ,PostalCode__c                                   // 우편번호
+                                                ,Address__c                                      // 주소>도로명주소(TAB)>도로명주소
+                                                ,AddressDetails__c                               // 주소>도로명주소(TAB)>상세주소
+                                                ,Address2__c                                     // 주소>지번주소(TAB)>지번주소
+                                                ,AddressDetails2__c                              // 주소>지번주소(TAB)>지번주소2
+                                                ,SalesForm__c                                    // 매출형태
+                                                ,CustomerStatus__c                               // 고객상태
+                                                ,SortKey__c                                      // 정렬키
+                                                ,MediateAccount__c                               // 조정계정
+                                                ,CashManagementGroup__c                          // 현금관리그룹
+                                                ,IsDeposit__c                                    // 입금여부(FS만 사용) 
+                                                ,TaxClassification__c                            // 세금분류
+                                                ,TaxPaymentMethod__c                             // 세금납부방법
+                                                ,CurrencyIsoCode                                 // 통화
+                                                ,CreditManagement__c                             // 여신관리(고객향)
+                                                ,StatementOfDeliveryType__c                      // 납품서유형
+                                                ,SubsidyType__c                                  // 장려금유형
+                                                ,StatementOfDeliveryType2__c                     // 납품서 하단유형
+                                                ,CustomerOrderDeadlineType__c                    // 고객 주문마감 유형코드
+                                                ,IsPrintVirtualAccount__c                        // 가상계좌 출력 제외
+                                                ,TermsOfPayment__c                               // 지급조건
+                                                ,DisHisRegType__c                                // 유통이력 신고대상 유형
+                                                ,ContractRocationDate__c                         // 약정회전일
+                                                ,CustomerPath__c                                 // 경로(사업부)
+                                                ,PVVF_OLD_BIZPLACE_NEW__c                        // 경로(사업부)(유효기간 관리) 
+                                                ,Shape__c                                        // 외형(정원)
+                                                ,IsFaceToFaceInspectionStatus__c                 // 대면검수여부
+                                                ,OTD__c                                          // OTD(배송요구시간)
+                                                ,ProductLoadingCondition__c                      // 상품적재조건
+                                                ,ReturnLocation__c                               // 반품회수 위치
+                                                ,VehicleEntryCondtions__c                        // 차량 진입조건-1
+                                                ,UnloadConditions1__c                            // 하역조건-1
+                                                ,UnloadConditions2__c                            // 하역조건-2
+                                                ,DeliveryGroup__c                                // 배송그룹
+                                                ,ShipmentArea__c                                 // 출하권역
+                                                ,IsBusinessPlaceKey__c                           // 업장key 여부
+                                                ,BusinessPlaceKeyInfo__c                         // 업장key 정보
+                                                ,KXOTD__c                                        // KX OTD
+                                                ,KXOTDRequestDate__c                             // KX OTD 요청시간
+                                                ,InitialDeliveryShare__c                         // 초도배송 정보공유
+                                                ,InitialDeliveryRequestDate__c                   // 초도배송 요청일자
+                                                ,InitialDeliveryRequestTime__c                   // 초도배송 요청시간
+                                                ,IsInitialDeliveryFTFInspection__c               // 초도배송 대면검수
+                                                ,InitialDeliveryContact__c                       // 초도배송 담당자 연락처
+                                                ,InitialDeliveryDescription__c                   // 초도배송 시 전달사항
+                                                ,PV_TEMPTARGET__c                                // 온도기록자 제출 대상 여부
                                                 ,  (SELECT Id,  Lastname,  Firstname,  Email,  Phone,  MobilePhone,  Department,  PV_PAFKT_VK__c,  PV_TALKT_VK__c,  PV_KNVKGB__c FROM Contacts) 
-                                            FROM Account 
+                                                //, tolabel(DisHisRegType__c) DisHisRegType    
+                                        FROM Account 
                                         WHERE Id =: accountId 
                                         LIMIT 1];
 
@@ -801,90 +851,149 @@ public with sharing class CJFW_MDMSellController {
 
             List<MDMReferenceCode__c> mdmReferenceCodeList = [SELECT Id, Name, Code__c FROM MDMReferenceCode__c WHERE code__c =: accCodeSet];
 
-            // Key :code , value :Id
+            // Code로 Name값 알아내기
+            // Key :code , value :Id 
             Map<String, String> codeToIdMap = new Map<String, String>();
                 for(MDMReferenceCode__c mdmCode :mdmReferenceCodeList){ 
                     codeToIdMap.put(mdmCode.Code__c, mdmCode.id);
                 }
 
-            /** 필요한지 모름
             // User의 사번필드(ResponsibilityAMA__c)로 User 조회해서 Id값 알아내기
             Set<String> accUserSet = new Set<String>();
+            Set<String> accSalesCodeSet = new Set<String>();
             for(Account acc :accountList){
                 accUserSet.add(acc.ResponsibilityAMA__c);
             }
+
+            system.debug('accSalesCodeSet ' + accSalesCodeSet);
             List<User> userList = [SELECT Id,EmployeeNumber FROM User WHERE EmployeeNumber =: accUserSet];
+            List<Account> accList = [SELECT Id, CustomerId__c  FROM Account WHERE customerId__c =: accSalesCodeSet];
             
             // Key :code , value :Id
             Map<String, String> codeToUserIdMap = new Map<String, String>();
+            Map<String, String> codeToAccIdMap = new Map<String, String>();
             for(User us :userList){ 
                 codeToUserIdMap.put(us.EmployeeNumber, us.Id);
             }
-             */
+            for(Account acc :accList){ 
+                codeToAccIdMap.put(acc.CustomerId__c, acc.Id);
+            }
 
             // Account를 MDMRegRequestContact__c 매핑하여 리턴
             for(Account acc : accountList){
                 MDMRegRequestCustomer__c mdmRequest = new MDMRegRequestCustomer__c    ();
                 
                 // Default
-                mdmRequest.Account__c                                  = acc?.Id;	
+                // mdmRequest.Account__c                                  = acc?.Id;	
                 mdmRequest.recordTypeId                                = recordIdEx;
-                mdmRequest.RequestType__c                              = 'Edit';
-                // 기본정보 [S] 
-                mdmRequest.PV_NAME1__c                                 = acc?.Name;				                                                       
-                mdmRequest.PV_NAME_G__c                                = acc?.NameKor__c;					                                                           
-                mdmRequest.PV_NAME2__c                                 = acc?.NameAlias__c;				                                                       
-                mdmRequest.PV_KTOKD__c                                 = acc?.AccountGroup__c;				                                                       
-                mdmRequest.PV_CUSTTYPE__c                              = acc?.CustomerType__c;					                                                           
-                mdmRequest.PV_STCD2__c                                 = acc?.CompanyRegisterNumber__c;				                                                       
-                mdmRequest.PV_GFORM__c                                 = acc?.LegalStatus__c;				                                                       
-                mdmRequest.PV_J_1KFREPRE__c                            = acc?.RepresentativeName__c;						                                                               
-                mdmRequest.PV_J_1KFTBUS__c                             = acc?.BusinessConditions__c;					                                                           
-                mdmRequest.PV_J_1KFTIND__c                             = acc?.BusinessCategory__c;					                                                           
-                mdmRequest.PV_TELF1__c                                 = acc?.Phone;				                                                       
-                mdmRequest.PV_STCDT__c     					           = acc?.TaxInvoiceType__c;	                             // 세금계산서발행유형 코드					
-                mdmRequest.PV_STCDT_lu__c					           = codeToIdMap.get(acc?.TaxInvoiceType__c);                // 세금계산서발행유형 id	
-                mdmRequest.PV_HKUNNR__c						           = acc?.HeadOfficeCode__c;                                 // [Prod확인] 실제Prod에는 headOfficeCode OR ##SELFID## 두개가 들어가네 (확인 필요)
-                mdmRequest.PV_HKUNNR_lu__c					           = acc?.ParentId;
-                mdmRequest.PV_LAND1__c                                 = acc?.CountryKeyCode__c;
-                mdmRequest.PV_LAND1_lu__c                              = codeToIdMap.get(acc?.CountryKeyCode__c);			                             	
-                mdmRequest.PV_REGIO__c						           = acc?.LocationState__c;				                      // 지역 코드(11140 : 서울 중구)					
-                mdmRequest.PV_REGIO_lu__c					           = codeToIdMap.get(acc?.LocationState__c);	              // 지역 id	
-                mdmRequest.PV_ADRES_ZIPCODE__c				           = acc?.PostalCode__c;						
-                mdmRequest.PV_ADRES_ROADADDR1__c			           = acc?.Address__c;							
-                mdmRequest.PV_ADRES_ROADADDR2__c			           = acc?.AddressDetails__c;							
-                mdmRequest.PV_ADRES_ADDR1__c				           = acc?.Address2__c;						
-                mdmRequest.PV_ADRES_ADDR2__c				           = acc?.AddressDetails2__c;		                 
-                // 기본정보 [E]      
-                //회계정보 [S]
-                mdmRequest.PV_BUSAB__c                                 = acc?.SalesForm__c;                
-                mdmRequest.PV_CESSION_KZ__c                            = acc?.CustomerStatus__c;                        
-                mdmRequest.PV_ZUAWA__c                                 = acc?.SortKey__c;
-                mdmRequest.PV_ZUAWA_lu__c                              = codeToIdMap.get(acc?.SortKey__c); 
-                mdmRequest.PV_AKONT__c                                 = acc?.MediateAccount__c;                
-                mdmRequest.PV_AKONT_lu__c                              = codeToIdMap.get(acc?.MediateAccount__c);          
-                mdmRequest.PV_FDGRV__c                                 = acc?.CashManagementGroup__c;                
-                mdmRequest.PV_TAXKDD__c                                = acc?.TaxClassification__c;                    
-                mdmRequest.PV_KATR5__c                                 = acc?.TaxPaymentMethod__c;
-                //회계정보 [E]
+                mdmRequest.RequestType__c                              = 'Create';
+                // [1027 New]
+                mdmRequest.Account__c                                  = acc?.id;                                            // 고객
+                mdmRequest.PV_KUNNR__c                                 = acc?.CustomerID__c;                                 // 고객ID(화면노출X)
+                mdmRequest.PV_OLDCD__c                                 = acc?.CustomerIDASIS__c;                             // 구코드(As-Is)
+                mdmRequest.PV_NAME1__c                                 = acc?.Name;                                          // 고객명(영문명 포함)
+                mdmRequest.PV_NAME_G__c                                = acc?.NameKor__c;                                    // 고객명(G) / 자국명
+                mdmRequest.PV_NAME2__c                                 = acc?.NameAlias__c;
+                mdmRequest.PV_KTOKD__c                                 = 'Z300';                                             // 고객계정그룹                                                                                                                                                                                                                      
+                mdmRequest.PV_CUSTTYPE__c                              = 'C02';                                              // 고객약칭명(변경)
+                mdmRequest.PV_STCD2__c                                 = acc?.CompanyRegisterNumber__c;                      // 사업자등록번호
+                mdmRequest.PV_STCD3__c                                 = acc?.CorporateCode__c;                              // 법인코드
+                mdmRequest.PV_STCD4__c                                 = acc?.SubCompanyRegisterNumber__c;                   // 종사업자번호
+                mdmRequest.PV_GFORM__c                                 = acc?.LegalStatus__c;                                // 법적상태
+                mdmRequest.PV_J_1KFREPRE__c                            = acc?.RepresentativeName__c;                         // 대표자이름
+                mdmRequest.PV_STCD1__c                                 = acc?.RepresentativeBirthDate__c;                    // 대표자 생년월일
+                mdmRequest.PV_J_1KFTBUS__c                             = acc?.BusinessConditions__c;                         // 업태
+                mdmRequest.PV_J_1KFTIND__c                             = acc?.BusinessCategory__c;                           // 업종
+                mdmRequest.PV_TELF1__c                                 = acc?.Phone;                                         // 전화번호
+                mdmRequest.PV_TELFX__c                                 = acc?.Fax;                                           // 팩스번호
+                mdmRequest.PV_PAYCUST__c                               = acc?.PaymentAccountCode__c;                         // 지급처
+                // mdmRequest.PV_PAYCUST_lu__c                         = acc?.X;                                             // =====================>지급처 ID 뭐넣어줘야하지?[확인]                                               
+                // mdmRequest.IsSelf_PV_PAYCUST__c                     = acc?.X;                                             // 지급처 Self 여부
+                mdmRequest.PV_CHARGECUST__c                            = acc?.ShippingAccountCode__c;                        // 청구처
+                // mdmRequest.PV_CHARGECUST_lu__c                      = acc?.X;                                             // 청구처(AccountId)
+                // mdmRequest.IsSelf_PV_CHARGECUST__c                  = acc?.X;                                             // 청구처 Self 여부
+                mdmRequest.PV_VKGRP__c                                 = acc?.PV_VKGRP__c;                                   // 영업그룹
+                mdmRequest.PV_VKGRP_lu__c                              = codeToIdMap.get(acc?.PV_VKGRP__c);                  // 영업그룹(Id)                                                                                                                                                                                                                                                               // 영업그룹(id)
+                mdmRequest.PVRA_VKGRP__c                               = acc?.PVVF_VKGRP__c;                                 // 영업그룹(유효기간 관리)
+                mdmRequest.PV_PERNR__c								   = acc.Owner.LastName;				
+                mdmRequest.PV_PERNR_lu__c						       = acc?.OwnerId;	 
+                mdmRequest.PVRA_PERNR__c                               = acc?.PVVF_PERNR__c;                                 //담당MA(유효기간 관리)
+                mdmRequest.PV_ADMINMA__c                               = acc?.ResponsibilityAMA__c;                          //담당AMA
+                mdmRequest.PV_ADMINMA_lu__c                            = codeToUserIdMap.get(acc?.ResponsibilityAMA__c);     // ResponsibilityAMA__c(사번)으로 User의 Id값 넣어주기                                //담당AMA(userId)
+                // mdmRequest.PV_LOGISCENTER__c                        = acc?.FWReleaseCenter__c;                            //FW 출고센터
+                // mdmRequest.PV_LOGISCENTER_lu__c                     = acc?.X;                                             //FW 출고센터(Id)
+                // mdmRequest.PVRA_LOGISCENTER__c                      = acc?.PVVF_LOGISCENTER__c;                           //FW 출고센터(유효기간 관리)
+                mdmRequest.PV_STCDT__c                                 = acc?.TaxInvoiceType__c;                             //세금계산서발행유형
+                mdmRequest.PV_STCDT_lu__c                              = codeToIdMap.get(acc?.TaxInvoiceType__c);            // 세금계산서발행유형(Id)
+                mdmRequest.PV_FITYP__c                                 = acc?.TaxationType__c;                               //과세유형
+                mdmRequest.PV_HDOFFICEYN__c                            = acc?.IsHeadShopUseYN__c;                            //본점사용 유무
+                mdmRequest.PV_HKUNNR__c                                = acc?.HeadOfficeCode__c;                             //본점코드
+                mdmRequest.PV_HKUNNR_lu__c                             = codeToIdMap.get(acc?.HeadOfficeCode__c);            // 본점코드(id)                                                   //본점코드(id)
+                mdmRequest.PV_SUBSIDIARYYN__c                          = acc?.IsAffiliatedcompanyYN__c;                      //관계사여부
+                mdmRequest.PV_VBUND__c                                 = acc?.AffiliatedCompany__c;                          //관계사 코드
+                mdmRequest.PV_VBUND_lu__c                              = codeToIdMap.get(acc?.AffiliatedCompany__c);         //관계사 코드(Id)
+                // mdmRequest.X                                        = acc?.X;                                             //수수료지급처
+                mdmRequest.PV_LAND1__c                                 = acc?.CountryKeyCode__c;                             //국가키
+                mdmRequest.PV_LAND1_lu__c                              = codeToIdMap.get(acc?.CountryKeyCode__c);            //국가키(Id)
+                mdmRequest.PV_KNVKTYPE__c                              = acc?.PV_KNVKTYPE__c;                                //주문유형
+                mdmRequest.PV_CLOSEDT__c                               = acc?.ShutDownDate__c;                               //휴폐업일자
+                mdmRequest.PV_REGIO__c                                 = acc?.LocationState__c;                              //지역
+                mdmRequest.PV_REGIO_lu__c                              = codeToIdMap.get(acc?.LocationState__c);             //지역(Id)
+                mdmRequest.PV_ADRES_ZIPCODE__c                         = acc?.PostalCode__c;                                 //우편번호
+                mdmRequest.PV_ADRES_ROADADDR1__c                       = acc?.Address__c;                                    //주소>도로명주소(TAB)>도로명주소
+                mdmRequest.PV_ADRES_ROADADDR2__c                       = acc?.AddressDetails__c;                             //주소>도로명주소(TAB)>상세주소
+                mdmRequest.PV_ADRES_ADDR1__c                           = acc?.Address2__c;                                   //주소>지번주소(TAB)>지번주소
+                mdmRequest.PV_ADRES_ADDR2__c                           = acc?.AddressDetails2__c;                            //주소>지번주소(TAB)>지번주소2
+                mdmRequest.PV_BUSAB__c                                 = acc?.SalesForm__c;                                  //매출형태
+                mdmRequest.PV_CESSION_KZ__c                            = acc?.CustomerStatus__c;                             //고객상태
+                mdmRequest.PV_ZUAWA__c                                 = acc?.SortKey__c;                                    //정렬키
+                mdmRequest.PV_ZUAWA_lu__c                              = codeToIdMap.get(acc?.SortKey__c);                   //정렬키(id)
+                mdmRequest.PV_AKONT__c                                 = acc?.MediateAccount__c;                             //조정계정
+                mdmRequest.PV_AKONT_lu__c                              = codeToIdMap.get(acc?.MediateAccount__c);            //조정계정(id)
+                mdmRequest.PV_FDGRV__c                                 = acc?.CashManagementGroup__c;                        //현금관리그룹
+                mdmRequest.PV_VRSDG__c                                 = acc?.IsDeposit__c;                                  //입금여부(FS만 사용) 
+                mdmRequest.PV_TAXKDD__c                                = acc?.TaxClassification__c;                          //세금분류
+                mdmRequest.PV_KATR5__c                                 = acc?.TaxPaymentMethod__c;                           //세금납부방법
+                mdmRequest.PV_WAERS__c                                 = acc?.CurrencyIsoCode;                               //통화
+                mdmRequest.PV_WAERS_lu__c                              = codeToIdMap.get(acc?.CurrencyIsoCode);              //통화(id)
+                mdmRequest.PV_KDGRP__c                                 = acc?.CreditManagement__c;                           //여신관리(고객향)
+                mdmRequest.PV_KVGR3__c                                 = acc?.StatementOfDeliveryType__c;                    //납품서유형
+                mdmRequest.PV_KVGR2__c                                 = acc?.SubsidyType__c;                                //장려금유형
+                mdmRequest.PV_KVGR3_BOT__c                             = acc?.StatementOfDeliveryType2__c;                   //납품서 하단유형
+                mdmRequest.PV_ODCLOSEGB__c                             = acc?.CustomerOrderDeadlineType__c;                  //고객 주문마감 유형코드
+                mdmRequest.PV_VACCPRTEXCYN__c                          = acc?.IsPrintVirtualAccount__c;                      //가상계좌 출력 제외
+                mdmRequest.PV_ZTERM_VV__c                              = acc?.TermsOfPayment__c;                             //지급조건
+                mdmRequest.PV_ZTERM_VV_lu__c                           = codeToIdMap.get(acc?.TermsOfPayment__c);            //지급조건(id)
+                mdmRequest.PV_DSTRHISTREGYN__c                         = acc?.DisHisRegType__c;                              //유통이력 신고대상 유형
+                mdmRequest.PV_KULTG__c                                 = acc?.ContractRocationDate__c;                       //약정회전일
+                mdmRequest.PV_OLD_BIZPLACE_NEW__c                      = acc?.CustomerPath__c;                               //경로(사업부)
+                mdmRequest.PV_OLD_BIZPLACE_NEW_lu__c                   = codeToIdMap.get(acc?.CustomerPath__c);              //경로(사업부)(id)
+                mdmRequest.PVRA_OLD_BIZPLACE_NEW__c                    = acc?.PVVF_OLD_BIZPLACE_NEW__c;                      //경로(사업부)(유효기간 관리) 
+                mdmRequest.PV_SHAPE__c                                 = acc?.Shape__c;                                      //외형(정원)
+                mdmRequest.PV_EXAMYN__c                                = acc?.IsFaceToFaceInspectionStatus__c;               //대면검수여부
+                mdmRequest.PV_SHIPREQTIME__c                           = acc?.OTD__c;                                        //OTD(배송요구시간)
+                mdmRequest.PV_PRODLOADCOND__c                          = acc?.ProductLoadingCondition__c;                    //상품적재조건
+                mdmRequest.PV_RETURNLOC__c                             = acc?.ReturnLocation__c;                             //반품회수 위치
+                mdmRequest.PV_ENTERCOND1__c                            = acc?.VehicleEntryCondtions__c;                      //차량 진입조건-1
+                mdmRequest.PV_UNLOADCOND1__c                           = acc?.UnloadConditions1__c;                          //하역조건-1
+                mdmRequest.PV_UNLOADCOND2__c                           = acc?.UnloadConditions2__c;                          //하역조건-2
+                mdmRequest.PV_DELIGROUP__c                             = acc?.DeliveryGroup__c;                              //배송그룹
+                mdmRequest.PV_DELIGROUP_lu__c                          = codeToIdMap.get(acc?.DeliveryGroup__c);             //배송그룹(id)
+                mdmRequest.PV_KATR10__c                                = acc?.ShipmentArea__c;                               //출하권역
+                mdmRequest.PV_KATR10_lu__c                             = codeToIdMap.get(acc?.ShipmentArea__c);              //출하권역(id)
+                mdmRequest.PV_KEYYN__c                                 = acc?.IsBusinessPlaceKey__c;                         //업장key 여부
+                mdmRequest.PV_KEYINFO__c                               = acc?.BusinessPlaceKeyInfo__c;                       //업장key 정보
+                mdmRequest.PV_KXOTD__c                                 = acc?.KXOTD__c == 'Y' ? true : false;                //KX OTD
+                mdmRequest.PV_KXOTDTIME__c                             = acc?.KXOTDRequestDate__c;                           //KX OTD 요청시간
+                mdmRequest.PV_FDINFO__c                                = acc.InitialDeliveryShare__c == 'Y' ? true : false;  //초도배송 정보공유
+                mdmRequest.PV_FDREQD__c                                = acc?.InitialDeliveryRequestDate__c;                 //초도배송 요청일자
+                mdmRequest.PV_FDREQT__c                                = acc?.InitialDeliveryRequestTime__c;                 //초도배송 요청시간
+                mdmRequest.PV_ISFDFTF__c                               = acc?.IsInitialDeliveryFTFInspection__c;             //초도배송 대면검수
+                mdmRequest.PV_FDCTINFO__c                              = acc?.InitialDeliveryContact__c;                     //초도배송 담당자 연락처
+                mdmRequest.PV_FDNOTICE__c                              = acc?.InitialDeliveryDescription__c;                 //초도배송 시 전달사항
+                mdmRequest.PV_TEMPTARGET__c                            = acc?.PV_TEMPTARGET__c;                              //온도기록자 제출 대상 여부
+                // mdmRequest.WF_DESCRIPTION__c                           = acc?.X;                                          //결재의견
 
-
-                //영업정보 [E]
-                mdmRequest.PV_KVGR3__c                                 = acc?.StatementOfDeliveryType__c;   
-                mdmRequest.PV_KDGRP__c                                 = acc?.CreditManagement__c; //여신관리(고객향)   
-                mdmRequest.PV_KVGR2__c                                 = acc?.SubsidyType__c;   
-                mdmRequest.PV_KVGR3_BOT__c                             = acc?.StatementOfDeliveryType2__c;   
-                mdmRequest.PV_ODCLOSEGB__c                             = acc?.CustomerOrderDeadlineType__c;  
-                mdmRequest.PV_ZTERM_VV__c                              = acc?.TermsOfPayment__c;
-                mdmRequest.PV_ZTERM_VV_lu__c                           = codeToIdMap.get(acc?.TermsOfPayment__c);  
-                mdmRequest.PV_DSTRHISTREGYN__c                         = acc?.DisHisRegType__c;   
-                mdmRequest.PV_OLD_BIZPLACE_NEW__c                      = acc?.CustomerPath__c;
-                mdmRequest.PV_OLD_BIZPLACE_NEW_lu__c                   = codeToIdMap.get(acc?.CustomerPath__c);  
-                mdmRequest.PV_DELIGROUP__c                             = acc?.DeliveryGroup__c;   
-                mdmRequest.PV_DELIGROUP_lu__c                          = codeToIdMap.get(acc?.DeliveryGroup__c);  
-                mdmRequest.PV_KATR10__c                                = acc?.ShipmentArea__c; 
-                mdmRequest.PV_KATR10_lu__c                             = codeToIdMap.get(acc?.ShipmentArea__c);  
-                mdmRequest.EditRequestDate__c                          = Date.today();
                 objWrapper.objMDMRegReqCustomer = mdmRequest;
             }    
         }catch(Exception e){

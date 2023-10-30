@@ -61,7 +61,9 @@ public without sharing class DecisionProcessNewController {
         Boolean isIFError = false;
         try {
             String DocType = objDecisionProcess.Type__c; 
-            if ( DocType == 'CRM001' || DocType == 'CRM002' || DocType == 'CRM003' || DocType == 'CRM004' || DocType == 'CRM005' || DocType == 'CRM008'){
+            System.debug('DocType =>' + DocType );
+            if ( DocType == 'CRM001' || DocType == 'CRM002' || DocType == 'CRM003' || DocType == 'CRM004' || DocType == 'CRM005' || DocType == 'CRM006' 
+                || DocType == 'CRM008' || DocType == 'CRM009' || DocType == 'CRM010'){
                
                 // I/F 파라미터 셋팅
                 Map<String, Object> mapInput = new Map<String, Object>();
@@ -85,13 +87,32 @@ public without sharing class DecisionProcessNewController {
                 // 5) 오픈품의서 CRM005
                 } else if ( DocType == 'CRM005' ){
                     file = new pagereference('/apex/ESM_OpenApproval');
-                // 6) (급식/헬씨) 신규개설 및 재계약 CRM008
+                // 6) 전자계약 법인(사용) 인감 날인 기본 신청서 CRM006
+                } else if ( DocType == 'CRM006' ){
+                    file = new pagereference('/apex/CJFW_ContractSealUseForm');
+                // 8) (급식/헬씨) 신규개설 및 재계약 CRM008
                 } else if ( DocType == 'CRM008' ){
                     file = new pagereference('/apex/CJFW_CreateNewReport');
+                // 9) (외식SU) 신규 품의 CRM009
+                } else if ( DocType == 'CRM009' ){
+                    file = new pagereference('/apex/CJFW_OrderConsiderNewForm');
+                // 10) (외식SU) 재계약 품의 CRM010
+                } else if ( DocType == 'CRM010' ){
+                    file = new pagereference('/apex/CJFW_OrderConsiderReContractForm');
                 }
-
-                file.getParameters().put('Id', objDecisionProcess.Opportunity__c ); 
-    
+                
+                
+                // 급식 & 외식의 경우 page 호출시 type & showtable 파라미터 값 추가 
+                if(DocType == 'CRM008' || DocType == 'CRM009' || DocType == 'CRM010'){
+                    file.getParameters().put('opportunityId', objDecisionProcess.Opportunity__c );  
+                    file.getParameters().put('type', DocType );  
+                    file.getParameters().put('showtable', 'true' );  
+                
+                // 그 외 품의서는 아이디값만 넘겨줌
+                } else {    
+                    file.getParameters().put('Id', objDecisionProcess.Opportunity__c ); 
+                }
+                
                 Blob body ;
                 if (!Test.isRunningTest()) {
                     body = file.getContent();
@@ -103,7 +124,7 @@ public without sharing class DecisionProcessNewController {
                 String strBlob = body.toString();
                     System.debug('[P2 확인] strBlob' + strBlob);
                     String strResult = CommonUtil.HTMLparse(strBlob, '<div id="getdata"');
-                    System.debug('[P2 확인] strResult' + strResult);
+                    // System.debug('[P2 확인] strResult' + strResult);
     
                 // 유저정보
                 User objUser = [
@@ -121,14 +142,14 @@ public without sharing class DecisionProcessNewController {
                 System.debug(' check Input ::: ' + mapInput);
                 String strJsonRequestBody = JSON.serialize(mapInput);
                 HttpResponse response = ifutilWrapper.webCallout(strJsonRequestBody, true);
-                system.debug( 'check Output ::: ' + response.getBody() );
+                System.debug( 'check Output ::: ' + response.getBody() );
 				System.debug('[P2 확인] response' + response);
                 // I/F 성공시
                 if(response.getStatusCode() == 200){
                     Map<String, Object> resultMap = (Map<String, Object>) JSON.deserializeUntyped(response.getBody());  
                     // I/F 결과 에러코드 발생시
                     if ( resultMap.get('err_cd') == '실패') {
-                        system.debug('[I/F Error] ::: ['+resultMap.get('err_cd')+'] '+resultMap.get('err_msg_ctt'));
+                        System.debug('[I/F Error] ::: ['+resultMap.get('err_cd')+'] '+resultMap.get('err_msg_ctt'));
                         isIFError = true;
                     }
                     // I/F 결과 에러코드 미발생시
@@ -136,22 +157,22 @@ public without sharing class DecisionProcessNewController {
                         objDecisionProcess.DocId__c = String.valueOf(resultMap.get('doc_id'));
                         objDecisionProcess.DocURL__c = String.valueOf(resultMap.get('url'))+'&modeType=REUSE';
                         // objDecisionProcess.DocURL__c = String.valueOf(resultMap.get('url'));
-                        system.debug( 'check doc_id  ::: ' + resultMap.get('doc_id'));
-                        system.debug( 'check doc_num ::: ' + resultMap.get('doc_num'));
-                        system.debug( 'check url     ::: ' + resultMap.get('url'));
+                        System.debug( 'check doc_id  ::: ' + resultMap.get('doc_id'));
+                        System.debug( 'check doc_num ::: ' + resultMap.get('doc_num'));
+                        System.debug( 'check url     ::: ' + resultMap.get('url'));
                     }
                 // I/F 실패시
                 } else {
                     isIFError = true;
-                    system.debug( '[I/F Error] ::: [' + response.getStatusCode() + '] 서버접속 실패');
+                    System.debug( '[I/F Error] ::: [' + response.getStatusCode() + '] 서버접속 실패');
                 }
             }  
             System.debug('objDecisionProcess : ' + objDecisionProcess);
             insert objDecisionProcess;
 
         } catch(Exception e) {
-            System.debug('error getMessage : ' + e.getMessage());
-            System.debug('error getLineNumber : ' + e.getLineNumber());
+            System.debug('error 메세지 => ' + e.getMessage());
+            System.debug('error 라인 => ' + e.getStackTraceString());
             System.debug('error getCause : ' + e.getCause());
             String strErrorMessage = '[오류]  관리자에게 문의해주세요. (' + e.getMessage() + ')';
 
