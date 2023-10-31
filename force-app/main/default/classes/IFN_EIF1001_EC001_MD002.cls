@@ -10,11 +10,12 @@
  * ----------------------------------------------
  *  NO | Date       | Modifier       | Description
  * ----------------------------------------------
- *  1. | 2023.08.22 | 김동영          | 최초작성
+ *  1. | 2023.08.22 | 김동영          | 최초작성  
  * */
 @RestResource(urlMapping='/EIF1001/EC001/MD002')
 global with sharing class IFN_EIF1001_EC001_MD002 {
     global IFN_EIF1001_EC001_MD002() {}
+    
     
     @HttpPost
     global static String doPost() {

@@ -2,7 +2,7 @@
  * @description       : 관리처-분할 Controller
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 10-30-2023
+ * @last modified on  : 10-31-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -1028,7 +1028,7 @@ public with sharing class CJFW_MDMManagementController {
                 mdmRequest.recordTypeId                                = recordIdEx;
                 mdmRequest.RequestType__c                              = 'Create';
                 // [1027 New]
-                mdmRequest.Account__c                                   = acc.id;                                                // 고객                                                                                                                                                                                                           
+                //mdmRequest.Account__c                                   = acc.id;                                                // 고객                                                                                                                                                                                                           
                 mdmRequest.PV_KUNNR__c                                  = acc.CustomerID__c;                                     // 고객ID(화면노출X)                                                                                                                                                                                                                        
                 mdmRequest.PV_OLDCD__c                                  = acc.CustomerIDASIS__c;                                 // 구코드(As-Is)                                                                                                                                                                                                                            
                 mdmRequest.PV_NAME1__c                                  = acc.Name;                                              // 고객명(영문명 포함)                                                                                                                                                                                                         

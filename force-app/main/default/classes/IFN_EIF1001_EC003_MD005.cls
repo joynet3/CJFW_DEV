@@ -15,7 +15,7 @@ public class IFN_EIF1001_EC003_MD005 {
     public String interfaceId = 'IFN_EIF1001_EC003_MD005';
 
     public IFN_CommonLog.LogWrap logWrap{get;set;}
-    public IFN_CommonLog commlog;
+    public IFN_CommonLog commlog;    
     
     public IFN_CalloutResult callout() {
         IFN_CalloutResult calloutResult = new IFN_CalloutResult();

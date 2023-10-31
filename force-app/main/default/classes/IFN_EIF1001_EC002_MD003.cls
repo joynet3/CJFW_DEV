@@ -10,13 +10,15 @@
  * ----------------------------------------------
  *  NO | Date       | Modifier       | Description
  * ----------------------------------------------
- *  1. | 2023.08.28 | 김동영          | 최초작성
+ *  1. | 2023.08.28 | 김동영          | 최초작성 
  * */
 public class IFN_EIF1001_EC002_MD003 {
     public String interfaceId = 'IFN_EIF1001_EC002_MD003';
     public String contDocId;
     public IFN_CommonLog.LogWrap logWrap{get;set;}
     public IFN_CommonLog commlog;
+    
+    
 
     public IFN_CalloutResult callout() {
         IFN_CalloutResult calloutResult = new IFN_CalloutResult();

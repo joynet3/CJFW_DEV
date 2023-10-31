@@ -24,6 +24,7 @@ public class IFN_EIF1001_EC002_MD004 {
         'InvalidImageFormatException' =>'지원하지 않는 이미지 형식',
         'FailedToUploadImageException' =>'카카오 시스템 오류'
     };
+                
         
     public IFN_CalloutResult callout() {
         IFN_CalloutResult calloutResult = new IFN_CalloutResult();

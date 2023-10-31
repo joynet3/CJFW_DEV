@@ -57,7 +57,7 @@ public with sharing class CJFW_MDMBulkSearchContactController {
             List<MDMRegRequestCustomer__c> customerList = [SELECT Id, PV_KUNNR__c FROM MDMRegRequestCustomer__c WHERE MDMRegRequestBulkCustomer__c = :recordId];
             
             for(MDMRegRequestCustomer__c cus : customerList) {
-                ids.add(cus.PV_KUNNR__c);
+                ids.add('\'' + cus.PV_KUNNR__c + '\'');
             }
             
             System.debug('===============> customerList : ' + customerList);
@@ -78,10 +78,10 @@ public with sharing class CJFW_MDMBulkSearchContactController {
             strQuery += ' FROM Contact ';
             strQuery += ' WHERE Account.CustomerId__c != null ';
             if(recordId != null) {
-                strQuery += ' AND Account.CustomerId__c IN (\'' + ids + '\') ';
+                strQuery += ' AND Account.CustomerId__c IN ' + ids + ' ';
             }
             for(Integer i = 0; i < searchKeys.size(); i++) {
-                if(searchKeys[i] == 'OwnerId') {
+                if(searchKeys[i] == 'AccountId') {
                     strQuery += ' AND ' + searchKeys[i] + ' = \'' + searchValues[i] + '\'';
                 } else {
                     strQuery += ' AND ' + searchKeys[i] + ' LIKE \'%' + searchValues[i] + '%\' ';

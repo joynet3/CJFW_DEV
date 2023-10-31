@@ -2,10 +2,26 @@
  * @description       : 
  * @author            : doyeon.kim@dkbmc.com
  * @group             : 
- * @last modified on  : 10-30-2023
+ * @last modified on  : 10-31-2023
  * @last modified by  : doyeon.kim@dkbmc.com
 **/
 public with sharing class CJFW_ExternalProductController {
+
+    @AuraEnabled
+    public static Map<String, Object> doSearch(Map<String, Object> mapParam) {
+        System.debug('# CJFW_ExternalProductController # doSearch ');
+        System.debug(' mapParam ->'+ mapParam );
+        String strSearchInput  = String.valueOf(mapParam.get('strSearchInput'));
+        System.debug(' strSearchInput ->'+ strSearchInput );
+
+        Set<String> productCodeSet;
+        if(mapParam.get('productCodeSet') != null) productCodeSet = (Set<String>) JSON.deserialize(JSON.serialize(mapParam.get('productCodeSet')), Set<String>.class);
+        System.debug(' productCodeSet ->'+ productCodeSet );
+
+        return null;
+
+    }
+    
     @AuraEnabled
     public static Map<String,Object> doSendSearchEngine(Map<String,Object> params){
         try {
@@ -55,4 +71,5 @@ public with sharing class CJFW_ExternalProductController {
             throw new AuraHandledException(e.getMessage() + ' (Line : ' + e.getLineNumber() + ')');
         }
     }
+
 }

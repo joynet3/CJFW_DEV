@@ -11,7 +11,7 @@
  * ----------------------------------------------
  *  1. | 2023.09.11 | 박지오          | 최초작성
  * */
-public with sharing class IFN_EIF1003_Callout {
+public class IFN_EIF1003_Callout {
     public IFN_CommonLog.LogWrap logWrap { get; set; }
     public IFN_CommonLog commlog;
 

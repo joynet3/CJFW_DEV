@@ -12,7 +12,7 @@
  *  1. | 2023.08.30 | sancho         | 최초작성
  * */
 @isTest
-public with sharing class IFN_EIF1001_FS001_MD001_test {
+public class IFN_EIF1001_FS001_MD001_test {
     @TestSetup
     static void makeData(){
         

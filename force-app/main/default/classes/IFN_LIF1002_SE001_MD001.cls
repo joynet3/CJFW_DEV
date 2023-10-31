@@ -19,8 +19,6 @@ public class IFN_LIF1002_SE001_MD001 {
     public IFN_CommonLog commlog;
 
 
-
-
     public SE001_01ResultWrapper callout( SE001RequstWrapper params){
         SE001_01ResultWrapper result = new SE001_01ResultWrapper();
 

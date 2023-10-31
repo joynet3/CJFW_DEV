@@ -11,7 +11,7 @@
  * ----------------------------------------------
  *  1. | 2023.08.29 | sancho         | 최초작성
  * */
-global with sharing class IFN_EIF1001_FS001_MD001 implements Database.Batchable<String>, Database.Stateful, Database.AllowsCallouts {
+global class IFN_EIF1001_FS001_MD001 implements Database.Batchable<String>, Database.Stateful, Database.AllowsCallouts {
 
     String interfaceId = 'IFN_EIF1001_FS001_MD001';
 

@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : seol.kim@dkbmc.com
  * @group             : 
- * @last modified on  : 10-27-2023
+ * @last modified on  : 10-31-2023
  * @last modified by  : seol.kim@dkbmc.com
 **/
 public with sharing class CJFW_CategoryFileController {
@@ -161,17 +161,22 @@ public with sharing class CJFW_CategoryFileController {
     }  
 
     @AuraEnabled(cacheable=true)
-    public static Boolean isUserMemberOfCollaborationGroup(String groupId) {
+    public static Boolean isUserMemberOfCollaborationGroup(String groupId, String category) {
         String userId = UserInfo.getUserId();
         System.debug('userId ==>' + userId);
+        System.debug('category ==>' + category);
+        System.debug('groupId ==>' + groupId);
 
-        CollaborationGroupMember[] members = [SELECT Id FROM CollaborationGroupMember
-                                                WHERE CollaborationGroupId = :groupId
-                                                AND MemberId  =: userId
-                                                AND CollaborationRole = 'Admin'];
-        return !members.isEmpty();
-    }
   
-    
+        if (category == '계약 참고자료') {
+            CollaborationGroupMember[] members = [SELECT Id FROM CollaborationGroupMember
+                                                    WHERE CollaborationGroupId = :groupId
+                                                    AND MemberId  =: userId
+                                                    AND CollaborationRole = 'Admin'];
+            return !members.isEmpty();
+        } else {
 
+            return true;
+        }
+    }
 }

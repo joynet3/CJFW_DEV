@@ -11,10 +11,10 @@
  * ----------------------------------------------
  *  1. | 2023.08.30 | sancho         | 최초작성
  * */
-public class IFN_EIF1001_FS001_MD001_sc implements Schedulable {
-    public IFN_EIF1001_FS001_MD001_sc() {}
+global class IFN_EIF1001_FS001_MD001_sc implements Schedulable {
+    global IFN_EIF1001_FS001_MD001_sc() {}
 
-    public void execute(SchedulableContext sc) {
+    global void execute(SchedulableContext sc) {
         IFN_EIF1001_FS001_MD001 ba = new IFN_EIF1001_FS001_MD001();
         Database.executeBatch(ba, 1);
     }

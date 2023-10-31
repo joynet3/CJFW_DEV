@@ -73,6 +73,6 @@ public class IFN_EIF1001_EC001_MD001 {
     // result
     public class EC001ResultWrapper {
         // msg_key, code, desc
-        public List<Map<String, Object>> results;
+        public List<Object> results {get;set;}
     }
 }
