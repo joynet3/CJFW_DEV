@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : yeonji.lim@dkbmc.com
  * @group             : 
- * @last modified on  : 10-30-2023
+ * @last modified on  : 10-31-2023
  * @last modified by  : yeonji.lim@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -40,26 +40,30 @@ public with sharing class CJFW_CreateNewReportPageController {
      * 품의이력Obj에서 해당 레코드 데이터 가져오기
      */
     public void getRecord(){
-        decProRecord = [SELECT Id,
+        try {
+            decProRecord = [SELECT Id,
                                 Name
-                        FROM DecisionProcess__c 
-                        WHERE Opportunity__c =: OpptyId
-                        ORDER BY CreatedDate DESC
-                        LIMIT 1]; 
+                            FROM DecisionProcess__c 
+                            WHERE Opportunity__c =: OpptyId
+                            ORDER BY CreatedDate DESC
+                            LIMIT 1]; 
 
 
-        saveResult = [SELECT saveResult__c
-                        FROM CJFW_ExpectedIncomeExpenses__c 
-                        // WHERE Id = 'a1l0w000001MmAMAA0'
-                        WHERE Opportunity__c =: OpptyId AND IsReportCheck__c = true
-                        LIMIT 1];
+            saveResult = [SELECT saveResult__c
+                            FROM CJFW_ExpectedIncomeExpenses__c 
+                            WHERE Opportunity__c =: OpptyId AND IsReportCheck__c = true
+                            LIMIT 1];
 
-        saveResultMap = new Map<String,Object>();
-        if (saveResult != null) {
-            saveResultMap = (Map<String, Object>)JSON.deserializeUntyped(saveResult.saveResult__c);
+            saveResultMap = new Map<String,Object>();
+            if (saveResult != null) {
+                saveResultMap = (Map<String, Object>)JSON.deserializeUntyped(saveResult.saveResult__c);
+            }
+
+            saveResultStr =  JSON.serialize(saveResultMap);
+        } catch (Exception e) {
+            System.debug('error 메세지 => ' + e.getMessage());
+            System.debug('error 라인 => ' + e.getStackTraceString());
         }
-
-        saveResultStr =  JSON.serialize(saveResultMap);
 
     }
 
@@ -67,7 +71,23 @@ public with sharing class CJFW_CreateNewReportPageController {
      * 손익계산 Obj에서 넘어온 saveResult 데이터 값 담긴 변수 선언 & 데이터 넣어주기
      */
     private class DataWrapper {
+    // ====[거래처 현황]=====
+        public String summary {get;set;}    // 개요
+        public String accountName {get;set;}    // 거래처명
+        public String ownerName {get;set;}    // 대표자명
+        public String accountChannel {get;set;}    // 경로
+        public String outwardEntire {get;set;}    // 전체외형
+        public String outwardCompanySize {get;set;}    // 당사규모
+        public String firstDraft {get;set;}    // 초도일자
+        public String accountAddress {get;set;}    // 주소
+        public String accountPhone {get;set;}    // 연락처
+        public String existGoods {get;set;}    // 기존납품처
+        public String exceptionPrice {get;set;}    // 단가/예외가
+        public String existCenter {get;set;}    // 센터
+        
     // ====[거래 상세 내용]=====
+        public String contractStartDate {get;set;}    // 계약시작기간
+        public String contractEndDate {get;set;}    // 계약종료기간
         public String collateralKind {get;set;}    // 담보종류
         public String collateralAmount {get;set;}    // 담보금액
         public String collateralPeriod {get;set;}    // 담보제공기간
@@ -80,7 +100,14 @@ public with sharing class CJFW_CreateNewReportPageController {
         public String paymentPicklist {get;set;}    // 결제수단
         public String ContractPaymentDate {get;set;}    // 약정결제일
         public String chefSupport {get;set;}    // 쉐프지원
-
+        public String contractPicklist {get;set;}    // 계약서종류
+        public String otherDetail {get;set;}    // 기타지원세부내역
+        
+    // ====[그 외]=====
+        public String ImproveDetail {get;set;}    // 개선방안내역
+        public String Description {get;set;}    // 특이사항
+        public String attachDoc {get;set;}    // 첨부서류
+        
     // ====[신규 개설 예상 손익]=====
         // 매출 합계 라인
         public String beforeTotal {get;set;}    // 지원전월
@@ -229,11 +256,27 @@ public with sharing class CJFW_CreateNewReportPageController {
         public String salesProfitRateAfter {get;set;}    // 지원 後월 예상
         public String salesProfitRateYear {get;set;}    // 연간예상실적률
 
-        /* 
-        * 생성자 - 데이터 넣기
-        */
+    /* 
+    * 생성자 - 데이터 넣기
+    */
         public DataWrapper(Map<String, Object> saveResultMap){
+        // ====[거래처 현황]=====
+            this.summary = saveResultMap.get('summary')!=null ? String.valueOf(saveResultMap.get('summary')) : '';
+            this.accountName = saveResultMap.get('accountName')!=null ? String.valueOf(saveResultMap.get('accountName')) : '';
+            this.ownerName = saveResultMap.get('ownerName')!=null ? String.valueOf(saveResultMap.get('ownerName')) : '';
+            this.accountChannel = saveResultMap.get('accountChannel')!=null ? String.valueOf(saveResultMap.get('accountChannel')) : '';
+            this.outwardEntire = saveResultMap.get('outwardEntire')!=null ? String.valueOf(saveResultMap.get('outwardEntire')) : '';
+            this.outwardCompanySize = saveResultMap.get('outwardCompanySize')!=null ? String.valueOf(saveResultMap.get('outwardCompanySize')) : '';
+            this.firstDraft = saveResultMap.get('firstDraft')!=null ? String.valueOf(saveResultMap.get('firstDraft')) : '';
+            this.accountAddress = saveResultMap.get('accountAddress')!=null ? String.valueOf(saveResultMap.get('accountAddress')) : '';
+            this.accountPhone = saveResultMap.get('accountPhone')!=null ? String.valueOf(saveResultMap.get('accountPhone')) : '';
+            this.existGoods = saveResultMap.get('existGoods')!=null ? String.valueOf(saveResultMap.get('existGoods')) : '';
+            this.exceptionPrice = saveResultMap.get('exceptionPrice')!=null ? String.valueOf(saveResultMap.get('exceptionPrice')) : '';
+            this.existCenter = saveResultMap.get('existCenter')!=null ? String.valueOf(saveResultMap.get('existCenter')) : '';
+            
         // ====[거래 상세 내용]=====
+            this.contractStartDate = saveResultMap.get('contractStartDate')!=null ? String.valueOf(saveResultMap.get('contractStartDate')) : '';
+            this.contractEndDate = saveResultMap.get('contractEndDate')!=null ? String.valueOf(saveResultMap.get('contractEndDate')) : '';
             this.collateralKind = saveResultMap.get('detail-collateral-kind')!=null ? String.valueOf(saveResultMap.get('detail-collateral-kind')) : '';
             this.collateralAmount = saveResultMap.get('detail-collateral-amount')!=null ? String.valueOf(saveResultMap.get('detail-collateral-amount')) : '';
             this.collateralPeriod = saveResultMap.get('collateral-period')!=null ? String.valueOf(saveResultMap.get('collateral-period')) : '';
@@ -246,6 +289,13 @@ public with sharing class CJFW_CreateNewReportPageController {
             this.paymentPicklist = saveResultMap.get('payment-picklist')!=null ? String.valueOf(saveResultMap.get('payment-picklist')) : '';
             this.ContractPaymentDate = saveResultMap.get('contract-payment-period')!=null ? String.valueOf(saveResultMap.get('contract-payment-period')) : '';
             this.chefSupport = saveResultMap.get('chef-support')!=null ? String.valueOf(saveResultMap.get('chef-support')) : '';
+            this.contractPicklist = saveResultMap.get('contract-picklist')!=null ? String.valueOf(saveResultMap.get('contract-picklist')) : '';
+            this.otherDetail = saveResultMap.get('otherDetail')!=null ? String.valueOf(saveResultMap.get('otherDetail')) : '';
+            
+        // ====[그 외]=====
+            this.ImproveDetail = saveResultMap.get('ImproveDetail')!=null ? String.valueOf(saveResultMap.get('ImproveDetail')) : '';
+            this.Description = saveResultMap.get('Description')!=null ? String.valueOf(saveResultMap.get('Description')) : '';
+            this.attachDoc = saveResultMap.get('attachDoc')!=null ? String.valueOf(saveResultMap.get('attachDoc')) : '';
             
         // ====[신규 개설 예상 손익]=====
             // 매출 합계 라인

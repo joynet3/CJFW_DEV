@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : yejoo.lee@dkbmc.com
  * @group             : 
- * @last modified on  : 10-27-2023
+ * @last modified on  : 10-31-2023
  * @last modified by  : yejoo.lee@dkbmc.com
 **/
 public without sharing class CJFW_DeliveryDstMgmtCtrlNotiHandler extends NotiHandler{
@@ -45,57 +45,59 @@ public without sharing class CJFW_DeliveryDstMgmtCtrlNotiHandler extends NotiHan
             }
         }
         insert cvList;
-        
-        // 2. ContentDistribution 생성 (Public Link 생성 : ContentDownloadUrl)
-        Set<String> cvIdSet = new Set<String>();
-        List<ContentDistribution> cdbList = new List<ContentDistribution>();
-        for (ContentVersion cv : cvList) {
-            cvIdSet.add(cv.Id);
-            
-            ContentDistribution cdb = new ContentDistribution (
-                ContentVersionId = cv.Id,
-                Name = cv.Title,
-                PreferencesAllowViewInBrowser = true,
-                PreferencesLinkLatestVersion =true
-            );
-            cdbList.add(cdb);
-        }
-        insert cdbList;
 
-        //List 정보
-        cvList = [SELECT Id, ContentDocumentId, MgmtId__c FROM ContentVersion WHERE Id IN :cvIdSet];
-        cdbList = [SELECT Id, ContentVersion.MgmtId__c, ContentDownloadUrl, ContentVersionId FROM ContentDistribution WHERE ContentVersionId IN :cvIdSet];
-        
-        //이미지 태그 가공
         Map<String, List<String>> imgUrlMap = new Map<String, List<String>>();
-        for (ContentDistribution cdb : cdbList) {
-            if(imgUrlMap.containsKey(cdb.ContentVersion.MgmtId__c)){
-                imgUrlMap.get(cdb.ContentVersion.MgmtId__c).add('<img src=\"' + cdb.ContentDownloadUrl + '\" style="width:100%;">');
-            }else{
-                imgUrlMap.put(cdb.ContentVersion.MgmtId__c, new List<String>{'<img src=\"' + cdb.ContentDownloadUrl + '\" style="width:100%;">'});
+        if(cvList.size()>0){
+            // 2. ContentDistribution 생성 (Public Link 생성 : ContentDownloadUrl)
+            Set<String> cvIdSet = new Set<String>();
+            List<ContentDistribution> cdbList = new List<ContentDistribution>();
+            for (ContentVersion cv : cvList) {
+                cvIdSet.add(cv.Id);
+                
+                ContentDistribution cdb = new ContentDistribution (
+                    ContentVersionId = cv.Id,
+                    Name = cv.Title,
+                    PreferencesAllowViewInBrowser = true,
+                    PreferencesLinkLatestVersion =true
+                );
+                cdbList.add(cdb);
             }
+            insert cdbList;
+    
+            //List 정보
+            cvList = [SELECT Id, ContentDocumentId, MgmtId__c FROM ContentVersion WHERE Id IN :cvIdSet];
+            cdbList = [SELECT Id, ContentVersion.MgmtId__c, ContentDownloadUrl, ContentVersionId FROM ContentDistribution WHERE ContentVersionId IN :cvIdSet];
+            
+            //이미지 태그 가공
+            for (ContentDistribution cdb : cdbList) {
+                if(imgUrlMap.containsKey(cdb.ContentVersion.MgmtId__c)){
+                    imgUrlMap.get(cdb.ContentVersion.MgmtId__c).add('<img src=\"' + cdb.ContentDownloadUrl + '\" style="width:100%;">');
+                }else{
+                    imgUrlMap.put(cdb.ContentVersion.MgmtId__c, new List<String>{'<img src=\"' + cdb.ContentDownloadUrl + '\" style="width:100%;">'});
+                }
+            }
+    
+            // 3. Record Id 랑 Link
+            Set<String> cdIdSet = new Set<String>();
+            for (ContentVersion cv : cvList) {
+                cdIdSet.add(cv.ContentDocumentId);
+            }
+    
+            List<ContentDocumentLink> richfilelinkList = [SELECT Id, ContentDocumentId, ContentDocument.LatestPublishedVersion.MgmtId__c, LinkedEntityId 
+                                                            FROM contentdocumentLink
+                                                            WHERE ContentDocumentId IN :cdIdSet];
+            List<ContentDocumentLink> insertLinkList = new List<ContentDocumentLink>();
+            
+            for (ContentDocumentLink l : richfilelinkList) {
+                ContentDocumentLink link = new ContentDocumentLink(
+                    LinkedEntityId = l.ContentDocument.LatestPublishedVersion.MgmtId__c,
+                    ContentDocumentId = l.ContentDocumentId
+                );
+                insertLinkList.add(link);
+            }
+            System.debug('updateLinkList:' +insertLinkList);
+            insert insertLinkList;
         }
-
-        // 3. Record Id 랑 Link
-        Set<String> cdIdSet = new Set<String>();
-        for (ContentVersion cv : cvList) {
-            cdIdSet.add(cv.ContentDocumentId);
-        }
-
-        List<ContentDocumentLink> richfilelinkList = [SELECT Id, ContentDocumentId, ContentDocument.LatestPublishedVersion.MgmtId__c, LinkedEntityId 
-                                                        FROM contentdocumentLink
-                                                        WHERE ContentDocumentId IN :cdIdSet];
-        List<ContentDocumentLink> insertLinkList = new List<ContentDocumentLink>();
-        
-        for (ContentDocumentLink l : richfilelinkList) {
-            ContentDocumentLink link = new ContentDocumentLink(
-                LinkedEntityId = l.ContentDocument.LatestPublishedVersion.MgmtId__c,
-                ContentDocumentId = l.ContentDocumentId
-            );
-            insertLinkList.add(link);
-        }
-        System.debug('updateLinkList:' +insertLinkList);
-        insert insertLinkList;
 
         /*
             # GET 첨부파일 Version => Map<Id(mgmt), Set(VersionIds)>

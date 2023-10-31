@@ -19,6 +19,9 @@ public class IFN_EIF1001_Callout {
         this.commlog = new IFN_CommonLog();
     }
 
+
+
+    
     public IFN_EIF1001_Callout(String interfaceId, String type) {
         this.commlog = new IFN_CommonLog();
         this.logWrap = new IFN_CommonLog.LogWrap(interfaceId, type);

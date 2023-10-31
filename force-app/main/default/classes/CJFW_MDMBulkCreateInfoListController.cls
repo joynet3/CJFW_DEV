@@ -2,8 +2,8 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 10-16-2023
- * @last modified by  : hyeeun.song@dkbmc.com
+ * @last modified on  : 10-30-2023
+ * @last modified by  : joohyeon.jang@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkCreateInfoListController {
 
@@ -11,7 +11,7 @@ public with sharing class CJFW_MDMBulkCreateInfoListController {
     @AuraEnabled(cacheable=true)
     public static DataWrapper getAccountInfo (String recordId, Integer pageNumber, Integer pageSize) {
 
-        List<MDMRegRequestCustomer__c> mdms = [SELECT PV_NAME1__c, PV_STCD1__c, PV_STCD2__c, PV_J_1KFREPRE__c FROM MDMRegRequestCustomer__c WHERE MDMRegRequestBulkCustomer__c = :recordId ORDER BY Name];
+        List<MDMRegRequestCustomer__c> mdms = [SELECT PV_NAME1__c, PV_NAME_G__c, PV_KUNNR__c, PV_OLDCD__c, PV_NAME2__c, PV_KTOKD__c, PV_CUSTTYPE__c, PV_STCD2__c  FROM MDMRegRequestCustomer__c WHERE MDMRegRequestBulkCustomer__c = :recordId ORDER BY Name];
 
         DataWrapper objWrapper = new DataWrapper();
         
@@ -24,9 +24,13 @@ public with sharing class CJFW_MDMBulkCreateInfoListController {
             MDMRequest mdmRequest = new MDMRequest();
             mdmRequest.PV_INDEX         =      i + 1;
             mdmRequest.PV_NAME1         =      String.isBlank(mdms[i].PV_NAME1__c) ? null : mdms[i].PV_NAME1__c;
-            mdmRequest.PV_STCD1         =      String.isBlank(mdms[i].PV_STCD1__c) ? null : mdms[i].PV_STCD1__c;
+            mdmRequest.PV_NAME_G        =      String.isBlank(mdms[i].PV_NAME_G__c) ? null : mdms[i].PV_NAME_G__c;
+            mdmRequest.PV_KUNNR         =      String.isBlank(mdms[i].PV_KUNNR__c) ? null : mdms[i].PV_KUNNR__c;
+            mdmRequest.PV_OLDCD         =      String.isBlank(mdms[i].PV_OLDCD__c) ? null : mdms[i].PV_OLDCD__c;
+            mdmRequest.PV_NAME2         =      String.isBlank(mdms[i].PV_NAME2__c) ? null : mdms[i].PV_NAME2__c;
+            mdmRequest.PV_KTOKD         =      String.isBlank(mdms[i].PV_KTOKD__c) ? null : mdms[i].PV_KTOKD__c;
+            mdmRequest.PV_CUSTTYPE      =      String.isBlank(mdms[i].PV_CUSTTYPE__c) ? null : mdms[i].PV_CUSTTYPE__c;
             mdmRequest.PV_STCD2         =      String.isBlank(mdms[i].PV_STCD2__c) ? null : mdms[i].PV_STCD2__c;
-            mdmRequest.PV_J_1KFREPRE    =      String.isBlank(mdms[i].PV_J_1KFREPRE__c) ? null : mdms[i].PV_J_1KFREPRE__c;
             System.debug((i+1) + ' 번째 mdmRequest => ' + mdmRequest);
             mdmList.add(mdmRequest);
         }
@@ -72,9 +76,13 @@ public with sharing class CJFW_MDMBulkCreateInfoListController {
     public class MDMRequest {
         @AuraEnabled public Integer PV_INDEX {get;set;}
         @AuraEnabled public String PV_NAME1 {get;set;}
-        @AuraEnabled public String PV_STCD1 {get;set;}
+        @AuraEnabled public String PV_NAME_G {get;set;}
+        @AuraEnabled public String PV_KUNNR {get;set;}
+        @AuraEnabled public String PV_OLDCD {get;set;}
+        @AuraEnabled public String PV_NAME2 {get;set;}
+        @AuraEnabled public String PV_KTOKD {get;set;}
+        @AuraEnabled public String PV_CUSTTYPE {get;set;}
         @AuraEnabled public String PV_STCD2 {get;set;}
-        @AuraEnabled public String PV_J_1KFREPRE {get;set;}
     }
 
 }

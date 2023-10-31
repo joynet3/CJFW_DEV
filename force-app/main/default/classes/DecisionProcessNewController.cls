@@ -46,6 +46,30 @@ public without sharing class DecisionProcessNewController {
     }
 
     /**
+     * 품의이력 레코드생성
+     * 
+     * @param objDecisionProcess 품의이력(DecisionProcess__c) Object
+     * @return 
+     *
+    **/
+    @AuraEnabled
+    public static String recordSave(DecisionProcess__c objDecisionProcess) {
+
+        try {
+            System.debug('objDecisionProcess : ' + objDecisionProcess);
+            insert objDecisionProcess;
+
+            return objDecisionProcess.Id!=null ? objDecisionProcess.Id : '';
+
+        } catch (Exception e) {
+            System.debug('error 메세지 => ' + e.getMessage());
+            System.debug('error 라인 => ' + e.getStackTraceString());
+
+            return '에러 발생: ' + e.getMessage();
+        }
+    }
+
+    /**
      * 품의이력 생성
      * 
      * @param recordId
@@ -54,10 +78,11 @@ public without sharing class DecisionProcessNewController {
      *
     **/
     @AuraEnabled
-    public static void doSave(Id recordId, DecisionProcess__c objDecisionProcess) {
+    public static void doSave(Id recordId, DecisionProcess__c objDecisionProcess, String decisionProcessId) {
         
         System.debug('=================================연결 됬나용??!!?!?!?!?!?!?!');
-
+        System.debug('=================================decisionProcessId => ' + decisionProcessId);
+        
         Boolean isIFError = false;
         try {
             String DocType = objDecisionProcess.Type__c; 
@@ -112,6 +137,8 @@ public without sharing class DecisionProcessNewController {
                 } else {    
                     file.getParameters().put('Id', objDecisionProcess.Opportunity__c ); 
                 }
+
+                System.debug('file => ' + file);
                 
                 Blob body ;
                 if (!Test.isRunningTest()) {
@@ -160,16 +187,20 @@ public without sharing class DecisionProcessNewController {
                         System.debug( 'check doc_id  ::: ' + resultMap.get('doc_id'));
                         System.debug( 'check doc_num ::: ' + resultMap.get('doc_num'));
                         System.debug( 'check url     ::: ' + resultMap.get('url'));
+                        
+                        objDecisionProcess.Id = decisionProcessId;
+                        System.debug('objDecisionProcess : ' + objDecisionProcess);
+                        update objDecisionProcess;
                     }
                 // I/F 실패시
                 } else {
                     isIFError = true;
                     System.debug( '[I/F Error] ::: [' + response.getStatusCode() + '] 서버접속 실패');
                 }
-            }  
-            System.debug('objDecisionProcess : ' + objDecisionProcess);
-            insert objDecisionProcess;
+            } 
 
+
+            
         } catch(Exception e) {
             System.debug('error 메세지 => ' + e.getMessage());
             System.debug('error 라인 => ' + e.getStackTraceString());

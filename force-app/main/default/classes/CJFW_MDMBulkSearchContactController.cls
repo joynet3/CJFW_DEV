@@ -5,13 +5,13 @@
  * @last modified on  : 10-31-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
-public with sharing class CJFW_MDMBulkCustomerSearchController {
+public with sharing class CJFW_MDMBulkSearchContactController {
     
     @AuraEnabled(cacheable=true)
-    public static DataWrapper getCustomerInfo(List<Map<String, String>> searchKey, String recordId, Integer pageNumber, Integer pageSize) {
+    public static DataWrapper getContactInfo(List<Map<String, String>> searchKey, String recordId, Integer pageNumber, Integer pageSize){
 
-        system.debug('### CJFW_MDMBulkAccountSearchController ###');
-        system.debug('>>> getAccountInfo()');
+        system.debug('### CJFW_MDMBulkSearchContactController ###');
+        system.debug('>>> getContactInfo()');
 
         String strStatus = 'SUCCESS';
         String strMessage = '';
@@ -50,16 +50,36 @@ public with sharing class CJFW_MDMBulkCustomerSearchController {
         System.debug('===============> searchKeys : ' + searchKeys);
         System.debug('===============> searchValues : ' + searchValues);
         System.debug('===============> dateValues : ' + dateValues);
+        
+        List<String> ids = new List<String>();
+
+        if(recordId != null) {
+            List<MDMRegRequestCustomer__c> customerList = [SELECT Id, PV_KUNNR__c FROM MDMRegRequestCustomer__c WHERE MDMRegRequestBulkCustomer__c = :recordId];
+            
+            for(MDMRegRequestCustomer__c cus : customerList) {
+                ids.add(cus.PV_KUNNR__c);
+            }
+            
+            System.debug('===============> customerList : ' + customerList);
+            System.debug('===============> ids : ' + ids);
+        }
+        
 
         DataWrapper objWrapper = new DataWrapper();
-        
+
         try {
 
-            List<MDMRegRequestCustomer__c> searchResult = new List<MDMRegRequestCustomer__c>(); // 분할해서 담은
-            List<MDMRegRequestCustomer__c> listSearchResult = new List<MDMRegRequestCustomer__c>(); // 모두 담은
+            List<Contact> searchResult = new List<Contact>();       // 분할해서 담은
+            List<Contact> listSearchResult = new List<Contact>();   // 모두 담은
 
-            String strQuery = 'SELECT Id, PV_NAME1__c, PV_CUSTTYPE__c, PV_PERNR__c FROM MDMRegRequestCustomer__c ';
-            strQuery += ' WHERE   	MDMRegRequestBulkCustomer__c = \'' + recordId + '\'';
+            String strQuery = 'SELECT Id, AccountId, Account.CustomerId__c, ';
+            strQuery += ' PV_KNVKGB__c, toLabel(PV_KNVKGB__c) PV_KNVKGB__LABEL, ';
+            strQuery += ' Phone, Department, PV_PAFKT_VK__c, PV_TALKT_VK__c, Email ';
+            strQuery += ' FROM Contact ';
+            strQuery += ' WHERE Account.CustomerId__c != null ';
+            if(recordId != null) {
+                strQuery += ' AND Account.CustomerId__c IN (\'' + ids + '\') ';
+            }
             for(Integer i = 0; i < searchKeys.size(); i++) {
                 if(searchKeys[i] == 'OwnerId') {
                     strQuery += ' AND ' + searchKeys[i] + ' = \'' + searchValues[i] + '\'';
@@ -67,16 +87,9 @@ public with sharing class CJFW_MDMBulkCustomerSearchController {
                     strQuery += ' AND ' + searchKeys[i] + ' LIKE \'%' + searchValues[i] + '%\' ';
                 }
             }
-            if(dateValues.size() > 0) {
-                if(dateValues.get('start') != null) {
-                    strQuery += ' AND CreatedDate >= ' + dateValues.get('start');
-                } else if(dateValues.get('end') != null) {
-                    strQuery += ' AND CreatedDate <= ' + dateValues.get('end');
-                }
-            }
 
-            System.debug('============> strQuery : ' + strQuery);
-            
+            System.debug('============> strQuery : '+strQuery);
+
             listSearchResult = Database.query(strQuery);
 
             Integer listSearchResultSize = listSearchResult.size();
@@ -96,7 +109,7 @@ public with sharing class CJFW_MDMBulkCustomerSearchController {
 
             objWrapper.listSearchResult = listSearchResult;
             objWrapper.totalCnt = listSearchResultSize;
-            
+
         } catch(Exception e) {
             strStatus = 'ERROR';
             strMessage = e.getMessage() + ' Line : '+e.getLineNumber();
@@ -106,6 +119,7 @@ public with sharing class CJFW_MDMBulkCustomerSearchController {
         objWrapper.strMessage = strMessage;
 
         return objWrapper;
+        
     }
 
     public class DataWrapper {
@@ -117,10 +131,10 @@ public with sharing class CJFW_MDMBulkCustomerSearchController {
         public String strMessage {get;set;}
 
         @AuraEnabled
-        public List<MDMRegRequestCustomer__c> searchResult {get;set;}
+        public List<Contact> searchResult {get;set;}
 
         @AuraEnabled
-        public List<MDMRegRequestCustomer__c> listSearchResult {get;set;}
+        public List<Contact> listSearchResult {get;set;}
 
         @AuraEnabled
         public Integer totalCnt {get;set;}

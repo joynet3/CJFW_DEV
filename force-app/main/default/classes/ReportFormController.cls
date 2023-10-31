@@ -11,7 +11,7 @@
 
  * @author            : eunyoung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 10-30-2023
+ * @last modified on  : 10-31-2023
  * @last modified by  : eunyoung.choi@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -30,7 +30,7 @@ public with sharing class ReportFormController {
     public String showtable { get; set; }
 
     public String reportType { get; set; } // Code
-    public String reportLabel { get; set; } // Label
+    public String headOfficeLabel { get; set; } // Label
 
     public String fieldValue { get; private set; }
 
@@ -88,6 +88,46 @@ public with sharing class ReportFormController {
     */
     public ReportFormController() {
 
+        this.opportunityId = ApexPages.currentPage().getParameters().get('opportunityId');
+        this.incomeExpensesId = ApexPages.currentPage().getParameters().get('incomeExpensesId');
+        this.showtable = ApexPages.currentPage().getParameters().get('showtable');
+        this.reportType = ApexPages.currentPage().getParameters().get('type');
+
+        String pageReferenceString = ApexPages.currentPage().getUrl();
+        String searchString = '/apex/CJFW_OrderConsiderNewForm_TEST';
+        String testTwo = '/apex/CJFW_OrderConsiderReContractForm_TEST';
+        
+        // 리포트 타입에 따라서 물류비 picklist 선정해주기 
+        if( reportType == 'CRM009' || reportType == 'CRM010' ){ // 외식 품의서 
+            this.headOfficeLabel = '6000'; // 외식코드
+        }else{ // 급식품의서 
+            this.headOfficeLabel = '3001'; // 급식코드 
+        }
+
+        // 테스트용 (삭제예정)
+        if (pageReferenceString.contains(searchString)) {
+            opportunityId = '006H200000DTM7EIAX';
+            incomeExpensesId ='a1lH2000001YWdgIAG';
+            showtable ='false';
+            headOfficeLabel = '6000';
+            //reportLabel = '외식SU';
+        }else if(pageReferenceString.contains(testTwo)){
+            opportunityId = '006H200000DTM7EIAX';
+            incomeExpensesId ='a1lH2000001YWdgIAG';
+            showtable ='false';
+            headOfficeLabel = '6000';
+            //reportLabel = '외식SU';
+        }else{
+            headOfficeLabel = '3001';
+            //reportLabel = '급식SU';
+        }
+
+        System.debug('# 파라미터 확인 ->' + searchString );
+        System.debug('# opportunityId ->' + opportunityId );
+        System.debug('# incomeExpensesId ->' + incomeExpensesId );
+        System.debug('# showtable ->' + showtable );
+        System.debug('# reportType ->' + reportType );
+
         getPicklistValues(); // picklist label/value 값 담기 [1]
         getAccountInfo();    // 고객사 정보 가져오기 [2]
         getIncomeExpenses(); // 신규개설품의 obj 값 가져오기 [3]
@@ -101,37 +141,6 @@ public with sharing class ReportFormController {
     */
    public void getAccountInfo() {
 
-    opportunityId = ApexPages.currentPage().getParameters().get('opportunityId');
-    incomeExpensesId = ApexPages.currentPage().getParameters().get('incomeExpensesId');
-    showtable = ApexPages.currentPage().getParameters().get('showtable');
-    reportType = ApexPages.currentPage().getParameters().get('type');
-
-    String pageReferenceString = ApexPages.currentPage().getUrl();
-    String searchString = '/apex/CJFW_OrderConsiderNewForm_TEST';
-    String testTwo = '/apex/CJFW_OrderConsiderReContractForm_TEST';
-
-    // 테스트용 (삭제예정)
-    if (pageReferenceString.contains(searchString)) {
-        opportunityId = '0060w00000D8uikAAB';
-        incomeExpensesId ='a1lH2000001YWdgIAG';
-        showtable ='false';
-        reportLabel = '외식SU';
-    }else if(pageReferenceString.contains(testTwo)){
-        opportunityId = '0060w00000D8uikAAB';
-        incomeExpensesId ='a1lH2000001YWdgIAG';
-        showtable ='false';
-        reportLabel = '외식SU';
-    }else{
-        reportLabel = '급식SU';
-    }
-
-    System.debug('# 파라미터 확인 ->' + searchString );
-    System.debug('# opportunityId ->' + opportunityId );
-    System.debug('# incomeExpensesId ->' + incomeExpensesId );
-    System.debug('# showtable ->' + showtable );
-    System.debug('# reportType ->' + reportType );
-
-    
     // 기회 레코드에서 계정 ID 가져오기
     Id accountId = [SELECT AccountId FROM Opportunity WHERE Id = :opportunityId LIMIT 1].AccountId;
     
@@ -398,6 +407,48 @@ public with sharing class ReportFormController {
             'NonFoodSupportExpect__c',
             'SalesSupportExpect__c',
             'CollateralAmount__c',
+            'SalesCapitalExclusive__c',
+            'SalesEastExclusive__c',
+            'SalesWestExclusive__c',
+            'SalesJejuExclusive__c',
+            'SalesCapitalGeneral__c',
+            'SalesEastGeneral__c',
+            'SalesWestGeneral__c',
+            'SalesJejuGeneral__c',
+            'ProfitRateExclusive__c',
+            'ProfitRateGeneral__c',
+            'SalesSolutionExclusive__c',
+            'SalesSolutionGeneral__c',
+            'SalesImproveResultExclusive__c',
+            'SalesImproveResultGeneral__c',
+            'ProfitRateCapitalExclusive__c',
+            'ProfitRateEastExclusive__c',
+            'ProfitRateWestExclusive__c',
+            'ProfitRateJejuExclusive__c',
+            'ProfitRateCapitalGeneral__c',
+            'ProfitRateEastGeneral__c',
+            'ProfitRateWestGeneral__c',
+            'ProfitRateJejuGeneral__c',
+            'SalesProfitCaptialExclusive__c',
+            'SalesProfitEastExclusive__c',
+            'SalesProfitWestExclusive__c',
+            'SalesProfitJejuExclusive__c',
+            'SalesLocationCntCapital__c',
+            'SalesLocationCntEast__c',
+            'SalesLocationCntWest__c',
+            'SalesLocationCntJeju__c',
+            'SalesPerStoreCapital__c',
+            'SalesPerStoreEast__c',
+            'SalesPerStoreWest__c',
+            'SalesPerStoreJeju__c',
+            'DropSizeCapital__c',
+            'DropSizeEast__c',
+            'DropSizeWest__c',
+            'DropSizeJeju__c',
+            'SalesProfitCapitalGeneral__c',
+            'SalesProfitEastGeneral__c',
+            'SalesProfitWestGeneral__c',
+            'SalesProfitJejuGeneral__c',
             'SalesReAverageResultExclusive__c', // 외식(재계약)전용 ▼
             'SalesReAverageResultGeneral__c',
             'SalesProfitReAverageResultExclusive__c',
@@ -405,8 +456,6 @@ public with sharing class ReportFormController {
             'LocationReAverageResult__c',
             'DistDirReAverageResult__c',
             'DistInDirReAverageResult__c',
-
-
             'CreditLoanAmount__c'
         };
 
@@ -521,14 +570,14 @@ public with sharing class ReportFormController {
                     Cost__c, 
                     HeadOffice__c, 
                     SU__c 
-                FROM CJFW_DistributionCost__c WHERE StartDate__c <= TODAY AND HeadOffice__c =: reportLabel ];
+                FROM CJFW_DistributionCost__c WHERE StartDate__c <= TODAY AND HeadOffice__c =: headOfficeLabel ];
 
             system.debug('DistributeCost 외식용 -> ' +  DistributeCostList );
 
             // 본부별 최대 8개까지 존재가능한 물류비값을 각각 담아주기 
             for(CJFW_DistributionCost__c record : DistributeCostList){
 
-                if(reportLabel == '외식SU'){
+                if(headOfficeLabel == '6000'){ // 외식일때 
                     if(record.Region__c =='수도권' && record.Type__c  =='직접'){ // Distribute list 안에 CapDirect로 담아주고 싶어 
                         DistributeDirCap = record.Cost__c;
                     }else if(record.Region__c =='수도권' && record.Type__c  =='간접'){
@@ -546,7 +595,7 @@ public with sharing class ReportFormController {
                     }else if(record.Region__c =='제주권' && record.Type__c  =='간접'){
                         DistributeInDirJeju = record.Cost__c;
                     }
-                }else if(reportLabel == '급식SU'){
+                }else if(headOfficeLabel == '3001'){ // 급식일때 
                     DistributeSchool =record.Cost__c;
                 }
             }
@@ -565,7 +614,7 @@ public with sharing class ReportFormController {
     예산손익관리(CJFW_ExpectedIncomeManager__c) 에서 값 가져오기
     적용시작일 기준으로 값 가져와야함 
     */
-    public void getExpectManager() {
+    public void getExpectManager_be() {
         System.debug('# ReportFormController # getExpectManager');
 
         IncomeManager = [
@@ -610,37 +659,72 @@ public with sharing class ReportFormController {
             IncomeManager.put(defaultSet, fieldValue);
         }
 
+        System.debug('IncomeManager !! check > '+  IncomeManager );
+
     }
-
     /* 
-    물류비관리(CJFW_DistributionCost__c) 에서 값 가져오기 
-     */
-    public void getDistributeCost_before() {
-        System.debug('# ReportFormController # getDistributeCost');
-
-        DistributeCost = [
+    예산손익관리(CJFW_ExpectedIncomeManager__c) 에서 값 가져오기
+    적용시작일 기준으로 값 가져와야함 
+    */
+    public void getExpectManager() {
+        System.debug('# ReportFormController # getExpectManager');
+        System.debug('# headOfficeLabel ~~ ' + headOfficeLabel );
+        List<CJFW_ExpectedIncomeManager__c> IncomeManagerList  = [
             SELECT Id, 
-                   Name,
-                   StartDate__c,  
-                   Region__c, 
-                   Type__c, 
-                   Cost__c, 
-                   HeadOffice__c, 
-                   SU__c 
-            FROM CJFW_DistributionCost__c WHERE StartDate__c <= TODAY ];
+                Name,
+                CurrencyIsoCode,  
+                DistributionCost__c, 
+                LaborCost__c, 
+                GroupCommonCost__c, 
+                GroupCommonCostExclusive__c, 
+                GroupCommonCostGeneral__c, 
+                PromotionFee__c, 
+                CardFee__c, 
+                CollateralFee__c, 
+                ChefFee__c, 
+                OtherFee__c, 
+                SupportFee__c, 
+                StartDate__c, 
+                HeadOffice__c, 
+                SU__c, 
+                Source__c 
+            FROM CJFW_ExpectedIncomeManager__c WHERE StartDate__c <= TODAY AND HeadOffice__c =: headOfficeLabel LIMIT 1];
 
-        String[] defaultValSet = new String[] {
-            'Cost__c'
-        };
+            String[] defaultValSet = new String[] {
+                'DistributionCost__c',
+                'LaborCost__c',
+                'GroupCommonCost__c',
+                'GroupCommonCostExclusive__c',
+                'GroupCommonCostGeneral__c',
+                'PromotionFee__c',
+                'CardFee__c',
+                'CollateralFee__c',
+                'ChefFee__c',
+                'OtherFee__c',
+                'SupportFee__c'
+            };
 
-        for (String defaultSet : defaultValSet) {
-            Object fieldValue = DistributeCost.get(defaultSet);
-            // 필드 값이 null이면 기본값을 0 으로 설정
-            if (fieldValue == null)  fieldValue = 0.00; 
-            DistributeCost.put(defaultSet, fieldValue);
-        }
+            if (IncomeManagerList.size() > 0) {
+                //CJFW_ExpectedIncomeManager__c IncomeManager = IncomeManagerList[0];
+                IncomeManager = IncomeManagerList[0];
+                
+                for (String defaultSet : defaultValSet) {
+                    Object fieldValue = IncomeManager.get(defaultSet);
+                    // 필드 값이 null이면 기본값을 0.00으로 설정
+                    if (fieldValue == null) fieldValue = 0.00; 
+                    IncomeManager.put(defaultSet, fieldValue);
+                }
 
-        system.debug('DistributeCost' +  DistributeCost);
+                System.debug('IncomeManager !! check > '+  IncomeManager );
+                System.debug('IncomeManager 라바코스트 > '+  IncomeManager.LaborCost__c );
+
+                //for (String defaultSet : defaultValSet) {
+                //    Object fieldValue = IncomeManager.get(defaultSet);
+                //    // 필드 값이 null이면 기본값을 0.00 으로 설정
+                //    if (fieldValue == null)  fieldValue = 0.00; 
+                //    IncomeManager.put(defaultSet, fieldValue);
+                //}
+            }
 
     }
 
@@ -773,7 +857,7 @@ public with sharing class ReportFormController {
                 expectIncome.SalesWestExclusive__c = convertToDecimal(dataMap.get('salesWestEx'));
             }
             if (dataMap.containsKey('salesJejuEx')) { // 매출-전용 : 제주권 
-                expectIncome.SalesWestExclusive__c = convertToDecimal(dataMap.get('salesJejuEx'));
+                expectIncome.SalesJejuExclusive__c = convertToDecimal(dataMap.get('salesJejuEx'));
             }
             if (dataMap.containsKey('salesCapGen')) { // 매출-일반 : 수도권 
                 expectIncome.SalesCapitalGeneral__c = convertToDecimal(dataMap.get('salesCapGen'));
@@ -886,7 +970,41 @@ public with sharing class ReportFormController {
                 expectIncome.DeliveryCnt__c = (String)dataMap.get('selectedDelivery'); // 결제수단 종류
             }
 
+            // -------------------------------------------외식(재계약) / 예상손익 저장 추가-------------------------------------------
 
+            if (dataMap.containsKey('salesThreeEx')) { // 매출 전용 - 3개월 평균실적 
+                expectIncome.SalesReAverageResultExclusive__c = convertToDecimal(dataMap.get('salesThreeEx'));
+            }
+            if (dataMap.containsKey('salesThreeGen')) { // 매출 일반- 3개월 평균실적 
+                expectIncome.SalesReAverageResultGeneral__c = convertToDecimal(dataMap.get('salesThreeGen'));
+            }
+            if (dataMap.containsKey('salesProfitThreeEx')) { // 매출이익 전용 - 3개월 평균실적 
+                expectIncome.SalesProfitReAverageResultExclusive__c = convertToDecimal(dataMap.get('salesProfitThreeEx'));
+            }
+            if (dataMap.containsKey('salesProfitThreeGen')) { // 매출이익 전용 - 3개월 평균실적 
+                expectIncome.SalesProfitReAverageResultGeneral__c = convertToDecimal(dataMap.get('salesProfitThreeGen'));
+            }
+            if (dataMap.containsKey('LocationThree')) { // 판매처수 - 3개월 평균실적 
+                expectIncome.LocationReAverageResult__c = convertToDecimal(dataMap.get('LocationThree'));
+            }
+            if (dataMap.containsKey('DistributeDirThree')) { // 물류비 -직접 
+                expectIncome.DistDirReAverageResult__c = convertToDecimal(dataMap.get('DistributeDirThree'));
+            }
+            if (dataMap.containsKey('DistributeInDirThree')) { // 물류비 -간접 
+                expectIncome.DistInDirReAverageResult__c = convertToDecimal(dataMap.get('DistributeInDirThree'));
+            }
+            if (dataMap.containsKey('salesSoluEx')) { // 솔루션 - 전용 개선
+                expectIncome.SalesSolutionExclusive__c = convertToDecimal(dataMap.get('salesSoluEx'));
+            }
+            if (dataMap.containsKey('salesSoluGen')) { // 솔루션 - 일반 개선
+                expectIncome.SalesSolutionGeneral__c = convertToDecimal(dataMap.get('salesSoluGen'));
+            }
+            if (dataMap.containsKey('salesImpMonthEx')) { // 월 예상실적 - 전용 개선
+                expectIncome.SalesImproveResultExclusive__c = convertToDecimal(dataMap.get('salesImpMonthEx'));
+            }
+            if (dataMap.containsKey('salesImpMonthGen')) { // 월 예상실적 - 일반 개선
+                expectIncome.SalesImproveResultGeneral__c = convertToDecimal(dataMap.get('salesImpMonthGen'));
+            }
 
             
             upsert expectIncome;
@@ -945,7 +1063,11 @@ public with sharing class ReportFormController {
     Decimal 값으로 변환하기위해 사용되는 메소드
     */
     public static Decimal convertToDecimal(Object objValue) {  
-        Decimal decimalValue = 0.0; // 기본값 설정
+        Decimal decimalValue = 0.00; // 기본값 설정
+
+        // 입력값이 3자리이상일 경우 1,234 숫자사이에 있는 반점 제거 
+        //String changeStr = (String)objValue;
+        //objValue = changeStr.replace(',', '');
     
         if (objValue != null || objValue != '') {
             if (objValue instanceof Decimal) {

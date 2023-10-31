@@ -28,19 +28,17 @@ public with sharing class CJFW_SurveyQustion_tr extends TriggerHandler {
         doUpdateCheck(); // 수정 불가처리 
     }
     public override void beforeDelete() {
-        // doDeleteCheck(); // 삭제 불가 처리
+        doDeleteCheck(); // 삭제 불가 처리
     }
-    public override void afterInsert() {
-        // doInsertCheck(); // 추가 불가 처리 
-    }
+  
 
     private void insertCheck() {
         System.debug('insertCheck start');
         List<CJFW_SurveyQuestion__c> newSurQues = listNew;
         System.debug('newSurQues?????????'+newSurQues);
         
-        Set<Id> surveyQueId = new Set<Id>();
-        Map<Id, CJFW_SurveyQuestion__c> surveyQueMap = new Map<Id, CJFW_SurveyQuestion__c>();
+        // Set<Id> surveyQueId = new Set<Id>();
+        // Map<Id, CJFW_SurveyQuestion__c> surveyQueMap = new Map<Id, CJFW_SurveyQuestion__c>();
         for (CJFW_SurveyQuestion__c newSurQue : newSurQues) {
             // surveyQueId.add(newSurQue.Id); 
             // System.debug('surveyQueId >>>>> '+ surveyQueId);
@@ -53,10 +51,11 @@ public with sharing class CJFW_SurveyQustion_tr extends TriggerHandler {
     }
     private void doUpdateCheck() {
         System.debug('doUpdateCheck start');
+        List<CJFW_SurveyQuestion__c> newSurQues = listNew;
         List<CJFW_SurveyQuestion__c> oldSurQues = listOld;
         System.debug('oldSurQues?????????'+oldSurQues);
         Set<Id> surveyQueId = new Set<Id>();
-        // Map<Id, CJFW_SurveyQuestion__c> surveyQueMap = new Map<Id, CJFW_SurveyQuestion__c>();
+        Map<Id, CJFW_SurveyQuestion__c> surveyQueMap = new Map<Id, CJFW_SurveyQuestion__c>();
         
         for (CJFW_SurveyQuestion__c oldSurQue : oldSurQues) {
             surveyQueId.add(oldSurQue.Id);
@@ -76,15 +75,51 @@ public with sharing class CJFW_SurveyQustion_tr extends TriggerHandler {
         System.debug('activeCheckList?????????'+activeCheckList);
 
         for (CJFW_SurveyQuestion__c activeCheck : activeCheckList) {
+            surveyQueMap.put(activeCheck.Id,activeCheck);
+            System.debug('surveyQueMap?????????'+surveyQueMap);
+
+        }
+        
+        for (CJFW_SurveyQuestion__c newSurQue : newSurQues) {
             System.debug('????? start');
-            if (activeCheck.ActiveCheck__c) {
+            if (surveyQueMap.get(newSurQue.Id).ActiveCheck__c) {
                 System.debug('!!!!! end');
-                activeCheck.addError('설문지가 활성화 되어 질문을 수정할 수 없습니다.');
+                newSurQue.addError('설문지가 활성화 되어 질문을 수정할 수 없습니다.');
+            }
+        }
+    }
+
+    private void doDeleteCheck(){
+        System.debug('doDeleteCheck start');
+        List<CJFW_SurveyQuestion__c> oldSurQues = listOld;
+        System.debug('oldSurQues start ??????' + oldSurQues);
+        Set<Id> queId = new Set<Id>();
+        Map<Id, CJFW_SurveyQuestion__c> surveyQueMap = new Map<Id, CJFW_SurveyQuestion__c>();
+
+        for (CJFW_SurveyQuestion__c oldSurQue : oldSurQues) {
+            queId.add(oldSurQue.Id);
+        }
+
+        List<CJFW_SurveyQuestion__c> oldQueChecks = [SELECT Id,  
+        Name,  
+        Name__c, 
+        Survey__c, 
+        Type__c, 
+        MultipleChoice__c, 
+        Order__c, 
+        DateType__c, 
+        TextType__c, 
+        ActiveCheck__c  FROM CJFW_SurveyQuestion__c WHERE Id IN: queId];
+
+        for (CJFW_SurveyQuestion__c oldQueCheck : oldQueChecks) {
+            surveyQueMap.put(oldQueCheck.Id,oldQueCheck);
+        }
+        
+        for (CJFW_SurveyQuestion__c oldSurQue : oldSurQues) {
+            if (surveyQueMap.get(oldSurQue.Id).ActiveCheck__c) {
+                oldSurQue.addError('설문지가 활성화 되어 질문을 삭제할 수 없습니다.');
             }
         }
 
-        // }
     }
-
-
 }

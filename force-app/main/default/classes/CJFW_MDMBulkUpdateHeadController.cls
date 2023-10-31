@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 10-30-2023
+ * @last modified on  : 10-31-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkUpdateHeadController {
@@ -125,7 +125,7 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
             custIds.remove(null);
         }
 
-        List<Account> booleanList = [SELECT Id, PV_BLCKYN__c, IsHeadShopUseYN__c, IsAffiliatedcompanyYN__c, IsPrintVirtualAccount__c, IsFaceToFaceInspectionStatus__c, IsInitialDeliveryFTFInspection__c, IsBusinessPlaceKey__c FROM Account WHERE CustomerID__c = :custIds];
+        List<Account> booleanList = [SELECT Id, CustomerId__c, PV_BLCKYN__c, IsHeadShopUseYN__c, IsAffiliatedcompanyYN__c, IsPrintVirtualAccount__c, IsFaceToFaceInspectionStatus__c, IsInitialDeliveryFTFInspection__c, IsBusinessPlaceKey__c FROM Account WHERE CustomerID__c = :custIds];
 
         System.debug('# booleanList => ' + booleanList);
         
@@ -148,7 +148,22 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
             isFaceYnMap.put(acc.CustomerId__c, acc.IsInitialDeliveryFTFInspection__c);
         }
 
-        System.debug('# codeToUserIdMap => ' + codeToUserIdMap);
+        System.debug('# blckYnMap => ' + blckYnMap);
+        System.debug('# headShopYnMap => ' + headShopYnMap);
+        System.debug('# affCompanyYnMap => ' + affCompanyYnMap);
+        System.debug('# accountYnMap => ' + accountYnMap);
+        System.debug('# faceYnMap => ' + faceYnMap);
+        System.debug('# bKeyYnMap => ' + bKeyYnMap);
+        System.debug('# isFaceYnMap => ' + isFaceYnMap);
+
+        for (MDMRegRequestCustomer__c mdm : mdmCustomer) {
+            MDMRequest mdmRequest = new MDMRequest();
+            
+            mdmRequest.PV_BLCKYN = (mdm.PV_BLCKYN__c == null) ? blckYnMap.get(mdm.PV_KUNNR__c) : mdm.PV_BLCKYN__c;
+            mdmRequest.PV_HDOFFICEYN = (mdm.PV_HDOFFICEYN__c == null) ? headShopYnMap.get(mdm.PV_KUNNR__c) : mdm.PV_HDOFFICEYN__c;
+            mdmRequest.PV_SUBSIDIARYYN = (mdm.PV_SUBSIDIARYYN__c == null) ? affCompanyYnMap.get(mdm.PV_KUNNR__c) : mdm.PV_SUBSIDIARYYN__c;
+            System.debug('mdmRequest => ' + mdmRequest);
+        }
 
         try {
             
@@ -209,6 +224,9 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
                     mdmRequest.PV_STCDT__c              =      String.isBlank(mdm.PV_STCDT__c) ? null : mdm.PV_STCDT__c;
                     mdmRequest.PV_STCDT_lu__c           =      codeToIdMap.get(mdm?.PV_STCDT__c);
                     mdmRequest.PV_FITYP__c              =      String.isBlank(mdm.PV_FITYP__c) ? null : mdm.PV_FITYP__c;
+                    System.debug('get yn 3 => ' + mdm.PV_HDOFFICEYN__c);
+                    System.debug('get yn 1 => ' + Boolean.valueof(mdm.PV_HDOFFICEYN__c == null));
+                    System.debug('get yn 2 => ' + (mdm.PV_HDOFFICEYN__c == null));
                     mdmRequest.PV_HDOFFICEYN__c         =      (mdm.PV_HDOFFICEYN__c == null) ? headShopYnMap.get(mdm.PV_KUNNR__c) : mdm.PV_HDOFFICEYN__c;
                     mdmRequest.PV_HKUNNR__c             =      String.isBlank(mdm.PV_HKUNNR__c) ? null : mdm.PV_HKUNNR__c;
                     mdmRequest.PV_HKUNNR_lu__c          =      codeToAccIdMap.get(mdm?.PV_HKUNNR__c);
@@ -300,7 +318,8 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
                     customerList.add(mdmRequest);
                 }
 
-                // System.debug('customerList => ' + customerList);
+                System.debug('customerList[0] => ' + customerList[0].PV_HDOFFICEYN__c);
+                System.debug('customerList[1] => ' + customerList[1].PV_HDOFFICEYN__c);
 
                 insert customerList;
 
@@ -348,9 +367,13 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
     /* 필드값 모두 가지고 오기 */
     @AuraEnabled
     public static Map<String, String> getAllField() {
+
         Map<String, Schema.SObjectField> fieldMap = Schema.getGlobalDescribe().get('MDMRegRequestCustomer__c').getDescribe().fields.getMap();
+
         System.debug(fieldMap);
+
         Map<String, String> labels = new Map<String, String>();
+
         for (String fieldName: fieldMap.keySet()) {
             DescribeFieldResult fieldResult = fieldMap.get(fieldName).getDescribe();
             if(fieldResult.getName().contains('__c')) {
@@ -379,8 +402,6 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
         @AuraEnabled public String massage{get;set;}
         @AuraEnabled public String bulkId{get;set;}
 
-        // 생성자의 역할은 기본적으로
-        // 전역변수(인스턴스변수) 초기화 해주는 역할을함
         public SaveResult() {
             this.status = 'S';
             this.massage = '성공 하였습니다.';
@@ -391,11 +412,139 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
             this.massage = massage;
         }
         
+        // location.href에 사용할 id
         public SaveResult(String status, String massage, String bulkId) {
             this.status  = status;
             this.massage = massage;
             this.bulkId = bulkId;
         }
+    }
+
+    /* Wrapper */
+    public class MDMRequest {
+        @AuraEnabled public String RecordTypeId {get;set;}
+        @AuraEnabled public String PV_KUNNR {get;set;}
+        @AuraEnabled public String PV_OLDCD {get;set;}
+        @AuraEnabled public String PV_NAME1 {get;set;}
+        @AuraEnabled public String PV_NAME_G {get;set;}
+        @AuraEnabled public String PV_NAME2 {get;set;}
+        @AuraEnabled public String PV_KTOKD {get;set;}
+        @AuraEnabled public String PV_CUSTTYPE {get;set;}
+        @AuraEnabled public String PV_STCD2 {get;set;}
+        @AuraEnabled public String PV_STCD3 {get;set;}
+        @AuraEnabled public String PV_STCD4 {get;set;}
+        @AuraEnabled public String PV_GFORM {get;set;}
+        @AuraEnabled public String PV_J_1KFREPRE {get;set;}
+        @AuraEnabled public Boolean PV_BLCKYN {get;set;}
+        @AuraEnabled public String PV_STCD1 {get;set;}
+        @AuraEnabled public String PV_J_1KFTBUS {get;set;}
+        @AuraEnabled public String PV_J_1KFTIND {get;set;}
+        @AuraEnabled public String PV_TELF1 {get;set;}
+        @AuraEnabled public String PV_TELFX {get;set;}
+        @AuraEnabled public String PV_PAYCUST {get;set;}
+        @AuraEnabled public String PV_PAYCUST_lu {get;set;}
+        @AuraEnabled public String PV_CHARGECUST {get;set;}
+        @AuraEnabled public String PV_CHARGECUST_lu {get;set;}
+        @AuraEnabled public String PV_VKGRP {get;set;}
+        @AuraEnabled public String PV_VKGRP_lu {get;set;}
+        @AuraEnabled public String PVVF_VKGRP {get;set;}
+        @AuraEnabled public String PVRA_VKGRP {get;set;}
+        @AuraEnabled public String PV_PERNR {get;set;}
+        @AuraEnabled public String PV_PERNR_lu {get;set;}
+        @AuraEnabled public String PVVF_PERNR {get;set;}
+        @AuraEnabled public String PVRA_PERNR {get;set;}
+        @AuraEnabled public String PV_ADMINMA {get;set;}
+        @AuraEnabled public String PV_ADMINMA_lu {get;set;}
+        @AuraEnabled public String PV_LOGISCENTER {get;set;}
+        @AuraEnabled public String PV_LOGISCENTER_lu {get;set;}
+        @AuraEnabled public String PVVF_LOGISCENTER {get;set;}
+        @AuraEnabled public String PVRA_LOGISCENTER {get;set;}
+        @AuraEnabled public String PV_STCDT {get;set;}
+        @AuraEnabled public String PV_STCDT_lu {get;set;}
+        @AuraEnabled public String PV_FITYP {get;set;}
+        @AuraEnabled public Boolean PV_HDOFFICEYN {get;set;}
+        @AuraEnabled public String PV_HKUNNR {get;set;}
+        @AuraEnabled public String PV_HKUNNR_lu {get;set;}
+        @AuraEnabled public Boolean PV_SUBSIDIARYYN {get;set;}
+        @AuraEnabled public String PV_VBUND {get;set;}
+        @AuraEnabled public String PV_VBUND_lu {get;set;}
+        @AuraEnabled public String PV_LAND1 {get;set;}
+        @AuraEnabled public String PV_LAND1_lu {get;set;}
+        @AuraEnabled public String PV_KNVKTYPE {get;set;}
+        @AuraEnabled public String PV_CLOSEDT {get;set;}
+        @AuraEnabled public String PV_REGIO {get;set;}
+        @AuraEnabled public String PV_REGIO_lu {get;set;}
+        @AuraEnabled public String PV_ADRES_ROADADDR1 {get;set;}
+        @AuraEnabled public String PV_ADRES_ROADADDR2 {get;set;}
+        @AuraEnabled public String PV_ADRES_ADDR1 {get;set;}
+        @AuraEnabled public String PV_ADRES_ADDR2 {get;set;}
+        @AuraEnabled public String PV_DELICUST {get;set;}
+        @AuraEnabled public String PV_SALESCUST {get;set;}
+        @AuraEnabled public String PV_BIZPLCODE {get;set;}
+        @AuraEnabled public String PV_BUSAB {get;set;}
+        @AuraEnabled public String PV_CESSION_KZ {get;set;}
+        @AuraEnabled public String PV_ZUAWA {get;set;}
+        @AuraEnabled public String PV_ZUAWA_lu {get;set;}
+        @AuraEnabled public String PV_AKONT {get;set;}
+        @AuraEnabled public String PV_AKONT_lu {get;set;}
+        @AuraEnabled public String PV_FDGRV {get;set;}
+        @AuraEnabled public String PV_VRSDG {get;set;}
+        @AuraEnabled public String PV_TAXKDD {get;set;}
+        @AuraEnabled public String PV_KATR5 {get;set;}
+        @AuraEnabled public String PV_CUHR1 {get;set;}
+        @AuraEnabled public String PV_CUHR1_lu {get;set;}
+        @AuraEnabled public String PVVF_CUHR1 {get;set;}
+        @AuraEnabled public String PVRA_CUHR1 {get;set;}
+        @AuraEnabled public String PV_KONDA {get;set;}
+        @AuraEnabled public String PV_KONDA_lu {get;set;}
+        @AuraEnabled public String PVVF_KONDA {get;set;}
+        @AuraEnabled public String PVRA_KONDA {get;set;}
+        @AuraEnabled public String PV_KVGR1 {get;set;}
+        @AuraEnabled public String PV_KVGR1_lu {get;set;}
+        @AuraEnabled public String PVVF_KVGR1 {get;set;}
+        @AuraEnabled public String PVRA_KVGR1 {get;set;}
+        @AuraEnabled public String PV_WAERS {get;set;}
+        @AuraEnabled public String PV_WAERS_lu {get;set;}
+        @AuraEnabled public String PV_KDGRP {get;set;}
+        @AuraEnabled public String PV_KVGR3 {get;set;}
+        @AuraEnabled public String PV_KVGR3_lu {get;set;}
+        @AuraEnabled public String PV_KVGR2 {get;set;}
+        @AuraEnabled public String PV_KVGR3_BOT {get;set;}
+        @AuraEnabled public String PV_KVGR3_BOT_lu {get;set;}
+        @AuraEnabled public String PV_ODCLOSEGB {get;set;}
+        @AuraEnabled public Boolean PV_VACCPRTEXCYN {get;set;}
+        @AuraEnabled public String PV_ZTERM_VV {get;set;}
+        @AuraEnabled public String PV_ZTERM_VV_lu {get;set;}
+        @AuraEnabled public Boolean PV_DSTRHISTREGYN {get;set;}
+        @AuraEnabled public String PV_KULTG {get;set;}
+        @AuraEnabled public String PV_OLD_BIZPLACE_NEW {get;set;}
+        @AuraEnabled public String PV_OLD_BIZPLACE_NEW_lu {get;set;}
+        @AuraEnabled public String PVVF_OLD_BIZPLACE_NEW {get;set;}
+        @AuraEnabled public String PVRA_OLD_BIZPLACE_NEW {get;set;}
+        @AuraEnabled public String PV_SHAPE {get;set;}
+        @AuraEnabled public Boolean PV_EXAMYN {get;set;}
+        @AuraEnabled public String PV_SHIPREQTIME {get;set;}
+        @AuraEnabled public String PV_PRODLOADCOND {get;set;}
+        @AuraEnabled public String PV_RETURNLOC {get;set;}
+        @AuraEnabled public String PV_ENTERCOND1 {get;set;}
+        @AuraEnabled public String PV_UNLOADCOND1 {get;set;}
+        @AuraEnabled public String PV_UNLOADCOND2 {get;set;}
+        @AuraEnabled public String PV_DELIGROUP {get;set;}
+        @AuraEnabled public String PV_DELIGROUP_lu {get;set;}
+        @AuraEnabled public String PV_KATR10 {get;set;}
+        @AuraEnabled public String PV_KATR10_lu {get;set;}
+        @AuraEnabled public String PV_KEYYN {get;set;}
+        @AuraEnabled public String PV_KEYINFO {get;set;}
+        @AuraEnabled public String PV_KXOTD {get;set;}
+        @AuraEnabled public String PV_KXOTDTIME {get;set;}
+        @AuraEnabled public String PV_FDINFO {get;set;}
+        @AuraEnabled public String PV_FDREQD {get;set;}
+        @AuraEnabled public String PV_FDREQT {get;set;}
+        @AuraEnabled public String PV_ISFDFTF {get;set;}
+        @AuraEnabled public String PV_FDCTINFO {get;set;}
+        @AuraEnabled public String PV_FDNOTICE {get;set;}
+        @AuraEnabled public String PV_SHIPTYPE {get;set;}
+        @AuraEnabled public String PV_TEMPTARGET {get;set;}
     }
 
 }

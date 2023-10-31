@@ -98,7 +98,11 @@ public with sharing class CJFW_MDMBulkAccountSearchController {
             strQuery += ' FROM    Account';
             strQuery += ' WHERE   CustomerType__c IN ( \'' + searchCode + '\' ) AND CustomerId__c != NULL ';
             for(Integer i = 0; i < searchKeys.size(); i++) {
-                strQuery += ' AND ' + searchKeys[i] + ' LIKE \'%' + searchValues[i] + '%\' ';
+                if(searchKeys[i] == 'OwnerId') {
+                    strQuery += ' AND ' + searchKeys[i] + ' = \'' + searchValues[i] + '\'';
+                } else {
+                    strQuery += ' AND ' + searchKeys[i] + ' LIKE \'%' + searchValues[i] + '%\' ';
+                }
             }
             if(dateValues.size() > 0) {
                 if(dateValues.get('start') != null) {

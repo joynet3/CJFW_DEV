@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : yejoo.lee@dkbmc.com
  * @group             : 
- * @last modified on  : 10-30-2023
+ * @last modified on  : 10-31-2023
  * @last modified by  : yejoo.lee@dkbmc.com
 **/
 public with sharing class CJFW_CustomConvertController {
@@ -27,21 +27,27 @@ public with sharing class CJFW_CustomConvertController {
     //     List<String> cvtFields = new List<String>();
     //     for (String input : mappingField.keySet()) {//opportunityMappingField
     //         if(fieldNameList.contains(input)){
-    //             String output = opportunityMappingField.get(input);//opptyField
+    //             String output = mappingField.get(input);//opptyField
     //             cvtFields.add(input);//lead
     //         }
     //     }
-
+        
     //     SObjectType objType = Schema.getGlobalDescribe().get(objectName);
-    //     Map<String, Schema.SObjectField> fieldMap = objType.getDescribe().cvtFields.getMap();
-
-    //         Schema.SObjectField field = fieldMap.get(fields[i]);
+    //     Map<String, Schema.SObjectField> fieldMap = objType.getDescribe().fields.getMap();
+    //     System.debug('fieldMap : '+fieldMap);
+        
+    //     Integer cnt = cvtFields.size();
+    //     for(Integer i = 0; i < cnt; i++){
+    //         Schema.SObjectField field = fieldMap.get(cvtFields[i]);
     //         Schema.DescribeFieldResult fld = field.getDescribe();
     //         String fieldType = fld.getType().name();
             
     //         if( fieldType == 'INTEGER' || fieldType == 'CURRENCY' || fieldType == 'DOUBLE' 
     //             || fieldType == 'DATE' || fieldType == 'DATETIME' || fieldType == 'BOOLEAN'){
-    //             }
+    //         }
+    //     }
+
+    //     return objMap;
     // }
     
     @AuraEnabled
@@ -70,7 +76,7 @@ public with sharing class CJFW_CustomConvertController {
     }
 
     @AuraEnabled
-    public static Map<String,Object> convert(Map<String, Map<String,Object>> convertInfo, String recordId){
+    public static Map<String,Object> convert(Map<String, Map<String,Object>> convertInfo, String recordId, String convertedOwnerId){
         Map<String,Object> resultMap = new  Map<String,Object>();
         
         // resultMap.put('sessionId', sessionId);
@@ -179,6 +185,7 @@ public with sharing class CJFW_CustomConvertController {
                 }
                 
                 acc.put('RecordTypeId', accRecordTypeId);
+                acc.put('OwnerId', convertedOwnerId);
                 upsert acc;
                 updateConvertObj.put('Account__c', acc.Id);
                 updateConvertObj.put('ConvertedAccount__c', acc.Id);
@@ -205,6 +212,8 @@ public with sharing class CJFW_CustomConvertController {
                     List<Object> li = (List<Object>)contactConvertInfo.get('convertedId');
                     con.put('Id',(String)li[0]);
                 }
+
+                con.put('OwnerId', convertedOwnerId);
                 upsert con;
                 updateConvertObj.put('ConvertedContact__c', con.Id);
             }
@@ -219,15 +228,15 @@ public with sharing class CJFW_CustomConvertController {
                     if(fieldNameList.contains(key)){
                         String fieldName = opportunityMappingField.get(key);
                         Object value = convertObj.get(key);
-                        opp.put(fieldName, value);
-                        // try {
-                        //     opp.put(fieldName, value);
-                        // }
-                        // catch (Exception ex) {
-                            
-                        // }
+                        try {
+                            opp.put(fieldName, value);
+                        }
+                        catch (Exception e) {
+                            resultMap.put('OPPTY FIELD TYPE DIFFERENT :', fieldName+'-->'+value);
+                        }
                     }
                 }
+
                 opp.put('StageName','Needs Analysis');
                 opp.put('CloseDate',Date.today().addDays(30));//TODO
                 
@@ -241,6 +250,7 @@ public with sharing class CJFW_CustomConvertController {
                 }
 
                 opp.put('RecordTypeId', opptyRecordTypeId);
+                opp.put('OwnerId', convertedOwnerId);
                 upsert opp;
                 updateConvertObj.put('ConvertedOpportunity__c', opp.Id);
             }
