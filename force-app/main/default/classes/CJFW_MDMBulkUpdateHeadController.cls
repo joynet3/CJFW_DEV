@@ -123,7 +123,7 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
             custIds.remove(null);
         }
 
-        List<Account> booleanList = [SELECT Id, CustomerId__c, PV_BLCKYN__c, IsHeadShopUseYN__c, IsAffiliatedcompanyYN__c, IsPrintVirtualAccount__c, IsFaceToFaceInspectionStatus__c, IsInitialDeliveryFTFInspection__c, IsBusinessPlaceKey__c, InitialDeliveryShare__c FROM Account WHERE CustomerID__c = :custIds];
+        List<Account> booleanList = [SELECT Id, CustomerId__c, PV_BLCKYN__c, IsHeadShopUseYN__c, IsAffiliatedcompanyYN__c, IsPrintVirtualAccount__c, IsFaceToFaceInspectionStatus__c, IsInitialDeliveryFTFInspection__c, IsBusinessPlaceKey__c, InitialDeliveryShare__c, KXOTD__c FROM Account WHERE CustomerID__c = :custIds];
 
         System.debug('# booleanList => ' + booleanList);
         
@@ -133,6 +133,7 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
         Map<String, Boolean> affCompanyYnMap = new Map<String, Boolean>();     // 관계사 여부
         Map<String, Boolean> accountYnMap = new Map<String, Boolean>();        // 가상 계좌
         Map<String, Boolean> faceYnMap = new Map<String, Boolean>();           // 대면 검수
+        Map<String, Boolean> kxOtdMap = new Map<String, Boolean>();           // KX OTD
         Map<String, Boolean> bKeyYnMap = new Map<String, Boolean>();           // 업장 Key
         Map<String, Boolean> isFaceYnMap = new Map<String, Boolean>();         // 초도배송 대면 검수
         Map<String, Boolean> fdInfoMap = new Map<String, Boolean>();           // 초도배송 정보 공유
@@ -143,14 +144,25 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
             affCompanyYnMap.put(acc.CustomerId__c, acc.IsAffiliatedcompanyYN__c);
             accountYnMap.put(acc.CustomerId__c, acc.IsPrintVirtualAccount__c);
             faceYnMap.put(acc.CustomerId__c, acc.IsFaceToFaceInspectionStatus__c);
+
+            Boolean isKxOtd = false;
+            if(acc.KXOTD__c == 'Y') {
+                isKxOtd = true;
+            } else if(acc.KXOTD__c == 'N') {
+                isKxOtd = false;
+            }
+
+            kxOtdMap.put(acc.CustomerId__c, isKxOtd);
             bKeyYnMap.put(acc.CustomerId__c, acc.IsBusinessPlaceKey__c);
             isFaceYnMap.put(acc.CustomerId__c, acc.IsInitialDeliveryFTFInspection__c);
+
             Boolean isFdInfo = false;
             if(acc.InitialDeliveryShare__c == 'Y') {
                 isFdInfo = true;
             } else if(acc.InitialDeliveryShare__c == 'N') {
                 isFdInfo = false;
             }
+
             fdInfoMap.put(acc.CustomerId__c, isFdInfo);
         }
 
@@ -298,7 +310,7 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
                     mdmRequest.PV_KATR10_lu__c                 =      codeToIdMap.get(mdm?.PV_KATR10);
                     mdmRequest.PV_KEYYN__c                     =      (mdm.PV_KEYYN == null) ? bKeyYnMap.get(mdm.PV_KUNNR) : mdm.PV_KEYYN;
                     mdmRequest.PV_KEYINFO__c                   =      String.isBlank(mdm.PV_KEYINFO) ? null : mdm.PV_KEYINFO;
-                    mdmRequest.PV_KXOTD__c                     =      (mdm.PV_KXOTD == null) ? null : mdm.PV_KXOTD;
+                    mdmRequest.PV_KXOTD__c                     =      (mdm.PV_KXOTD == null) ? kxOtdMap.get(mdm.PV_KUNNR) : mdm.PV_KXOTD;
                     mdmRequest.PV_KXOTDTIME__c                 =      String.isBlank(mdm.PV_KXOTDTIME) ? null : mdm.PV_KXOTDTIME;
                     mdmRequest.PV_FDINFO__c                    =      (mdm.PV_FDINFO == null) ? fdInfoMap.get(mdm.PV_KUNNR) : mdm.PV_FDINFO;
                     mdmRequest.PV_FDREQD__c                    =      (mdm.PV_FDREQD == null) ? null : mdm.PV_FDREQD;

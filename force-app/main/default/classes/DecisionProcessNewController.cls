@@ -70,10 +70,11 @@ public without sharing class DecisionProcessNewController {
     }
 
     /**
-     * 품의이력 생성
+     * i-fresh 연동
      * 
      * @param recordId
      * @param objDecisionProcess 품의이력(DecisionProcess__c) Object
+     * @param decisionProcessId  품의이력(DecisionProcess__c) Id
      * @return 
      *
     **/

@@ -45,14 +45,15 @@ public with sharing class IFN_EIF1001_EC001_MD001_TEST {
         String resultCode = calloutResult.result;
 
         IFN_EIF1001_EC001_MD001.EC001ResultWrapper resultResponse = (IFN_EIF1001_EC001_MD001.EC001ResultWrapper)calloutResult.response;
-        List<Map<String, Object>> results = (List<Map<String, Object>>)resultResponse.results;
+        //List<Map<String, Object>> results = (List<Map<String, Object>>)resultResponse.results;
 
         if(resultCode.equals('S')) {
             // 메시지 발송 결과 수신
-            for(Map<String,Object> result : results) {
-                for(String key : result.keySet()){
-                    System.debug(key + ':::::::' + result.get(key));
-                }
+            for(IFN_EIF1001_EC001_MD001.results result : resultResponse.results) {
+                
+                System.debug('msg_key :::::::' + result.msg_key);
+                System.debug('code :::::::' + result.code);
+                System.debug('result_desc :::::::' + result.result_desc);
             }
         } else {
             // 메시지 발송 결과 수신 실패

@@ -11,18 +11,47 @@
 *@author 진현욱
 *@since 2023-09-20  설문지 Edit 버전 추가
 *@since 2023-10-26  설문지를 Opportunity 에서 작성할 경우 Oppty 의 AccountId 도 Survey Response 에 등록
+*@since 2023-11-01  Lead, Opportunity, Account Owenr 의 SU__c 필드 기준으로 설문지 노출
 */
+
+
 
 public with sharing class CJFW_SurveyController {
     public CJFW_SurveyController() {
 
     }
+    /**
+    * 부모 Object 의 정보
+    *
+    *@param  recordId parentRecordId
+    *@return  Map<String,Object>
+    */
+    @AuraEnabled
+    public static Map<String,Object> getParentInfo(String recordId){
+        try {
+            Map<String,Object> result = new Map<String,Object>();
+
+            String query = ' select '
+                         + '         Id '
+                         + '        ,Name '
+                         + '        ,Owner.SU__c '
+                         + ' from ' + Id.valueOf(recordId).getSobjectType()
+                         + ' where Id = :recordId';
+
+            result.put('data', database.query(query));
+
+            return result;
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
     @AuraEnabled
     public static String getCurrentUserInfo(){
         User currentUser = [SELECT Id, Profile.Name FROM User WHERE Id = :UserInfo.getUserId()];
         
         String profileName = currentUser.Profile.Name;
-        System.debug('현재 프로필: ' + profileName);
+        //System.debug('현재 프로필: ' + profileName);
         return profileName;
 
     }
@@ -32,18 +61,25 @@ public with sharing class CJFW_SurveyController {
     *@return  result Map<String,Object>
     */
    @AuraEnabled
-    public static Map<String,Object> getSurveyType(){
+    public static Map<String,Object> getSurveyType(Boolean isNotAdmin, String suCode){
         try {
             Map<String,Object> result = new Map<String,Object>();
             List<selectOption> optionList = new List<selectOption>();
 
-            List<CJFW_Survey__c> surveyList =[
-                select
-                    Id
-                    , Name
-                    , Description__c
-                from CJFW_Survey__c 
-            ];
+            
+            String query = ' select '
+            + '        Id '
+            + '        ,Name '
+            + '        ,Description__c'
+            + ' from CJFW_Survey__c '
+            + ' where Id != null ';
+            
+            if(isNotAdmin) {
+                query += ' and Active__c = true '
+                +  ' and SU__c = :suCode ';
+            }
+            
+            List<CJFW_Survey__c> surveyList = database.query(query);
 
             for(CJFW_Survey__c survey : surveyList) {
                 optionList.add(new selectOption(survey.Name , survey.Id));

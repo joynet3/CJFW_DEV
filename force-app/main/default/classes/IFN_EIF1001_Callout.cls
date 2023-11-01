@@ -91,7 +91,7 @@ public class IFN_EIF1001_Callout {
                         ] 
         }
     */
-    private IFN_CalloutResult IFN_EIF1001_EC001_MD001(String interfaceId, Object params){
+    public IFN_CalloutResult IFN_EIF1001_EC001_MD001(String interfaceId, Object params){
         IFN_CalloutResult result = new IFN_CalloutResult();
 
         String responsedata = '';
@@ -115,10 +115,9 @@ public class IFN_EIF1001_Callout {
 
             responsedata = response.getBody();
             if(response.getStatusCode() == 200) {
-                // responsedata = responsedata.replace('\"desc\"', '\"result_desc\"');
-                System.debug('Debuggng 1');
+                responsedata = responsedata.replace('\"desc\"', '\"result_desc\"');
+                System.debug('Callout Responsedata ::::::: ' + responsedata);
                 infResponse = (IFN_EIF1001_EC001_MD001.EC001ResultWrapper)JSON.deserializeStrict((String)responsedata, IFN_EIF1001_EC001_MD001.EC001ResultWrapper.class);
-                System.debug('Debuggng 2');
             } else {
                 result_code = 'F';
                 result_message = 'Callout Fail';
@@ -164,7 +163,7 @@ public class IFN_EIF1001_Callout {
             "errmsg" : "",
         }
     */
-    private IFN_CalloutResult IFN_EIF1001_EC002_MD003(String interfaceId, Object params){
+    public IFN_CalloutResult IFN_EIF1001_EC002_MD003(String interfaceId, Object params){
         IFN_CalloutResult result = new IFN_CalloutResult();
 
         String responsedata = '';
@@ -239,7 +238,7 @@ public class IFN_EIF1001_Callout {
             "errmsg" : "",
         }
     */
-    private IFN_CalloutResult IFN_EIF1001_EC002_MD004(String interfaceId, Object params){
+    public IFN_CalloutResult IFN_EIF1001_EC002_MD004(String interfaceId, Object params){
         IFN_CalloutResult result = new IFN_CalloutResult();
 
         String responsedata = '';
@@ -328,7 +327,7 @@ public class IFN_EIF1001_Callout {
                         ] 
         }
     */
-    private IFN_CalloutResult IFN_EIF1001_EC003_MD005(String interfaceId, Object params){
+    public IFN_CalloutResult IFN_EIF1001_EC003_MD005(String interfaceId, Object params){
         IFN_CalloutResult result = new IFN_CalloutResult();
 
         String responsedata = '';
@@ -413,7 +412,7 @@ public class IFN_EIF1001_Callout {
             }
         }
      * */
-    private IFN_CalloutResult IFN_EIF1001_FS001_MD001(String interfaceId, Object params){
+    public IFN_CalloutResult IFN_EIF1001_FS001_MD001(String interfaceId, Object params){
         IFN_CalloutResult result = new IFN_CalloutResult();
 
         String responsedata = '';

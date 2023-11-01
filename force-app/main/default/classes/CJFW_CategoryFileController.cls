@@ -38,7 +38,7 @@ public with sharing class CJFW_CategoryFileController {
                 System.debug('검색어 있을때 : ' + searchTerm);
 
                 if (category == '계약 참고자료') {
-                    contentDocumentLinkQuery += ' WHERE LinkedEntityId IN (SELECT Id FROM CollaborationGroupMember) ';
+                    contentDocumentLinkQuery += ' WHERE LinkedEntityId IN (SELECT CollaborationGroupId FROM CollaborationGroupMember) ';
                     List<ContentDocumentLink> ContentDocumentLinkList = Database.query(contentDocumentLinkQuery);
                     System.debug('쿼리실행 ==> ' + ContentDocumentLinkList);    
     
@@ -161,18 +161,21 @@ public with sharing class CJFW_CategoryFileController {
     }  
 
     @AuraEnabled(cacheable=true)
-    public static Boolean isUserMemberOfCollaborationGroup(String groupId, String category) {
+    public static Boolean isUserMemberOfCollaborationGroup(String groupId, String category, String objectName) {
         String userId = UserInfo.getUserId();
         System.debug('userId ==>' + userId);
         System.debug('category ==>' + category);
         System.debug('groupId ==>' + groupId);
+        System.debug('objectName ==>' + objectName);
 
+      
   
         if (category == '계약 참고자료') {
             CollaborationGroupMember[] members = [SELECT Id FROM CollaborationGroupMember
                                                     WHERE CollaborationGroupId = :groupId
                                                     AND MemberId  =: userId
-                                                    AND CollaborationRole = 'Admin'];
+                                                    AND (CollaborationRole = 'Admin'
+                                                    OR CollaborationRole = 'Standard')];
             return !members.isEmpty();
         } else {
 

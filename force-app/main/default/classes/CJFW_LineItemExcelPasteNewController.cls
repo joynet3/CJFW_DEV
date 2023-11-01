@@ -69,20 +69,23 @@ public without sharing class CJFW_LineItemExcelPasteNewController {
         Set<String> setDupInputProductCode = new Set<String>();
         Set<String> setExtId = new Set<String>();
 
+        String targetObjectApi = sObjectName+'LineItem';
+        if(targetObjectApi.indexOf('Quote') != -1) targetObjectApi = 'CJFW_'+targetObjectApi+'__c';
+
         // 유효성 체크를 위한 데이터 준비
-        Map<String, String> mapMonthValue = CommonUtil.getMapPickListLabeltoValue(sObjectName+'LineItem', 'Month__c');
+        Map<String, String> mapMonthValue = CommonUtil.getMapPickListLabeltoValue(targetObjectApi, 'Month__c');
         Map<String, String> mapCenterValue = CommonUtil.getMapPickListValuetoLabel('Product2', 'lgs_ctr__c');
         Map<String, String> mapOriginValue = CommonUtil.getMapPickListValuetoLabel('Product2', 'migr_orinat_cd__c');
 
         for ( Map<String, Object> objData : listValidTargetData ){
             System.debug('objData ' + objData);
-            if ( setProductCode.contains(String.valueOf(objData.get('fm_ProductCode__c')))){
-                setDupInputProductCode.add(String.valueOf(objData.get('fm_ProductCode__c')));
+            if ( setProductCode.contains(String.valueOf(objData.get('ProductCode__c')))){
+                setDupInputProductCode.add(String.valueOf(objData.get('ProductCode__c')));
             }
             else{
-                setProductCode.add(String.valueOf(objData.get('fm_ProductCode__c')));
+                setProductCode.add(String.valueOf(objData.get('ProductCode__c')));
             }
-            setExtId.add(String.valueOf(objData.get('LogisticsCenter__c'))+'_'+String.valueOf(objData.get('fm_ProductCode__c')));
+            setExtId.add(String.valueOf(objData.get('LogisticsCenter__c'))+'_'+String.valueOf(objData.get('ProductCode__c')));
             String strMonth = String.valueOf(objData.get('Month__c'));
             if ( mapMonthValue.get(strMonth) != null)
                 setMonth.add(mapMonthValue.get(strMonth)+'__c');
@@ -127,10 +130,10 @@ public without sharing class CJFW_LineItemExcelPasteNewController {
         List<Map<String, Object>> listInvalidData = new List<Map<String, Object>>();
         for ( Map<String, Object> objData : listValidTargetData ){
             Map<String, Object> objLineItem = new Map<String, Object> ();
-            String strProductCode = String.valueOf(objData.get('fm_ProductCode__c'));
+            String strProductCode = String.valueOf(objData.get('ProductCode__c'));
             String strMonth = String.valueOf(objData.get('Month__c'));
             String strCenter = String.valueOf(objData.get('LogisticsCenter__c'));
-            String strUnitPrice = String.valueOf(objData.get('UnitPrice'));
+            String strUnitPrice = String.valueOf(objData.get('UnitPrice__c'));
             String strProfitMargin = String.valueOf(objData.get('ProfitMargin__c'));
             String strExtId = String.valueOf(objData.get('LogisticsCenter__c'))+'_'+String.valueOf(objData.get('fm_ProductCode__c'));
             if ( mapCenterValue.get(strCenter) == null){
@@ -189,7 +192,7 @@ public without sharing class CJFW_LineItemExcelPasteNewController {
             for ( Map<String, Object> objData : listValidTargetData ){
                 Map<String, Object> objLineItem = new Map<String, Object> ();
 
-                String strProductCode = String.valueOf(objData.get('fm_ProductCode__c'));
+                String strProductCode = String.valueOf(objData.get('ProductCode__c'));
                 String strMonth = String.valueOf(objData.get('Month__c'));
                 String strCenter = String.valueOf(objData.get('LogisticsCenter__c'));
                 String strExtId = String.valueOf(objData.get('LogisticsCenter__c'))+'_'+String.valueOf(objData.get('fm_ProductCode__c'));
@@ -203,9 +206,9 @@ public without sharing class CJFW_LineItemExcelPasteNewController {
                 Decimal strVAT = 0;
                 Decimal strUnitPriceWithVAT = strUnitPrice;
                 
-                objLineItem.put('SortOrder', orderCount++);
+                objLineItem.put('SortOrder__c', orderCount++);
                 objLineItem.put(sObjectName+'Id', recordId);
-                objLineItem.put('fm_ProductCode__c', strProductCode);
+                objLineItem.put('ProductCode__c', strProductCode);
                 objLineItem.put('BasePurchasePrice__c', strBasePurchasePrice);
                 objLineItem.put('OldBasePurchasePrice__c', strOldBasePurchasePrice);
 
@@ -241,14 +244,14 @@ public without sharing class CJFW_LineItemExcelPasteNewController {
                     strUnitPriceWithVAT = strUnitPrice + strVAT;
                 }
                 objLineItem.put('TaxTypeName__c', strTaxTypeName);
-                objLineItem.put('UnitPrice', strUnitPrice);
+                objLineItem.put('UnitPrice__c', strUnitPrice);
                 objLineItem.put('ProfitMargin__c', strProfitMargin);
                 objLineItem.put('UnitPriceWithVAT__c', strUnitPriceWithVAT);
                 objLineItem.put('VAT__c', strVAT);
-                objLineItem.put('Quantity', 1);
-                objLineItem.put('PricebookEntryId', mapPriceBookEntry.get(strExtId).Id);
-                objLineItem.put('fm_PriceBookEntryName__c', mapPriceBookEntry.get(strExtId).Name);
-                objLineItem.put('fm_QuantityUnitOfMeasure__c', mapPriceBookEntry.get(strExtId).Product2.bas_unit_cd__c);
+                objLineItem.put('Quantity__c', 1);
+                //objLineItem.put('PricebookEntryId', mapPriceBookEntry.get(strExtId).Id);
+                objLineItem.put('ProductName__c', mapPriceBookEntry.get(strExtId).Name);
+                objLineItem.put('QuantityUnitOfMeasure__c', mapPriceBookEntry.get(strExtId).Product2.bas_unit_cd__c);
                 objLineItem.put('CountryOfOriginName__c', mapPriceBookEntry.get(strExtId).Product2.migr_orinat_cd__c);
                 objLineItem.put('Month__c', mapMonthValue.get(strMonth));
                 objLineItem.put('MonthToLabel', strMonth);

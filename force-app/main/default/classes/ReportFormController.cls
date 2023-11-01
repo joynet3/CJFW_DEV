@@ -96,6 +96,8 @@ public with sharing class ReportFormController {
         String pageReferenceString = ApexPages.currentPage().getUrl();
         String searchString = '/apex/CJFW_OrderConsiderNewForm_TEST';
         String testTwo = '/apex/CJFW_OrderConsiderReContractForm_TEST';
+        String testThree = '/apex/CJFW_DepositForm';
+        String testFour = '/apex/CJFW_ChangeDepositForm';
         
         // 리포트 타입에 따라서 물류비 picklist 선정해주기 
         if( reportType == 'CRM009' || reportType == 'CRM010' ){ // 외식 품의서 
@@ -105,21 +107,18 @@ public with sharing class ReportFormController {
         }
 
         // 테스트용 (삭제예정)
-        if (pageReferenceString.contains(searchString)) {
+        if (pageReferenceString.contains(searchString) || pageReferenceString.contains(testTwo)) {
             opportunityId = '006H200000DTM7EIAX';
-            incomeExpensesId ='a1lH2000001YWdgIAG';
-            showtable ='false';
+            incomeExpensesId = 'a1lH2000001YWdgIAG';
+            showtable = 'false';
             headOfficeLabel = '6000';
-            //reportLabel = '외식SU';
-        }else if(pageReferenceString.contains(testTwo)){
+        } else if (pageReferenceString.contains(testThree) || pageReferenceString.contains(testFour)) {
             opportunityId = '006H200000DTM7EIAX';
-            incomeExpensesId ='a1lH2000001YWdgIAG';
-            showtable ='false';
-            headOfficeLabel = '6000';
-            //reportLabel = '외식SU';
-        }else{
+            incomeExpensesId = 'a1lH2000001YWdgIAG';
+            showtable = 'false';
             headOfficeLabel = '3001';
-            //reportLabel = '급식SU';
+        } else {
+            headOfficeLabel = '3001';
         }
 
         System.debug('# 파라미터 확인 ->' + searchString );

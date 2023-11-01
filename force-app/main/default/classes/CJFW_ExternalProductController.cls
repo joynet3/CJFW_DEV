@@ -8,17 +8,39 @@
 public with sharing class CJFW_ExternalProductController {
 
     @AuraEnabled
-    public static Map<String, Object> doSearch(Map<String, Object> mapParam) {
+    public static List<Product2> doSearch(Map<String, Object> mapParam) {
         System.debug('# CJFW_ExternalProductController # doSearch ');
-        System.debug(' mapParam ->'+ mapParam );
-        String strSearchInput  = String.valueOf(mapParam.get('strSearchInput'));
-        System.debug(' strSearchInput ->'+ strSearchInput );
-
+        
         Set<String> productCodeSet;
         if(mapParam.get('productCodeSet') != null) productCodeSet = (Set<String>) JSON.deserialize(JSON.serialize(mapParam.get('productCodeSet')), Set<String>.class);
+        
         System.debug(' productCodeSet ->'+ productCodeSet );
 
-        return null;
+        List<Product2> productList = [ SELECT Id
+                                            ,   Name 
+                                            ,   gd_no__c 
+                                            ,   gd_nm__c 
+                                            ,   lgs_ctr__c 
+                                            ,   lgl_dstr_tlmt_end_ymd__c 
+                                            ,   mnfco_oriplc_cd__c 
+                                            ,   bas_unit_cd__c
+                                            ,   avg_wt__c
+                                            ,   box_ctcnt_qty__c 
+                                            ,   taxt_cl_cd__c //dlv_req_ymd 필드 없음
+                                   FROM Product2
+                                   WHERE  gd_no__c IN : productCodeSet
+                                   AND lgs_ctr__c = '2170' ];
+
+        System.debug('===== productList =====');
+        System.debug(productList);
+
+        // Map<String, Object> mapProductData = new Map<String, Object>{           
+        //     'listSearchEntry' => productList
+        // };
+
+        // System.debug('mapProductData' + mapProductData);
+
+        return productList;
 
     }
     

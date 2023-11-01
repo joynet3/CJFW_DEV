@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : yeonji.lim@dkbmc.com
  * @group             : 
- * @last modified on  : 10-27-2023
+ * @last modified on  : 10-31-2023
  * @last modified by  : yeonji.lim@dkbmc.com
 **/
 public with sharing class OrderConsiderReContractFormController {
@@ -16,6 +16,7 @@ public with sharing class OrderConsiderReContractFormController {
     public String reportType { get; set; } // 품의서 유형
 
     /* 가져온 데이터 담는 object */
+    public Contact keymanInfo {get;set;}
     public Opportunity opptyInfo {get;set;}
     public Account accountInfo {get;set;}
     public CJFW_ExpectedIncomeExpenses__c IncomeExpensesInfo {get;set;}
@@ -65,6 +66,7 @@ public with sharing class OrderConsiderReContractFormController {
         }else{
             System.debug('실제 환경에서 실행할 로직');
             getPicklistValues();    // picklist label/value 값 담기
+            getKeymanInfo();        // key-man 정보 가져오기 
             getOpptyInfo();         // 담당자 정보 가져오기
             getAccountInfo();       // 고객사 정보 가져오기
             getIncomeExpenses();    // 신규개설품의 obj 값 가져오기
@@ -119,7 +121,27 @@ public with sharing class OrderConsiderReContractFormController {
         // System.debug(' 여신관리 pickList 값 ' + loanManagePickList);
         // System.debug(' 결제수단종류 pickList 값 ' + paymentPickList);
         // System.debug(' 계약서종류 pickList 값 ' + contractPickList);
-     }
+    }
+
+    /* 
+    OpportunityContactRole에 있는 key-man 정보 가져오는 메소드
+    */
+    public void getKeymanInfo() {
+        try {
+            Id contactId = [SELECT ContactId FROM OpportunityContactRole WHERE OpportunityId =:opportunityId AND IsPrimary = true].contactId;
+    
+            if(contactId != null){
+                keymanInfo = [SELECT Id, Name
+                                FROM Contact
+                                WHERE Id =:contactId];
+        
+                System.debug('#######keymanInfo =>' + keymanInfo);
+            }
+        } catch (Exception e) {
+            System.debug('message => ' + e.getMessage());
+            System.debug('trace => ' + e.getStackTraceString());
+        }
+    }
 
     /* 
     Oppty 에 있는 Owner 정보 가져오는 메소드
@@ -127,8 +149,8 @@ public with sharing class OrderConsiderReContractFormController {
     public void getOpptyInfo() {
         
         Opportunity getOppty = [SELECT Id, Name, Owner.TeamLabel__c, Owner.Name
-                            FROM Opportunity
-                            WHERE Id = :opportunityId
+                                FROM Opportunity
+                                WHERE Id = :opportunityId
         ];
 
         // System.debug('#oppty => '+ oppty);
@@ -144,7 +166,7 @@ public with sharing class OrderConsiderReContractFormController {
     /* 
     Oppty 에 있는 Account 값을 가져오는 메소드
     */
-   public void getAccountInfo() {
+    public void getAccountInfo() {
         // System.debug('# opportunityId ->' + opportunityId );
         // System.debug('# incomeExpensesId ->' + incomeExpensesId );
         // System.debug('# showtable ->' + showtable );
@@ -374,9 +396,9 @@ public with sharing class OrderConsiderReContractFormController {
 
 
         /* Date 필드를 yyyy-MM-dd 형식의 문자열로 변환 */
-        String initialDateString = String.valueOf(IncomeExpensesInfo.InitialDate__c); // 초도일자 
-        String contractStartString = String.valueOf(IncomeExpensesInfo.ContractStartDate__c); // 계약시작일자
-        String contractEndString = String.valueOf(IncomeExpensesInfo.ContractEndDate__c); // 계약종료일자 
+        String initialDateString = String.valueOf(IncomeExpensesInfo.InitialDate__c);           // 초도일자 
+        String contractStartString = String.valueOf(IncomeExpensesInfo.ContractStartDate__c);   // 계약시작일자
+        String contractEndString = String.valueOf(IncomeExpensesInfo.ContractEndDate__c);       // 계약종료일자 
         String collateralPeriodString = String.valueOf(IncomeExpensesInfo.CollateralPeriod__c); // 담보기간
         String contractPaymentDateString = String.valueOf(IncomeExpensesInfo.ContractPaymentDate__c);   //약정결제일
 
@@ -388,11 +410,17 @@ public with sharing class OrderConsiderReContractFormController {
 
 
         /* pickList 저장된 값 가져오기 */
-        selectedBrandChannel = IncomeExpensesInfo.BrandChannel__c;  // 브랜드 경로
-        selectedCollateral = IncomeExpensesInfo.CollateralType__c; // 담보종류
+        selectedBrandChannel = IncomeExpensesInfo.BrandChannel__c;      // 브랜드 경로
+        selectedCollateral = IncomeExpensesInfo.CollateralType__c;      // 담보종류
         selectedLoanManage = IncomeExpensesInfo.LoanManage__c	;       // 여신관리
-        selectedPayment = IncomeExpensesInfo.PaymentMethod__c;      // 결제수단 
-        selectedContract = IncomeExpensesInfo.ContractType__c	; // 계약서종류 
+        selectedPayment = IncomeExpensesInfo.PaymentMethod__c;          // 결제수단 
+        selectedContract = IncomeExpensesInfo.ContractType__c	;       // 계약서종류 
+
+        /* keyman info 값을 참고로 IncomeExpensesInfo 에 담아주기 
+            -> keymanInfo 필드에 값이 있는지 먼저 체크 > 값이 없으면 keymanInfo 에서 값 땡겨옴 */
+        if( IncomeExpensesInfo.KeyMan__c == '' || IncomeExpensesInfo.KeyMan__c == null ){
+            IncomeExpensesInfo.put('KeyMan__c', keymanInfo.get('Name'));
+        }
 
         /* 2. 거래처 현황 account info 값을 참고로 IncomeExpensesInfo 에 담아주기 
             -> IncomeExpensesInfo 필드에 값이 있는지 먼저 체크 > 값이 없으면 accountInfo 에서 값 땡겨옴 */
