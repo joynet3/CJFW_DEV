@@ -16,7 +16,23 @@ public with sharing class IFN_LIF1002_SE001_MD001_TEST {
     @TestSetup
     static void setup(){
 
-        IFN_TestDataFactory.createIfPrograms();
+        Set<String> setIFId = new Set<String>{'IFN_LIF1002_SE001_MD001', 'IFN_LIF1002_Callout'};
+
+        List<IFMaster__c> listIF = new List<IFMaster__c>();
+
+        for(String str : setIFId) {
+            IFMaster__c obj = new IFMaster__c();
+            obj.Name = str;
+            obj.ContentType__c = 'application/json';
+            obj.Endpoint__c = 'https://test.salesforce.com';
+            obj.Method__c = 'POST';
+            obj.Type__c = 'Inbound';
+            obj.WebServiceType__c = 'REST';
+
+            listIF.add(obj);
+        }
+
+        insert listIF;
 
     }
 
@@ -48,7 +64,12 @@ public with sharing class IFN_LIF1002_SE001_MD001_TEST {
         searchitm.gd_bd = '';
         searchitm.gd_bd_kw = '';
         searchitm.taxt_cl_cd_nm = '';
-                
+        searchitm.strg_cond_cd_nm= '';
+        searchitm.strg_cond_cd= '';
+        searchitm.box_ctcnt_qty= '';
+        searchitm.img_url= '';
+        searchitm.gd_cls_nm= '';
+        searchitm.cnt= '';
         Test.setMock(HttpCalloutMock.class, new IFN_LIF1002_SE001_MD001_TESTMock(JSON.serialize(searchitm),200)); 
         IFN_LIF1002_SE001_MD001.SE001RequstWrapper params = new IFN_LIF1002_SE001_MD001.SE001RequstWrapper();
         IFN_LIF1002_SE001_MD001 cont = new IFN_LIF1002_SE001_MD001();
@@ -59,6 +80,7 @@ public with sharing class IFN_LIF1002_SE001_MD001_TEST {
         params.pageSize = '10';
         params.order = 'gd_no';
         params.order_mt = 'asc';
+        params.keywd_sp = '';
         IFN_LIF1002_SE001_MD001.SE001_01ResultWrapper res = cont.callout( params);
 
         

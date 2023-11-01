@@ -63,4 +63,22 @@ public class IFN_LIF1002_OD003_MD006_TEST {
         
         Test.stopTest();
     }
+
+
+    @isTest
+    static void test03() {
+        Test.startTest();
+
+        RestRequest req = new RestRequest();
+        RestResponse res = new RestResponse();
+        String strBody = '';
+
+        req.requestBody = Blob.valueOf(strBody);
+        RestContext.request = req;
+        RestContext.response = res;
+        IFN_LIF1002_OD003_MD006.doPost();
+        
+        Test.stopTest();
+    }
+
 }
