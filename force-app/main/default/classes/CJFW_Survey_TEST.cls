@@ -3,6 +3,14 @@ public with sharing class CJFW_Survey_TEST {
     
     @testSetup
     public static void makeData() {
+        //HeadOffice
+        //FS본부: 	3000
+        //급식SU: 	3001
+        //외식SU: 	6000
+        //영업본부직속: 	6001
+        //유통SU: 	6002
+
+        //SU
         //원료솔루션사업부: 4600
         //급식솔루션사업부: 4700
         //아이누리사업부: 4100
@@ -44,6 +52,7 @@ public with sharing class CJFW_Survey_TEST {
             CJFW_Survey__c survey4600 = new CJFW_Survey__c(
                 Name = '원료 솔루션 설문지'
                 ,Description__c = '원료 솔루션 설문지 설명'
+                ,HeadOffice__c = '6001'
                 ,SU__c = '4600'
             );
             surveyList.add(survey4600);
@@ -52,6 +61,7 @@ public with sharing class CJFW_Survey_TEST {
             CJFW_Survey__c survey4700 = new CJFW_Survey__c(
                 Name = '급식 솔루션 설문지'
                 ,Description__c = '급식 솔루션 설문지 설명'
+                ,HeadOffice__c = '3001'
                 ,SU__c = '4700'
             );
             surveyList.add(survey4700);
@@ -60,6 +70,7 @@ public with sharing class CJFW_Survey_TEST {
             CJFW_Survey__c survey4100 = new CJFW_Survey__c(
                 Name = '아이누리 설문지'
                 ,Description__c = '아이누리 설문지 설명'
+                ,HeadOffice__c = '3001'
                 ,SU__c = '4100'
             );
             surveyList.add(survey4100);
@@ -68,6 +79,7 @@ public with sharing class CJFW_Survey_TEST {
             CJFW_Survey__c survey4705 = new CJFW_Survey__c(
                 Name = '헬씨누리 설문지'
                 ,Description__c = '헬씨누리 설문지 설명'
+                ,HeadOffice__c = '3001'
                 ,SU__c = '4705'
             );
             surveyList.add(survey4705);
@@ -278,15 +290,21 @@ public with sharing class CJFW_Survey_TEST {
             );
             followUpList.add(followup4700_two);
             insert followUpList;
+
+
+            //
+            survey4600.Active__c = true;
+            update survey4600;
+
             /*급식솔루션 사업부 연계 질문 - 연계  [e]*/
+            //Shairng Rule 제거 하고 Sharing Setting 권한 Public Read 변경으로 제거
+            // CJFW_Survey__Share u4600Share = new CJFW_Survey__Share(
+            //     AccessLevel = 'Read'
+            //     ,UserOrGroupId = u4600.Id
+            //     ,ParentID = survey4600.Id
+            // );
 
-            CJFW_Survey__Share u4600Share = new CJFW_Survey__Share(
-                AccessLevel = 'Read'
-                ,UserOrGroupId = u4600.Id
-                ,ParentID = survey4600.Id
-            );
-
-            insert u4600Share;
+            // insert u4600Share;
         }
 
     }

@@ -2,52 +2,16 @@
  * @description       : 
  * @author            : yejoo.lee@dkbmc.com
  * @group             : 
- * @last modified on  : 10-31-2023
+ * @last modified on  : 11-01-2023
  * @last modified by  : yejoo.lee@dkbmc.com
 **/
 public with sharing class CJFW_CustomConvertController {
 
-    // @AuraEnabled(cacheable=true)
-    // public static String getSessionId() {
-    //     return UserInfo.getSessionId();
-    // }
-
-    public static MetadataService.MetadataPort createService(){
-        MetadataService.MetadataPort service = new MetadataService.MetadataPort();
-        service.SessionHeader = new MetadataService.SessionHeader_element();
-        //service.SessionHeader.sessionId = UserInfo.getSessionId();
-        service.SessionHeader.sessionId = getSessionForLightning.getSession();
-        return service;
-    }
-    
-    // public static Map<String,Object> createObj(String objectName, Map<String,String> mappingField, List<String> fieldNameList, Map<String, Object> convertObj){
-        
-    //     Map<String,Object> objMap = new Map<String,Object>();
-    
-    //     List<String> cvtFields = new List<String>();
-    //     for (String input : mappingField.keySet()) {//opportunityMappingField
-    //         if(fieldNameList.contains(input)){
-    //             String output = mappingField.get(input);//opptyField
-    //             cvtFields.add(input);//lead
-    //         }
-    //     }
-        
-    //     SObjectType objType = Schema.getGlobalDescribe().get(objectName);
-    //     Map<String, Schema.SObjectField> fieldMap = objType.getDescribe().fields.getMap();
-    //     System.debug('fieldMap : '+fieldMap);
-        
-    //     Integer cnt = cvtFields.size();
-    //     for(Integer i = 0; i < cnt; i++){
-    //         Schema.SObjectField field = fieldMap.get(cvtFields[i]);
-    //         Schema.DescribeFieldResult fld = field.getDescribe();
-    //         String fieldType = fld.getType().name();
-            
-    //         if( fieldType == 'INTEGER' || fieldType == 'CURRENCY' || fieldType == 'DOUBLE' 
-    //             || fieldType == 'DATE' || fieldType == 'DATETIME' || fieldType == 'BOOLEAN'){
-    //         }
-    //     }
-
-    //     return objMap;
+    // public static MetadataService.MetadataPort createService(){
+    //     MetadataService.MetadataPort service = new MetadataService.MetadataPort();
+    //     service.SessionHeader = new MetadataService.SessionHeader_element();
+    //     service.SessionHeader.sessionId = getSessionForLightning.getSession();
+    //     return service;
     // }
     
     @AuraEnabled
@@ -79,35 +43,46 @@ public with sharing class CJFW_CustomConvertController {
     public static Map<String,Object> convert(Map<String, Map<String,Object>> convertInfo, String recordId, String convertedOwnerId){
         Map<String,Object> resultMap = new  Map<String,Object>();
         
-        // resultMap.put('sessionId', sessionId);
-
         //Lead Convert Info
         Map<String, String> accountMappingField = new Map<String, String>();//Lead->Account
-        Map<String, String> contactMappingField = new Map<String, String>();
-        Map<String, String> opportunityMappingField = new Map<String, String>();
+        Map<String, String> contactMappingField = new Map<String, String>();//Lead->Contact
+        Map<String, String> opportunityMappingField = new Map<String, String>();//Lead->Opportunity
 
-        MetadataService.MetadataPort service = createService();
-        
-        List<MetadataService.LeadConvertSettings> leadConvertSettings = (List<MetadataService.LeadConvertSettings>) service.readMetadata('LeadConvertSettings', new List<String>{'LeadConvertSettings'}).getRecords();
-        
-        for (MetadataService.LeadConvertSettings leadConvertSetting : leadConvertSettings) {
-            for (MetadataService.ObjectMapping objectMapping : leadConvertSetting.objectMapping) {
-                System.debug(objectMapping.inputObject + ' -> ' + objectMapping.outputObject);
-                MetadataService.ObjectMapping mappingObject = objectMapping;
-                for (MetadataService.ObjectMappingField fieldMapping : objectMapping.mappingFields) {
-                    // System.debug('\t' + fieldMapping.inputField + ' -> ' + fieldMapping.outputField);
-                    if(mappingObject.outputObject == 'Account'){
-                        accountMappingField.put(fieldMapping.inputField, fieldMapping.outputField);//LeadFeild -> AccountFeild
-                    } else if (mappingObject.outputObject == 'Contact'){
-                        contactMappingField.put(fieldMapping.inputField, fieldMapping.outputField);
-                    } else if (mappingObject.outputObject == 'Opportunity'){
-                        opportunityMappingField.put(fieldMapping.inputField, fieldMapping.outputField);
-                    }
-                }
+        List<Bid_Info_Cvt_Field__mdt> customConvertList = [SELECT Id, OutputObject__c, InputField__c, OutputField__c FROM Bid_Info_Cvt_Field__mdt];
+
+        for (Bid_Info_Cvt_Field__mdt cvt : customConvertList) {
+            if(cvt.OutputObject__c == 'Account'){
+                accountMappingField.put(cvt.InputField__c, cvt.OutputField__c);//LeadFeild -> AccountFeild
+            } else if (cvt.OutputObject__c == 'Contact'){
+                contactMappingField.put(cvt.InputField__c, cvt.OutputField__c);
+            } else if (cvt.OutputObject__c == 'Opportunity'){
+                opportunityMappingField.put(cvt.InputField__c, cvt.OutputField__c);
             }
         }
+        // resultMap.put('accountMappingField', accountMappingField);
+        // resultMap.put('contactMappingField', contactMappingField);
+        // resultMap.put('opportunityMappingField', opportunityMappingField);
+
+        // MetadataService.MetadataPort service = createService(); //권한이 없다잖아 ㅠㅠ
+        // List<MetadataService.LeadConvertSettings> leadConvertSettings = (List<MetadataService.LeadConvertSettings>) service.readMetadata('LeadConvertSettings', new List<String>{'LeadConvertSettings'}).getRecords();
+        // for (MetadataService.LeadConvertSettings leadConvertSetting : leadConvertSettings) {
+        //     for (MetadataService.ObjectMapping objectMapping : leadConvertSetting.objectMapping) {
+        //         System.debug(objectMapping.inputObject + ' -> ' + objectMapping.outputObject);
+        //         MetadataService.ObjectMapping mappingObject = objectMapping;
+        //         for (MetadataService.ObjectMappingField fieldMapping : objectMapping.mappingFields) {
+        //             // System.debug('\t' + fieldMapping.inputField + ' -> ' + fieldMapping.outputField);
+        //             if(mappingObject.outputObject == 'Account'){
+        //                 accountMappingField.put(fieldMapping.inputField, fieldMapping.outputField);//LeadFeild -> AccountFeild
+        //             } else if (mappingObject.outputObject == 'Contact'){
+        //                 contactMappingField.put(fieldMapping.inputField, fieldMapping.outputField);
+        //             } else if (mappingObject.outputObject == 'Opportunity'){
+        //                 opportunityMappingField.put(fieldMapping.inputField, fieldMapping.outputField);
+        //             }
+        //         }
+        //     }
+        // }
         
-        resultMap.put('convertInfo', convertInfo);
+        resultMap.put('apex:convertInfo', convertInfo);
         /*
             convertInfo = {
                 'Account' : {
@@ -171,8 +146,12 @@ public with sharing class CJFW_CustomConvertController {
                 
                 for (String key : accountMappingField.keySet()) {
                     if(fieldNameList.contains(key)){
-                        String value = accountMappingField.get(key);
-                        acc.put(value, convertObj.get(key));
+                        String fieldName = accountMappingField.get(key);
+                        try {
+                            acc.put(fieldName, convertObj.get(key));
+                        } catch (Exception e) {
+                            resultMap.put('ACCOUNT FIELD DIFFERENT :', fieldName);
+                        }
                     }
                 }
                 
@@ -197,8 +176,12 @@ public with sharing class CJFW_CustomConvertController {
             if((Boolean)contactConvertInfo.get('convert')){
                 for (String key : contactMappingField.keySet()) {
                     if(fieldNameList.contains(key)){
-                        String value = contactMappingField.get(key);
-                        con.put(value, convertObj.get(key));
+                        String fieldName = contactMappingField.get(key);
+                        try {
+                            con.put(fieldName, convertObj.get(key));                            
+                        } catch (Exception e) {
+                            resultMap.put('CONTACT FIELD DIFFERENT :', fieldName);
+                        }
                     }
                 }
                 
@@ -232,7 +215,7 @@ public with sharing class CJFW_CustomConvertController {
                             opp.put(fieldName, value);
                         }
                         catch (Exception e) {
-                            resultMap.put('OPPTY FIELD TYPE DIFFERENT :', fieldName+'-->'+value);
+                            resultMap.put('OPPTY FIELD DIFFERENT :', fieldName);
                         }
                     }
                 }
@@ -279,7 +262,7 @@ public with sharing class CJFW_CustomConvertController {
             convertObjList = Database.query(query);
 			resultMap.put('updateConvertObj', convertObjList[0]);
             
-            Database.rollback(sp);            
+            // Database.rollback(sp);            
             // resultMap.put('STATUS', 'S');
         } catch (Exception e) {
             Database.rollback(sp);

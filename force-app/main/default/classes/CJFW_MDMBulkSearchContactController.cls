@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 10-31-2023
+ * @last modified on  : 11-01-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkSearchContactController {
@@ -72,7 +72,7 @@ public with sharing class CJFW_MDMBulkSearchContactController {
             List<Contact> searchResult = new List<Contact>();       // 분할해서 담은
             List<Contact> listSearchResult = new List<Contact>();   // 모두 담은
 
-            String strQuery = 'SELECT Id, AccountId, Account.CustomerId__c, ';
+            String strQuery = 'SELECT Id, AccountId, Account.CustomerId__c, Account.Name, Name, ';
             strQuery += ' PV_KNVKGB__c, toLabel(PV_KNVKGB__c) PV_KNVKGB__LABEL, ';
             strQuery += ' Phone, Department, PV_PAFKT_VK__c, PV_TALKT_VK__c, Email ';
             strQuery += ' FROM Contact ';

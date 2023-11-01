@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 10-31-2023
+ * @last modified on  : 11-01-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -11,11 +11,11 @@
 public with sharing class CJFW_MDMReferenceCreateController {
 
     @AuraEnabled(cacheable=true)
-    public static DataWrapper getAccountInfo(List<Map<String, String>> searchKey, String customerType, Integer pageNumber, Integer pageSize) {
+    public static DataWrapper getAccountInfo(List<Map<String, String>> searchKey, String customerTypeOption, Integer pageNumber, Integer pageSize) {
 
         system.debug('### CJFW_MDMBulkAccountSearchController ###');
         system.debug('>>> getAccountInfo()');
-        system.debug('>>> customerType ' + customerType);
+        system.debug('>>> customerTypeOption ' + customerTypeOption);
 
 
         String strStatus = 'SUCCESS';
@@ -44,9 +44,12 @@ public with sharing class CJFW_MDMReferenceCreateController {
             if(searchWord != null && searchWord.length() > 0 && fieldName != 'CreatedDate') {
                 searchKeys.add(fieldName);
                 searchValues.add(searchWord);
+                system.debug('searchKeys ' + searchKeys);
+                system.debug('searchValues ' + searchValues);
             } else if(searchWord != null && searchWord.length() > 0 && fieldName == 'CreatedDate') {
                 searchWord = searchWord + 'T00:00:00.000+0000'; // UTC
                 dateValues.put(datePoint, searchWord);
+                system.debug('searchWord ' + searchWord);
             }
 
         }
@@ -82,13 +85,17 @@ public with sharing class CJFW_MDMReferenceCreateController {
             strQuery += ' InitialDeliveryRequestTime__c, IsInitialDeliveryFTFInspection__c, InitialDeliveryContact__c, InitialDeliveryDescription__c, PV_SHIPTYPE__c, toLabel(PV_SHIPTYPE__c) PV_SHIPTYPE__LABEL, PV_TEMPTARGET__c, toLabel(PV_TEMPTARGET__c) PV_TEMPTARGET__LABEL, ';
             strQuery += ' PV_SALESCUST__c, PV_DELICUST__c, PV_BIZPLCODE__c ';
             strQuery += ' FROM    Account';
-            strQuery += ' WHERE   CustomerType__c IN ( \'' + customerType + '\' ) AND CustomerId__c != NULL ';
+            strQuery += ' WHERE   CustomerType__c IN ( \'' + customerTypeOption + '\' ) AND CustomerId__c != NULL ';
             for(Integer i = 0; i < searchKeys.size(); i++) {
                 if(searchKeys[i] == 'OwnerId') {
                     strQuery += ' AND ' + searchKeys[i] + ' = \'' + searchValues[i] + '\'';
+                }else if(searchKeys[i] == 'Name'){
+                    strQuery += ' AND (Name LIKE \'%' + searchValues[i]+ '%\' OR CustomerId__c LIKE \'%' + searchValues[i] + '%\') ';
+                    system.debug('serchKeys[i] == Name ' +' AND (Name LIKE \'%' + searchValues[i]+ '%\' OR CustomerId__c LIKE \'%' + searchValues[i] + '%\') ');
                 } else {
                     strQuery += ' AND ' + searchKeys[i] + ' LIKE \'%' + searchValues[i] + '%\' ';
                 }
+                
             }
             if(dateValues.size() > 0) {
                 if(dateValues.get('start') != null) {
@@ -131,6 +138,70 @@ public with sharing class CJFW_MDMReferenceCreateController {
 
         return objWrapper;
     }
+
+    
+    /**
+     * @description : 화면에서 Param으로 보내준 AccountId로 customer 필드를 조회하여, 리턴
+     *                customer 타입에 따라 화면을 분기 처리해 주기 위함.
+     *
+     * @return      `String`
+     */
+    @AuraEnabled
+    public static DataWrapper getCustomerTypeInfo(Id recordId) {
+        DataWrapper objWrapper = new DataWrapper();
+        system.debug(' ###CJFW_MDMReferenceCreateController > getCustomerTypeInfo()');
+
+        String customerType = '';
+        
+    
+        system.debug(' ====================================> Account조회해서 CustomerType__c이 무엇인지 확인 후 리턴해야 함');
+        List<Account> accountList = [SELECT Id, customerType__c
+                                    FROM Account
+                                    WHERE Id =: recordId
+                                    LIMIT 1];
+
+        List<Contact> listContact = [
+            SELECT Id, AccountId  FROM Contact WHERE AccountId =:recordId
+        ];
+
+        if(listContact <> null && listContact.size() > 0) {
+            objWrapper.isContact = true;
+        }
+        
+        if(!accountList.isEmpty()) {
+            objWrapper.customerType = accountList[0]?.customerType__c;
+            system.debug(' ====================================> accountList[0]?.customerType__c ' + accountList[0]?.customerType__c);
+        }
+        return objWrapper;
+    }
+    public class DataWrapper {
+
+		@AuraEnabled
+        public String strStatus {get;set;}
+        @AuraEnabled
+        public String strMessage {get;set;}
+        @AuraEnabled
+        public List<Account> searchResult {get;set;}
+        @AuraEnabled
+        public List<Account> listSearchResult {get;set;}
+        @AuraEnabled
+        public Integer totalCnt {get;set;}
+        @AuraEnabled
+        public String code {get;set;}
+        @AuraEnabled
+        public String inputId {get;set;}
+        @AuraEnabled
+        public String inputTextLabel {get;set;}
+        /** @description 레코드아이디를 통해 알아낸 고객유형*/
+        @AuraEnabled public String customerType {get;set;}
+        /** @description Object Name*/
+        @AuraEnabled public String strObjectType {get;set;}
+        /** @description Object Name*/
+        @AuraEnabled public Boolean isContact {get;set;}
+
+	}
+
+    
      /**
      * @description 참조생성 모달 > 검색어 입력 후 검색 > 검색어로 Like 
      * 
@@ -239,30 +310,5 @@ public with sharing class CJFW_MDMReferenceCreateController {
     //     }
     // }
 
-    public class DataWrapper {
 
-		@AuraEnabled
-        public String strStatus {get;set;}
-
-        @AuraEnabled
-        public String strMessage {get;set;}
-
-        @AuraEnabled
-        public List<Account> searchResult {get;set;}
-
-        @AuraEnabled
-        public List<Account> listSearchResult {get;set;}
-
-        @AuraEnabled
-        public Integer totalCnt {get;set;}
-
-        @AuraEnabled
-        public String code {get;set;}
-
-        @AuraEnabled
-        public String inputId {get;set;}
-
-        @AuraEnabled
-        public String inputTextLabel {get;set;}
-	}
 }

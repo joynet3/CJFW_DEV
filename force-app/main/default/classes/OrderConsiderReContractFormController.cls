@@ -2,8 +2,8 @@
  * @description       : 
  * @author            : yeonji.lim@dkbmc.com
  * @group             : 
- * @last modified on  : 10-31-2023
- * @last modified by  : yeonji.lim@dkbmc.com
+ * @last modified on  : 11-01-2023
+ * @last modified by  : eunyoung.choi@dkbmc.com
 **/
 public with sharing class OrderConsiderReContractFormController {
     public static String SaveDataList;
@@ -46,19 +46,28 @@ public with sharing class OrderConsiderReContractFormController {
     
     /* 생성자 */
     public OrderConsiderReContractFormController() {
-        // this.opportunityId = '0060w00000D8yoKAAR';      //테스트를 위한 아이디값
-        // this.incomeExpensesId = 'a1lH2000001NWe6IAG';   //테스트를 위한 아이디값
         this.opportunityId = ApexPages.currentPage().getParameters().get('opportunityId');
         this.incomeExpensesId = ApexPages.currentPage().getParameters().get('incomeExpensesId');
         this.showtable = ApexPages.currentPage().getParameters().get('showtable');
         this.reportType = ApexPages.currentPage().getParameters().get('type');
 
-        System.debug('# opportunityId ->' + opportunityId );
-        System.debug('# incomeExpensesId ->' + incomeExpensesId );
-        System.debug('# showtable ->' + showtable );
-        System.debug('# reportType ->' + reportType );
         
-        System.debug('#########################################->' + Test.isRunningTest() );
+        //System.debug('# opportunityId ->' + opportunityId );
+        //System.debug('# incomeExpensesId ->' + incomeExpensesId );
+        //System.debug('# showtable ->' + showtable );
+        //System.debug('# reportType ->' + reportType );
+        
+        String pageReferenceString = ApexPages.currentPage().getUrl();
+        String testReContract = 'https://cjck--devsales--c.sandbox.vf.force.com/apex/CJFW_OrderConsiderReContractForm';
+
+        // 테스트용 (삭제예정)
+        System.debug(' 테스트 모드' + pageReferenceString );
+        //if (pageReferenceString == testReContract) {
+        //    System.debug(' 테스트 모드');
+        //    opportunityId = '006H200000DTM7EIAX';
+        //    incomeExpensesId = 'a1lH2000001YWgPIAW';
+        //    showtable = 'false';
+        //}
 
         // test Class에서 객체 생성시 다른 메소드들이 실행되지 않게 분기처리
         if(Test.isRunningTest()){
@@ -128,15 +137,20 @@ public with sharing class OrderConsiderReContractFormController {
     */
     public void getKeymanInfo() {
         try {
-            Id contactId = [SELECT ContactId FROM OpportunityContactRole WHERE OpportunityId =:opportunityId AND IsPrimary = true].contactId;
+            List<OpportunityContactRole> opptyConRoles = [SELECT Id, ContactId FROM OpportunityContactRole WHERE OpportunityId =:opportunityId AND IsPrimary = true LIMIT 1];
+            
+            if(opptyConRoles != null && !opptyConRoles.isEmpty()) {
+                OpportunityContactRole opptyConRole = opptyConRoles[0];
+                Id contactId = opptyConRole.ContactId;
     
-            if(contactId != null){
                 keymanInfo = [SELECT Id, Name
                                 FROM Contact
-                                WHERE Id =:contactId];
+                                WHERE Id =:contactId 
+                                LIMIT 1];
         
-                System.debug('#######keymanInfo =>' + keymanInfo);
-            }
+                }
+                System.debug('keymanInfo =>' + keymanInfo);
+
         } catch (Exception e) {
             System.debug('message => ' + e.getMessage());
             System.debug('trace => ' + e.getStackTraceString());
@@ -167,9 +181,9 @@ public with sharing class OrderConsiderReContractFormController {
     Oppty 에 있는 Account 값을 가져오는 메소드
     */
     public void getAccountInfo() {
-        // System.debug('# opportunityId ->' + opportunityId );
-        // System.debug('# incomeExpensesId ->' + incomeExpensesId );
-        // System.debug('# showtable ->' + showtable );
+        System.debug('# opportunityId ->' + opportunityId );
+        System.debug('# incomeExpensesId ->' + incomeExpensesId );
+        System.debug('# showtable ->' + showtable );
 
         
         // 기회 레코드에서 계정 ID 가져오기 
@@ -304,13 +318,18 @@ public with sharing class OrderConsiderReContractFormController {
             System.debug('# query ->' + query );
             List<CJFW_ExpectedIncomeExpenses__c> incomeExpensesList = Database.query(query);
 
+            // insert 인지 update 구분이 되야하는데 
+            System.debug(' 버전체크전  예상손익 -> ' +  incomeExpensesId );
+
             if (!incomeExpensesList.isEmpty()) {
-                // 품의서 업데이트시 
+
                 IncomeExpensesInfo = incomeExpensesList[0];
-                versionCheck = ( incomeExpensesList[0].Version__c ) + 1 ;
-                reportCheck = ( incomeExpensesList[0].IsReportCheck__c );
-                if(reportCheck){
-                    versionCheck = versionCheck-1;
+                
+                if(incomeExpensesId == null){ // insert : 버전 업! 
+                    versionCheck = ( incomeExpensesList[0].Version__c ) + 1 ;
+                }else{ //update 
+                    versionCheck = ( incomeExpensesList[0].Version__c );
+                    reportCheck = ( incomeExpensesList[0].IsReportCheck__c );
                 }
                 //System.debug(' 업데이트 versionCheck ' + versionCheck );
                 //System.debug(' 업데이트 품의지정여부 ' + reportCheck );
@@ -318,7 +337,7 @@ public with sharing class OrderConsiderReContractFormController {
                 // 품의서 초기 생성시 
                 versionCheck = 1;
                 IncomeExpensesInfo = new CJFW_ExpectedIncomeExpenses__c();
-            }
+            }  // version 1 에 re
 
             System.debug('versionCheck -> '+ versionCheck);
 
@@ -417,8 +436,9 @@ public with sharing class OrderConsiderReContractFormController {
         selectedContract = IncomeExpensesInfo.ContractType__c	;       // 계약서종류 
 
         /* keyman info 값을 참고로 IncomeExpensesInfo 에 담아주기 
-            -> keymanInfo 필드에 값이 있는지 먼저 체크 > 값이 없으면 keymanInfo 에서 값 땡겨옴 */
-        if( IncomeExpensesInfo.KeyMan__c == '' || IncomeExpensesInfo.KeyMan__c == null ){
+            -> IncomeExpensesInfo 필드에 값이 있는지 먼저 체크 > 값이 없고 keymanInfo가 null이 아닐때 keymanInfo 에서 값 땡겨옴 
+        */
+        if( (IncomeExpensesInfo.KeyMan__c == '' || IncomeExpensesInfo.KeyMan__c == null) && keymanInfo != null){
             IncomeExpensesInfo.put('KeyMan__c', keymanInfo.get('Name'));
         }
 

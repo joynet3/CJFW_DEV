@@ -70,19 +70,23 @@ public with sharing class CJFW_SurveyController {
             String query = ' select '
             + '        Id '
             + '        ,Name '
+            + '        ,Su__c '
             + '        ,Description__c'
             + ' from CJFW_Survey__c '
-            + ' where Id != null ';
+            + ' where Id != null '
+            + '      and Su__c != null ';
             
             if(isNotAdmin) {
                 query += ' and Active__c = true '
-                +  ' and SU__c = :suCode ';
+                      +  ' and Su__c = :suCode ';
             }
             
             List<CJFW_Survey__c> surveyList = database.query(query);
 
             for(CJFW_Survey__c survey : surveyList) {
-                optionList.add(new selectOption(survey.Name , survey.Id));
+                selectOption option = new selectOption(survey.Name , survey.Id);
+                //option.su = survey.Su__c;
+                optionList.add(option);
             }
             result.put('surveyList', surveyList);
             result.put('optionList', optionList);
@@ -295,6 +299,7 @@ public with sharing class CJFW_SurveyController {
     public class selectOption {
         @AuraEnabled public String label;
         @AuraEnabled public String value;
+        @AuraEnabled public String su;
         public selectOption(){}
         public selectOption(String label, String value){
             this.label = label;

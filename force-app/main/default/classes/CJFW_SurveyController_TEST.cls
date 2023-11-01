@@ -51,11 +51,11 @@ public with sharing class CJFW_SurveyController_TEST {
     static void getSurveyType_Test(){
         Test.startTest();
 
-        Map<String,Object> result = CJFW_SurveyController.getSurveyType();
+        Map<String,Object> result = CJFW_SurveyController.getSurveyType(true, '4600');
 
         List<CJFW_Survey__c> surveyList =  (List<CJFW_Survey__c>) JSON.deserialize(JSON.serialize(result.get('surveyList')), List<CJFW_Survey__c>.class);
 
-        System.assert(surveyList.size() == 4);
+        System.assert(surveyList.size() == 1);
 
         Test.stopTest();
     }
@@ -85,6 +85,18 @@ public with sharing class CJFW_SurveyController_TEST {
     @isTest
     static void saveSurveyResponse_TEST() {
         Test.startTest();
+
+
+        Account ac = new Account(Name='Opportunity');
+        insert ac;
+
+        Opportunity op = new Opportunity(
+            Name='test'
+            , AccountId=ac.id
+            , StageName = 'Needs Analysis'
+            , CloseDate = date.today().addDays(10)
+        );
+        insert op;
 
         List<CJFW_Survey__c> surveyList = [select id from CJFW_Survey__c where SU__c = '4600'];
         Map<String, List<CJFW_SurveyOption__c>> questionOptionListMap = new Map<String, List<CJFW_SurveyOption__c>>();
@@ -125,7 +137,7 @@ public with sharing class CJFW_SurveyController_TEST {
         System.debug(questionOptionListMap);
         Map<String, Object> params = new Map<String, Object>();
         params.put('recordId', surveyId);
-        params.put('mode', 'create');
+        
         Map<String,Object> result = CJFW_SurveyController.getSurvey(params);
 
         Map<String,Object> surveyObj = (Map<String,Object>) JSON.deserializeUntyped(JSON.serialize(result.get('survey')));
@@ -192,16 +204,34 @@ public with sharing class CJFW_SurveyController_TEST {
 
         params.remove('recordId');
 
+        params.put('recordId', op.id);
+        params.put('objectApiName', 'Opportunity');
+        params.put('mode', 'create');
         params.put('surveyTypeId', surveyList.get(0).id);
         //System.debug(JSON.serializePretty(selectedObjList));
         params.put('selectedValueList', selectedObjList);
         //1. 생성
-        CJFW_SurveyController.saveSurveyResponse(params);
-
+        Map<String,Object> insertResult = CJFW_SurveyController.saveSurveyResponse(params);
+        CJFW_SurveyResponse__c response = (CJFW_SurveyResponse__c) insertResult.get('insertData');
 
         //2. 수정
         params.put('mode', 'edit');
+        params.put('surveyResponseId', response.id);
         CJFW_SurveyController.saveSurveyResponse(params);
+        Test.stopTest();
+    }
+    @isTest
+    static void getParentInfo_TEST() {
+        Test.startTest();
+
+        Account testParent = new Account(Name='test');
+        insert testParent;
+
+        CJFW_SurveyController.getParentInfo(testParent.id);
+
+        new CJFW_SurveyController();
+        new CJFW_SurveyController.selectOption();
+
         Test.stopTest();
     }
 }

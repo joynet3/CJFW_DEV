@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : sunkyung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 10-31-2023
+ * @last modified on  : 11-01-2023
  * @last modified by  : sunkyung.choi@dkbmc.com
 **/
 public with sharing class CJFW_SurveyActiveController {
@@ -22,5 +22,11 @@ public with sharing class CJFW_SurveyActiveController {
         System.debug('surveyMap?????????'+surveyMap);
         return surveyMap;
 
+    }
+    @AuraEnabled
+    public static void updateSurveyInfo(CJFW_Survey__c surveyData) {
+        if (surveyData != null) {
+            update surveyData;
+        }
     }
 }
