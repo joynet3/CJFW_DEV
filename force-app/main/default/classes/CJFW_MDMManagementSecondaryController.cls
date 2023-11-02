@@ -2,7 +2,7 @@
  * @description       : 관리처-2차 Controller
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 10-31-2023
+ * @last modified on  : 11-01-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -1114,14 +1114,15 @@ public with sharing class CJFW_MDMManagementSecondaryController  {
             if(listUpdateContact <> null && listUpdateContact.size() > 0) {
                 update listUpdateContact;
             }
-            if(customer.Id != null && customer.Account__c != null){
-                Account objAccount = new Account();
+            // 조건 변경해서 다시.
+            // if(customer.Id != null && customer.Account__c != null){
+            //     Account objAccount = new Account();
 
-                objAccount.Id = customer.Account__c;
-                objAccount.IsRequestMDMReg__c = true;
+            //     objAccount.Id = customer.Account__c;
+            //     objAccount.IsRequestMDMReg__c = true;
 
-                update objAccount;
-            }
+            //     update objAccount;
+            // }
             system.debug('customer.id ' + customer.id);
             return customer.Id;
         }catch(Exception e) {

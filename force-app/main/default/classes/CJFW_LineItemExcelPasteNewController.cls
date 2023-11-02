@@ -101,12 +101,26 @@ public without sharing class CJFW_LineItemExcelPasteNewController {
             strSetMonth = string.join(listMonth,',');
 
         String Query = '';
-        Query += ' SELECT  Id, Name, Product2.gd_no__c, ProductCode, UnitPrice, toLabel(Product2.strg_cond_cd__c), ';
-        Query += ' toLabel(Product2.migr_orinat_cd__c), Product2.fm_TaxType__c, Product2.bas_unit_cd__c, Product2.box_ctcnt_qty__c';
-        Query += ' Product2.fm_LAR_CLS_NM__c, Product2.fm_LAR_CLS_ID__c,  ExtId__c, ';
-        Query += ' Product2.fm_MID_CLS_NM__c, Product2.fm_MID_CLS_ID__c, ';
-        Query += ' Product2.fm_SML_CLS_NM__c, Product2.fm_SML_CLS_CD__c, ';
-        Query += ' Product2.fm_XSM_CLS_NM__c, Product2.fm_XSM_CLS_CD__c ';
+        Query += ' SELECT  '
+              +  '  Id '
+              +  ' ,Name '
+              +  ' ,Product2.gd_no__c '
+              +  ' ,ProductCode '
+              +  ' ,UnitPrice '
+              +  ' ,toLabel(Product2.strg_cond_cd__c) '
+              +  ' ,toLabel(Product2.migr_orinat_cd__c) '
+              +  ' ,Product2.fm_TaxType__c '
+              +  ' ,Product2.bas_unit_cd__c '
+              +  ' ,Product2.box_ctcnt_qty__c '
+              +  ' ,Product2.fm_LAR_CLS_NM__c ' 
+              +  ' ,Product2.fm_LAR_CLS_ID__c '
+              +  ' ,ExtId__c '
+              +  ' ,Product2.fm_MID_CLS_NM__c '
+              +  ' ,Product2.fm_MID_CLS_ID__c '
+              +  ' ,Product2.fm_SML_CLS_NM__c '
+              +  ' ,Product2.fm_SML_CLS_CD__c '
+              +  ' ,Product2.fm_XSM_CLS_NM__c '
+              +  ' ,Product2.fm_XSM_CLS_CD__c ';
         if(!setMonth.isEmpty())
             Query += ' ,' + strSetMonth + ', Old' + strSetMonth;
         Query += ' FROM    PriceBookEntry ';
@@ -135,7 +149,7 @@ public without sharing class CJFW_LineItemExcelPasteNewController {
             String strCenter = String.valueOf(objData.get('LogisticsCenter__c'));
             String strUnitPrice = String.valueOf(objData.get('UnitPrice__c'));
             String strProfitMargin = String.valueOf(objData.get('ProfitMargin__c'));
-            String strExtId = String.valueOf(objData.get('LogisticsCenter__c'))+'_'+String.valueOf(objData.get('fm_ProductCode__c'));
+            String strExtId = String.valueOf(objData.get('LogisticsCenter__c'))+'_'+String.valueOf(objData.get('ProductCode__c'));
             if ( mapCenterValue.get(strCenter) == null){
                 objData.put('result','['+orderCount+'] [물류센터] 값에 오류가 있습니다.');
                 listInvalidData.add(objData);
@@ -186,7 +200,7 @@ public without sharing class CJFW_LineItemExcelPasteNewController {
         if (isValid){
             orderCount = 1;
             Set<String> listSelectedField = listValidTargetData[0].keyset();
-            Boolean isPriceExist = listSelectedField.contains('UnitPrice') ? true : false ; 
+            Boolean isPriceExist = listSelectedField.contains('UnitPrice__c') ? true : false ; 
             Boolean isMarginExist = listSelectedField.contains('ProfitMargin__c') ? true : false ; 
             
             for ( Map<String, Object> objData : listValidTargetData ){
@@ -195,11 +209,11 @@ public without sharing class CJFW_LineItemExcelPasteNewController {
                 String strProductCode = String.valueOf(objData.get('ProductCode__c'));
                 String strMonth = String.valueOf(objData.get('Month__c'));
                 String strCenter = String.valueOf(objData.get('LogisticsCenter__c'));
-                String strExtId = String.valueOf(objData.get('LogisticsCenter__c'))+'_'+String.valueOf(objData.get('fm_ProductCode__c'));
-                Decimal strUnitPrice = (objData.get('UnitPrice') != null ? Decimal.valueOf(String.valueOf(objData.get('UnitPrice'))) : 10);
+                String strExtId = String.valueOf(objData.get('LogisticsCenter__c'))+'_'+String.valueOf(objData.get('ProductCode__c'));
+                Decimal strUnitPrice = (objData.get('UnitPrice__c') != null ? Decimal.valueOf(String.valueOf(objData.get('UnitPrice__c'))) : 10);
                 Decimal strProfitMargin = (objData.get('ProfitMargin__c') != null ? Decimal.valueOf(String.valueOf(objData.get('ProfitMargin__c'))) : 0);
                 Decimal strBasePurchasePrice = (Decimal) mapPriceBookEntry.get(strExtId).get(mapMonthValue.get(strMonth)+'__c');
-                Decimal strOldBasePurchasePrice = (Decimal) mapPriceBookEntry.get(strExtId).get('Old'+mapMonthValue.get(strMonth)+'__c');
+                //Decimal strOldBasePurchasePrice = (Decimal) mapPriceBookEntry.get(strExtId).get('Old'+mapMonthValue.get(strMonth)+'__c');
 
                 String strTaxTypeName = mapPriceBookEntry.get(strExtId).Product2.fm_TaxType__c;
 
@@ -207,10 +221,10 @@ public without sharing class CJFW_LineItemExcelPasteNewController {
                 Decimal strUnitPriceWithVAT = strUnitPrice;
                 
                 objLineItem.put('SortOrder__c', orderCount++);
-                objLineItem.put(sObjectName+'Id', recordId);
+                objLineItem.put(sObjectName+'Id__c', recordId);
                 objLineItem.put('ProductCode__c', strProductCode);
                 objLineItem.put('BasePurchasePrice__c', strBasePurchasePrice);
-                objLineItem.put('OldBasePurchasePrice__c', strOldBasePurchasePrice);
+                //objLineItem.put('OldBasePurchasePrice__c', strOldBasePurchasePrice);
 
                 if ( strBasePurchasePrice == 1){
                     strUnitPrice = 1;

@@ -84,6 +84,11 @@ global with sharing class IF_SFDC_KIND_REQ_BASE_INFO implements Database.Batchab
         getParameter += '&sidoCode=' + scope[0].SidoCode__c.substring(0,2);
         getParameter += '&sggCode='+ scope[0].SidoCode__c;
 
+        //2023.11.01 : sancho 시도/시군구 코드 넣기
+        String SidoCode     = scope[0].SidoCode__c.substring(0,2);
+        String SingunguCode = scope[0].SidoCode__c;
+
+
         //System.debug('==============================getParameter:::' + getParameter);
         //System.debug('============================== URL :::' + ifMasterObj.EndPoint__c + getParameter);
 
@@ -102,7 +107,7 @@ global with sharing class IF_SFDC_KIND_REQ_BASE_INFO implements Database.Batchab
 
         try {
             //LogWrapper.requestBody = ifMasterObj.EndPoint__c + getParameter;
-
+            
             HttpResponse res = http.send(request);
             if(res.getStatusCode() == 200) {
                 if(res.getBody() <> null){
@@ -114,6 +119,10 @@ global with sharing class IF_SFDC_KIND_REQ_BASE_INFO implements Database.Batchab
 
                     //{"status":"SUCCESS","kinderInfo":[{"key":"1","kindercode":"1ecec08c-eecb-b044-e053-0a32095ab044","o
                     if(Response != null && Response.kinderInfo != null && Response.kinderInfo.size() > 0){
+
+                        //2023.11.01 PickList
+                        List<String> sidoMap    = IFN_Util.getPickList('CJFW_PublicBiddingInformation__c', 'State__c');
+                        List<String> sigunguMap = IFN_Util.getPickList('CJFW_PublicBiddingInformation__c', 'City__c');
 
                         for (IF_SFDC_KIND_REQ_BASE_INFO.kinderInfo info : Response.kinderInfo) {
                             
@@ -159,6 +168,10 @@ global with sharing class IF_SFDC_KIND_REQ_BASE_INFO implements Database.Batchab
                             bidObj.mixppcnt__c		    = info.mixppcnt	!= null && info.mixppcnt	!= '' ? Decimal.valueOf(info.mixppcnt	)   : null   ;	//number
                             bidObj.shppcnt__c		    = info.shppcnt	!= null && info.shppcnt		!= '' ? Decimal.valueOf(info.shppcnt	)	: null	;	//number
                             bidObj.pbntTmng__c		    = info.pbnttmng	        ;	//text
+
+                            bidObj.State__c             = sidoMap.contains(SidoCode) ? SidoCode : null;    //SidoCode
+                            bidObj.City__c              = sigunguMap.contains(SingunguCode) ? SingunguCode : null; //sigunguMap
+
                             bidObj.RecordtypeId         = recordId;
                             listData.add(bidObj);
                         }

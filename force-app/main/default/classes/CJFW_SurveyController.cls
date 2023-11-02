@@ -73,12 +73,12 @@ public with sharing class CJFW_SurveyController {
             + '        ,Su__c '
             + '        ,Description__c'
             + ' from CJFW_Survey__c '
-            + ' where Id != null '
-            + '      and Su__c != null ';
+            + ' where Id != null ';
             
             if(isNotAdmin) {
                 query += ' and Active__c = true '
-                      +  ' and Su__c = :suCode ';
+                      +  ' and Su__c = :suCode '
+                      + '  and Su__c != null ';
             }
             
             List<CJFW_Survey__c> surveyList = database.query(query);

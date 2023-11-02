@@ -19,57 +19,88 @@ public with sharing class CJFW_MDMBulkCreateManagementController {
    * CRM 오브젝트 = wrapper class다 
    * contact < 스탠다드 오브젝트 
    */
-  @AuraEnabled
-  public static SaveResult doSave(List<MDMRequest> mdmCustomer)
+  @AuraEnabled                  // List<MDMRequest> mdmCustomer
+  public static SaveResult doSave(List<MDMRegRequestCustomer__c> customerList)
   {
-     String recordTypeName = 'MDMManagement';  
-     String MDMRecordTypeId = '';  
-    // JSON.deserialize(mdmCustomer, mdmCustomer.class);
-      system.debug('mdmCustomer ' + mdmCustomer);
-      system.debug('#CJFW_MDMBulkCreateHeadController >>>doSave ');
-      MDMRecordTypeId = Schema.SObjectType.MDMRegRequestCustomer__c.getRecordTypeInfosByDeveloperName().get(recordTypeName).getRecordTypeId();
-      SaveResult saveResult = new SaveResult();
-      // aura  String 으로 넘어와서 JSON.des
-      // mdmCustomer obj =  JSON.deserialize(mdmCustomer, 래퍼클래스명.class);
-      system.debug('>>>doSave # mdmCustomer ' + JSON.serialize(mdmCustomer));
-      //값을 나눠서 값이 없으면 안되는친구들
-      //값이 없어도 되는친구들 
-      try {
-          if(mdmCustomer != null){    
-            system.debug('mdmCustomer!@@@ ' + json.serialize(mdmCustomer));
-              MDMRegRequestBulkCustomer__c mdmRequestbulk = new MDMRegRequestBulkCustomer__c();
-              //bulk 첫번째 => (0번째 Name) + 외 ( )건;
-             // 얘가
+    system.debug('gd');
+    system.debug(customerList);
+
+    SaveResult saveResult = new SaveResult();
+
+    String recordTypeName = 'MDMManagement';     // 판매처
+    String MDMRecordTypeId = '';  
+    String Status = 'Waiting';              // 이거
+    system.debug('#CJFW_MDMBulkCreateHeadController >>>doSave ');
+    MDMRecordTypeId = Schema.SObjectType.MDMRegRequestCustomer__c.getRecordTypeInfosByDeveloperName().get(recordTypeName).getRecordTypeId(); // 이거
+    // aura  String 으로 넘어와서 JSON.des
+    // mdmCustomer obj =  JSON.deserialize(mdmCustomer, 래퍼클래스명.class);
+    // system.debug('>>>doSave # mdmCustomer ' + JSON.serialize(mdmCustomer));
+    //값을 나눠서 값이 없으면 안되는친구들
+    //값이 없어도 되는친구들 
+    try {
+        if(customerList != null){    
+            MDMRegRequestBulkCustomer__c mdmRequestbulk = new MDMRegRequestBulkCustomer__c();
+            //bulk 첫번째 => (0번째 Name) + 외 ( )건;
+            // 얘가
             //   mdmRequestbulk.Name	                                = '저장TEST.';
-              mdmRequestbulk.Name = mdmCustomer[0].Name + ' 외 ' + mdmCustomer.size() + '건';
-              mdmRequestbulk.RequestType__c = 'Create';
-              insert mdmRequestbulk;
-              saveResult.customerId = mdmRequestbulk.id;
-              
-              for (MDMRequest mdm : mdmCustomer) {
-                    MDMRegRequestCustomer__c mdmRequest = new MDMRegRequestCustomer__c();
-                    system.debug('안녕하세요 ' + mdmRequestbulk.id);
-                    system.debug('mdm.name ' + mdm.name);
-                    system.debug('mdm.name ' + mdm.BusinessNumber);
-                    system.debug('mdm.name ' + mdm.CEOName);
-                    
-                    mdmRequest.PV_NAME1__c       =      String.isBlank(mdm.Name) ? null : mdm.Name;
-                    mdmRequest.PV_STCD2__c       =      String.isBlank(mdm.BusinessNumber) ? null : mdm.BusinessNumber;
-                    mdmRequest.PV_J_1KFREPRE__c  =      String.isBlank(mdm.CEOName) ? null : mdm.CEOName;
-                    mdmRequest.recordTypeId      =      MDMRecordTypeId;
-                    mdmRequest.MDMRegRequestBulkCustomer__c  = mdmRequestbulk.id;
-                    
-                    insert mdmRequest;
-                }
-                saveResult.status = 'S';
-                saveResult.massage = '성공 하였습니다.';
-          }
+            mdmRequestbulk.Name = customerList[0].PV_NAME1__c + ' 외 ' + customerList.size() + '건';
+            mdmRequestbulk.RequestType__c = 'Create';
+            insert mdmRequestbulk;
+
+            saveResult.customerId = mdmRequestbulk.id;
+            
+            for(MDMRegRequestCustomer__c customerObj : customerList)
+            {
+                customerObj.MDMRegRequestBulkCustomer__c = mdmRequestbulk.id;
+                customerObj.recordTypeId = MDMRecordTypeId;
+                customerObj.Status__c = Status;
+            }
+            insert customerList;
+
+            saveResult.status = 'S';
+            saveResult.massage = '성공 하였습니다.';
+        }
       } catch (Exception e) {
           saveResult.error = e.getMessage() +', '+ e.getLineNumber();
+          saveResult.status = 'F';
+          saveResult.massage = '실패 하였습니다.';
+          
+          throw new AuraHandledException(e.getMessage()+ ', '+ e.getLineNumber());
+
       }
 
       return saveResult;
   } 
+  
+  public static List<String> getAllFieldNames(String sObjectName) {
+        List<String> fieldNames = new List<String>();
+        
+        // sObject의 토큰을 가져옵니다.
+        Schema.SObjectType sObjectType = Schema.getGlobalDescribe().get(sObjectName);
+        
+        // null 체크
+        if(sObjectType == null) {
+            System.debug('sObject not found: ' + sObjectName);
+            return fieldNames;
+        }
+        
+        // 모든 필드의 맵을 가져옵니다.
+        Map<String, Schema.SObjectField> fieldMap = sObjectType.getDescribe().fields.getMap();
+        
+        // 필드 이름들을 목록에 추가합니다.
+        for(String fieldName : fieldMap.keySet()) {
+            fieldNames.add(fieldName);
+        }
+        
+        system.debug('fieldNames ' + fieldNames);
+
+        return fieldNames;
+    }
+
+// // 사용 예:
+// List<String> accountFields = getAllFieldNames('Account');
+// System.debug(accountFields);
+
 
   public class SaveResult{
       @AuraEnabled public String status{get;set;}
@@ -77,17 +108,6 @@ public with sharing class CJFW_MDMBulkCreateManagementController {
       @AuraEnabled public String customerId{get;set;}
       @AuraEnabled public String error{get;set;}
 
-      // 생성자의 역할은 기본적으로
-      // 전역변수(인스턴스변수) 초기화 해주는 역할을함
-    //   public SaveResult(){
-    //       this.status = 'S';
-    //       this.massage = '성공 하였습니다.';
-    //   }
-
-    //   public SaveResult(String status, String massage){
-    //       this.status  = status;
-    //       this.massage = massage;
-    //   }
       public SaveResult(){}
 
   }

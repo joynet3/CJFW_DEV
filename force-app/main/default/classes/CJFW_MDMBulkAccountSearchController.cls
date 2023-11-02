@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 10-30-2023
+ * @last modified on  : 11-01-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkAccountSearchController {
@@ -83,7 +83,7 @@ public with sharing class CJFW_MDMBulkAccountSearchController {
             strQuery += ' PVVF_VKGRP__c, SalesGroupFromDate__c, OwnerId, PVVF_PERNR__c, ResponsibilityMAFromDate__c, ResponsibilityAMA__c, TaxInvoiceType__c, toLabel(TaxInvoiceType__c) TaxInvoiceLabel, ';
             strQuery += ' IsHeadShopUseYN__c, HeadOfficeCode__c, IsAffiliatedcompanyYN__c, AffiliatedCompany__c, toLabel(AffiliatedCompany__c) AffiliatedCompanyLabel, CountryKeyCode__c, toLabel(CountryKeyCode__c) CountryKeyCodeLabel, ';
             strQuery += ' PV_KNVKTYPE__c, toLabel(PV_KNVKTYPE__c) PV_KNVKTYPE__LABEL, ShutDownDate__c, LocationState__c, toLabel(LocationState__c) LocationStateLabel, Address__c, AddressDetails__c, ';
-            strQuery += ' Address2__c, AddressDetails2__c, SalesForm__c, toLabel(SalesForm__c) SalesFormLabel, AccountStatus__c, toLabel(AccountStatus__c) AccountStatusLabel, SortKey__c, toLabel(SortKey__c) SortKeyLabel, ';
+            strQuery += ' Address2__c, AddressDetails2__c, SalesForm__c, toLabel(SalesForm__c) SalesFormLabel, CustomerStatus__c, toLabel(CustomerStatus__c) CustomerStatusLabel, SortKey__c, toLabel(SortKey__c) SortKeyLabel, ';
             strQuery += ' MediateAccount__c, toLabel(MediateAccount__c) MediateAccountLabel, CashManagementGroup__c, toLabel(CashManagementGroup__c) CashManagementGroupLabel, IsDeposit__c, toLabel(IsDeposit__c) IsDepositLabel, ';
             strQuery += ' TaxClassification__c, toLabel(TaxClassification__c) TaxClassificationLabel, TaxPaymentMethod__c, toLabel(TaxPaymentMethod__c) TaxPaymentMethodLabel, CustomerRoute__c, toLabel(CustomerRoute__c) CustomerRouteLabel, ';
             strQuery += ' PV_CUHR1__c, CustomerRouteFromDate__c, PriceGroup__c, toLabel(PriceGroup__c) PriceGroupLabel, PVVF_KONDA__c, PriceGroupFromDate__c,  UnitPriceGroup__c, toLabel(UnitPriceGroup__c) UnitPriceGroupLabel, PVVF_KVGR1__c, UnitPriceGroupFromDate__c, CurrencyIsoCode, ';
@@ -100,6 +100,9 @@ public with sharing class CJFW_MDMBulkAccountSearchController {
             for(Integer i = 0; i < searchKeys.size(); i++) {
                 if(searchKeys[i] == 'OwnerId') {
                     strQuery += ' AND ' + searchKeys[i] + ' = \'' + searchValues[i] + '\'';
+                } else if(searchKeys[i] == 'Name') {
+                    strQuery += ' AND (Name LIKE \'%' + searchValues[i]+ '%\' OR CustomerId__c LIKE \'%' + searchValues[i] + '%\') ';
+                    System.debug('searchKeys[i] == Name ' +' AND (Name LIKE \'%' + searchValues[i]+ '%\' OR CustomerId__c LIKE \'%' + searchValues[i] + '%\') ');
                 } else {
                     strQuery += ' AND ' + searchKeys[i] + ' LIKE \'%' + searchValues[i] + '%\' ';
                 }

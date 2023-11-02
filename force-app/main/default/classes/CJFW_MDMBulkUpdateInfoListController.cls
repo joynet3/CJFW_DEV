@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 10-30-2023
+ * @last modified on  : 11-01-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkUpdateInfoListController {
@@ -30,7 +30,7 @@ public with sharing class CJFW_MDMBulkUpdateInfoListController {
         strQuery += ' PVVF_VKGRP__c, SalesGroupFromDate__c, OwnerId, PVVF_PERNR__c, ResponsibilityMAFromDate__c, ResponsibilityAMA__c, TaxInvoiceType__c, toLabel(TaxInvoiceType__c) TaxInvoiceLabel, ';
         strQuery += ' IsHeadShopUseYN__c, IsAffiliatedcompanyYN__c, AffiliatedCompany__c, toLabel(AffiliatedCompany__c) AffiliatedCompanyLabel, CountryKeyCode__c, toLabel(CountryKeyCode__c) CountryKeyCodeLabel, ';
         strQuery += ' PV_KNVKTYPE__c, toLabel(PV_KNVKTYPE__c) PV_KNVKTYPE__LABEL, ShutDownDate__c, LocationState__c, toLabel(LocationState__c) LocationStateLabel, Address__c, AddressDetails__c, ';
-        strQuery += ' Address2__c, AddressDetails2__c, SalesForm__c, toLabel(SalesForm__c) SalesFormLabel, AccountStatus__c, toLabel(AccountStatus__c) AccountStatusLabel, SortKey__c, toLabel(SortKey__c) SortKeyLabel, ';
+        strQuery += ' Address2__c, AddressDetails2__c, SalesForm__c, toLabel(SalesForm__c) SalesFormLabel, CustomerStatus__c, toLabel(CustomerStatus__c) CustomerStatusLabel, SortKey__c, toLabel(SortKey__c) SortKeyLabel, ';
         strQuery += ' MediateAccount__c, toLabel(MediateAccount__c) MediateAccountLabel, CashManagementGroup__c, toLabel(CashManagementGroup__c) CashManagementGroupLabel, IsDeposit__c, toLabel(IsDeposit__c) IsDepositLabel, ';
         strQuery += ' TaxClassification__c, toLabel(TaxClassification__c) TaxClassificationLabel, TaxPaymentMethod__c, toLabel(TaxPaymentMethod__c) TaxPaymentMethodLabel, CustomerRoute__c, toLabel(CustomerRoute__c) CustomerRouteLabel, ';
         strQuery += ' PV_CUHR1__c, CustomerRouteFromDate__c, PriceGroup__c, toLabel(PriceGroup__c) PriceGroupLabel, UnitPriceGroup__c, toLabel(UnitPriceGroup__c) UnitPriceGroupLabel, CurrencyIsoCode, ';
@@ -126,7 +126,7 @@ public with sharing class CJFW_MDMBulkUpdateInfoListController {
                 mdmRequest.PV_ADRES_ADDR2_MOD       =      String.isBlank(mdms[i].PV_ADRES_ADDR2__c) ? null : mdms[i].PV_ADRES_ADDR2__c;
                 mdmRequest.PV_BUSAB                 =      String.isBlank(accList[i].SalesForm__c) ? null : accList[i].SalesForm__c;
                 mdmRequest.PV_BUSAB_MOD             =      String.isBlank(mdms[i].PV_BUSAB__c) ? null : mdms[i].PV_BUSAB__c;
-                mdmRequest.PV_CESSION_KZ            =      String.isBlank(accList[i].AccountStatus__c) ? null : accList[i].AccountStatus__c;
+                mdmRequest.PV_CESSION_KZ            =      String.isBlank(accList[i].CustomerStatus__c) ? null : accList[i].CustomerStatus__c;
                 mdmRequest.PV_CESSION_KZ_MOD        =      String.isBlank(mdms[i].PV_CESSION_KZ__c) ? null : mdms[i].PV_CESSION_KZ__c;
                 mdmRequest.PV_ZUAWA                 =      String.isBlank(accList[i].SortKey__c) ? null : accList[i].SortKey__c;
                 mdmRequest.PV_ZUAWA_MOD             =      String.isBlank(mdms[i].PV_ZUAWA__c) ? null : mdms[i].PV_ZUAWA__c;

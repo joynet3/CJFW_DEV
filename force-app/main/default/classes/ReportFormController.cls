@@ -11,8 +11,8 @@
 
  * @author            : eunyoung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 10-31-2023
- * @last modified by  : eunyoung.choi@dkbmc.com
+ * @last modified on  : 11-02-2023
+ * @last modified by  : seol.kim@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
  * 1.0   08-24-2023   eunyoung.choi@dkbmc.com   Initial Version 작성
@@ -29,8 +29,8 @@ public with sharing class ReportFormController {
     public Boolean reportCheck { get; set; }
     public String showtable { get; set; }
 
-    public String reportType { get; set; } // Code
-    public String headOfficeLabel { get; set; } // Label
+    public String reportType { get; set; } // 품의서 유형
+    public String headOfficeLabel { get; set; } // 본부구분 
 
     public String fieldValue { get; private set; }
 
@@ -283,12 +283,118 @@ public with sharing class ReportFormController {
             'Center__c, ' +  
             'IncentiveSupport__c, ' +
             'ImprovementPlanDetails__c, ' +
+            'ChangeReason__c, ' + // 변경내역 
             'KeyMan__c, ' +             //키맨    
 
             'OtherSupportDetail__c, ' + // 기타 지원세부 내역
             'AttachedDocument__c, ' + // 첨부서류
             'OpptyDescription__c, ' + // 특이사항
             'SalesCapitalExclusive__c, ' + // 외식전용 필드 ↓ :매출 수도권 전용
+            //김설 추가
+            // 매출
+            'SalesNameOne__c, ' +
+            'SalesNameTwo__c, ' +
+            'SalesNameThree__c, ' +
+            'SalesNameFour__c, ' +
+
+            'SalesCapOne__c, ' +
+            'SalesCapTwo__c, ' +
+            'SalesCapThree__c, ' +
+            'SalesCapFour__c, ' +
+
+            'SalesEastOne__c, ' +
+            'SalesEastTwo__c, ' +
+            'SalesEastThree__c, ' +
+            'SalesEastFour__c, ' +
+
+            'SalesWestOne__c, ' +
+            'SalesWestTwo__c, ' +
+            'SalesWestThree__c, ' +
+            'SalesWestFour__c, ' +
+
+            'SalesJejuOne__c, ' +
+            'SalesJejuTwo__c, ' +
+            'SalesJejuThree__c, ' +
+            'SalesJejuFour__c, ' +
+
+            'SalesMonthFoOne__c, ' +
+            'SalesMonthFoTwo__c, ' +
+            'SalesMonthFoThree__c, ' +
+            'SalesMonthFoFour__c, ' +
+
+            'SalesSoluOne__c, ' +
+            'SalesSoluTwo__c, ' +
+            'SalesSoluThree__c, ' +
+            'SalesSoluFour__c, ' +
+            // 매출이익
+            'SalesProfitNameOne__c, ' +
+            'SalesProfitNameTwo__c, ' +
+            'SalesProfitNameThree__c, ' +
+            'SalesProfitNameFour__c, ' +
+
+            'SalesProfitCapOne__c, ' +
+            'SalesProfitCapTwo__c, ' +
+            'SalesProfitCapThree__c, ' +
+            'SalesProfitCapFour__c, ' +
+
+            'SalesProfitEastOne__c, ' +
+            'SalesProfitEastTwo__c, ' +
+            'SalesProfitEastThree__c, ' +
+            'SalesProfitEastFour__c, ' +
+
+            'SalesProfitWestOne__c, ' +
+            'SalesProfitWestTwo__c, ' +
+            'SalesProfitWestThree__c, ' +
+            'SalesProfitWestFour__c, ' +
+
+            'SalesProfitJejuOne__c, ' +
+            'SalesProfitJejuTwo__c, ' +
+            'SalesProfitJejuThree__c, ' +
+            'SalesProfitJejuFour__c, ' +
+
+            'SalesProfitFoOne__c, ' +
+            'SalesProfitFoTwo__c, ' +
+            'SalesProfitFoThree__c, ' +
+            'SalesProfitFoFour__c, ' +
+
+            'SalesProfitSoluOne__c, ' +
+            'SalesProfitSoluTwo__c, ' +
+            'SalesProfitSoluThree__c, ' +
+            'SalesProfitSoluFour__c, ' +
+
+            // 매익률
+            'ProfitRateNameOne__c, ' +
+            'ProfitRateNameTwo__c, ' +
+            'ProfitRateNameThree__c, ' +
+            'ProfitRateNameFour__c, ' +
+
+            // 판매처 수
+            'LocationCntCap__c, ' +
+            'LocationCntEast__c, ' +
+            'LocationCntWest__c, ' +
+            'LocationCntJeju__c, ' +          
+            'LocationCntFo__c, ' +          
+ 
+            //물류비 직접비
+            'DistributeDirCap__c, ' +
+            'DistributeDirEast__c, ' +
+            'DistributeDirWest__c, ' +
+            'DistributeDirJeju__c, ' +          
+            'DistributeDirFo__c, ' +   
+
+            //물류비 간접비
+
+            'DistributeInDirCap__c, ' +
+            'DistributeInDirEast__c, ' +
+            'DistributeInDirWest__c, ' +
+            'DistributeInDirJeju__c, ' +          
+            'DistributeInDirFo__c, ' +   
+
+            'SalesFoEx__c, ' +   
+            'SalesFoGen__c, ' +   
+
+            // 김설 추가 끝
+
             'SalesCapitalGeneral__c, ' + // 매출 수도권 일반
             'SalesEastExclusive__c, ' + // 매출 동부권 전용
             'SalesEastGeneral__c, ' + // 매출 동부권 일반
@@ -368,21 +474,23 @@ public with sharing class ReportFormController {
             System.debug('# query ->' + query );
             List<CJFW_ExpectedIncomeExpenses__c> incomeExpensesList = Database.query(query);
 
+            // insert 인지 update 구분해서 version up _231101
             if (!incomeExpensesList.isEmpty()) {
-                // 품의서 업데이트시 
                 IncomeExpensesInfo = incomeExpensesList[0];
-                versionCheck = ( incomeExpensesList[0].Version__c ) + 1 ;
-                reportCheck = ( incomeExpensesList[0].IsReportCheck__c );
-                if(reportCheck){
-                    versionCheck = versionCheck-1;
+
+                if(incomeExpensesId == null){ // insert : 버전 업! 
+                    versionCheck = ( incomeExpensesList[0].Version__c ) + 1 ;
+                }else{ //update 
+                    versionCheck = ( incomeExpensesList[0].Version__c );
+                    reportCheck = ( incomeExpensesList[0].IsReportCheck__c );
                 }
                 //System.debug(' 업데이트 versionCheck ' + versionCheck );
                 //System.debug(' 업데이트 품의지정여부 ' + reportCheck );
-            } else {
-                // 품의서 초기 생성시 
+            } else { // 품의 초기생성시 
                 versionCheck = 1;
                 IncomeExpensesInfo = new CJFW_ExpectedIncomeExpenses__c();
-            }
+            } 
+
 
             System.debug('versionCheck -> '+ versionCheck);
 
@@ -549,15 +657,11 @@ public with sharing class ReportFormController {
 
 
     /* 
-    CJFW_OrderConsiderNewForm_TEST 용 개발 : 물류비 가져오기 ( 추후 삭제예정 )
+    물류비 관리 (CJFW_DistributionCost__c)에서 값 가져오기 
      */
     public void getDistributeCost() {
         System.debug('# ReportFormController # getDistributeCost ');
 
-        // 파람값 들어오면 변경예정 231024
-        //String ReportType1 ='외식SU';
-        //String ReportType2 ='급식SU';
-        
         try{
 
             List<CJFW_DistributionCost__c> DistributeCostList  = [
@@ -608,59 +712,6 @@ public with sharing class ReportFormController {
 
     }
 
-
-    /* 
-    예산손익관리(CJFW_ExpectedIncomeManager__c) 에서 값 가져오기
-    적용시작일 기준으로 값 가져와야함 
-    */
-    public void getExpectManager_be() {
-        System.debug('# ReportFormController # getExpectManager');
-
-        IncomeManager = [
-        SELECT Id, 
-               Name,
-               CurrencyIsoCode,  
-               DistributionCost__c, 
-               LaborCost__c, 
-               GroupCommonCost__c, 
-               GroupCommonCostExclusive__c, 
-               GroupCommonCostGeneral__c, 
-               PromotionFee__c, 
-               CardFee__c, 
-               CollateralFee__c, 
-               ChefFee__c, 
-               OtherFee__c, 
-               SupportFee__c, 
-               StartDate__c, 
-               HeadOffice__c, 
-               SU__c, 
-               Source__c 
-        FROM CJFW_ExpectedIncomeManager__c WHERE StartDate__c <= TODAY LIMIT 1];
-
-        String[] defaultValSet = new String[] {
-            'DistributionCost__c',
-            'LaborCost__c',
-            'GroupCommonCost__c',
-            'GroupCommonCostExclusive__c',
-            'GroupCommonCostGeneral__c',
-            'PromotionFee__c',
-            'CardFee__c',
-            'CollateralFee__c',
-            'ChefFee__c',
-            'OtherFee__c',
-            'SupportFee__c'
-        };
-
-        for (String defaultSet : defaultValSet) {
-            Object fieldValue = IncomeManager.get(defaultSet);
-            // 필드 값이 null이면 기본값을 0.00 으로 설정
-            if (fieldValue == null)  fieldValue = 0.00; 
-            IncomeManager.put(defaultSet, fieldValue);
-        }
-
-        System.debug('IncomeManager !! check > '+  IncomeManager );
-
-    }
     /* 
     예산손익관리(CJFW_ExpectedIncomeManager__c) 에서 값 가져오기
     적용시작일 기준으로 값 가져와야함 
@@ -749,6 +800,8 @@ public with sharing class ReportFormController {
             if (incomeExpensesId != null && incomeExpensesId != '') {
                 System.debug('update ★-> ' + incomeExpensesId);
                 expectIncome = [SELECT Id FROM CJFW_ExpectedIncomeExpenses__c WHERE Id = :incomeExpensesId];
+                System.debug('incomeExpensesId ' + incomeExpensesId);
+                
             } else { // insert 
                 System.debug('insert ★-> ');
                 //System.debug(' 품의서종류  -> ' + (String)dataMap.get('reportType')  );
@@ -964,8 +1017,6 @@ public with sharing class ReportFormController {
                 expectIncome.ProfitRateGeneral__c = convertToDecimal(dataMap.get('ProfitRateGen'));
             }
             if (dataMap.containsKey('selectedDelivery')) { // 배송횟수
-                System.debug(' 배송 횟수  ' + dataMap.get('selectedDelivery') );
-                //expectIncome.DeliveryCnt__c = dataMap.get('selectedDelivery');
                 expectIncome.DeliveryCnt__c = (String)dataMap.get('selectedDelivery'); // 결제수단 종류
             }
 
@@ -1003,6 +1054,10 @@ public with sharing class ReportFormController {
             }
             if (dataMap.containsKey('salesImpMonthGen')) { // 월 예상실적 - 일반 개선
                 expectIncome.SalesImproveResultGeneral__c = convertToDecimal(dataMap.get('salesImpMonthGen'));
+            }
+            if (dataMap.containsKey('changeReason')) { // 월 예상실적 - 일반 개선
+                //expectIncome.ChangeReason__c = convertToDecimal(dataMap.get('changeReason'));
+                expectIncome.ChangeReason__c = (String)dataMap.get('changeReason') ;
             }
 
             

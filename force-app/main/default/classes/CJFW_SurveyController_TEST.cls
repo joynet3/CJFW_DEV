@@ -137,6 +137,7 @@ public with sharing class CJFW_SurveyController_TEST {
         System.debug(questionOptionListMap);
         Map<String, Object> params = new Map<String, Object>();
         params.put('recordId', surveyId);
+        params.put('mode', 'create');
         
         Map<String,Object> result = CJFW_SurveyController.getSurvey(params);
 
@@ -206,7 +207,7 @@ public with sharing class CJFW_SurveyController_TEST {
 
         params.put('recordId', op.id);
         params.put('objectApiName', 'Opportunity');
-        params.put('mode', 'create');
+        
         params.put('surveyTypeId', surveyList.get(0).id);
         //System.debug(JSON.serializePretty(selectedObjList));
         params.put('selectedValueList', selectedObjList);

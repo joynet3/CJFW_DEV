@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 10-30-2023
+ * @last modified on  : 11-02-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkCreateInfoListController {
@@ -11,7 +11,7 @@ public with sharing class CJFW_MDMBulkCreateInfoListController {
     @AuraEnabled(cacheable=true)
     public static DataWrapper getAccountInfo (String recordId, Integer pageNumber, Integer pageSize) {
 
-        List<MDMRegRequestCustomer__c> mdms = [SELECT PV_NAME1__c, PV_NAME_G__c, PV_KUNNR__c, PV_OLDCD__c, PV_NAME2__c, PV_KTOKD__c, PV_CUSTTYPE__c, PV_STCD2__c  FROM MDMRegRequestCustomer__c WHERE MDMRegRequestBulkCustomer__c = :recordId ORDER BY Name];
+        List<MDMRegRequestCustomer__c> mdms = [SELECT PV_NAME1__c, PV_NAME_G__c, PV_KUNNR__c, PV_OLDCD__c, PV_NAME2__c, PV_KTOKD__c, toLabel(PV_KTOKD__c) PV_KTOKDLabel, PV_CUSTTYPE__c, toLabel(PV_CUSTTYPE__c) PV_CUSTTYPELabel, PV_STCD2__c  FROM MDMRegRequestCustomer__c WHERE MDMRegRequestBulkCustomer__c = :recordId ORDER BY Name];
 
         DataWrapper objWrapper = new DataWrapper();
         
@@ -31,6 +31,8 @@ public with sharing class CJFW_MDMBulkCreateInfoListController {
             mdmRequest.PV_KTOKD         =      String.isBlank(mdms[i].PV_KTOKD__c) ? null : mdms[i].PV_KTOKD__c;
             mdmRequest.PV_CUSTTYPE      =      String.isBlank(mdms[i].PV_CUSTTYPE__c) ? null : mdms[i].PV_CUSTTYPE__c;
             mdmRequest.PV_STCD2         =      String.isBlank(mdms[i].PV_STCD2__c) ? null : mdms[i].PV_STCD2__c;
+            //mdmRequest.PV_KTOKDLabel    =      String.isBlank(mdms[i].PV_KTOKDLabel) ? null : mdms[i].PV_KTOKDLabel;
+            //mdmRequest.PV_CUSTTYPELabel =      String.isBlank(mdms[i].PV_CUSTTYPELabel) ? null : mdms[i].PV_CUSTTYPELabel;
             System.debug((i+1) + ' 번째 mdmRequest => ' + mdmRequest);
             mdmList.add(mdmRequest);
         }
@@ -83,6 +85,8 @@ public with sharing class CJFW_MDMBulkCreateInfoListController {
         @AuraEnabled public String PV_KTOKD {get;set;}
         @AuraEnabled public String PV_CUSTTYPE {get;set;}
         @AuraEnabled public String PV_STCD2 {get;set;}
+        @AuraEnabled public String PV_KTOKDLabel {get;set;}
+        @AuraEnabled public String PV_CUSTTYPELabel {get;set;}
     }
 
 }

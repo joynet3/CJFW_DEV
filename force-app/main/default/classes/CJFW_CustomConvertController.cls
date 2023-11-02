@@ -149,8 +149,9 @@ public with sharing class CJFW_CustomConvertController {
                         String fieldName = accountMappingField.get(key);
                         try {
                             acc.put(fieldName, convertObj.get(key));
+                            // resultMap.put('ACCOUNT FIELD :' + key, fieldName+' / '+convertObj.get(key));
                         } catch (Exception e) {
-                            resultMap.put('ACCOUNT FIELD DIFFERENT :', fieldName);
+                            resultMap.put('ACCOUNT FIELD DIFFERENT :'+key, fieldName);
                         }
                     }
                 }
@@ -166,9 +167,12 @@ public with sharing class CJFW_CustomConvertController {
                 acc.put('RecordTypeId', accRecordTypeId);
                 acc.put('OwnerId', convertedOwnerId);
                 upsert acc;
+
                 updateConvertObj.put('Account__c', acc.Id);
                 updateConvertObj.put('ConvertedAccount__c', acc.Id);
             }
+            resultMap.put('Convert Account::', acc);
+
             
             //2. Contact Convert
             Contact con = new Contact();
@@ -180,7 +184,7 @@ public with sharing class CJFW_CustomConvertController {
                         try {
                             con.put(fieldName, convertObj.get(key));                            
                         } catch (Exception e) {
-                            resultMap.put('CONTACT FIELD DIFFERENT :', fieldName);
+                            resultMap.put('CONTACT FIELD DIFFERENT :'+key, fieldName);
                         }
                     }
                 }
@@ -200,6 +204,7 @@ public with sharing class CJFW_CustomConvertController {
                 upsert con;
                 updateConvertObj.put('ConvertedContact__c', con.Id);
             }
+            resultMap.put('Convert Contact::', con);
             
             //3. Oppty Convert
             Opportunity opp = new Opportunity();
@@ -215,7 +220,7 @@ public with sharing class CJFW_CustomConvertController {
                             opp.put(fieldName, value);
                         }
                         catch (Exception e) {
-                            resultMap.put('OPPTY FIELD DIFFERENT :', fieldName);
+                            resultMap.put('OPPTY FIELD DIFFERENT :'+key, fieldName);
                         }
                     }
                 }
@@ -235,8 +240,12 @@ public with sharing class CJFW_CustomConvertController {
                 opp.put('RecordTypeId', opptyRecordTypeId);
                 opp.put('OwnerId', convertedOwnerId);
                 upsert opp;
+                if(sObjectName == 'CJFW_BiddingInformation__c') {
+                    updateConvertObj.put('Opportunity__c', opp.Id);
+                }
                 updateConvertObj.put('ConvertedOpportunity__c', opp.Id);
             }
+            resultMap.put('Convert Opportunity::', opp);
             
             //if (condition) {
      		//   throw new Exception('예외 발생');
@@ -262,7 +271,7 @@ public with sharing class CJFW_CustomConvertController {
             convertObjList = Database.query(query);
 			resultMap.put('updateConvertObj', convertObjList[0]);
             
-            // Database.rollback(sp);            
+            // Database.rollback(sp);//TEST    
             // resultMap.put('STATUS', 'S');
         } catch (Exception e) {
             Database.rollback(sp);

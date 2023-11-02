@@ -2,7 +2,7 @@
  * @description       : 관리처-분할 Controller
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 10-31-2023
+ * @last modified on  : 11-02-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -392,7 +392,7 @@ public with sharing class CJFW_MDMManagementController {
                         ,IsSelf_PV_CHARGECUST__c        // 청구처 Self 여부 
                         ,Status__c                      // 전송상태 
                         ,WF_DESCRIPTION__c              // 결재의견 
-                        ,PV_SELLER_lu__c                // 판매처 
+                        ,PV_SALESCUST_lu__c             // 판매처 
                 FROM    MDMRegRequestCustomer__c
                 WHERE   Id =:mdmCustomerId];
 
@@ -529,6 +529,7 @@ public with sharing class CJFW_MDMManagementController {
                                                 ,MediateAccount__c
                                                 ,CashManagementGroup__c
                                                 ,TaxClassification__c
+                                                ,SalesCustomerCode__c                          // 판매처
                                                 ,TaxPaymentMethod__c //여기까지 회계정보
                                                 ,CustomerRoute__c
                                                 ,CustomerRouteFromDate__c
@@ -666,17 +667,25 @@ public with sharing class CJFW_MDMManagementController {
             system.debug('codeToIdMap 뭐가나오니' + codeToIdMap.get('1'));
             // User의 사번필드(ResponsibilityAMA__c)로 User 조회해서 Id값 알아내기
             Set<String> accUserSet = new Set<String>();
+            Set<String> accSalesCodeSet = new Set<String>();
             for(Account acc :accountList){
                 accUserSet.add(acc.ResponsibilityAMA__c);
+                accSalesCodeSet.add(acc.SalesCustomerCode__c);    //accSalesCodeSet의 코드가 들어 감
             }
             List<User> userList = [SELECT Id,EmployeeNumber FROM User WHERE EmployeeNumber =: accUserSet];
+            List<Account> accList = [SELECT Id, CustomerId__c  FROM Account WHERE customerId__c =: accSalesCodeSet];
             
             // Key :code , value :Id
             Map<String, String> codeToUserIdMap = new Map<String, String>();
             for(User us :userList){ 
                 codeToUserIdMap.put(us.EmployeeNumber, us.Id);
             }
-
+            Map<String, String> codeToAccIdMap = new Map<String, String>();
+            system.debug('accList ' + accList);
+            for(Account acc :accList){ 
+                codeToAccIdMap.put(acc.CustomerId__c, acc.Id);
+            }
+            system.debug('codeToAccIdMap ' + codeToAccIdMap);
             // Account를 MDMRegRequestContact__c 매핑하여 리턴
             for(Account acc : accountList){
                 MDMRegRequestCustomer__c mdmRequest = new MDMRegRequestCustomer__c    ();
@@ -737,7 +746,11 @@ public with sharing class CJFW_MDMManagementController {
                 // wrapperRequest.PV_SELLER_lu__c                      = acc?.X;                                                  //[수정] 판매처는 잠시,,               
                 // wrapperRequest.CreateReferenceId__c                 = acc?.X;                                                  //[수정] 판매처는 잠시,,               
                 // wrapperRequest.PV_BIZPLCODE                         = acc?.X;                                                  //[수정] OnlyOneFoodNet사업장ID는 잠시,,
-                 // 기본정보 [E]      
+                mdmRequest.PV_SALESCUST__c                              = acc.SalesCustomerCode__c;                              // 판매처                                                                                                                                                                                                                         
+                mdmRequest.PV_SALESCUST_lu__c                           = codeToAccIdMap.get(acc?.SalesCustomerCode__c);         // 판매처(Id)
+                system.debug('acc.SalesCustomerCode__c ' + acc.SalesCustomerCode__c);
+                system.debug('codeToAccIdMap.get(acc?.SalesCustomerCode__c) ' + codeToAccIdMap.get(acc?.SalesCustomerCode__c));
+                // 기본정보 [E]      
                 //회계정보 [S]
                 mdmRequest.PV_BUSAB__c                                 = acc?.SalesForm__c;                
                 mdmRequest.PV_CESSION_KZ__c                            = acc?.CustomerStatus__c;                        
@@ -1217,7 +1230,7 @@ public with sharing class CJFW_MDMManagementController {
     * @params      : objCustomer : 화면 objCustomer 데이터
     * @params      : 화면 contacts (List)데이터 > 왜 리스트가 나올까? 데이터가 다건인가?
     * @params      : 화면 banks (List) 데이터 (현재는 사용하지않음!)
-    * @return      : `List<MDMReferenceCode__c>`
+    * @return      : `String`
     * =======================================================================================================================
     */
     @AuraEnabled                                // List<CustomContacts> contacts, Boolean isMDMEdit
@@ -1278,14 +1291,15 @@ public with sharing class CJFW_MDMManagementController {
             if(listUpdateContact <> null && listUpdateContact.size() > 0) {
                 update listUpdateContact;
             }
-            if(customer.Id != null && customer.Account__c != null){
-                Account objAccount = new Account();
+             // 조건 변경해서 다시 풀어야 함
+            // if(customer.Id != null && customer.Account__c != null){
+            //     Account objAccount = new Account();
 
-                objAccount.Id = customer.Account__c;
-                objAccount.IsRequestMDMReg__c = true;
+            //     objAccount.Id = customer.Account__c;
+            //     objAccount.IsRequestMDMReg__c = true;
 
-                update objAccount;
-            }
+            //     update objAccount;
+            // }
             system.debug('customer.id ' + customer.id);
             return customer.Id;
         }catch(Exception e) {

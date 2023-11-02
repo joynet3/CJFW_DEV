@@ -74,6 +74,12 @@ global with sharing class IF_SFDC_CRCT_REQ_CENTER_INFO_ba implements Database.Ba
         System.debug('==============================getParameter:::' + getParameter);
         System.debug('============================== URL :::' + ifMasterObj.EndPoint__c + getParameter);
 
+
+        //2023.11.01 : sancho 시도/시군구 코드 넣기
+        String SidoCode     = scope[0].SidoCode__c.substring(0,2);
+        String SingunguCode = scope[0].SidoCode__c;
+
+
         Http http = new Http();
         HttpRequest request = new HttpRequest();
         request.setEndpoint(ifMasterObj.EndPoint__c + getParameter);
@@ -100,6 +106,13 @@ global with sharing class IF_SFDC_CRCT_REQ_CENTER_INFO_ba implements Database.Ba
                     IF_SFDC_CRCT_REQ_CENTER_INFO_sc.Res inputRes = input.response;
 
                     if(inputRes <> null && inputRes.item <> null && inputRes.item.size() > 0) {
+
+                        //2023.11.01 PickList
+                        List<String> sidoMap    = IFN_Util.getPickList('CJFW_PublicBiddingInformation__c', 'State__c');
+                        List<String> sigunguMap = IFN_Util.getPickList('CJFW_PublicBiddingInformation__c', 'City__c');
+
+                        //
+
                         for (IF_SFDC_CRCT_REQ_CENTER_INFO_sc.Items obj : input.response.item) {
                             
                             System.debug('=========================> 4 sancho obj');
@@ -130,6 +143,10 @@ global with sharing class IF_SFDC_CRCT_REQ_CENTER_INFO_ba implements Database.Ba
                             //objLead.Address__c = obj.sigunname <> null ? obj.sidoname +' '+obj.sigunname : obj.sidoname;  //2023.10.18 왜 막아 놨지? 
                             objLead.PostalCode__c           = obj.zipcode;
                             objLead.AuthorizationDate__c    = obj.crcnfmdt <> null && obj.crcnfmdt <> '' ? Date.valueOf(obj.crcnfmdt) : null;
+
+                            objLead.State__c             = sidoMap.contains(SidoCode) ? SidoCode : null;    //SidoCode
+                            objLead.City__c              = sigunguMap.contains(SingunguCode) ? SingunguCode : null; //sigunguMap
+
                             objLead.RecordtypeId            = recordId;
                             listData.add(objLead);
                         }

@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 11-01-2023
+ * @last modified on  : 11-02-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -65,9 +65,9 @@ public with sharing class CJFW_MDMReferenceCreateController {
             List<Account> searchResult = new List<Account>(); // 분할해서 담은
             List<Account> listSearchResult = new List<Account>(); // 모두 담은
 
-            String strQuery = 'SELECT Id, CustomerID__c, Name, Owner.Name, CustomerIDASIS__c, NameKor__c, NameAlias__c, AccountGroup__c, toLabel(AccountGroup__c) AccountGroupLabel, ';
+            String strQuery = 'SELECT Id, CustomerID__c, Name, Owner.Name, CustomerIDASIS__c, NameKor__c, NameAlias__c, AccountGroup__c, toLabel(AccountGroup__c) AccountGroupLabel, CustomerStatus__c, toLabel(CustomerStatus__c) CustomerStatusLabel, ';
             strQuery += ' CustomerType__c, toLabel(CustomerType__c) CustomerTypeLabel, CompanyRegisterNumber__c, 	CorporateCode__c, 	SubCompanyRegisterNumber__c, TaxationType__c, toLabel(TaxationType__c) TaxationTypeLabel, ';
-            strQuery += ' LegalStatus__c, toLabel(LegalStatus__c) LegalStatusLabel, RepresentativeName__c, PV_BLCKYN__c,	RepresentativeBirthDate__c, BusinessConditions__c, BusinessCategory__c, ';
+            strQuery += ' LegalStatus__c, toLabel(LegalStatus__c) LegalStatusLabel, RepresentativeName__c, PV_BLCKYN__c,	RepresentativeBirthDate__c, BusinessConditions__c, BusinessCategory__c, FWReleaseCenter__c, toLabel(FWReleaseCenter__c) FWReleaseCenterLabel, ';
             strQuery += ' Phone, Fax, PaymentAccountCode__c, PaymentAccountName__c, ShippingAccountCode__c, ShippingAccountName__c, PV_VKGRP__c, toLabel(PV_VKGRP__c) PV_VKGRP__LABEL, ';
             strQuery += ' PVVF_VKGRP__c, SalesGroupFromDate__c, OwnerId, PVVF_PERNR__c, ResponsibilityMAFromDate__c, ResponsibilityAMA__c, TaxInvoiceType__c, toLabel(TaxInvoiceType__c) TaxInvoiceLabel, ';
             strQuery += ' IsHeadShopUseYN__c, HeadOfficeCode__c, IsAffiliatedcompanyYN__c, AffiliatedCompany__c, toLabel(AffiliatedCompany__c) AffiliatedCompanyLabel, CountryKeyCode__c, toLabel(CountryKeyCode__c) CountryKeyCodeLabel, ';

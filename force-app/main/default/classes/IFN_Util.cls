@@ -766,4 +766,33 @@ public with sharing class IFN_Util {
         return result;
     }
 
+
+    /**
+     *  getPickList //2023.11.01 - sancho pickList
+     * 
+     * @param  변수명 파라미터 설명 (있는경우)
+     * @return  리턴값 설명 (있는경우)
+     * @exception  메소드가 발생시키는 예외에 대한 설명 또는 목록
+     * @example 
+     *  List<String> incoPickLst    = IFN_Util.getPickList('LGC_OrderRequest__c', 'Incoterms__c');
+     *  result.Incoterms__c         = incoPickLst.contains(log.INCOTERMS__c) ? log.INCOTERMS__c : null;
+     * */
+    public static List<String> getPickList(String objName, String fieldName) {
+        List<String> result = new List<String>();
+ 
+        Schema.SObjectType targetType = Schema.getGlobalDescribe().get(objName);
+        Sobject Object_name = targetType.newSObject();
+ 
+        Schema.sObjectType sobject_type = Object_name.getSObjectType();
+        Schema.DescribeSObjectResult sobject_describe = sobject_type.getDescribe();
+        Map<String, Schema.SObjectField> field_map = sobject_describe.fields.getMap();
+        List<Schema.PicklistEntry> pick_list_values = field_map.get(fieldName).getDescribe().getPickListValues();
+ 
+        for(Schema.PicklistEntry plv : pick_list_values) {
+            result.add(plv.getValue());            
+        }
+ 
+        return result;
+    }
+
 }

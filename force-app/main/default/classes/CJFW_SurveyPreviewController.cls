@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : sunkyung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 10-11-2023
+ * @last modified on  : 11-01-2023
  * @last modified by  : sunkyung.choi@dkbmc.com
 **/
 public with sharing class CJFW_SurveyPreviewController {
@@ -75,7 +75,7 @@ public with sharing class CJFW_SurveyPreviewController {
                 answers.add(String.valueOf(ru.DateResult__c)); // DateResult__c의 값을 리스트에 추가
                 System.debug('날짜 찍어봐 : '+ answers);
             }
-            else {
+            else if (ru.TimeResult__c != null) {
                 answers.add(DateTime.newInstance(2000, 1, 1, ru.TimeResult__c.hour(), ru.TimeResult__c.minute(), ru.TimeResult__c.second()).format('a hh:mm'));
                 System.debug('시간 찍어봐  : '+ answers);
             }

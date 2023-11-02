@@ -8,7 +8,7 @@
 public with sharing class CJFW_MDMBulkSearchContactController {
     
     @AuraEnabled(cacheable=true)
-    public static DataWrapper getContactInfo(List<Map<String, String>> searchKey, String recordId, Integer pageNumber, Integer pageSize){
+    public static DataWrapper getContactInfo(List<Map<String, String>> searchKey, String recordId, Integer pageNumber, Integer pageSize, String typeValue){
 
         system.debug('### CJFW_MDMBulkSearchContactController ###');
         system.debug('>>> getContactInfo()');
@@ -18,6 +18,7 @@ public with sharing class CJFW_MDMBulkSearchContactController {
 
         System.debug('===============> searchKey : ' + searchKey);
         System.debug('===============> recordId : ' + recordId);
+        System.debug('===============> typeValue : ' + typeValue);
 
         // Key와 Value 따로 담아 주기
         List<String> searchKeys = new List<String>();
@@ -79,6 +80,9 @@ public with sharing class CJFW_MDMBulkSearchContactController {
             strQuery += ' WHERE Account.CustomerId__c != null ';
             if(recordId != null) {
                 strQuery += ' AND Account.CustomerId__c IN ' + ids + ' ';
+            }
+            if(typeValue != null) {
+                strQuery += ' AND Account.CustomerType__c = \'' + typeValue + '\' ';
             }
             for(Integer i = 0; i < searchKeys.size(); i++) {
                 if(searchKeys[i] == 'AccountId') {
