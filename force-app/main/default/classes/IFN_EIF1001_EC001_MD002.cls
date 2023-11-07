@@ -10,12 +10,12 @@
  * ----------------------------------------------
  *  NO | Date       | Modifier       | Description
  * ----------------------------------------------
- *  1. | 2023.08.22 | 김동영          | 최초작성  
+ *  1. | 2023.08.22 | 김동영          | 최초작성
+ *  2. | 2023.10.30 | 김동영          | 테스트용도 Object 추가에 따른 레코드 조회 및 업데이트 추가
  * */
 @RestResource(urlMapping='/EIF1001/EC001/MD002')
 global with sharing class IFN_EIF1001_EC001_MD002 {
     global IFN_EIF1001_EC001_MD002() {}
-    
     
     @HttpPost
     global static String doPost() {
@@ -69,13 +69,34 @@ global with sharing class IFN_EIF1001_EC001_MD002 {
 
                 for(Object result : results){
                     Map<String, Object> resultItem = (Map<String, Object>)result;
-                    if(resultItem.get('code').toString().equals('C100')) {
-                        // 메시지 발송 성공 처리
-                    } else {
-                        // 메시지 발송 실패 처리
+                    // 메시지 발송 결과 저장 - 현재 테스트용도 생성된 Object에 입력, 추후 수정 Or 변경될 수 있음.
+                    // ================================= 테스트 용 추가코드 Start =================================
+                    String msgKey = resultItem.get('msg_key').toString();
+                    List<ChannelTransHist__c> MMSHist = [select Id, ImageKey__c,
+                                     		SendYn__c, SendResultCode__c, SendResultDesc__c, SendResultDest__c, SendResultDoneDate__c, 
+                                     		ErrorCode__c, ErrorMsg__c
+  									   from ChannelTransHist__c 
+                                     where MsgKey__c =: msgKey 
+                                       and MsgType__c = 'MMS'];
+
+                    if(MMSHist.size() > 0 ){
+                        for(ChannelTransHist__c mms : MMSHist){
+                            if(resultItem.get('code').toString().equals('0')) mms.SendYn__c = 'Y';
+                            else mms.SendYn__c = 'N';
+
+                            mms.SendResultCode__c = resultItem.get('code').toString();
+                            mms.SendResultDesc__c = resultItem.get('desc').toString();
+                            mms.SendResultDesc__c = resultItem.get('dest').toString();
+                            mms.SendResultDesc__c = resultItem.get('done_date').toString();
+                            try {
+                                update mms;
+                            } catch (DmlException e) {
+                                // Process exception here
+                            }
+                        }    
                     }
+                    // ================================= 테스트 용 추가코드 END =================================
                 }
-                
             }
         } catch(Exception e) {
 

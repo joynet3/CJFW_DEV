@@ -34,7 +34,8 @@ public with sharing class CJFW_SurveyController {
             String query = ' select '
                          + '         Id '
                          + '        ,Name '
-                         + '        ,Owner.SU__c '
+                         + '        ,FM_OwnerSU__c '
+                         //FM_OwnerSU__c ,Owner.SU__c
                          + ' from ' + Id.valueOf(recordId).getSobjectType()
                          + ' where Id = :recordId';
 

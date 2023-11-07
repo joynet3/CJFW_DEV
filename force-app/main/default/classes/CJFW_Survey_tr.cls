@@ -2,7 +2,7 @@
  * @description       :
  * @author            : sunkyung.choi@dkbmc.com
  * @group             :
- * @last modified on  : 10-26-2023
+ * @last modified on  : 11-07-2023
  * @last modified by  : sunkyung.choi@dkbmc.com
 **/
 public with sharing class CJFW_Survey_tr extends TriggerHandler {
@@ -25,6 +25,9 @@ public with sharing class CJFW_Survey_tr extends TriggerHandler {
     }
     public override void afterInsert() {
         doCloneInsert();
+    }
+    public override void beforeUpdate() {
+        checkSuFieldChanges();
     }
     private void doClone() {
         system.debug('doClone  START');
@@ -72,10 +75,11 @@ public with sharing class CJFW_Survey_tr extends TriggerHandler {
                     newSurvey.Version__c = sourceSurvey.Version__c + 1;
                 }
             } else {
-                if (suCheckMap.containsKey(newSurvey.su__c) && suCheckMap.get(newSurvey.Su__c).Active__c ) {
-                    if (newSurvey.Active__c) {
-                        newSurvey.addError('사업부 형식지가 활성화 되어 있습니다. ');
-                    }
+                // if (suCheckMap.containsKey(newSurvey.su__c) && suCheckMap.get(newSurvey.Su__c).Active__c ) {
+                if (suCheckMap.containsKey(newSurvey.su__c)  ) {
+                    newSurvey.addError('해당 사업부 형식지가 작성되어있습니다. ');
+                    // if (newSurvey.Active__c) {
+                    // }
                 }
                 System.debug('newSurvey22222: >>' + newSurveys);
                 newSurvey.Version__c = 1;
@@ -103,8 +107,10 @@ public with sharing class CJFW_Survey_tr extends TriggerHandler {
         Map<Id, Id> optCloneMap = new Map<Id, Id>(); // 복제 optionID
 
         for (CJFW_Survey__c newSurvey : newSurveys) {
-            originId.add(newSurvey.getCloneSourceId());
-            surveyIdMap.put(newSurvey.getCloneSourceId(), newSurvey.Id);
+            if (newSurvey.isclone()) {
+                originId.add(newSurvey.getCloneSourceId());
+                surveyIdMap.put(newSurvey.getCloneSourceId(), newSurvey.Id);
+            }
         }
         List<CJFW_SurveyQuestion__c> originQuestionList = [
             SELECT Id,
@@ -170,5 +176,30 @@ public with sharing class CJFW_Survey_tr extends TriggerHandler {
         }
         insert surveyFollow;
     }
-
+    private void checkSuFieldChanges() {
+        List<CJFW_Survey__c> newSurveys = listNew;
+        List<CJFW_Survey__c> oldSurveys = listOld;
+        Map<String, CJFW_Survey__c> suCheckMap = new Map<String, CJFW_Survey__c>();
+    
+        List<CJFW_Survey__c> suChecks = [SELECT Id, Name, Su__c, Active__c, ParentSurvey__c, Version__c, HeadOffice__c FROM CJFW_Survey__c WHERE Su__c != null and Active__c = true];
+        for (CJFW_Survey__c suCheck : suChecks) {
+            suCheckMap.put(suCheck.Su__c, suCheck);
+            System.debug('suCheckMap>>>>>>>> ' + suCheckMap);
+        }
+        for (CJFW_Survey__c newSurvey : newSurveys) {
+            CJFW_Survey__c oldSurvey = mapOld.get(newSurvey.Id);
+            if (newSurvey.Su__c != oldSurvey.Su__c) {
+                // Su__c 필드가 변경된 경우
+                if (newSurvey.Su__c != null) {
+                    if (suCheckMap.containsKey(newSurvey.Su__c)) {
+                        if (suCheckMap.get(newSurvey.Su__c).Active__c) {
+                            newSurvey.addError('해당 사업부 형식지가 작성되어있습니다.');
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    
 }

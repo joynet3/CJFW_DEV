@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : yejoo.lee@dkbmc.com
  * @group             : 
- * @last modified on  : 11-01-2023
+ * @last modified on  : 11-02-2023
  * @last modified by  : yejoo.lee@dkbmc.com
 **/
 public with sharing class CJFW_NotificationMgmtEmailNotiHandler extends NotiHandler{
@@ -56,7 +56,8 @@ public with sharing class CJFW_NotificationMgmtEmailNotiHandler extends NotiHand
                 // emailTemplate.setIsTargetObjectId(true);
                 emailTemplate.setIsSaveAsActivity(true);
                 emailTemplate.setTargetId(mgmt.Id);
-                emailTemplate.setToAddresses(new Set<String>{mgmt.CreatedById});
+                // emailTemplate.setToAddresses(new Set<String>{mgmt.CreatedById});
+                emailTemplate.setToAddresses(new Set<String>{mgmt.Account__r.OwnerId});
                 emailTemplateList.add(emailTemplate);
             }
         }

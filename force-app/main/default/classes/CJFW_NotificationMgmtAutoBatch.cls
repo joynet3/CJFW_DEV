@@ -2,10 +2,10 @@
  * @description       : 
  * @author            : yejoo.lee@dkbmc.com
  * @group             : 
- * @last modified on  : 11-02-2023
+ * @last modified on  : 11-06-2023
  * @last modified by  : yejoo.lee@dkbmc.com
 **/
-public with sharing class CJFW_NotificationMgmtEmailBatch implements  Database.Batchable<SObject>, Database.Stateful, Database.AllowsCallouts, Schedulable{
+public with sharing class CJFW_NotificationMgmtAutoBatch implements  Database.Batchable<SObject>, Database.Stateful, Database.AllowsCallouts, Schedulable{
     public Database.QueryLocator start(Database.BatchableContext BC) {
         System.debug('Batch START :: CJFW_NotificationMgmtEmailBatch');
         List<Schema.SObjectField> fieldList = COMM_Util.getFieldList('NotificationManagement__c');
@@ -23,7 +23,7 @@ public with sharing class CJFW_NotificationMgmtEmailBatch implements  Database.B
                     +     ', Account__r.Name'
                     +     ', Account__r.OwnerId'
                     +  ' FROM NotificationManagement__c '
-                    +  ' WHERE Cycle__c != null AND EndDate__c >= :condition';
+                    +  ' WHERE AutoUpdate__c = true AND IsUpdated__c != true AND EndDate__c < :condition';
                     // +  ' WHERE Name =\'Test\' ';
 
         Database.QueryLocator returnScope = Database.getQueryLocator(query);
@@ -35,11 +35,20 @@ public with sharing class CJFW_NotificationMgmtEmailBatch implements  Database.B
     public void execute(Database.BatchableContext BC, List<NotificationManagement__c> scope) {
         System.debug('Bactch EXECUTE, size : ' + scope.size());
         
-        // CJFW_NotificationMgmtEmailNotiHandler 에서 가공
-        NotificationManager.getInstance()
-                        .setTargetObject(scope)
-                        .execute('Notification_Mgmt_Noti_Mail');
+        List<NotificationManagement__c> cloneList = new List<NotificationManagement__c>();
+        List<NotificationManagement__c> updateList = new List<NotificationManagement__c>();
+        for (NotificationManagement__c noti : scope) {
+            NotificationManagement__c cl = noti.clone(false);
+            cl.StartDate__c = Date.today();
+            cloneList.add(cl);
+            noti.IsUpdated__c = true;
+            updateList.add(noti);
+        }
 
+        insert cloneList;
+        update updateList;
+        // System.debug('Bactch EXECUTE, cloneList : ' + cloneList.size() + '/' + cloneList);
+        // System.debug('Bactch EXECUTE, updateList : ' + updateList.size() + '/' + updateList);
     }
 
     public void finish(Database.BatchableContext BC) {
@@ -49,6 +58,6 @@ public with sharing class CJFW_NotificationMgmtEmailBatch implements  Database.B
 
     public void execute(SchedulableContext sc) {
         // ...
-        DataBase.executeBatch( new CJFW_NotificationMgmtEmailBatch(), 50);
+        DataBase.executeBatch( new CJFW_NotificationMgmtAutoBatch(), 50);
     }
 }

@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : yeonji.lim@dkbmc.com
  * @group             : 
- * @last modified on  : 10-26-2023
+ * @last modified on  : 11-03-2023
  * @last modified by  : jieun.lee3@dkbmc.com
 **/
 public with sharing class CJFW_ExpectedIncoExpenRelatedController {
@@ -33,7 +33,7 @@ public with sharing class CJFW_ExpectedIncoExpenRelatedController {
                     , PaymentMethod__c
                     , ChefSupportCnt__c, FarmSupportExpect__c, MarineSupportExpect__c, LivestockSupportExpect__c, ManufactureSupportExpect__c, NonFoodSupportExpect__c, SalesSupportExpect__c, IsReportCheck__c, IncentiveSupport__c, ContractPaymentDate__c, Version__c, MoveUrl__c,ReportType__c 
                      FROM CJFW_ExpectedIncomeExpenses__c
-                     WHERE Opportunity__c = :Id AND ReportType__c = 'CRM008'
+                     WHERE Opportunity__c = :Id AND (ReportType__c = 'CRM008' OR ReportType__c = 'CRM011' OR ReportType__c = 'CRM012')
                     ];
             }else if(!String.isEmpty(headLabel)  && headLabel =='6000' && type == 'New Business'){ //Owner의 본부가 외식이고 유형이 신규 
                 return [

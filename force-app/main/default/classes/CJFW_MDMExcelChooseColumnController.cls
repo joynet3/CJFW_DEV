@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 10-26-2023
+ * @last modified on  : 11-06-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 public with sharing class CJFW_MDMExcelChooseColumnController {
@@ -41,7 +41,7 @@ public with sharing class CJFW_MDMExcelChooseColumnController {
 
     /* 속성부문, 속성군, 타입에 따라 field값 다르게 도출하기 */
     @AuraEnabled
-    public static List<String> getDownloadField(String property, String attribute, String type, String searchWord) {
+    public static List<AccountApplicableField__mdt> getDownloadField(String property, String attribute, String type, String searchWord) {
 
         String typeApi = null;
 
@@ -60,7 +60,7 @@ public with sharing class CJFW_MDMExcelChooseColumnController {
         System.debug('## type => ' + type);
         System.debug('## typeApi => ' + typeApi);
 
-        String strQuery = 'SELECT MasterLabel FROM AccountApplicableField__mdt';
+        String strQuery = 'SELECT MasterLabel, FieldType__c, ApiName__c, GroupCode__c FROM AccountApplicableField__mdt';
         strQuery += ' WHERE AccountType__r.DeveloperName = \'' + typeApi + '\'';
         if(property != null) {
             strQuery += ' AND PropertySector__r.DeveloperName = \'' + property + '\'';
@@ -71,6 +71,7 @@ public with sharing class CJFW_MDMExcelChooseColumnController {
         if(searchWord != null) {
             strQuery += ' AND MasterLabel LIKE \'%' + searchWord + '%\'';
         }
+        strQuery += ' AND ApiName__c != \'CreatedDate\' ';
         strQuery += ' ORDER BY MasterLabel';
 
         System.debug('query => ' + strQuery);
@@ -79,20 +80,52 @@ public with sharing class CJFW_MDMExcelChooseColumnController {
 
         System.debug('>>> fieldSet ' + fieldSet);
 
-        // List<AccountApplicableField__mdt> mcs = AccountApplicableField__mdt.getAll().values();
-        // System.debug('>>> mcs ' + mcs);
+        return fieldSet;
 
-        List<AccountApplicableField__mdt> objects = new List<AccountApplicableField__mdt>();
+    }
 
-        List<String> records = new List<String>();
+    /* Filter 값 불러오기 */
+    @AuraEnabled
+    public static List<AccountApplicableField__mdt> getFilterField(String property, String attribute, String type, String searchWord) {
 
-        for(AccountApplicableField__mdt record : fieldSet) {
-            records.add(record.MasterLabel);
+        String typeApi = null;
+
+        if (type == '본점') {
+            typeApi = 'MDMParent';
+        } else if (type == '판매처') {
+            typeApi = 'MDMChild';
+        } else if (type == '관리처-분할') {
+            typeApi = 'MDMManagement';
+        } else if (type == '관리처-배송') {
+            typeApi = 'MDMDelievery';
+        } else if (type == '관리처-2차') {
+            typeApi = 'MDM2ndManagement';
         }
 
-        System.debug('>>> records : ' + records);
-        
-        return records;
+        System.debug('## type => ' + type);
+        System.debug('## typeApi => ' + typeApi);
+
+        String strQuery = 'SELECT MasterLabel, FieldType__c, ApiName__c, GroupCode__c FROM AccountApplicableField__mdt';
+        strQuery += ' WHERE AccountType__r.DeveloperName = \'' + typeApi + '\'';
+        if(property != null) {
+            strQuery += ' AND PropertySector__r.DeveloperName = \'' + property + '\'';
+        }
+        if(attribute != null) {
+            strQuery += ' AND AttributeGroup__r.DeveloperName = \'' + attribute + '\'';
+        }
+        if(searchWord != null) {
+            strQuery += ' AND MasterLabel LIKE \'%' + searchWord + '%\'';
+        }
+        strQuery += ' AND isFilter__c = true ';
+        strQuery += ' ORDER BY MasterLabel';
+
+        System.debug('query => ' + strQuery);
+
+        List<AccountApplicableField__mdt> fieldSet = Database.query(strQuery);
+
+        System.debug('>>> fieldSet ' + fieldSet);
+
+        return fieldSet;
 
     }
 

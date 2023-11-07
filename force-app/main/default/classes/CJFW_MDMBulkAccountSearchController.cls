@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 11-01-2023
+ * @last modified on  : 11-06-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkAccountSearchController {
@@ -46,10 +46,10 @@ public with sharing class CJFW_MDMBulkAccountSearchController {
 
             String apiType = data.get('type');
             String fieldName = data.get('fieldName');
-            String datePoint = data.get('datePoint');
+            String groupCode = data.get('groupCode');
             String searchWord = data.get('searchKey');
 
-            System.debug('## get param > ' + 'fieldName: ' + fieldName + ', apiType: ' + apiType + ', datePoint: ' + datePoint + ', searchWord: ' + searchWord);
+            System.debug('## get param > ' + 'fieldName: ' + fieldName + ', apiType: ' + apiType + ', groupCode: ' + groupCode + ', searchWord: ' + searchWord);
 
             if(searchWord != null) {
                 searchWord = searchWord.trim();
@@ -60,7 +60,7 @@ public with sharing class CJFW_MDMBulkAccountSearchController {
                 searchValues.add(searchWord);
             } else if(searchWord != null && searchWord.length() > 0 && fieldName == 'CreatedDate') {
                 searchWord = searchWord + 'T00:00:00.000+0000'; // UTC
-                dateValues.put(datePoint, searchWord);
+                dateValues.put(groupCode, searchWord);
             }
 
         }
@@ -98,20 +98,21 @@ public with sharing class CJFW_MDMBulkAccountSearchController {
             strQuery += ' FROM    Account';
             strQuery += ' WHERE   CustomerType__c IN ( \'' + searchCode + '\' ) AND CustomerId__c != NULL ';
             for(Integer i = 0; i < searchKeys.size(); i++) {
-                if(searchKeys[i] == 'OwnerId') {
-                    strQuery += ' AND ' + searchKeys[i] + ' = \'' + searchValues[i] + '\'';
-                } else if(searchKeys[i] == 'Name') {
+                if(searchKeys[i] == 'Name') {
                     strQuery += ' AND (Name LIKE \'%' + searchValues[i]+ '%\' OR CustomerId__c LIKE \'%' + searchValues[i] + '%\') ';
                     System.debug('searchKeys[i] == Name ' +' AND (Name LIKE \'%' + searchValues[i]+ '%\' OR CustomerId__c LIKE \'%' + searchValues[i] + '%\') ');
                 } else {
-                    strQuery += ' AND ' + searchKeys[i] + ' LIKE \'%' + searchValues[i] + '%\' ';
+                    // strQuery += ' AND ' + searchKeys[i] + ' LIKE \'%' + searchValues[i] + '%\' ';
+                    strQuery += ' AND ' + searchKeys[i] + ' = \'' + searchValues[i] + '\'';
                 }
             }
             if(dateValues.size() > 0) {
                 if(dateValues.get('start') != null) {
                     strQuery += ' AND CreatedDate >= ' + dateValues.get('start');
+                    System.debug(' AND CreatedDate >= ' + dateValues.get('start'));
                 } else if(dateValues.get('end') != null) {
                     strQuery += ' AND CreatedDate <= ' + dateValues.get('end');
+                    System.debug(' AND CreatedDate >= ' + dateValues.get('end'));
                 }
             }
 

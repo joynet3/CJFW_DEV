@@ -47,8 +47,8 @@ Database.Stateful, Database.AllowsCallouts {
             SELECT DeveloperName,MasterLabel,SiGunGuName__c,SiGunGuCode__c,LocalGovCode__c,SidoName__c,SidoCode__c,SidoLocalGovCode__c
             FROM local_govCD__mdt
         ]) {
-            localToSiGunGuMap.put(obj.LocalGovCode__c, obj.SiGunGuCode__c);
-            localToSiDoMap.put(obj.LocalGovCode__c, obj.SidoCode__c);
+            localToSiGunGuMap.put(  obj.LocalGovCode__c,    obj.SiGunGuCode__c  );
+            localToSiDoMap.put(     obj.LocalGovCode__c,    obj.SidoCode__c     );
         }
         if (upsertFailList <> null && upsertFailList.size() > 0) {
             totalPageList = upsertFailList;
@@ -124,7 +124,13 @@ Database.Stateful, Database.AllowsCallouts {
                         if(objRows <> null && objRows.row <> null && objRows.row.size() > 0) {
                             for (IF_SFDC_LOCAL_DATA_INFO_sc.Item item : objRows.row) {
                                 CJFW_PublicBiddingInformation__c leadObj = new CJFW_PublicBiddingInformation__c();
-                                leadObj.LocationStateProvince__c    = localToSiGunGuMap.get(item.opnSfTeamCode); //leadObj.LocationState__c = localToSiGunGuMap.get(item.opnSfTeamCode);   //PickList
+                                //leadObj.LocationState__c = localToSiGunGuMap.get(item.opnSfTeamCode);   //PickList
+                                //2023.11.02 기존 운영 LocationStateProvince__c 에 시도코드 들어 간다. 이에 맞춘다.
+                                leadObj.LocationStateProvince__c    = localToSiDoMap.get(item.opnSfTeamCode);
+                                //2023.11.02 시도/시군구 필드에 코드값 추가.
+                                leadObj.State__c                    = localToSiDoMap.get(item.opnSfTeamCode);
+                                leadObj.City__c                     = localToSiGunGuMap.get(item.opnSfTeamCode);
+
                                 leadObj.mgtNo__c                    = item.mgtNo;
                                 leadObj.opnSvcId__c                 = item.opnSvcId;
                                 leadObj.updateGbn__c                = item.updateGbn;

@@ -2,10 +2,22 @@
  * @description       : 
  * @author            : doyeon.kim@dkbmc.com
  * @group             : 
- * @last modified on  : 10-31-2023
+ * @last modified on  : 11-06-2023
  * @last modified by  : doyeon.kim@dkbmc.com
 **/
 public with sharing class CJFW_ExternalProductController {
+
+    @AuraEnabled
+    public static List<Product2> getIFData(List<String> codeList){
+        try {
+            System.debug('codeList : '+ codeList);
+            
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+
+        return null;
+    }
 
     @AuraEnabled
     public static List<Product2> doSearch(Map<String, Object> mapParam) {

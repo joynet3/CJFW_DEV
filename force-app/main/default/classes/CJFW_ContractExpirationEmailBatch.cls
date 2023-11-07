@@ -5,10 +5,11 @@
  * @last modified on  : 11-02-2023
  * @last modified by  : yejoo.lee@dkbmc.com
 **/
-public with sharing class CJFW_NotificationMgmtEmailBatch implements  Database.Batchable<SObject>, Database.Stateful, Database.AllowsCallouts, Schedulable{
+public with sharing class CJFW_ContractExpirationEmailBatch implements  Database.Batchable<SObject>, Database.Stateful, Database.AllowsCallouts, Schedulable {
     public Database.QueryLocator start(Database.BatchableContext BC) {
-        System.debug('Batch START :: CJFW_NotificationMgmtEmailBatch');
-        List<Schema.SObjectField> fieldList = COMM_Util.getFieldList('NotificationManagement__c');
+        System.debug('Batch START :: CJFW_ContractExpirationEmailBatch');
+        
+        List<Schema.SObjectField> fieldList = COMM_Util.getFieldList('Contract');
         List<String> fieldNameList = new List<String>();
         for (Schema.SObjectField field : fieldList) {
             fieldNameList.add(field.getDescribe().getName());
@@ -20,11 +21,9 @@ public with sharing class CJFW_NotificationMgmtEmailBatch implements  Database.B
         String query = ' SELECT '
                     // +     ' Id '
                     +      allFieldString
-                    +     ', Account__r.Name'
-                    +     ', Account__r.OwnerId'
-                    +  ' FROM NotificationManagement__c '
-                    +  ' WHERE Cycle__c != null AND EndDate__c >= :condition';
-                    // +  ' WHERE Name =\'Test\' ';
+                    +     ', Account.Name'
+                    +  ' FROM Contract '
+                    +  ' WHERE OwnerExpirationNotice__c != null AND EndDate >= :condition';
 
         Database.QueryLocator returnScope = Database.getQueryLocator(query);
         System.debug('query :: ' + returnScope);
@@ -32,13 +31,13 @@ public with sharing class CJFW_NotificationMgmtEmailBatch implements  Database.B
         return returnScope;
     }
 
-    public void execute(Database.BatchableContext BC, List<NotificationManagement__c> scope) {
+    public void execute(Database.BatchableContext BC, List<Contract> scope) {
         System.debug('Bactch EXECUTE, size : ' + scope.size());
         
-        // CJFW_NotificationMgmtEmailNotiHandler 에서 가공
+        // CJFW_ContractExpirationEmailNotiHandler 에서 가공
         NotificationManager.getInstance()
                         .setTargetObject(scope)
-                        .execute('Notification_Mgmt_Noti_Mail');
+                        .execute('Contact_Expiration_Noti_Mail');
 
     }
 
@@ -49,6 +48,6 @@ public with sharing class CJFW_NotificationMgmtEmailBatch implements  Database.B
 
     public void execute(SchedulableContext sc) {
         // ...
-        DataBase.executeBatch( new CJFW_NotificationMgmtEmailBatch(), 50);
+        DataBase.executeBatch( new CJFW_ContractExpirationEmailBatch(), 50);
     }
 }

@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : yejoo.lee@dkbmc.com
  * @group             : 
- * @last modified on  : 10-31-2023
+ * @last modified on  : 11-03-2023
  * @last modified by  : yejoo.lee@dkbmc.com
 **/
 public without sharing class CJFW_DeliveryDstMgmtCtrlNotiHandler extends NotiHandler{
@@ -31,7 +31,12 @@ public without sharing class CJFW_DeliveryDstMgmtCtrlNotiHandler extends NotiHan
                     String decodedURL = imageURL.unescapeHtml4();
                     // System.debug( 'decodedURL=' + decodedURL );
                     PageReference page = new PageReference( decodedURL );
-                    Blob b = page.getContent();
+                    Blob b; 
+                    if(Test.isRunningTest()){
+                        b = blob.valueof('TEST');
+                    } else {
+                        b = page.getContent();
+                    }
                     // System.debug( 'blob=' + b );
 
                     ContentVersion cv = new ContentVersion(
@@ -71,9 +76,9 @@ public without sharing class CJFW_DeliveryDstMgmtCtrlNotiHandler extends NotiHan
             //이미지 태그 가공
             for (ContentDistribution cdb : cdbList) {
                 if(imgUrlMap.containsKey(cdb.ContentVersion.MgmtId__c)){
-                    imgUrlMap.get(cdb.ContentVersion.MgmtId__c).add('<img src=\"' + cdb.ContentDownloadUrl + '\" style="width:100%;">');
+                    imgUrlMap.get(cdb.ContentVersion.MgmtId__c).add('<img src=\"' + cdb.ContentDownloadUrl + '\">');//style="width:100%;"
                 }else{
-                    imgUrlMap.put(cdb.ContentVersion.MgmtId__c, new List<String>{'<img src=\"' + cdb.ContentDownloadUrl + '\" style="width:100%;">'});
+                    imgUrlMap.put(cdb.ContentVersion.MgmtId__c, new List<String>{'<img src=\"' + cdb.ContentDownloadUrl + '\">'});
                 }
             }
     
@@ -199,34 +204,36 @@ public without sharing class CJFW_DeliveryDstMgmtCtrlNotiHandler extends NotiHan
                 
                 System.debug('modifiedRichText: ' + modifiedRichText);
             }
-
+            
+            //LC,AN,CID,CN,Ph,CT_1,CT_2,Ad,MA,TS,IniD,ST_1,ST_2,AT_1,AT_2,Key,InspYn,Insp,DL,Cd,Img,LR,ReL,Veh,OF,HCode,CR
             emailTemplate.setFieldsMap(new Map<String, String>{ //Field Mapping
-                '0' => mgmt.Account__r.Name,
-                '1' => mgmt.FM_CustomerID__c,
-                '2' => mgmt.ContactName__c,
-                '3' => mgmt.Phone__c,
-                '4' => mgmt.FM_Address__c,
-                '5' => mgmt.FM_MA__c,
-                '6' => mgmt.TotalSize__c,
-                '7' => String.valueOf(mgmt.InitialDate__c),
-                '8-1' => mgmt.InitialRequestStartTime__c,
-                '8-2' => mgmt.InitialRequestEndTime__c,
-                '9-1' => mgmt.InitialRequestAfterStartTime__c,
-                '9-2' => mgmt.InitialRequestAfterEndTime__c,
-                '10' => mgmt.Key__c,
-                '11' => mgmt.InspectionYN__c,
-                '12' => mgmt.Inspector__c,
-                // '13' => imgUrlMap.get(mgmt.Id),//사진파일
-                '13' => modifiedRichText,//사진파일
-                '14' => mgmt.DeliveryLocation__c,
-                // '15' => mgmt.LoadingInfo__c, //--> *적재방법 및 장소(사진 첨부)
-                '16' => mgmt.Condition__c,
-                '17' => mgmt.ReturnLocation__c,
-                '18' => mgmt.AllowedVehicle__c,
-                '19' => mgmt.LogisticRemark__c,
-                '20' => mgmt.OrderForm__c,
-                '21' => mgmt.FM_HeadOfficeCode__c,
-                '22' => mgmt.CenterRemark__c
+                'LC' => mgmt.LogisticsCenter__c,
+                'AN' => mgmt.Account__r.Name != null ? mgmt.Account__r.Name : mgmt.ManagementAccount__r.Name,
+                'CID' => mgmt.FM_CustomerID__c,
+                'CN' => mgmt.ContactName__c,
+                'Ph' => mgmt.Phone__c,
+                'CT_1' => mgmt.CallableTime__c,
+                'CT_2' => mgmt.CallableAfterTime__c,
+                'Ad' => mgmt.FM_Address__c,
+                'MA' => mgmt.FM_MA__c,
+                'TS' => mgmt.TotalSize__c,
+                'IniD' => String.valueOf(mgmt.InitialDate__c),
+                'ST_1' => mgmt.InitialRequestStartTime__c,
+                'ST_2' => mgmt.InitialRequestEndTime__c,
+                'AT_1' => mgmt.InitialRequestAfterStartTime__c,
+                'AT_2' => mgmt.InitialRequestAfterEndTime__c,
+                'Key' => mgmt.Key__c,
+                'InspYn' => mgmt.InspectionYN__c,
+                'Insp' => mgmt.Inspector__c,
+                'DL' => mgmt.DeliveryLocation__c,
+                'Cd' => mgmt.Condition__c,
+                'Img' => modifiedRichText,//사진파일
+                'RL' => mgmt.ReturnLocation__c,
+                'AV' => mgmt.AllowedVehicle__c,
+                'LR' => mgmt.LogisticRemark__c,
+                'OF' => mgmt.OrderForm__c,
+                'HOC' => mgmt.FM_HeadOfficeCode__c,
+                'CR' => mgmt.CenterRemark__c
             });
 
             // emailTemplate.setIsTargetObjectId(true);

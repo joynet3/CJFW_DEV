@@ -11,6 +11,7 @@
  *  NO | Date       | Modifier       | Description
  * ----------------------------------------------
  *  1. | 2023.08.28 | 김동영          | 최초작성
+ *  2. | 2023.10.30 | 김동영          | ContentVersion.PathOnClient -> filename 파라미터로 추가 
  * */
 public class IFN_EIF1001_EC002_MD004 {
     public String interfaceId = 'IFN_EIF1001_EC002_MD004';
@@ -24,20 +25,21 @@ public class IFN_EIF1001_EC002_MD004 {
         'InvalidImageFormatException' =>'지원하지 않는 이미지 형식',
         'FailedToUploadImageException' =>'카카오 시스템 오류'
     };
-                
         
     public IFN_CalloutResult callout() {
         IFN_CalloutResult calloutResult = new IFN_CalloutResult();
         EC002RequstWrapper param = new EC002RequstWrapper();
 
-        ContentVersion content = [select id, versiondata 
+        ContentVersion content = [select id, versiondata, PathOnClient, FileType 
                                     from ContentVersion
                                    where ContentDocumentId = :contDocId 
                                      and isLatest = true
                                     limit 1];
 
+        
         Blob fileData = content.VersionData;
         param.image = EncodingUtil.base64Encode(fileData);
+        param.filename = content.PathOnClient;
 
         this.logWrap = new IFN_CommonLog.logWrap(this.interfaceId, 'Real');
         this.commlog = new IFN_CommonLog();
@@ -57,6 +59,7 @@ public class IFN_EIF1001_EC002_MD004 {
 
     // Request
     public class EC002RequstWrapper{
+        public String filename {get;set;}
         public String image {get;set;}
     }
 

@@ -47,9 +47,9 @@ public with sharing class CJFW_NewLineItemMgmtController {
         System.debug('# CJFW_NewLineItemMgmtController # getLineItem ');
         List<CJFW_QuoteLineItem__c> listQuoteLineItem = new List<CJFW_QuoteLineItem__c>();
         Quote objQuote = new Quote();
-
-        List<OpportunityLineItem> listOpptyLineItem = new List<OpportunityLineItem>();
-        Opportunity objOppty = new Opportunity();
+        Boolean isExcelData = false;
+        // List<OpportunityLineItem> listOpptyLineItem = new List<OpportunityLineItem>();
+        // Opportunity objOppty = new Opportunity();
         
         if ( sObjectName == 'Quote'){
 
@@ -75,7 +75,7 @@ public with sharing class CJFW_NewLineItemMgmtController {
                                         , BasePurchasePrice__c
                                         , TaxTypeName__c
                                         , ProfitMargin__c
-                                        , Product2Id__c
+                                        //, Product2Id__c
                                         , QuantityUnitOfMeasure__c
                                         , UnitPriceWithVAT__c
                                         , VAT__c
@@ -84,11 +84,27 @@ public with sharing class CJFW_NewLineItemMgmtController {
                                         , ProductWeight__c              // 중량
                                         , Barcode__c                    // 바코드 정보
                                         , BoxQuantity__c
-                                        //    Product2Id__r.Name,  Product2Id__r.bas_unit_cd__c, Product2Id__r.strg_cond_cd__c, 
+                                        , Batch__c
+                                        , BiddingProductName__c         //Excel Paste 품목명
+                                        , BiddingProductWeight__c       //Excel Paste 중량
+                                        , BiddingSpec__c                //Excel Paste 규격(SPEC)
+                                        , BiddingUnit__c                //Excel Paste 단위
+                                        , BiddingQuoteQuantity__c       //Excel Paste 수량
                                  FROM      CJFW_QuoteLineItem__c
                                  WHERE     QuoteId__c = :recordId
                                  ORDER BY  SortOrder__c
                                  ];
+
+            for(CJFW_QuoteLineItem__c quoteLineItem : listQuoteLineItem) {
+                //입찰정보 Excel Paste 데이터 존재 여부
+                if(String.isNotBlank(quoteLineItem.BiddingProductName__c) || 
+                   String.isNotBlank(quoteLineItem.BiddingSpec__c) || 
+                   String.isNotBlank(quoteLineItem.BiddingUnit__c) || 
+                   quoteLineItem.BiddingProductWeight__c != null ||
+                   quoteLineItem.BiddingQuoteQuantity__c != null
+                ) 
+                isExcelData = true;
+            }
 
             objQuote = [SELECT  Id
                                 , Pricebook2Id
@@ -101,23 +117,23 @@ public with sharing class CJFW_NewLineItemMgmtController {
             System.debug(listQuoteLineItem);
 
         }
-        else if ( sObjectName == 'Opportunity' ){
+        // else if ( sObjectName == 'Opportunity' ){
 
-            listOpptyLineItem = [SELECT    OpportunityId, Month__c, LogisticsCenter__c, fm_ProductCode__c, BasePurchasePrice__c, Quantity, 
-                                           fm_QuantityUnitOfMeasure__c, CountryOfOriginName__c, Product2.bas_unit_cd__c, Product2.migr_orinat_cd__c, Product2.strg_cond_cd__c,
-                                           fm_IsTaxFreeYN__c,
-                                           ProfitMargin__c, SortOrder, fm_PriceBookEntryName__c, Product2Id,  
-                                           PricebookEntryId, ListPrice, UnitPrice, UnitPriceWithVAT__c, VAT__c
-                                 FROM      OpportunityLineItem
-                                 WHERE     OpportunityId = :recordId
-                                 ORDER BY  SortOrder
-                                ];
+        //     listOpptyLineItem = [SELECT    OpportunityId, Month__c, LogisticsCenter__c, fm_ProductCode__c, BasePurchasePrice__c, Quantity, 
+        //                                    fm_QuantityUnitOfMeasure__c, CountryOfOriginName__c, Product2.bas_unit_cd__c, Product2.migr_orinat_cd__c, Product2.strg_cond_cd__c,
+        //                                    fm_IsTaxFreeYN__c,
+        //                                    ProfitMargin__c, SortOrder, fm_PriceBookEntryName__c, Product2Id,  
+        //                                    PricebookEntryId, ListPrice, UnitPrice, UnitPriceWithVAT__c, VAT__c
+        //                          FROM      OpportunityLineItem
+        //                          WHERE     OpportunityId = :recordId
+        //                          ORDER BY  SortOrder
+        //                         ];
                                 
-            objOppty = [SELECT  Id, Pricebook2Id, Account.CustomerID__c
-                        FROM    Opportunity
-                        WHERE   Id = :recordId
-                       ]; 
-        }
+        //     objOppty = [SELECT  Id, Pricebook2Id, Account.CustomerID__c
+        //                 FROM    Opportunity
+        //                 WHERE   Id = :recordId
+        //                ]; 
+        // }
 
         // 상품군 정보 Query
         List<ProductCategory__c > listCategory = new List<ProductCategory__c >();
@@ -177,13 +193,14 @@ public with sharing class CJFW_NewLineItemMgmtController {
                                 
             
         Map<String, Object> mapInitData = new Map<String, Object>{            
-            'listLineItem' => (sObjectName == 'Quote' ? (Object) listQuoteLineItem : (Object) listOpptyLineItem),
-            'objParent' => (sObjectName == 'Quote' ? (Object) objQuote : (Object) objOppty),
+            'listLineItem' => (Object) listQuoteLineItem, //(sObjectName == 'Quote' ? (Object) listQuoteLineItem : (Object) listOpptyLineItem),
+            'objParent' =>    (Object) objQuote, //(sObjectName == 'Quote' ? (Object) objQuote : (Object) objOppty),
             'listMonth' => CommonUtil.getPickListValues(sObjectName+'LineItem', 'Month__c', false),
             'listCenter' => CommonUtil.getPickListValues('Product2', 'lgs_ctr__c', false),
             'listCategoryL' => listCategoryL,
             'mapCategoryM' => mapCategoryM,
-            'objUser' => objUser
+            'objUser' => objUser,
+            'isExcelData' => isExcelData
         };
 
         return mapInitData;

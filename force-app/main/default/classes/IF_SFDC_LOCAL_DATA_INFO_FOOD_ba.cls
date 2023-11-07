@@ -139,7 +139,13 @@ global with sharing class IF_SFDC_LOCAL_DATA_INFO_FOOD_ba implements Database.Ba
                                     CJFW_PublicBiddingInformation__c leadObj = new CJFW_PublicBiddingInformation__c();
                                     System.debug(item.bplcNm + ', ' + item.opnSvcId + ' : ' + item.opnSvcNm);
                                     //공통 제공항목
-                                    leadObj.LocationStateProvince__c    = localToSiGunGuMap.get(item.opnSfTeamCode); //leadObj.LocationState__c = localToSiGunGuMap.get(item.opnSfTeamCode);   //PickList
+                                    //leadObj.LocationState__c = localToSiGunGuMap.get(item.opnSfTeamCode);   //PickList
+                                    //2023.11.02 기존 운영 LocationStateProvince__c 에 시도코드 들어 간다. 이에 맞춘다.
+                                    leadObj.LocationStateProvince__c    = localToSiDoMap.get(item.opnSfTeamCode);
+                                    //2023.11.02 시도/시군구 필드에 코드값 추가.
+                                    leadObj.State__c                    = localToSiDoMap.get(item.opnSfTeamCode);
+                                    leadObj.City__c                     = localToSiGunGuMap.get(item.opnSfTeamCode);
+
                                     leadObj.mgtNo__c                    = item.mgtNo;
                                     leadObj.opnSvcId__c                 = item.opnSvcId;
                                     leadObj.updateGbn__c                = item.updateGbn;

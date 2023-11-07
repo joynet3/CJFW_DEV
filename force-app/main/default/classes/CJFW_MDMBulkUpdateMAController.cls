@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 11-01-2023
+ * @last modified on  : 11-06-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkUpdateMAController {
@@ -27,9 +27,13 @@ public with sharing class CJFW_MDMBulkUpdateMAController {
         // 각종 ID 필요한 MDMReferenceCode__c 조회해서 Id값 가지고 오기
         Set<String> codeSet = new Set<String>();
         for(MDMRegRequestContact__c con : mdmContacts){
-            codeSet.add(con.PV_KNVKGB__c);
+            String upperCode = con.PV_KNVKGB__c;
+            codeSet.add(upperCode.toUpperCase());
+            System.debug('# upperCode => ' + upperCode);
             codeSet.remove(null);
         }
+
+        System.debug('# codeSet => ' + codeSet);
         
         List<MDMReferenceCode__c> referenceCodeList = [SELECT Id, Name, Code__c FROM MDMReferenceCode__c WHERE code__c = :codeSet AND GROUPID__c = 'KNVKGB'];
 
@@ -133,7 +137,6 @@ public with sharing class CJFW_MDMBulkUpdateMAController {
                 customer.PV_CESSION_KZ__c                =       acc.CustomerStatus__c;
                 customer.RequestType__c                  =       'Edit';
 
-
                 mdmList.add(customer);
 
             }
@@ -161,8 +164,8 @@ public with sharing class CJFW_MDMBulkUpdateMAController {
                     MDMRegRequestContact__c mdmContact = new MDMRegRequestContact__c();
 
                     mdmContact.PV_NAME1_VK__c           =      String.isBlank(con.PV_NAME1_VK__c) ? null : con.PV_NAME1_VK__c;
-                    mdmContact.PV_KNVKGB__c             =      String.isBlank(con.PV_KNVKGB__c) ? null : con.PV_KNVKGB__c;
-                    mdmContact.PV_KNVKGB_lu__c          =      codeToIdMap.get(con.PV_KNVKGB__c);
+                    mdmContact.PV_KNVKGB__c             =      String.isBlank(con.PV_KNVKGB__c) ? null : con.PV_KNVKGB__c.toUpperCase();
+                    mdmContact.PV_KNVKGB_lu__c          =      codeToIdMap.get(con.PV_KNVKGB__c.toUpperCase());
                     mdmContact.PV_TELF1_VK__c           =      String.isBlank(con.PV_TELF1_VK__c) ? null : con.PV_TELF1_VK__c;
                     mdmContact.PV_ABTNR_VK__c           =      String.isBlank(con.PV_ABTNR_VK__c) ? null : con.PV_ABTNR_VK__c;
                     mdmContact.PV_PAFKT_VK__c           =      String.isBlank(con.PV_PAFKT_VK__c) ? null : con.PV_PAFKT_VK__c;
@@ -171,8 +174,10 @@ public with sharing class CJFW_MDMBulkUpdateMAController {
                     mdmContact.Contact__c               =      String.isBlank(con.Contact__c) ? null : con.Contact__c;
                     if(recordId != null) {
                         mdmContact.MDMRegRequestCustomer__c     =      kunnrToIdMap.get(con.MDMRegRequestCustomer__c);
+                        mdmContact.MDMRegRequestBulkCustomer__c =      recordId;
                     } else {
                         mdmContact.MDMRegRequestCustomer__c     =      newMDMToIdMap.get(con.MDMRegRequestCustomer__c);
+                        mdmContact.MDMRegRequestBulkCustomer__c =      saveResult.bulkId;
                     }
                     
                     contactList.add(mdmContact);

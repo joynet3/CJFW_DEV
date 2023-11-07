@@ -2,8 +2,8 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 11-01-2023
- * @last modified by  : hyeeun.song@dkbmc.com
+ * @last modified on  : 11-06-2023
+ * @last modified by  : joohyeon.jang@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkSearchContactController {
     
@@ -58,7 +58,8 @@ public with sharing class CJFW_MDMBulkSearchContactController {
             List<MDMRegRequestCustomer__c> customerList = [SELECT Id, PV_KUNNR__c FROM MDMRegRequestCustomer__c WHERE MDMRegRequestBulkCustomer__c = :recordId];
             
             for(MDMRegRequestCustomer__c cus : customerList) {
-                ids.add('\'' + cus.PV_KUNNR__c + '\'');
+                //ids.add('\'' + cus.PV_KUNNR__c + '\'');
+                ids.add(cus.PV_KUNNR__c);
             }
             
             System.debug('===============> customerList : ' + customerList);
@@ -79,7 +80,8 @@ public with sharing class CJFW_MDMBulkSearchContactController {
             strQuery += ' FROM Contact ';
             strQuery += ' WHERE Account.CustomerId__c != null ';
             if(recordId != null) {
-                strQuery += ' AND Account.CustomerId__c IN ' + ids + ' ';
+                // strQuery += ' AND Account.CustomerId__c IN (' + String.join(ids, ',') + ') ';
+                strQuery += ' AND Account.CustomerId__c IN :  ids ';
             }
             if(typeValue != null) {
                 strQuery += ' AND Account.CustomerType__c = \'' + typeValue + '\' ';

@@ -11,6 +11,8 @@
  *  NO | Date       | Modifier       | Description
  * ----------------------------------------------
  *  1. | 2023.08.31 | 김동영          | 최초작성
+ *  2. | 2023.10.30 | 김동영          | results Wrapper 추가 
+ *                                     테스트용도 Object 추가에 따른 레코드 조회 및 업데이트 추가
  * */
 public class IFN_EIF1001_EC001_MD001 {
     public String interfaceId = 'IFN_EIF1001_EC001_MD001';
@@ -35,10 +37,41 @@ public class IFN_EIF1001_EC001_MD001 {
             // Target Object 확정 후 코드 처리 필요
             if('S'.equals(calloutResult.result)) {
                 // 메시지 전송 결과값 정상 수신
+                // 메시지 전송 결과 저장 - 현재 테스트용도 생성된 Object에 입력, 추후 수정 Or 변경될 수 있음.
+                // ================================= 테스트 용 추가코드 Start =================================
+                IFN_EIF1001_EC001_MD001.EC001ResultWrapper resultResponse = (IFN_EIF1001_EC001_MD001.EC001ResultWrapper)calloutResult.response;
+                for(IFN_EIF1001_EC001_MD001.results result : resultResponse.results) {
+                    
+                    String msgKey = result.msg_key;
+                    
+                    List<ChannelTransHist__c> MMSHist = [select Id, 
+                                     		MsgType__c, ImageKey__c, Title__c, SubId__c, MsgKey__c, SenderNumber__c, ReceiveNumber__c, Msg__c, OriginCid__c, 
+                                     		DeliveryYn__c, DeliveryResultCode__c, DeliveryResultDesc__c
+  									   from ChannelTransHist__c 
+                                     where MsgKey__c =: msgKey
+                                       and MsgType__c = 'MMS'];
 
+                    if(MMSHist.size() > 0 ){
+                        for(ChannelTransHist__c mms : MMSHist){
+                            mms.DeliveryYn__c = result.code.equals('C100') ? 'Y' : 'N';
+                            mms.DeliveryResultCode__c = result.code;
+                            mms.DeliveryResultDesc__c = result.result_desc;
+                            
+                            try {
+                                update mms;
+                            } catch (DmlException e) {
+                                // Process exception here
+                            }
+                        }    
+                    }
+                    System.debug('msg_key :::::::' + result.msg_key);
+                    System.debug('code :::::::' + result.code);
+                    System.debug('result_desc :::::::' + result.result_desc);
+                }
+                // ================================= 테스트 용 추가코드 END =================================
             } else {
                 // 인터페이스 처리 오류 Or Http 오류 결과 수신
-
+                
             }
             
         } catch (Exception e) {
@@ -72,11 +105,11 @@ public class IFN_EIF1001_EC001_MD001 {
 
     // result
     public class EC001ResultWrapper {
-        // msg_key, code, desc
         public List<results> results {get;set;}
     }
 
     public class results {
+        // msg_key, code, desc
         public String msg_key {get;set;}
         public String code {get;set;}
         public String result_desc {get;set;} //Salesforce Keyword

@@ -6,9 +6,9 @@
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
- * 1.0   08-24-2023   joohyeon.jang@dkbmc.com   Initial Version
+ * 1.0   11-06-2023   joohyeon.jang@dkbmc.com   Initial Version
 **/
-public with sharing class CJFW_MDMReferenceCreateController { 
+public with sharing class CJFW_MDMAccountSearchController { 
     
     @AuraEnabled(cacheable=true)
     public static String getCookieValueFromService() {
@@ -24,7 +24,7 @@ public with sharing class CJFW_MDMReferenceCreateController {
     @AuraEnabled(cacheable=true)
     public static DataWrapper getAccountInfo(List<Map<String, String>> searchKey, String selectedcustomerType, Integer pageNumber, Integer pageSize) {
 
-        system.debug('### CJFW_MDMBulkAccountSearchController ###');
+        system.debug('### CJFW_MDMAccountSearchController ###');
         system.debug('>>> getAccountInfo()');
         system.debug('>>> selectedcustomerType ' + selectedcustomerType);
 

@@ -10,6 +10,8 @@
  *  NO | Date       | Modifier       | Description
  * ----------------------------------------------
  *  1. | 2023.08.28 | 김동영          | 최초작성
+ *  2. | 2023.10.30 | 김동영          | IFN_EIF1001_EC001_MD001 ResultWrapper 변경에 따른 수정
+ *                                      IFN_EIF1001_EC002_MD003 infResponse.Response 입력값 오류 수정
  * */
 public class IFN_EIF1001_Callout {
     public IFN_CommonLog.LogWrap logWrap{get;set;}
@@ -187,11 +189,14 @@ public class IFN_EIF1001_Callout {
             HttpResponse response = gateway.webCallout(requestBody, hemap, true);
 
             responsedata = response.getBody();
+            system.debug('responsedata ::::: ' + responsedata);
             if(response.getStatusCode() == 200) {
+                // 이미지 업로드 - 전송 성공
                 IFN_EIF1001_EC002_MD003.EC002Response resData = (IFN_EIF1001_EC002_MD003.EC002Response)JSON.deserializeStrict((String)responsedata, IFN_EIF1001_EC002_MD003.EC002Response.class);
                 IFN_EIF1001_EC002_MD003.EC002SuccessData successData = resData.data;
                 infResponse.response = (Object)successData;
             } else {
+                // 이미지 업로드 - 전송 실패
                 IFN_EIF1001_EC002_MD003.EC002ErrorData errData = (IFN_EIF1001_EC002_MD003.EC002ErrorData)JSON.deserializeStrict((String)responsedata, IFN_EIF1001_EC002_MD003.EC002ErrorData.class);
                 result_code = 'F';
                 result_message = 'Upload Error';
@@ -207,7 +212,7 @@ public class IFN_EIF1001_Callout {
         result.setResult(
             result_code
             , result_message
-            , infResponse
+            , infResponse.response
         );
 
         return result;

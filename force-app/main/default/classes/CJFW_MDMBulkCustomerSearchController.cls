@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 10-31-2023
+ * @last modified on  : 11-02-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkCustomerSearchController {
@@ -58,7 +58,7 @@ public with sharing class CJFW_MDMBulkCustomerSearchController {
             List<MDMRegRequestCustomer__c> searchResult = new List<MDMRegRequestCustomer__c>(); // 분할해서 담은
             List<MDMRegRequestCustomer__c> listSearchResult = new List<MDMRegRequestCustomer__c>(); // 모두 담은
 
-            String strQuery = 'SELECT Id, PV_NAME1__c, PV_CUSTTYPE__c, PV_PERNR__c FROM MDMRegRequestCustomer__c ';
+            String strQuery = 'SELECT Id, PV_NAME1__c, PV_CUSTTYPE__c, toLabel(PV_CUSTTYPE__c) CustTypeLabel, PV_PERNR__c FROM MDMRegRequestCustomer__c ';
             strQuery += ' WHERE   	MDMRegRequestBulkCustomer__c = \'' + recordId + '\'';
             for(Integer i = 0; i < searchKeys.size(); i++) {
                 if(searchKeys[i] == 'OwnerId') {

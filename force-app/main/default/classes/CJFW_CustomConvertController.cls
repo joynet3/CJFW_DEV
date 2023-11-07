@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : yejoo.lee@dkbmc.com
  * @group             : 
- * @last modified on  : 11-01-2023
+ * @last modified on  : 11-03-2023
  * @last modified by  : yejoo.lee@dkbmc.com
 **/
 public with sharing class CJFW_CustomConvertController {
@@ -140,7 +140,13 @@ public with sharing class CJFW_CustomConvertController {
             //1. Account Convert
             Account acc = new Account();
             Map<String,Object> accountConvertInfo = (Map<String,Object>)convertInfo.get('Account');
-            Id accRecordTypeId    = [SELECT Id, Name, DeveloperName FROM RecordType WHERE IsActive = true AND SobjectType = 'Account' AND DeveloperName = 'ProspectiveCustomer'].Id;
+            // Id accRecordTypeId    = [SELECT Id, Name, DeveloperName FROM RecordType WHERE IsActive = true AND SobjectType = 'Account' AND DeveloperName = 'ProspectiveCustomer'].Id;
+            Id accRecordTypeId;
+            for (Schema.RecordTypeInfo rtInfo : Account.SObjectType.getDescribe().getRecordTypeInfos()) {
+                if (rtInfo.isDefaultRecordTypeMapping()) {
+                    accRecordTypeId = rtInfo.getRecordTypeId();
+                }
+            }
 
             if((Boolean)accountConvertInfo.get('convert')){
                 
@@ -209,7 +215,13 @@ public with sharing class CJFW_CustomConvertController {
             //3. Oppty Convert
             Opportunity opp = new Opportunity();
             Map<String,Object> opptyConvertInfo = (Map<String,Object>)convertInfo.get('Opportunity');
-            Id opptyRecordTypeId    = [SELECT Id, Name, DeveloperName FROM RecordType WHERE IsActive = true AND SobjectType = 'Opportunity' AND DeveloperName = 'General'].Id;
+            // Id opptyRecordTypeId    = [SELECT Id, Name, DeveloperName FROM RecordType WHERE IsActive = true AND SobjectType = 'Opportunity' AND DeveloperName = 'General'].Id;
+            Id opptyRecordTypeId;
+            for (Schema.RecordTypeInfo rtInfo : Opportunity.SObjectType.getDescribe().getRecordTypeInfos()) {
+                if (rtInfo.isDefaultRecordTypeMapping()) {
+                    opptyRecordTypeId = rtInfo.getRecordTypeId();
+                }
+            }
 
             if((Boolean)opptyConvertInfo.get('convert')){
                 for (String key : opportunityMappingField.keySet()) {
@@ -272,12 +284,14 @@ public with sharing class CJFW_CustomConvertController {
 			resultMap.put('updateConvertObj', convertObjList[0]);
             
             // Database.rollback(sp);//TEST    
-            // resultMap.put('STATUS', 'S');
+            
         } catch (Exception e) {
             Database.rollback(sp);
             resultMap.put('STATUS', 'E');
             resultMap.put('MESSAGE', e.getMessage());
             resultMap.put('TRACE', e.getStackTraceString());
+            System.debug('MESSAGE:' + e.getMessage());
+            System.debug('TRACE:' + e.getStackTraceString());
         }
         
         return resultMap;

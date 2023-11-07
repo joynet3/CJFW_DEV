@@ -71,6 +71,24 @@ public with sharing class CJFW_MDMBulkCreateManagementController {
 
       return saveResult;
   } 
+      /**
+        *   let hiddenElement = document.createElement('a');
+            hiddenElement.href = result;
+            hiddenElement.target = '_blank';
+            hiddenElement.download = 'download';
+            hiddenElement.click();
+         */
+    @AuraEnabled  
+    public static String downloadMenualExcel(){
+        ContentVersion cv = [SELECT   Title, id, VersionNumber 
+                             FROM     ContentVersion 
+                             WHERE    Title = '참조코드 매뉴얼Ver1.0' 
+                             ORDER BY VersionNumber DESC LIMIT 1];
+
+        String contentId = cv.Id;
+
+        return URL.getSalesforceBaseUrl().toExternalForm() + '/sfc/servlet.shepherd/version/download/' + contentId;
+    }
   
   public static List<String> getAllFieldNames(String sObjectName) {
         List<String> fieldNames = new List<String>();

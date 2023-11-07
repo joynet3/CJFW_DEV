@@ -1,71 +1,81 @@
 /**
- * @description       : 
+ * @description       :
  * @author            : sunkyung.choi@dkbmc.com
- * @group             : 
- * @last modified on  : 11-02-2023
+ * @group             :
+ * @last modified on  : 11-06-2023
  * @last modified by  : sunkyung.choi@dkbmc.com
 **/
 public with sharing class CJFW_SurveyActiveController {
-    public CJFW_SurveyActiveController() {
+    public CJFW_SurveyActiveController() {}
 
+    @AuraEnabled public static Map<Id, CJFW_Survey__c> getSurveyInfo(
+        String recordId
+    ) {
+        List<CJFW_Survey__c> surveyList = [
+            SELECT Id,
+            Name,
+            Su__c,
+            Active__c,
+            ParentSurvey__c,
+            Version__c,
+            HeadOffice__c,
+            CheckActive__c FROM CJFW_Survey__c WHERE Id = : recordId
+        ];
+
+        Map<Id, CJFW_Survey__c> surMap = new Map<Id, CJFW_Survey__c>();
+        for (CJFW_Survey__c su : surveyList) {
+            surMap.put(su.Id, su);
+        }
+        return surMap;
     }
-    @AuraEnabled
-    public static Map<String, CJFW_Survey__c> getSurveyInfo(String recordId){
-        System.debug('recordId?????????'+recordId);
-        List<CJFW_Survey__c> surveyLists = [SELECT Id,Active__c,CheckActive__c FROM  CJFW_Survey__c WHERE Id =: recordId ];
-        System.debug('surveyLists?????????'+surveyLists);
-        Map<String, CJFW_Survey__c> surveyMap = new Map<String, CJFW_Survey__c>();
-        
+    @AuraEnabled public static void updateSurveyInfo(CJFW_Survey__c surveyData) {
+        System.debug('시작>>>>> ');
+        System.debug('surveyData' + surveyData);
+        surveyData.CheckActive__c = System.now();
+
+        Set<Id> parId = new Set<Id>();
+        Set<Id> surId = new Set<Id>();
+
+        System.debug('시작2>>>>> ');
+        surId.add(surveyData.Id);
+        Map<Id, CJFW_Survey__c> currentSurveyMap = new Map<Id, CJFW_Survey__c>();
+        List<CJFW_Survey__c> surveyLists = [
+            SELECT Id,
+            Name,
+            Active__c,
+            CheckActive__c,
+            ParentSurvey__c,
+            Version__c FROM CJFW_Survey__c WHERE Id IN: surId
+        ];
         for (CJFW_Survey__c surveyList : surveyLists) {
-            surveyMap.put(surveyList.Id,surveyList);
-        }
-        System.debug('surveyMap?????????'+surveyMap);
-        return surveyMap;
-
-    }
-    @AuraEnabled
-    public static String updateSurveyInfo(CJFW_Survey__c surveyData) {
-        try {
-            if (surveyData != null) {
-                System.debug('surveyData' + surveyData);
-                surveyData.CheckActive__c = System.now();
-                update surveyData;
-                return 'Success'; // 업데이트가 성공했을 때 성공 메시지 반환
-            } else {
-                return 'Data is null'; // 데이터가 null일 때 오류 메시지 반환
+            if (surveyList.Version__c > 1) {
+                parId.add(surveyList.ParentSurvey__c);
+            } else if (surveyList.Version__c == 1) {
+                parId.add(surveyList.Id);
             }
-        } catch (Exception e) {
-            return 'Error: ' + e.getMessage(); // 업데이트 중 오류가 발생했을 때 오류 메시지 반환
+            currentSurveyMap.put(surveyList.Id, surveyList);
         }
-    }
-    @AuraEnabled
-    public static Map<Id, CJFW_SurveyOption__c> getSurveyQueInfo(String recordId){
-        System.debug('recordId?????????'+recordId);
-        
-        List<CJFW_SurveyQuestion__c> surveyQueLists = [SELECT Id,  Name,Name__c, Survey__c, Type__c, MultipleChoice__c, Order__c, DateType__c, TextType__c, ActiveCheck__c FROM  CJFW_SurveyQuestion__c WHERE Survey__c =: recordId ];
-        
-        Set<Id> questionId = new Set<Id>();
-        System.debug('surveyQueLists?????????'+surveyQueLists);
-        Map<Id, CJFW_SurveyQuestion__c> surveyQueMap = new Map<Id, CJFW_SurveyQuestion__c>();
-        Map<Id, CJFW_SurveyOption__c> surveyOptMap = new Map<Id, CJFW_SurveyOption__c>();
-        
-        for (CJFW_SurveyQuestion__c surveyQueList : surveyQueLists) {
-            questionId.add(surveyQueList.Id);
-            surveyQueMap.put(surveyQueList.Id,surveyQueList);
-        }
-        System.debug('surveyQueMap?????????'+surveyQueMap);
-        System.debug('questionId?????????'+questionId);
-        
-        List<CJFW_SurveyOption__c> surveyOptions = [SELECT Id, Name, Order__c, SurveyQuestion__c, OpActiveCheck__c FROM  CJFW_SurveyOption__c WHERE  SurveyQuestion__c IN: questionId ];
-        
-        for (CJFW_SurveyOption__c surveyOption : surveyOptions) {
-            surveyOptMap.put(surveyOption.Id,surveyOption);
-        }
-        System.debug('surveyOptMap?????????'+surveyOptMap);
+        System.debug(
+            '2222222222222222222>>>>> ' + currentSurveyMap.get(surveyLists[0].Id)
+        );
+        List<CJFW_Survey__c> realatedLists = [
+            SELECT Id,
+            Name,
+            Active__c,
+            CheckActive__c,
+            ParentSurvey__c,
+            Version__c FROM CJFW_Survey__c WHERE Id IN: parId or ParentSurvey__c IN: parId
+        ];
+        System.debug('1111111surveyLists>>>>> ' + realatedLists);
 
-
-        return surveyOptMap;
+        for (CJFW_Survey__c realatedList : realatedLists) {
+            if (realatedList.Id != surveyData.Id) {
+                realatedList.Active__c = false;
+            }
+        }
+        update realatedLists;
+        update surveyData;
 
     }
-    
+
 }

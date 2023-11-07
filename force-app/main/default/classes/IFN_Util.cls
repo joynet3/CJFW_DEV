@@ -770,12 +770,12 @@ public with sharing class IFN_Util {
     /**
      *  getPickList //2023.11.01 - sancho pickList
      * 
-     * @param  변수명 파라미터 설명 (있는경우)
-     * @return  리턴값 설명 (있는경우)
+     * @param  String objName, String fieldName
+     * @return  List<String>
      * @exception  메소드가 발생시키는 예외에 대한 설명 또는 목록
      * @example 
-     *  List<String> incoPickLst    = IFN_Util.getPickList('LGC_OrderRequest__c', 'Incoterms__c');
-     *  result.Incoterms__c         = incoPickLst.contains(log.INCOTERMS__c) ? log.INCOTERMS__c : null;
+     *  List<String> sidoMap    = IFN_Util.getPickList('CJFW_PublicBiddingInformation__c', 'State__c');
+     *  objLead.State__c        = sidoMap.contains(SidoCode) ? SidoCode : null;
      * */
     public static List<String> getPickList(String objName, String fieldName) {
         List<String> result = new List<String>();

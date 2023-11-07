@@ -2,7 +2,7 @@
  * @description       : 배송처 관리 (작성 완료시 이메일 발송)
  * @author            : yejoo.lee@dkbmc.com
  * @group             : 
- * @last modified on  : 10-27-2023
+ * @last modified on  : 11-02-2023
  * @last modified by  : yejoo.lee@dkbmc.com
  * @since 2023-10-11  내용 작성
 **/
@@ -25,6 +25,7 @@ public with sharing class CJFW_DeliveryDstMgmtController {
                         // +     ' Id '
                         +      allFieldString
                         +  '   , Account__r.Name '
+                        +  '   , ManagementAccount__r.Name '
                         +  ' FROM CJFW_DeliveryDestinationMgmt__c '
                         +  ' WHERE Id =:recordId ';
 

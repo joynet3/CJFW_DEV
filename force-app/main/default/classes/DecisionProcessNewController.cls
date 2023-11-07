@@ -89,7 +89,7 @@ public without sharing class DecisionProcessNewController {
             String DocType = objDecisionProcess.Type__c; 
             System.debug('DocType =>' + DocType );
             if ( DocType == 'CRM001' || DocType == 'CRM002' || DocType == 'CRM003' || DocType == 'CRM004' || DocType == 'CRM005' || DocType == 'CRM006' 
-                || DocType == 'CRM008' || DocType == 'CRM009' || DocType == 'CRM010'){
+                || DocType == 'CRM008' || DocType == 'CRM009' || DocType == 'CRM010' || DocType == 'CRM011' || DocType == 'CRM012'){
                
                 // I/F 파라미터 셋팅
                 Map<String, Object> mapInput = new Map<String, Object>();
@@ -116,7 +116,7 @@ public without sharing class DecisionProcessNewController {
                 // 6) 전자계약 법인(사용) 인감 날인 기본 신청서 CRM006
                 } else if ( DocType == 'CRM006' ){
                     file = new pagereference('/apex/CJFW_ContractSealUseForm');
-                // 8) (급식/헬씨) 신규개설 및 재계약 CRM008
+                // 8) (급식) 신규개설 CRM008
                 } else if ( DocType == 'CRM008' ){
                     file = new pagereference('/apex/CJFW_CreateNewReport');
                 // 9) (외식SU) 신규 품의 CRM009
@@ -125,11 +125,17 @@ public without sharing class DecisionProcessNewController {
                 // 10) (외식SU) 재계약 품의 CRM010
                 } else if ( DocType == 'CRM010' ){
                     file = new pagereference('/apex/CJFW_OrderConsiderReContractForm');
+                // 11) (급식) 보증금 개설 CRM011
+                } else if ( DocType == 'CRM011' ){
+                    file = new pagereference('/apex/CJFW_DepositForm');
+                // 12) (급식) 보증금 변경
+                } else if ( DocType == 'CRM012' ){
+                    file = new pagereference('/apex/CJFW_ChangeDepositForm');
                 }
                 
                 
                 // 급식 & 외식의 경우 page 호출시 type & showtable 파라미터 값 추가 
-                if(DocType == 'CRM008' || DocType == 'CRM009' || DocType == 'CRM010'){
+                if(DocType == 'CRM008' || DocType == 'CRM009' || DocType == 'CRM010' || DocType == 'CRM011' || DocType == 'CRM012'){
                     file.getParameters().put('opportunityId', objDecisionProcess.Opportunity__c );  
                     file.getParameters().put('type', DocType );  
                     file.getParameters().put('showtable', 'true' );  
