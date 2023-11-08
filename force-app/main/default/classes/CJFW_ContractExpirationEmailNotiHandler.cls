@@ -33,7 +33,7 @@ public with sharing class CJFW_ContractExpirationEmailNotiHandler extends NotiHa
             }
         }
 
-        System.debug('mgmtList ::' + notiDayMap);
+        System.debug('notiDayMap ::' + notiDayMap);
         
         String orgDomainUrl = URL.getOrgDomainUrl().toExternalForm();
 

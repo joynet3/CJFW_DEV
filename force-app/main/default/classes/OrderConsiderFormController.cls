@@ -731,6 +731,7 @@ public with sharing class OrderConsiderFormController {
         if(IncomeExpensesInfo.SalesMonthly__c == 0 || IncomeExpensesInfo.SalesMonthly__c == null){
             IncomeExpensesInfo.put('SalesMonthly__c', accountInfo.get('SalesMonthly__c') );
         }
+
         System.debug('# 품의서정보  ->' + IncomeExpensesInfo ); 
     }
 
@@ -1359,6 +1360,9 @@ public with sharing class OrderConsiderFormController {
     public void getDistributeCost() {
         System.debug('# ReportFormController # getDistributeCost ');
 
+        
+        
+
         // 파람값 들어오면 변경예정 231024
         //String ReportType1 ='외식SU';
         //String ReportType2 ='급식SU';
@@ -1403,6 +1407,36 @@ public with sharing class OrderConsiderFormController {
                     DistributeSchool =record.Cost__c;
                 }
             }
+            // IncomeExpensesInfo 에 담아주기 
+            // IncomeExpensesInfo 필드에 값이 있는지 먼저 체크 > 값이 없으면 물류비값 넣어주기 */
+
+            if (IncomeExpensesInfo.DistributeDirCap__c == 0 || IncomeExpensesInfo.DistributeDirCap__c == null){
+                IncomeExpensesInfo.put('DistributeDirCap__c', DistributeDirCap );
+            }
+            if (IncomeExpensesInfo.DistributeDirEast__c == 0 || IncomeExpensesInfo.DistributeDirEast__c == null){
+                IncomeExpensesInfo.put('DistributeDirEast__c', DistributeDirEast );
+            }
+            if (IncomeExpensesInfo.DistributeDirWest__c == 0 || IncomeExpensesInfo.DistributeDirWest__c == null){
+                IncomeExpensesInfo.put('DistributeDirWest__c', DistributeDirWest );
+            }
+            if (IncomeExpensesInfo.DistributeDirJeju__c == 0 || IncomeExpensesInfo.DistributeDirJeju__c == null){
+                IncomeExpensesInfo.put('DistributeDirJeju__c', DistributeDirJeju );
+            }
+
+            if (IncomeExpensesInfo.DistributeInDirCap__c == 0 || IncomeExpensesInfo.DistributeInDirCap__c == null){
+                IncomeExpensesInfo.put('DistributeInDirCap__c', DistributeInDirCap );
+            }
+            if (IncomeExpensesInfo.DistributeInDirEast__c == 0 || IncomeExpensesInfo.DistributeInDirEast__c == null){
+                IncomeExpensesInfo.put('DistributeInDirEast__c', DistributeInDirEast );
+            }
+            if (IncomeExpensesInfo.DistributeInDirWest__c == 0 || IncomeExpensesInfo.DistributeInDirWest__c == null){
+                IncomeExpensesInfo.put('DistributeInDirWest__c', DistributeInDirWest );
+            }
+            if (IncomeExpensesInfo.DistributeInDirJeju__c == 0 || IncomeExpensesInfo.DistributeInDirJeju__c == null){
+                IncomeExpensesInfo.put('DistributeInDirJeju__c', DistributeInDirJeju );
+            }
+            System.debug('# IncomeExpensesInfo 값 넣어줘  ->' + IncomeExpensesInfo ); 
+
 
         }catch(Exception e){
             String errorMessage = e.getMessage();

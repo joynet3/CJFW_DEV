@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 10-10-2023
+ * @last modified on  : 11-07-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -82,7 +82,7 @@ public with sharing class CJFW_MDMBulkCreateManagementController {
     public static String downloadMenualExcel(){
         ContentVersion cv = [SELECT   Title, id, VersionNumber 
                              FROM     ContentVersion 
-                             WHERE    Title = '참조코드 매뉴얼Ver1.0' 
+                             WHERE    Title = 'MDM 참조코드 매뉴얼' 
                              ORDER BY VersionNumber DESC LIMIT 1];
 
         String contentId = cv.Id;

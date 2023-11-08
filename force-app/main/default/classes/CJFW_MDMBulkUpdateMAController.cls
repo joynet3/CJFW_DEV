@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 11-06-2023
+ * @last modified on  : 11-07-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkUpdateMAController {
@@ -71,6 +71,8 @@ public with sharing class CJFW_MDMBulkUpdateMAController {
             }
     
             System.debug('# kunnrToIdMap => ' + kunnrToIdMap);
+
+            saveResult.bulkId = recordId;
 
         } else {
 

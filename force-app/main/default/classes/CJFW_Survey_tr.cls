@@ -31,37 +31,37 @@ public with sharing class CJFW_Survey_tr extends TriggerHandler {
     }
     private void doClone() {
         system.debug('doClone  START');
-        List<CJFW_Survey__c> newSurveys = listNew;
-        Set<Id> surveyId = new Set<Id>();
+        List<CJFW_Survey__c> newSurveyLists = listNew;
+        Set<Id> surveyIdSet = new Set<Id>();
         Map<Id, CJFW_Survey__c> surveyMap = new Map<Id, CJFW_Survey__c>();
         Map<String, CJFW_Survey__c> suCheckMap = new Map<String, CJFW_Survey__c>();
 
-        System.debug('1111111: >>' + newSurveys);
-        for (CJFW_Survey__c newSurvey : newSurveys) {
+        System.debug('1111111: >>' + newSurveyLists);
+        for (CJFW_Survey__c newSurvey : newSurveyLists) {
             if (newSurvey.isclone()) {
                 newSurvey.Active__c = false;
             }
             
             if (newSurvey.isclone()) {
-                surveyId.add(newSurvey.getCloneSourceId());
+                surveyIdSet.add(newSurvey.getCloneSourceId());
             }
         }
 
-        List<CJFW_Survey__c> sourceSurveys = [SELECT Id, Active__c, Su__c, Version__c, ParentSurvey__c FROM CJFW_Survey__c WHERE Id IN: surveyId]; //원본
+        List<CJFW_Survey__c> sourceSurveys = [SELECT Id, Active__c, Su__c, Version__c, ParentSurvey__c FROM CJFW_Survey__c WHERE Id IN: surveyIdSet]; //원본
 
-        List<CJFW_Survey__c> suChecks = [SELECT Id,  Name,  Su__c, Active__c, ParentSurvey__c, Version__c, HeadOffice__c FROM CJFW_Survey__c WHERE Su__c !=null and Active__c =true]; //su__c 필드값 있는 데이터 쿼리 
+        List<CJFW_Survey__c> suChecksList = [SELECT Id,  Name,  Su__c, Active__c, ParentSurvey__c, Version__c, HeadOffice__c FROM CJFW_Survey__c WHERE Su__c !=null and Active__c =true]; //su__c 필드값 있는 데이터 쿼리 
 
         System.debug('sourceSurveys ???>>>>' + sourceSurveys);
         for (CJFW_Survey__c sourceSurvey : sourceSurveys) {
                 surveyMap.put(sourceSurvey.Id, sourceSurvey);
         }
         System.debug('맵확인 >>>> ' + surveyMap);
-        for (CJFW_Survey__c suCheck : suChecks) {
+        for (CJFW_Survey__c suCheck : suChecksList) {
             suCheckMap.put(suCheck.su__c,suCheck);
             System.debug('suCheckMap>>>>>>>> '+ suCheckMap);
         }
         // 새로운 레코드를 반복하며 필드 업데이트
-        for (CJFW_Survey__c newSurvey : newSurveys) {
+        for (CJFW_Survey__c newSurvey : newSurveyLists) {
             if (newSurvey.getCloneSourceId() != null) {
                 // newSurvey.Active__c = true;
                 CJFW_Survey__c sourceSurvey = surveyMap.get(newSurvey.getCloneSourceId());
@@ -81,7 +81,7 @@ public with sharing class CJFW_Survey_tr extends TriggerHandler {
                     // if (newSurvey.Active__c) {
                     // }
                 }
-                System.debug('newSurvey22222: >>' + newSurveys);
+                System.debug('newSurvey22222: >>' + newSurveyLists);
                 newSurvey.Version__c = 1;
               
             }
@@ -90,25 +90,25 @@ public with sharing class CJFW_Survey_tr extends TriggerHandler {
 
     private void doCloneInsert() {
         system.debug('doCloneInsert  START');
-        List<CJFW_Survey__c> newSurveys = listNew;
-        system.debug('22222 : >> ' + newSurveys);
+        List<CJFW_Survey__c> newSurveyLists = listNew;
+        system.debug('22222 : >> ' + newSurveyLists);
 
-        List < CJFW_SurveyQuestion__c > surveyQuestion = new List < CJFW_SurveyQuestion__c > ();
-        List < CJFW_SurveyOption__c > surveyOption = new List < CJFW_SurveyOption__c > ();
-        List < CJFW_SurveyFollowUp__c > surveyFollow = new List < CJFW_SurveyFollowUp__c > ();
+        List < CJFW_SurveyQuestion__c > surveyQuestionList = new List < CJFW_SurveyQuestion__c > ();
+        List < CJFW_SurveyOption__c > surveyOptionList = new List < CJFW_SurveyOption__c > ();
+        List < CJFW_SurveyFollowUp__c > surveyFollowList = new List < CJFW_SurveyFollowUp__c > ();
 
-        Set<Id> originId = new Set<Id>(); // 원본 ID
+        Set<Id> originIdSet = new Set<Id>(); // 원본 ID
         Map<Id, Id> surveyIdMap = new Map<Id, Id>(); //새로 생성된 데이터 ID
 
-        Set<Id> questionId = new Set<Id>(); // 원본 questioID
+        Set<Id> questionIdSet = new Set<Id>(); // 원본 questioID
         Map<Id, Id> queCloneMap = new Map<Id, Id>(); // 복제 questioID
 
         Set<Id> optionId = new Set<Id>(); // 원본 optionID
         Map<Id, Id> optCloneMap = new Map<Id, Id>(); // 복제 optionID
 
-        for (CJFW_Survey__c newSurvey : newSurveys) {
+        for (CJFW_Survey__c newSurvey : newSurveyLists) {
             if (newSurvey.isclone()) {
-                originId.add(newSurvey.getCloneSourceId());
+                originIdSet.add(newSurvey.getCloneSourceId());
                 surveyIdMap.put(newSurvey.getCloneSourceId(), newSurvey.Id);
             }
         }
@@ -121,20 +121,20 @@ public with sharing class CJFW_Survey_tr extends TriggerHandler {
             MultipleChoice__c,
             Order__c,
             DateType__c,
-            TextType__c FROM CJFW_SurveyQuestion__c WHERE Survey__c IN: originId
+            TextType__c FROM CJFW_SurveyQuestion__c WHERE Survey__c IN: originIdSet
         ]; // 원본 Question 저장
 
         for (CJFW_SurveyQuestion__c originalQuestionChild : originQuestionList) {
-            questionId.add(originalQuestionChild.Id);
+            questionIdSet.add(originalQuestionChild.Id);
             CJFW_SurveyQuestion__c newBchild = originalQuestionChild.clone(); // Bchild 레코드 복제
             newBchild.Survey__c = surveyIdMap.get(originalQuestionChild.Survey__c);
-            surveyQuestion.add(newBchild);
-            System.debug('surveyQuestion :: ' + surveyQuestion);
+            surveyQuestionList.add(newBchild);
+            System.debug('surveyQuestionList :: ' + surveyQuestionList);
 
         }
-        insert surveyQuestion;
+        insert surveyQuestionList;
 
-        for (CJFW_SurveyQuestion__c surq : surveyQuestion) {
+        for (CJFW_SurveyQuestion__c surq : surveyQuestionList) {
             queCloneMap.put(surq.getCloneSourceId(), surq.Id);
         }
         List < CJFW_SurveyOption__c > originOptionList = [
@@ -144,7 +144,7 @@ public with sharing class CJFW_Survey_tr extends TriggerHandler {
             CreatedDate,
             CreatedById,
             Order__c,
-            SurveyQuestion__c FROM CJFW_SurveyOption__c WHERE SurveyQuestion__c IN: questionId
+            SurveyQuestion__c FROM CJFW_SurveyOption__c WHERE SurveyQuestion__c IN: questionIdSet
         ]; // 원본 Option 저장
 
         System.debug('originOptionList>>>>' + originOptionList);
@@ -155,15 +155,15 @@ public with sharing class CJFW_Survey_tr extends TriggerHandler {
             newCchild.SurveyQuestion__c = queCloneMap.get(originOption.SurveyQuestion__c);
 
             System.debug('확인 Option 11>>>>' + newCchild.SurveyQuestion__c);
-            surveyOption.add(newCchild);
-            System.debug('확인 Option 22>>>>' + surveyOption);
+            surveyOptionList.add(newCchild);
+            System.debug('확인 Option 22>>>>' + surveyOptionList);
         }
-        insert surveyOption;
+        insert surveyOptionList;
 
-        for (CJFW_SurveyOption__c suro : surveyOption) {
+        for (CJFW_SurveyOption__c suro : surveyOptionList) {
             optCloneMap.put(suro.getCloneSourceId(), suro.Id);
         }
-        List<CJFW_SurveyFollowUp__c> originFollowList = [SELECT Id, Name, SurveyQuestion__c, SurveyOption__c FROM CJFW_SurveyFollowUp__c WHERE SurveyQuestion__c IN: questionId AND SurveyOption__c IN: optionId];
+        List<CJFW_SurveyFollowUp__c> originFollowList = [SELECT Id, Name, SurveyQuestion__c, SurveyOption__c FROM CJFW_SurveyFollowUp__c WHERE SurveyQuestion__c IN: questionIdSet AND SurveyOption__c IN: optionId];
 
         for (CJFW_SurveyFollowUp__c originFollow : originFollowList) {
             CJFW_SurveyFollowUp__c newDchild = originFollow.clone();
@@ -171,22 +171,22 @@ public with sharing class CJFW_Survey_tr extends TriggerHandler {
             newDchild.SurveyOption__c = optCloneMap.get(originFollow.SurveyOption__c);
             System.debug('확인 Follow 11>>>>' + newDchild.SurveyQuestion__c);
             System.debug('확인 Follow 12>>>>' + newDchild.SurveyOption__c);
-            surveyFollow.add(newDchild);
-            System.debug('확인 Follow 22>>>>' + surveyFollow);
+            surveyFollowList.add(newDchild);
+            System.debug('확인 Follow 22>>>>' + surveyFollowList);
         }
-        insert surveyFollow;
+        insert surveyFollowList;
     }
     private void checkSuFieldChanges() {
-        List<CJFW_Survey__c> newSurveys = listNew;
-        List<CJFW_Survey__c> oldSurveys = listOld;
+        List<CJFW_Survey__c> newSurveyLists = listNew;
+        List<CJFW_Survey__c> oldSurveysList = listOld;
         Map<String, CJFW_Survey__c> suCheckMap = new Map<String, CJFW_Survey__c>();
     
-        List<CJFW_Survey__c> suChecks = [SELECT Id, Name, Su__c, Active__c, ParentSurvey__c, Version__c, HeadOffice__c FROM CJFW_Survey__c WHERE Su__c != null and Active__c = true];
-        for (CJFW_Survey__c suCheck : suChecks) {
+        List<CJFW_Survey__c> suChecksList = [SELECT Id, Name, Su__c, Active__c, ParentSurvey__c, Version__c, HeadOffice__c FROM CJFW_Survey__c WHERE Su__c != null and Active__c = true];
+        for (CJFW_Survey__c suCheck : suChecksList) {
             suCheckMap.put(suCheck.Su__c, suCheck);
             System.debug('suCheckMap>>>>>>>> ' + suCheckMap);
         }
-        for (CJFW_Survey__c newSurvey : newSurveys) {
+        for (CJFW_Survey__c newSurvey : newSurveyLists) {
             CJFW_Survey__c oldSurvey = mapOld.get(newSurvey.Id);
             if (newSurvey.Su__c != oldSurvey.Su__c) {
                 // Su__c 필드가 변경된 경우

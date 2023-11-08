@@ -8,7 +8,7 @@
 
  * @author            : eunyoung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 11-06-2023
+ * @last modified on  : 11-07-2023
  * @last modified by  : yeonji.lim@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -32,6 +32,7 @@ public with sharing class ReportFormController {
     public String fieldValue { get; private set; }
 
     public Decimal DistributeSchool {get;set;} // 급식용 
+    public String paymentMethod {get;set;}    // 결제수단 value 가져오기 (급식 보증금 개설전용)
 
     /* 계산값 가져오기 */
     public CJFW_ExpectedIncomeExpenses__c IncomeExpensesInfo {get;set;} //예상손익 
@@ -401,8 +402,10 @@ public with sharing class ReportFormController {
             // System.debug('# 담보제공 날짜 ->' + collateralPeriod ); 
             // System.debug('# 채권 날짜 ->' + contractPaymentDate ); 
             // System.debug('# 담보종류 ->' + selectedCollateral ); 
-            // System.debug('# 결제수단 ->' + selectedPayment ); 
+            System.debug('# 결제수단 ->' + selectedPayment ); 
 
+            // 급식 보증금개설에서 결제수단필드에 저장된 value값 담아서 넘겨주기 (예상손익에 결제수단에 따라 계산이 달라지기 때문)
+            paymentMethod = IncomeExpensesInfo.PaymentMethod__c != null ? IncomeExpensesInfo.PaymentMethod__c : '';
 
             // 2. 거래처 현황 account info 값을 참고로 IncomeExpensesInfo 에 담아주기 : IncomeExpensesInfo 필드에 값이 있는지 먼저 체크 > 값이 없으면 accountInfo 에서 값 땡겨옴
             // 거래처명 (text)
@@ -452,7 +455,7 @@ public with sharing class ReportFormController {
             }
             // 단가/예외가 (Account에 정보없음) 
             // 센터 (Account에 정보없음) 
-            // 3. 거래처 상세내용 
+            
 
             System.debug('# accountInfo  ->' + accountInfo ); 
             System.debug('# 품의서정보  ->' + IncomeExpensesInfo ); 

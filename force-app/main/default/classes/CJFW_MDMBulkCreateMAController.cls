@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 11-06-2023
+ * @last modified on  : 11-07-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkCreateMAController {
@@ -117,6 +117,25 @@ public with sharing class CJFW_MDMBulkCreateMAController {
         return saveResult;
 
     }
+    /**
+    *                  let hiddenElement = document.createElement('a');
+                       hiddenElement.href = result;
+                       hiddenElement.target = '_blank';
+                       hiddenElement.download = 'download';
+                       hiddenElement.click();
+    */
+    @AuraEnabled  
+    public static String downloadMenualExcel(){
+        ContentVersion cv = [SELECT   Title, id, VersionNumber 
+                             FROM     ContentVersion 
+                             WHERE    Title = 'MDM 담당자유형 매뉴얼' 
+                             ORDER BY VersionNumber DESC LIMIT 1];
+
+        String contentId = cv.Id;
+
+        return URL.getSalesforceBaseUrl().toExternalForm() + '/sfc/servlet.shepherd/version/download/' + contentId;
+    }
+
 
     public class SaveResult{
 
