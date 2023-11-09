@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : yeonji.lim@dkbmc.com
  * @group             : 
- * @last modified on  : 11-06-2023
+ * @last modified on  : 11-08-2023
  * @last modified by  : eunyoung.choi@dkbmc.com
 **/
 public with sharing class OrderConsiderReContractFormController {
@@ -65,6 +65,7 @@ public with sharing class OrderConsiderReContractFormController {
     public String contractEndDate { get; set; } // 계약종료
     public String collateralPeriod { get; set; } // 담보 제공 기간
     public String contractPaymentDate { get; set; } // 약정결제일
+    public String createdDate { get; set; } // 품의생성일자
 
     
     /* 생성자 */
@@ -113,10 +114,10 @@ public with sharing class OrderConsiderReContractFormController {
             getExpectManager();     // 품의서 관리자 작성 obj 값 가져오기    
             getDistributeCost();    // 물류비관리 값 가져오기
 
-            //if( incomeExpensesId != null ){
-            //    System.debug('예상손익  id -> ' + incomeExpensesId );
-            //    getSalesPerform(incomeExpensesId); // 실적현황 가져오기
-            //}
+            if( incomeExpensesId != null ){
+                System.debug('예상손익  id -> ' + incomeExpensesId );
+                getSalesPerform(incomeExpensesId); // 실적현황 가져오기
+            }
         }
     }
 
@@ -286,6 +287,7 @@ public with sharing class OrderConsiderReContractFormController {
             String query = 'SELECT Id, ' +
             'Version__c, ' +                        
             'IsReportCheck__c, ' +                        
+            'CreatedDate, ' +                        
             'KeyMan__c, ' +                         //키맨    
             'Competitor__c, ' +                     //경쟁업체
             'CompetitorSuggestions__c, ' +          //경제업제 제안 
@@ -800,12 +802,14 @@ public with sharing class OrderConsiderReContractFormController {
         String contractEndString = String.valueOf(IncomeExpensesInfo.ContractEndDate__c);       // 계약종료일자 
         String collateralPeriodString = String.valueOf(IncomeExpensesInfo.CollateralPeriod__c); // 담보기간
         String contractPaymentDateString = String.valueOf(IncomeExpensesInfo.ContractPaymentDate__c);   //약정결제일
+        String createdDateString = String.valueOf(IncomeExpensesInfo.CreatedDate);      // 생성일자
 
         initialDate = initialDateString != null ? initialDateString.substring(0, 10) : null;
         contractStartDate = contractStartString != null ? contractStartString.substring(0, 10) : null;
         contractEndDate = contractEndString != null ? contractEndString.substring(0, 10) : null;
         collateralPeriod = collateralPeriodString != null ? collateralPeriodString.substring(0, 10) : null;
         contractPaymentDate = contractPaymentDateString != null ? contractPaymentDateString.substring(0, 10) : null;
+        createdDate = createdDateString != null ? createdDateString.substring(0, 10) : null;
 
 
         /* pickList 저장된 값 가져오기 */
@@ -1378,259 +1382,58 @@ public with sharing class OrderConsiderReContractFormController {
             if (dataMap.containsKey('profitRateNameFour')) { 
                 expectIncome.ProfitRateNameFour__c = (String)dataMap.get('profitRateNameFour');
             }
+            
 
-            // 판매처수 
-            if (dataMap.containsKey('locationCntThree')) { 
-                expectIncome.SalesLocationCntThree__c = convertToDecimal(dataMap.get('locationCntThree'));
+            // 물류비(실제) - 직접 
+            if (dataMap.containsKey('distributeDirThree')) { // 재계약 3개월전
+                expectIncome.DistDirReAverageResult__c = convertToDecimal(dataMap.get('distributeDirThree'));
             }
-            if (dataMap.containsKey('locationCntCap')) { 
-                expectIncome.SalesLocationCntCapital__c = convertToDecimal(dataMap.get('locationCntCap'));
+            if (dataMap.containsKey('distributeDirCap')) {  // 수도권 
+                expectIncome.DistributeDirCap__c = convertToDecimal(dataMap.get('distributeDirCap'));
             }
-            if (dataMap.containsKey('locationCntEast')) { 
-                expectIncome.SalesLocationCntEast__c = convertToDecimal(dataMap.get('locationCntEast'));
+            if (dataMap.containsKey('distributeDirEast')) { // 동부권 
+                expectIncome.DistributeDirEast__c = convertToDecimal(dataMap.get('distributeDirEast'));
             }
-            if (dataMap.containsKey('locationCntWest')) { 
-                expectIncome.SalesLocationCntWest__c = convertToDecimal(dataMap.get('locationCntWest'));
+            if (dataMap.containsKey('distributeDirWest')) { // 서부권 
+                expectIncome.DistributeDirWest__c = convertToDecimal(dataMap.get('distributeDirWest'));
             }
-            if (dataMap.containsKey('locationCntJeju')) { 
-                expectIncome.SalesLocationCntJeju__c = convertToDecimal(dataMap.get('locationCntJeju'));
+            if (dataMap.containsKey('distributeDirJeju')) { // 제주권 
+                expectIncome.DistributeDirJeju__c = convertToDecimal(dataMap.get('distributeDirJeju'));
             }
-            if (dataMap.containsKey('locationCntFo')) { 
-                expectIncome.SalesLocationCntFo__c = convertToDecimal(dataMap.get('locationCntFo'));
+            if (dataMap.containsKey('distributeDirFo')) {   // FO센터 
+               expectIncome.DistributeDirFo__c = convertToDecimal(dataMap.get('distributeDirFo'));
             }
-            if (dataMap.containsKey('locationCntImpMonth')) { 
-                expectIncome.SalesLocationCntImpMonth__c = convertToDecimal(dataMap.get('locationCntImpMonth'));
+            if (dataMap.containsKey('distributeDirImpMonth')) { // 솔루션
+               expectIncome.DistributeDirImpMonth__c = convertToDecimal(dataMap.get('distributeDirImpMonth'));
             }
+            // 물류비(실제) - 간접
 
-            // -------------------------------------------외식(재계약) / 예상손익 저장 추가-------------------------------------------
-
-            // if (dataMap.containsKey('salesThreeGen')) { // 매출 일반- 3개월 평균실적 
-            //     expectIncome.SalesReAverageResultGeneral__c = convertToDecimal(dataMap.get('salesThreeGen'));
-            // }
-            // if (dataMap.containsKey('salesProfitThreeGen')) { // 매출이익 전용 - 3개월 평균실적 
-            //     expectIncome.SalesProfitReAverageResultGeneral__c = convertToDecimal(dataMap.get('salesProfitThreeGen'));
-            // }
-            // if (dataMap.containsKey('locationThree')) { // 판매처수 - 3개월 평균실적 
-            //     expectIncome.LocationReAverageResult__c = convertToDecimal(dataMap.get('LocationThree'));
-            // }
-            // if (dataMap.containsKey('distributeDirThree')) { // 물류비 -직접 
-            //     expectIncome.DistDirReAverageResult__c = convertToDecimal(dataMap.get('DistributeDirThree'));
-            // }
-            // if (dataMap.containsKey('DistributeInDirThree')) { // 물류비 -간접 
-            //     expectIncome.DistInDirReAverageResult__c = convertToDecimal(dataMap.get('DistributeInDirThree'));
-            // }
-            // if (dataMap.containsKey('salesSoluEx')) { // 솔루션 - 전용 개선
-            //     expectIncome.SalesSolutionExclusive__c = convertToDecimal(dataMap.get('salesSoluEx'));
-            // }
-            // if (dataMap.containsKey('salesSoluGen')) { // 솔루션 - 일반 개선
-            //     expectIncome.SalesSolutionGeneral__c = convertToDecimal(dataMap.get('salesSoluGen'));
-            // }
-            // if (dataMap.containsKey('salesImpMonthEx')) { // 월 예상실적 - 전용 개선
-            //     expectIncome.SalesImproveResultExclusive__c = convertToDecimal(dataMap.get('salesImpMonthEx'));
-            // }
-            // if (dataMap.containsKey('salesImpMonthGen')) { // 월 예상실적 - 일반 개선
-            //     expectIncome.SalesImproveResultGeneral__c = convertToDecimal(dataMap.get('salesImpMonthGen'));
-            // }      
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesCapOne__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesCapTwo__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesCapThree__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesCapFour__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesEastOne__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesEastTwo__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesEastThree__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesEastFour__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesWestOne__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesWestTwo__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesWestThree__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesWestFour__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesJejuOne__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesJejuTwo__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesJejuThree__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesJejuFour__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesMonthFoOne__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesMonthFoTwo__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesMonthFoThree__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesMonthFoFour__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesSoluOne__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesSoluTwo__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesSoluThree__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesSoluFour__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesProfitCapOne__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesProfitCapTwo__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesProfitCapThree__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesProfitCapFour__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesProfitEastOne__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesProfitEastTwo__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesProfitEastThree__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesProfitEastFour__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesProfitWestOne__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesProfitWestTwo__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesProfitWestThree__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesProfitWestFour__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesProfitJejuOne__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesProfitJejuTwo__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesProfitJejuThree__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesProfitJejuFour__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesProfitFoOne__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesProfitFoTwo__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesProfitFoThree__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesProfitFoFour__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesProfitSoluOne__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesProfitSoluTwo__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesProfitSoluThree__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesProfitSoluFour__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.LocationCntCap__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.LocationCntEast__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.LocationCntWest__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.LocationCntJeju__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.LocationCntFo__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.DistributeDirCap__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.DistributeDirEast__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.DistributeDirWest__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.DistributeDirJeju__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.DistributeInDirCap__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.DistributeInDirEast__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.DistributeInDirWest__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.DistributeInDirJeju__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.DistributeInDirFo__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesFoEx__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-            // if (dataMap.containsKey('salesCapEx')) { // 매출-직송 : 수도권 
-            //     expectIncome.SalesFoGen__c = convertToDecimal(dataMap.get('salesCapEx'));
-            // }
-
+            if (dataMap.containsKey('distributeInDirThree')) { // 재계약 3개월전
+                expectIncome.DistInDirReAverageResult__c = convertToDecimal(dataMap.get('distributeInDirThree'));
+            }
+            if (dataMap.containsKey('distributeInDirCap')) {   // 수도권 
+                expectIncome.DistributeInDirCap__c = convertToDecimal(dataMap.get('distributeInDirCap'));
+            }
+            if (dataMap.containsKey('distributeInDirEast')) {  // 동부권 
+                expectIncome.DistributeInDirEast__c = convertToDecimal(dataMap.get('distributeInDirEast'));
+            }
+            if (dataMap.containsKey('distributeInDirWest')) {  // 서부권 
+                expectIncome.DistributeInDirWest__c = convertToDecimal(dataMap.get('distributeInDirWest'));
+            }
+            if (dataMap.containsKey('distributeInDirJeju')) {  // 제주권 
+                expectIncome.DistributeInDirJeju__c = convertToDecimal(dataMap.get('distributeInDirJeju'));
+            }
+            if (dataMap.containsKey('distributeInDirFo')) {    // FO센터 
+               expectIncome.DistributeInDirFo__c = convertToDecimal(dataMap.get('distributeInDirFo'));
+            }
+            if (dataMap.containsKey('distributeInDirImpMonth')) {    // 솔루션 
+               expectIncome.DistributeInDirImpMonth__c = convertToDecimal(dataMap.get('distributeInDirImpMonth'));
+            }
 
             upsert expectIncome;
 
             // 실적현황 insert 
-            if(dmlType =='insert' && expectIncome.Id !=null){
+            if(expectIncome.Id !=null){
                 upsertSalesPerform(expectIncome.Id , dataMap);
             }
 
@@ -1652,14 +1455,55 @@ public with sharing class OrderConsiderReContractFormController {
     public static void upsertSalesPerform(String expectIncomeId , Map<String, Object> dataMap) {
         System.debug(' 실적현황 insert 2 ' + expectIncomeId );
         System.debug(' dataMap !' + dataMap );
-        CJFW_SalesPerformance__c salesPerform = new CJFW_SalesPerformance__c();
-        salesPerform.ExpectedIncomeExpensesId__c = expectIncomeId;
+        CJFW_SalesPerformance__c salesPerform;
+
+        if (expectIncomeId != null && expectIncomeId != '') {
+            System.debug('실적현황 update ★-> ' + expectIncomeId);
+            salesPerform = [SELECT Id FROM CJFW_SalesPerformance__c WHERE ExpectedIncomeExpensesId__c  = :expectIncomeId LIMIT 1];
+        }else{
+            System.debug('실적현황 insert ★-> ' );
+            salesPerform = new CJFW_SalesPerformance__c();
+            salesPerform.ExpectedIncomeExpensesId__c = expectIncomeId; // 필수값 
+        }
 
         if (dataMap.containsKey('beforeSales')) { // 매출-직송 : 수도권 
-            System.debug(' ~test 1 ' + convertToDecimal(dataMap.get('beforeSales')) );
             salesPerform.BeforeSales__c = convertToDecimal(dataMap.get('beforeSales'));
         }
-        insert salesPerform;
+        if (dataMap.containsKey('salesElevenAgo')) { 
+            salesPerform.SalesElevenAgo__c = convertToDecimal(dataMap.get('salesElevenAgo'));
+        }
+        if (dataMap.containsKey('salesTenAgo')) { 
+            salesPerform.SalesTenAgo__c = convertToDecimal(dataMap.get('salesTenAgo'));
+        }
+        if (dataMap.containsKey('salesNineAgo')) { 
+            salesPerform.SalesNineAgo__c = convertToDecimal(dataMap.get('salesNineAgo'));
+        }
+        if (dataMap.containsKey('salesEightAgo')) { 
+            salesPerform.SalesEightAgo__c = convertToDecimal(dataMap.get('salesEightAgo'));
+        }
+        if (dataMap.containsKey('salesSevenAgo')) { 
+            salesPerform.SalesSevenAgo__c = convertToDecimal(dataMap.get('salesSevenAgo'));
+        }
+        if (dataMap.containsKey('salesSixAgo')) { 
+            salesPerform.SalesSixAgo__c = convertToDecimal(dataMap.get('salesSixAgo'));
+        }
+        if (dataMap.containsKey('salesFiveAgo')) { 
+            salesPerform.SalesFiveAgo__c = convertToDecimal(dataMap.get('salesFiveAgo'));
+        }
+        if (dataMap.containsKey('salesFourAgo')) { 
+            salesPerform.SalesFourAgo__c = convertToDecimal(dataMap.get('salesFourAgo'));
+        }
+        if (dataMap.containsKey('salesThreeAgo')) { 
+            salesPerform.SalesThreeAgo__c = convertToDecimal(dataMap.get('salesThreeAgo'));
+        }
+        if (dataMap.containsKey('salesTwoAgo')) { 
+            salesPerform.SalesTwoAgo__c = convertToDecimal(dataMap.get('salesTwoAgo'));
+        }
+        if (dataMap.containsKey('salesOneAgo')) { 
+            salesPerform.SalesOneAgo__c = convertToDecimal(dataMap.get('salesOneAgo'));
+        }
+
+        upsert salesPerform;
     }
 
     /* 
@@ -1667,13 +1511,105 @@ public with sharing class OrderConsiderReContractFormController {
     @param : 신규개설품의Id
     */
     public void getSalesPerform(String expectIncomeId) {
+
         System.debug(' 실적현황 가져오기 ~ ' + expectIncomeId );
+        try{
+
             salesPerformance = [
                 SELECT  Id,
-                        BeforeSales__c, 
+                        BeforeSales__c,     // 매출라인
+                        SalesElevenAgo__c, 
+                        SalesTenAgo__c, 
+                        SalesNineAgo__c, 
+                        SalesEightAgo__c, 
+                        SalesSevenAgo__c, 
+                        SalesSixAgo__c, 
+                        SalesFiveAgo__c, 
+                        SalesFourAgo__c, 
+                        SalesThreeAgo__c, 
+                        SalesTwoAgo__c, 
+                        SalesOneAgo__c, 
+                        BeforeSalesProfit__c,     // 매출이익라인
+                        SalesProfitElevenAgo__c, 
+                        SalesProfitTenAgo__c, 
+                        SalesProfitNineAgo__c, 
+                        SalesProfitEightAgo__c, 
+                        SalesProfitSevenAgo__c, 
+                        SalesProfitSixAgo__c, 
+                        SalesProfitFiveAgo__c, 
+                        SalesProfitFourAgo__c, 
+                        SalesProfitThreeAgo__c, 
+                        SalesProfitTwoAgo__c, 
+                        SalesProfitOneAgo__c, 
+                        BeforeSalesStore__c,      // 매장수 
+                        SalesStoreElevenAgo__c, 
+                        SalesStoreTenAgo__c, 
+                        SalesStoreNineAgo__c, 
+                        SalesStoreEightAgo__c, 
+                        SalesStoreSevenAgo__c, 
+                        SalesStoreSixAgo__c, 
+                        SalesStoreFiveAgo__c, 
+                        SalesStoreFourAgo__c, 
+                        SalesStoreThreeAgo__c, 
+                        SalesStoreTwoAgo__c, 
+                        SalesStoreOneAgo__c, 
+                        BeforeDistribute__c,      // 물류비 
+                        DistributeElevenAgo__c, 
+                        DistributeTenAgo__c, 
+                        DistributeNineAgo__c, 
+                        DistributeEightAgo__c, 
+                        DistributeSevenAgo__c, 
+                        DistributeSixAgo__c, 
+                        DistributeFiveAgo__c, 
+                        DistributeFourAgo__c, 
+                        DistributeThreeAgo__c, 
+                        DistributeTwoAgo__c, 
+                        DistributeOneAgo__c, 
+                        BeforeDistributeDir__c,    // 직접물류비 
+                        DistributeDirElevenAgo__c, 
+                        DistributeDirTenAgo__c, 
+                        DistributeDirNineAgo__c, 
+                        DistributeDirEightAgo__c, 
+                        DistributeDirSevenAgo__c, 
+                        DistributeDirSixAgo__c, 
+                        DistributeDirFiveAgo__c, 
+                        DistributeDirFourAgo__c, 
+                        DistributeDirThreeAgo__c, 
+                        DistributeDirTwoAgo__c, 
+                        DistributeDirOneAgo__c, 
+                        BeforeDistributeInDir__c,   // 간접물류비
+                        DistributeInDirElevenAgo__c, 
+                        DistributeInDirTenAgo__c, 
+                        DistributeInDirNineAgo__c, 
+                        DistributeInDirEightAgo__c, 
+                        DistributeInDirSevenAgo__c, 
+                        DistributeInDirSixAgo__c, 
+                        DistributeInDirFiveAgo__c, 
+                        DistributeInDirFourAgo__c, 
+                        DistributeInDirThreeAgo__c, 
+                        DistributeInDirTwoAgo__c, 
+                        DistributeInDirOneAgo__c, 
+                        BeforeContribute__c,        // 공헌이익
+                        ContributeElevenAgo__c, 
+                        ContributeTenAgo__c, 
+                        ContributeNineAgo__c, 
+                        ContributeEightAgo__c, 
+                        ContributeSevenAgo__c, 
+                        ContributeSixAgo__c, 
+                        ContributeFiveAgo__c, 
+                        ContributeFourAgo__c, 
+                        ContributeThreeAgo__c, 
+                        ContributeTwoAgo__c, 
+                        ContributeOneAgo__c, 
                         ExpectedIncomeExpensesId__c 
                 FROM CJFW_SalesPerformance__c WHERE ExpectedIncomeExpensesId__c =: expectIncomeId LIMIT 1  ];
-            
+
+        }catch(Exception e){
+            String errorMessage = e.getMessage();
+            String errorStackTrace = e.getStackTraceString(); 
+            System.debug(' 실적현황쪽 에러 메시지: ' + errorMessage);
+            System.debug(' 실적현황쪽 에러 라인: ' + errorStackTrace);
+        }
         System.debug(' 실적현황 가져오기 ~ ' + salesPerformance  );
     }
 
@@ -1722,6 +1658,32 @@ public with sharing class OrderConsiderReContractFormController {
                 }else if(headOfficeLabel == '3001'){ // 급식일때 
                     DistributeSchool =record.Cost__c;
                 }
+            }
+
+            if (IncomeExpensesInfo.DistributeDirCap__c == 0 || IncomeExpensesInfo.DistributeDirCap__c == null){
+                IncomeExpensesInfo.put('DistributeDirCap__c', DistributeDirCap );
+            }
+            if (IncomeExpensesInfo.DistributeDirEast__c == 0 || IncomeExpensesInfo.DistributeDirEast__c == null){
+                IncomeExpensesInfo.put('DistributeDirEast__c', DistributeDirEast );
+            }
+            if (IncomeExpensesInfo.DistributeDirWest__c == 0 || IncomeExpensesInfo.DistributeDirWest__c == null){
+                IncomeExpensesInfo.put('DistributeDirWest__c', DistributeDirWest );
+            }
+            if (IncomeExpensesInfo.DistributeDirJeju__c == 0 || IncomeExpensesInfo.DistributeDirJeju__c == null){
+                IncomeExpensesInfo.put('DistributeDirJeju__c', DistributeDirJeju );
+            }
+
+            if (IncomeExpensesInfo.DistributeInDirCap__c == 0 || IncomeExpensesInfo.DistributeInDirCap__c == null){
+                IncomeExpensesInfo.put('DistributeInDirCap__c', DistributeInDirCap );
+            }
+            if (IncomeExpensesInfo.DistributeInDirEast__c == 0 || IncomeExpensesInfo.DistributeInDirEast__c == null){
+                IncomeExpensesInfo.put('DistributeInDirEast__c', DistributeInDirEast );
+            }
+            if (IncomeExpensesInfo.DistributeInDirWest__c == 0 || IncomeExpensesInfo.DistributeInDirWest__c == null){
+                IncomeExpensesInfo.put('DistributeInDirWest__c', DistributeInDirWest );
+            }
+            if (IncomeExpensesInfo.DistributeInDirJeju__c == 0 || IncomeExpensesInfo.DistributeInDirJeju__c == null){
+                IncomeExpensesInfo.put('DistributeInDirJeju__c', DistributeInDirJeju );
             }
 
         }catch(Exception e){

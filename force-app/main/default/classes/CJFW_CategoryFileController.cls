@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : seol.kim@dkbmc.com
  * @group             : 
- * @last modified on  : 10-31-2023
+ * @last modified on  : 11-08-2023
  * @last modified by  : seol.kim@dkbmc.com
 **/
 public with sharing class CJFW_CategoryFileController {
@@ -11,6 +11,9 @@ public with sharing class CJFW_CategoryFileController {
         try {
             System.debug('category ==> ' + category);     
             System.debug('recordId ==> ' + recordId);     
+
+            String categoryName = Label.CJFW_ETC_CategoryName;
+            System.debug('categoryName ==> ' + categoryName); 
 
             if(category == '파일'){
                 category = null;
@@ -37,7 +40,7 @@ public with sharing class CJFW_CategoryFileController {
                 searchTerm = '%' + searchTerm + '%'; // 검색어 형식을 처리
                 System.debug('검색어 있을때 : ' + searchTerm);
 
-                if (category == '계약 참고자료') {
+                if (category == categoryName) {
                     contentDocumentLinkQuery += ' WHERE LinkedEntityId IN (SELECT CollaborationGroupId FROM CollaborationGroupMember) ';
                     List<ContentDocumentLink> ContentDocumentLinkList = Database.query(contentDocumentLinkQuery);
                     System.debug('쿼리실행 ==> ' + ContentDocumentLinkList);    
@@ -77,7 +80,7 @@ public with sharing class CJFW_CategoryFileController {
 
             } else {
                 // 검색어가 없을 때의 처리
-                if (category == '계약 참고자료') {
+                if (category == categoryName) {
                     contentDocumentLinkQuery += ' WHERE LinkedEntityId IN ( SELECT CollaborationGroupId FROM CollaborationGroupMember) ';
 
                     List<ContentDocumentLink> ContentDocumentLinkList = Database.query(contentDocumentLinkQuery);
@@ -162,6 +165,9 @@ public with sharing class CJFW_CategoryFileController {
 
     @AuraEnabled(cacheable=true)
     public static Boolean isUserMemberOfCollaborationGroup(String groupId, String category, String objectName) {
+        String categoryName = Label.CJFW_ETC_CategoryName;
+        System.debug('categoryName ==> ' + categoryName); 
+        
         String userId = UserInfo.getUserId();
         System.debug('userId ==>' + userId);
         System.debug('category ==>' + category);
@@ -170,7 +176,7 @@ public with sharing class CJFW_CategoryFileController {
 
       
   
-        if (category == '계약 참고자료') {
+        if (category == categoryName) {
             CollaborationGroupMember[] members = [SELECT Id FROM CollaborationGroupMember
                                                     WHERE CollaborationGroupId = :groupId
                                                     AND MemberId  =: userId

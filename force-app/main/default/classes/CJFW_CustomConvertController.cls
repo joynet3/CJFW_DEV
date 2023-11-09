@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : yejoo.lee@dkbmc.com
  * @group             : 
- * @last modified on  : 11-07-2023
+ * @last modified on  : 11-08-2023
  * @last modified by  : yejoo.lee@dkbmc.com
 **/
 public with sharing class CJFW_CustomConvertController {
@@ -251,10 +251,10 @@ public with sharing class CJFW_CustomConvertController {
 
                 opp.put('RecordTypeId', opptyRecordTypeId);
                 opp.put('OwnerId', convertedOwnerId);
+                if(sObjectName == 'CJFW_BiddingInformation__c') opp.put('BiddingInformation__c', recordId);
                 upsert opp;
-                if(sObjectName == 'CJFW_BiddingInformation__c') {
-                    updateConvertObj.put('Opportunity__c', opp.Id);
-                }
+
+                if(sObjectName == 'CJFW_BiddingInformation__c') updateConvertObj.put('Opportunity__c', opp.Id);
                 updateConvertObj.put('ConvertedOpportunity__c', opp.Id);
             }
             resultMap.put('Convert Opportunity::', opp);

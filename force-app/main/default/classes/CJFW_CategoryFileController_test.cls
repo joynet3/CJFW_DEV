@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : seol.kim@dkbmc.com
  * @group             : 
- * @last modified on  : 10-27-2023
+ * @last modified on  : 11-08-2023
  * @last modified by  : seol.kim@dkbmc.com
 **/
 
@@ -30,7 +30,7 @@ public class CJFW_CategoryFileController_test {
             Title = 'Penguins',
             PathOnClient = 'Penguins.jpg',
             VersionData = Blob.valueOf('Test Content'),
-            Category__c = '계약 참고자료',
+            Category__c = '표준계약서',
             IsMajorVersion = true
         );
         insert cv;
@@ -40,7 +40,7 @@ public class CJFW_CategoryFileController_test {
     public static void test() {
      
         // 테스트 데이터 생성
-        String category = '계약 참고자료';
+        String category = '표준계약서';
         String otherCategory = '파일';
         Id recordId = [SELECT Id FROM Opportunity Limit 1].Id; 
         String searchTerm = 'SearchTerm1';

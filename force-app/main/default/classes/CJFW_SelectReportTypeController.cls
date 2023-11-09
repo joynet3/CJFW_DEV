@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : jieun.lee3@dkbmc.com
  * @group             : 
- * @last modified on  : 10-27-2023
+ * @last modified on  : 11-08-2023
  * @last modified by  : jieun.lee3@dkbmc.com
 **/
 public with sharing class CJFW_SelectReportTypeController {
@@ -17,8 +17,8 @@ public with sharing class CJFW_SelectReportTypeController {
             System.debug('Id = ' + Id);
             List<Opportunity> typeData = [
                 SELECT Id, Type, Owner.HeadOffice__c
-                FROM Opportunity
-                WHERE Id =: Id 
+                 FROM Opportunity
+                 WHERE Id =: Id 
             ];
 
             return typeData.size()>0 ? typeData : new List<Opportunity>();

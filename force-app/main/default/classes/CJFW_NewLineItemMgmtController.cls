@@ -247,7 +247,8 @@ public with sharing class CJFW_NewLineItemMgmtController {
 
         // PriceBookEntryList 조회
         String query = '';
-        query += 'SELECT    Name, ProductCode ';
+        query = 'SELECT    Name, ProductCode '
+              +  '          ,Product2.fm_LAR_CLS_ID__c';
         query += '  FROM    PriceBookEntry ';
         query += ' WHERE    lgs_ctr__c = \'' + selectedCenter + '\' ' ;
         query += '   AND    Product2.isActive = true ' ; 

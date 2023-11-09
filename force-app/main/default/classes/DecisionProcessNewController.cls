@@ -116,6 +116,9 @@ public without sharing class DecisionProcessNewController {
                 // 6) 전자계약 법인(사용) 인감 날인 기본 신청서 CRM006
                 } else if ( DocType == 'CRM006' ){
                     file = new pagereference('/apex/CJFW_ContractSealUseForm');
+                // 7) 법인(사용)인감 날인 상향 신청서
+                } else if ( DocType == 'CRM007'){
+                    file = new pagereference('/apex/CJFW_SealLiftForm');
                 // 8) (급식) 신규개설 CRM008
                 } else if ( DocType == 'CRM008' ){
                     file = new pagereference('/apex/CJFW_CreateNewReport');
@@ -128,7 +131,7 @@ public without sharing class DecisionProcessNewController {
                 // 11) (급식) 보증금 개설 CRM011
                 } else if ( DocType == 'CRM011' ){
                     file = new pagereference('/apex/CJFW_DepositForm');
-                // 12) (급식) 보증금 변경
+                // 12) (급식) 보증금 변경 CRM012
                 } else if ( DocType == 'CRM012' ){
                     file = new pagereference('/apex/CJFW_ChangeDepositForm');
                 }

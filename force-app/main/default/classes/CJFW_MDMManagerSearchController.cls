@@ -2,8 +2,8 @@
  * @description       : 
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 10-04-2023
- * @last modified by  : joohyeon.jang@dkbmc.com
+ * @last modified on  : 11-08-2023
+ * @last modified by  : hyeeun.song@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
  * 1.0   08-29-2023   joohyeon.jang@dkbmc.com   Initial Version
@@ -186,7 +186,7 @@ public with sharing class CJFW_MDMManagerSearchController {
                         updateCon.Department       = String.isBlank(con.Department)       ? '' : con.Department;
                         updateCon.PV_TALKT_VK__c   = String.isBlank(con.PV_TALKT_VK__c)   ? '' : con.PV_TALKT_VK__c;
                         updateCon.Id               = String.isBlank(con.Id)               ? '' : con.Id;
-                        updateCon.PV_KNVKGB__c               = String.isBlank(con.PV_KNVKGB__c) ? '' : con.PV_KNVKGB__c;
+                        updateCon.PV_KNVKGB__c     = String.isBlank(con.PV_KNVKGB__c)     ? '' : con.PV_KNVKGB__c;
                         updateConList.add(updateCon);
                     }else{
                         Contact insertCon = new Contact();

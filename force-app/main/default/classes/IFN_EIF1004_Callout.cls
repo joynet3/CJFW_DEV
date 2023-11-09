@@ -1,6 +1,6 @@
 /**
  * @Class : IFN_EIF1004_Callout.cls
- * @group Framework : 
+ * @group Framework : 두탑BID 학교급식 Callout
  * @Author : 
  * @Date : 2023.11.06
  * @Version : 1.0
@@ -30,10 +30,15 @@ public class IFN_EIF1004_Callout {
         try {
             switch on interfaceId {
 
-                //식품(첨가물)품목제조보고-전용유 조회
+                // 두탑BID 지역별 학교정보
                 when 'IFN_EIF1004_DT001_MD001'{ 
                     System.debug(' getResponse >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' + params);
                     result = IFN_EIF1004_DT001_MD001(interfaceId, params);
+                }
+                // 두탑BID 학교별 급식정보
+                when 'IFN_EIF1004_DT001_MD002'{ 
+                    System.debug(' getResponse >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>' + params);
+                    result = IFN_EIF1004_DT001_MD002(interfaceId, params);
                 }
             }
         } catch(Exception e) {
@@ -45,13 +50,14 @@ public class IFN_EIF1004_Callout {
     
 
     /**
-     *  식품(첨가물)품목제조보고-전용유 조회
+     *  두탑BID 지역별 학교정보
      * 
      * @param  변수명 파라미터 설명 (있는경우)
      * @return  리턴값 설명 (있는경우)
      * @exception  메소드가 발생시키는 예외에 대한 설명 또는 목록
      * @example 
      *  예제코드 태그 아래줄에서 예제 작성
+        
         @request 
             REST get 방식 https://dotop.kr/Service/API/?serviceKey=944FB5A82EAE4149B3F8AAE5C48E7752&serviceDiv=A01&Address1=서울
         @response
@@ -117,6 +123,94 @@ public class IFN_EIF1004_Callout {
             responsedata = response.getBody();
             if(response.getStatusCode() == 200) {
                 infResponse = (IFN_EIF1004_DT001_MD001.Output)JSON.deserializeStrict((String)responsedata, IFN_EIF1004_DT001_MD001.Output.class);
+            } else {
+                result_code = 'F';
+                result_message = 'Callout Fail';
+            }
+
+        } catch(Exception e) {
+            result_code = 'E';
+            result_message = 'Interface Exception';
+        }  
+
+        result.setResult(
+            result_code
+            , result_message
+            , infResponse
+        );
+
+        return result;
+    }
+
+    //IFN_EIF1004_DT001_MD002
+    /**
+     *  식품(첨가물)품목제조보고-전용유 조회
+     * 
+     * @param  변수명 파라미터 설명 (있는경우)
+     * @return  리턴값 설명 (있는경우)
+     * @exception  메소드가 발생시키는 예외에 대한 설명 또는 목록
+     * @example 
+     *  예제코드 태그 아래줄에서 예제 작성
+        @request 
+            REST get 방식 https://dotop.kr/Service/API/?serviceKey=944FB5A82EAE4149B3F8AAE5C48E7752&serviceDiv=A02&NeisCodeStd=7261070&StartDate=20231001&EndDate=20231030
+        @response
+        {
+            "meta": [
+                {
+                    "result_code": "0",
+                    "err_message": "",
+                    "err_stack": "",
+                    "total_count": "70",
+                    "NeisCodeStd": "7569036",
+                    "SchoolTitle": "안양동초등학교"
+                }
+            ],
+            "item": [
+                {
+                    "MealDate": "2023-10-04",
+                    "MealDivText": "중식",
+                    "MenuTitle": "칼슘찹쌀밥.",
+                    "AlgInfoText": "",
+                    "NeisCodeStd": "7569036"
+                },
+                {
+                    "MealDate": "2023-10-04",
+                    "MealDivText": "중식",
+                    "MenuTitle": "브로콜리스프.",
+                    "AlgInfoText": "(2.5.6.13.16)",
+                    "NeisCodeStd": "7569036"
+                }, ...
+            ]
+        }
+        
+     * */
+    public IFN_CalloutResult IFN_EIF1004_DT001_MD002(String interfaceId, Object params){
+        IFN_CalloutResult result = new IFN_CalloutResult();
+
+        String responsedata = '';
+        String result_code = 'S';
+        String result_message = 'Callout Success';
+        
+        IFN_EIF1004_DT001_MD002.Output infResponse = new IFN_EIF1004_DT001_MD002.Output();  
+        
+        try{
+            System.debug('params >>>>>>>>>>>>>>>>>>>>>>>>>' + params);
+            IFN_ApiGateWay gateway = new IFN_ApiGateWay(interfaceId);
+            //String requestBody = JSON.serialize(reqparam);
+            String requestBody = (String)params;
+            
+            System.debug('requestBody:' + requestBody);
+
+            Map<String,String> hemap = new Map<String,String>();
+            HttpResponse response = gateway.webCallout(requestBody, hemap, true);
+
+            System.debug(response.getBody());
+            System.debug(response.getStatusCode());
+            System.debug(response.getStatus());
+
+            responsedata = response.getBody();
+            if(response.getStatusCode() == 200) {
+                infResponse = (IFN_EIF1004_DT001_MD002.Output)JSON.deserializeStrict((String)responsedata, IFN_EIF1004_DT001_MD002.Output.class);
             } else {
                 result_code = 'F';
                 result_message = 'Callout Fail';

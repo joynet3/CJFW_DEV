@@ -110,8 +110,9 @@ public with sharing class IFN_sancho_test {
         Database.executeBatch(b,1);
         //유치원
         IF_SFDC_KIND_REQ_BASE_INFO b = new IF_SFDC_KIND_REQ_BASE_INFO(false,null);
-        IF_SFDC_KIND_REQ_SCHOOL_MEAL m = new IF_SFDC_KIND_REQ_SCHOOL_MEAL(false,null);
         Database.executeBatch(b,1);
+
+        IF_SFDC_KIND_REQ_SCHOOL_MEAL m = new IF_SFDC_KIND_REQ_SCHOOL_MEAL(false,null);
         Database.executeBatch(m,1);
 
 
@@ -185,6 +186,43 @@ public with sharing class IFN_sancho_test {
 
         System.debug('sDt:' + sDt);
         System.debug('eDt:' + eDt);
+
+
+/*
+
+        //학교급식 지역별 학교정보
+        IFN_EIF1004_DT001_MD001.Output              outputObj   = new IFN_EIF1004_DT001_MD001.Output();
+        IFN_EIF1004_DT001_MD001                     iftest      = new IFN_EIF1004_DT001_MD001();
+        IFN_EIF1004_DT001_MD001.MD001RequstWrapper  reqmap      = new IFN_EIF1004_DT001_MD001.MD001RequstWrapper();
+
+        ////https://dotop.kr/Service/API/?serviceKey=944FB5A82EAE4149B3F8AAE5C48E7752&serviceDiv=A01&Address1=서울
+        reqmap.serviceKey   = '944FB5A82EAE4149B3F8AAE5C48E7752';
+        reqmap.serviceDiv   = 'A01';
+        reqmap.Address1     = '서울';
+        outputObj = iftest.callout(reqmap);
+        System.debug('outputObj:' + outputObj);
+
+
+        //학교급식 - 학교별 급식정보 
+        IFN_EIF1004_DT001_MD002.Output              outputObj   = new IFN_EIF1004_DT001_MD002.Output();
+        IFN_EIF1004_DT001_MD002                     iftest      = new IFN_EIF1004_DT001_MD002();
+        IFN_EIF1004_DT001_MD002.MD002RequstWrapper  reqmap      = new IFN_EIF1004_DT001_MD002.MD002RequstWrapper();
+
+        //https://dotop.kr/Service/API/?serviceKey=944FB5A82EAE4149B3F8AAE5C48E7752&serviceDiv=A02&NeisCodeStd=7569036&StartDate=20231001&EndDate=20231030
+        reqmap.serviceKey   = '944FB5A82EAE4149B3F8AAE5C48E7752';
+        reqmap.serviceDiv   = 'A02';
+        reqmap.NeisCodeStd  = '7569036';
+        reqmap.StartDate    = '20231001';
+        reqmap.EndDate      = '20231030';
+
+        outputObj = iftest.callout(reqmap);
+
+        System.debug('outputObj:' + outputObj);
+
+*/
+
+
+
 
 
 

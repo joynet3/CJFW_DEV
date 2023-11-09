@@ -202,7 +202,6 @@ public without sharing class Opportunity_tr extends TriggerHandler {
 
         for (Opportunity obj : listNew) {
             if (obj.ContractId == null && obj.StageName == 'Contract' && !obj.IsContract__c ) {
-                system.debug(' 조건만족 ' );
                 Contract newContract = new Contract();
                 newContract.AccountId = obj.AccountId;
                 newContract.Name = obj.Name;
@@ -216,7 +215,6 @@ public without sharing class Opportunity_tr extends TriggerHandler {
         }
 
         if (!opptyId.isEmpty() && contractId != null) {
-            system.debug(' Oppty SET Id-> ' + opptyId );
             List<Opportunity> opptyContractUpdate = [SELECT Id FROM Opportunity WHERE Id IN :opptyId LIMIT 1];
             for (Opportunity opp : opptyContractUpdate) {
                 opp.ContractId = contractId;

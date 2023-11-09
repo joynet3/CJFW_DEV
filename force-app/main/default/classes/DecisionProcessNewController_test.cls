@@ -31,7 +31,8 @@ private class DecisionProcessNewController_test {
 
         insert objRelayInfo;
 
-        Account objAccount = TestObjectCreator.objHealthAccount;
+        // Account objAccount = TestObjectCreator.objHealthAccount;
+        Account objAccount = COMM_ReportTestDataFactory.createAccount('test', 'ExistingCustomer');
         insert objAccount;
 
         PricebookEntry objPriceBookEntry = TestObjectCreator.objPricebookEntry;
@@ -41,7 +42,7 @@ private class DecisionProcessNewController_test {
         objOpportunity.AccountId = objAccount.Id;
         objOpportunity.Name = '영업활동';
         objOpportunity.CloseDate = date.valueOf('2022-01-01');
-        objOpportunity.StageName = 'Proposal';
+        objOpportunity.StageName = 'Negotiation';
         objOpportunity.BidNoticeSource__c = 'NotNull';
         objOpportunity.LeadSource = 'NaraMarket';
         objOpportunity.BidQualifyRegistCloseDateTime__c = date.valueOf('2022-01-01');
@@ -75,8 +76,9 @@ private class DecisionProcessNewController_test {
 
             DecisionProcessNewController.getOwner(objOpportunity.Id, objOpportunity);
             DecisionProcessNewController.getInitData();
+            DecisionProcessNewController.recordSave(objDecisionProcess);
             DecisionProcessNewController.doCheckOpenApproval(objOpportunity.Id, objDecisionProcess.Type__c);
-            DecisionProcessNewController.doSave(objOpportunity.Id, objDecisionProcess);
+            DecisionProcessNewController.doSave(objOpportunity.Id, objDecisionProcess, objDecisionProcess.Id);
         } catch (Exception e) {
             system.debug('DecisionProcessNewController_test  error : ' + e.getMessage() + ' (Line : ' + e.getLineNumber() + ')');
         }
@@ -111,8 +113,9 @@ private class DecisionProcessNewController_test {
 
             DecisionProcessNewController.getOwner(objOpportunity.Id, objOpportunity);
             DecisionProcessNewController.getInitData();
+            DecisionProcessNewController.recordSave(objDecisionProcess);
             DecisionProcessNewController.doCheckOpenApproval(objOpportunity.Id, objDecisionProcess.Type__c);
-            DecisionProcessNewController.doSave(objOpportunity.Id, objDecisionProcess);
+            DecisionProcessNewController.doSave(objOpportunity.Id, objDecisionProcess, objDecisionProcess.Id);
 
         } catch (Exception e) {
             system.debug('DecisionProcessNewController_test  error : ' + e.getMessage() + ' (Line : ' + e.getLineNumber() + ')');
@@ -128,7 +131,7 @@ private class DecisionProcessNewController_test {
             Opportunity objOpportunity = [SELECT Id FROM Opportunity LIMIT 1];
 
             DecisionProcess__c objDecisionProcess = new DecisionProcess__c();
-            objDecisionProcess.Name = '(급식/헬씨) 신규개설 및 재계약';
+            objDecisionProcess.Name = '(급식) 신규 개설 사전 품의';
             objDecisionProcess.DocStatus__c = '임시저장';
             objDecisionProcess.DocId__c = '046B9F0DC91A';
             objDecisionProcess.totalLineCount__c = 2;
@@ -137,7 +140,7 @@ private class DecisionProcessNewController_test {
             objDecisionProcess.approvedUserType__c = '기안자';
             objDecisionProcess.approvedUserCode__c = '1000000245';
             objDecisionProcess.approvedDate__c = '"2023-01-20 16:01:54';
-            objDecisionProcess.Type__c = 'CRM006';
+            objDecisionProcess.Type__c = 'CRM008';
             objDecisionProcess.Opportunity__c = objOpportunity.Id;
 
             PageReference pageRef = Page.CJFW_CreateNewReport;
@@ -148,8 +151,9 @@ private class DecisionProcessNewController_test {
 
             DecisionProcessNewController.getOwner(objOpportunity.Id, objOpportunity);
             DecisionProcessNewController.getInitData();
+            DecisionProcessNewController.recordSave(objDecisionProcess);
             DecisionProcessNewController.doCheckOpenApproval(objOpportunity.Id, objDecisionProcess.Type__c);
-            DecisionProcessNewController.doSave(objOpportunity.Id, objDecisionProcess);
+            DecisionProcessNewController.doSave(objOpportunity.Id, objDecisionProcess, objDecisionProcess.Id);
 
         } catch (Exception e) {
             system.debug('DecisionProcessNewController_test  error : ' + e.getMessage() + ' (Line : ' + e.getLineNumber() + ')');
@@ -185,8 +189,275 @@ private class DecisionProcessNewController_test {
 
             DecisionProcessNewController.getOwner(objOpportunity.Id, objOpportunity);
             DecisionProcessNewController.getInitData();
+            DecisionProcessNewController.recordSave(objDecisionProcess);
             DecisionProcessNewController.doCheckOpenApproval(objOpportunity.Id, objDecisionProcess.Type__c);
-            DecisionProcessNewController.doSave(objOpportunity.Id, objDecisionProcess);
+            DecisionProcessNewController.doSave(objOpportunity.Id, objDecisionProcess, objDecisionProcess.Id);
+
+        } catch (Exception e) {
+            system.debug('DecisionProcessNewController_test  error : ' + e.getMessage() + ' (Line : ' + e.getLineNumber() + ')');
+        }
+        test.stopTest(); 
+    }
+
+    @IsTest
+    static void DecisionProcessNewController_test5() {
+        test.startTest();
+
+        try {
+            Opportunity objOpportunity = [SELECT Id FROM Opportunity LIMIT 1];
+
+            DecisionProcess__c objDecisionProcess = new DecisionProcess__c();
+            objDecisionProcess.Name = '외식 신규 품의';
+            objDecisionProcess.DocStatus__c = '임시저장';
+            objDecisionProcess.DocId__c = '046B9F0DC91A';
+            objDecisionProcess.totalLineCount__c = 2;
+            objDecisionProcess.approvedCount__c = 1;
+            objDecisionProcess.approvedUserName__c = '김성진님';
+            objDecisionProcess.approvedUserType__c = '기안자';
+            objDecisionProcess.approvedUserCode__c = '1000000245';
+            objDecisionProcess.approvedDate__c = '"2023-01-20 16:01:54';
+            objDecisionProcess.Type__c = 'CRM009';
+            objDecisionProcess.Opportunity__c = objOpportunity.Id;
+
+            PageReference pageRef = Page.CJFW_OrderConsiderNewForm;
+            Test.setCurrentPage(pageRef);
+            ApexPages.currentPage().getParameters().put('Id', objOpportunity.Id);
+
+            Test.setMock(HttpCalloutMock.class, new HttpCalloutSuccessMock());
+
+            DecisionProcessNewController.getOwner(objOpportunity.Id, objOpportunity);
+            DecisionProcessNewController.getInitData();
+            DecisionProcessNewController.recordSave(objDecisionProcess);
+            DecisionProcessNewController.doCheckOpenApproval(objOpportunity.Id, objDecisionProcess.Type__c);
+            DecisionProcessNewController.doSave(objOpportunity.Id, objDecisionProcess, objDecisionProcess.Id);
+
+        } catch (Exception e) {
+            system.debug('DecisionProcessNewController_test  error : ' + e.getMessage() + ' (Line : ' + e.getLineNumber() + ')');
+        }
+        test.stopTest(); 
+    }
+
+    @IsTest
+    static void DecisionProcessNewController_test6() {
+        test.startTest();
+
+        try {
+            Opportunity objOpportunity = [SELECT Id FROM Opportunity LIMIT 1];
+
+            DecisionProcess__c objDecisionProcess = new DecisionProcess__c();
+            objDecisionProcess.Name = '외식 재계약 품의';
+            objDecisionProcess.DocStatus__c = '임시저장';
+            objDecisionProcess.DocId__c = '046B9F0DC91A';
+            objDecisionProcess.totalLineCount__c = 2;
+            objDecisionProcess.approvedCount__c = 1;
+            objDecisionProcess.approvedUserName__c = '김성진님';
+            objDecisionProcess.approvedUserType__c = '기안자';
+            objDecisionProcess.approvedUserCode__c = '1000000245';
+            objDecisionProcess.approvedDate__c = '"2023-01-20 16:01:54';
+            objDecisionProcess.Type__c = 'CRM010';
+            objDecisionProcess.Opportunity__c = objOpportunity.Id;
+
+            PageReference pageRef = Page.CJFW_OrderConsiderReContractForm;
+            Test.setCurrentPage(pageRef);
+            ApexPages.currentPage().getParameters().put('Id', objOpportunity.Id);
+
+            Test.setMock(HttpCalloutMock.class, new HttpCalloutSuccessMock());
+
+            DecisionProcessNewController.getOwner(objOpportunity.Id, objOpportunity);
+            DecisionProcessNewController.getInitData();
+            DecisionProcessNewController.recordSave(objDecisionProcess);
+            DecisionProcessNewController.doCheckOpenApproval(objOpportunity.Id, objDecisionProcess.Type__c);
+            DecisionProcessNewController.doSave(objOpportunity.Id, objDecisionProcess, objDecisionProcess.Id);
+
+        } catch (Exception e) {
+            system.debug('DecisionProcessNewController_test  error : ' + e.getMessage() + ' (Line : ' + e.getLineNumber() + ')');
+        }
+        test.stopTest(); 
+    }
+
+    @IsTest
+    static void DecisionProcessNewController_test7() {
+        test.startTest();
+
+        try {
+            Opportunity objOpportunity = [SELECT Id FROM Opportunity LIMIT 1];
+
+            DecisionProcess__c objDecisionProcess = new DecisionProcess__c();
+            objDecisionProcess.Name = '급식 보증금 개설';
+            objDecisionProcess.DocStatus__c = '임시저장';
+            objDecisionProcess.DocId__c = '046B9F0DC91A';
+            objDecisionProcess.totalLineCount__c = 2;
+            objDecisionProcess.approvedCount__c = 1;
+            objDecisionProcess.approvedUserName__c = '김성진님';
+            objDecisionProcess.approvedUserType__c = '기안자';
+            objDecisionProcess.approvedUserCode__c = '1000000245';
+            objDecisionProcess.approvedDate__c = '"2023-01-20 16:01:54';
+            objDecisionProcess.Type__c = 'CRM011';
+            objDecisionProcess.Opportunity__c = objOpportunity.Id;
+
+            PageReference pageRef = Page.CJFW_DepositForm;
+            Test.setCurrentPage(pageRef);
+            ApexPages.currentPage().getParameters().put('Id', objOpportunity.Id);
+
+            Test.setMock(HttpCalloutMock.class, new HttpCalloutSuccessMock());
+
+            DecisionProcessNewController.getOwner(objOpportunity.Id, objOpportunity);
+            DecisionProcessNewController.getInitData();
+            DecisionProcessNewController.recordSave(objDecisionProcess);
+            DecisionProcessNewController.doCheckOpenApproval(objOpportunity.Id, objDecisionProcess.Type__c);
+            DecisionProcessNewController.doSave(objOpportunity.Id, objDecisionProcess, objDecisionProcess.Id);
+
+        } catch (Exception e) {
+            system.debug('DecisionProcessNewController_test  error : ' + e.getMessage() + ' (Line : ' + e.getLineNumber() + ')');
+        }
+        test.stopTest(); 
+    }
+
+    @IsTest
+    static void DecisionProcessNewController_test8() {
+        test.startTest();
+
+        try {
+            Opportunity objOpportunity = [SELECT Id FROM Opportunity LIMIT 1];
+
+            DecisionProcess__c objDecisionProcess = new DecisionProcess__c();
+            objDecisionProcess.Name = '급식 보증금 변경';
+            objDecisionProcess.DocStatus__c = '임시저장';
+            objDecisionProcess.DocId__c = '046B9F0DC91A';
+            objDecisionProcess.totalLineCount__c = 2;
+            objDecisionProcess.approvedCount__c = 1;
+            objDecisionProcess.approvedUserName__c = '김성진님';
+            objDecisionProcess.approvedUserType__c = '기안자';
+            objDecisionProcess.approvedUserCode__c = '1000000245';
+            objDecisionProcess.approvedDate__c = '"2023-01-20 16:01:54';
+            objDecisionProcess.Type__c = 'CRM012';
+            objDecisionProcess.Opportunity__c = objOpportunity.Id;
+
+            PageReference pageRef = Page.CJFW_ChangeDepositForm;
+            Test.setCurrentPage(pageRef);
+            ApexPages.currentPage().getParameters().put('Id', objOpportunity.Id);
+
+            Test.setMock(HttpCalloutMock.class, new HttpCalloutSuccessMock());
+
+            DecisionProcessNewController.getOwner(objOpportunity.Id, objOpportunity);
+            DecisionProcessNewController.getInitData();
+            DecisionProcessNewController.recordSave(objDecisionProcess);
+            DecisionProcessNewController.doCheckOpenApproval(objOpportunity.Id, objDecisionProcess.Type__c);
+            DecisionProcessNewController.doSave(objOpportunity.Id, objDecisionProcess, objDecisionProcess.Id);
+
+        } catch (Exception e) {
+            system.debug('DecisionProcessNewController_test  error : ' + e.getMessage() + ' (Line : ' + e.getLineNumber() + ')');
+        }
+        test.stopTest(); 
+    }
+
+    @IsTest
+    static void DecisionProcessNewController_test9() {
+        test.startTest();
+
+        try {
+            Opportunity objOpportunity = [SELECT Id FROM Opportunity LIMIT 1];
+
+            DecisionProcess__c objDecisionProcess = new DecisionProcess__c();
+            objDecisionProcess.Name = '전자계약 법인(사용) 인감 날인 기본 신청서';
+            objDecisionProcess.DocStatus__c = '임시저장';
+            objDecisionProcess.DocId__c = '046B9F0DC91A';
+            objDecisionProcess.totalLineCount__c = 2;
+            objDecisionProcess.approvedCount__c = 1;
+            objDecisionProcess.approvedUserName__c = '김성진님';
+            objDecisionProcess.approvedUserType__c = '기안자';
+            objDecisionProcess.approvedUserCode__c = '1000000245';
+            objDecisionProcess.approvedDate__c = '"2023-01-20 16:01:54';
+            objDecisionProcess.Type__c = 'CRM006';
+            objDecisionProcess.Opportunity__c = objOpportunity.Id;
+
+            PageReference pageRef = Page.CJFW_ContractSealUseForm;
+            Test.setCurrentPage(pageRef);
+            ApexPages.currentPage().getParameters().put('Id', objOpportunity.Id);
+
+            Test.setMock(HttpCalloutMock.class, new HttpCalloutSuccessMock());
+
+            DecisionProcessNewController.getOwner(objOpportunity.Id, objOpportunity);
+            DecisionProcessNewController.getInitData();
+            DecisionProcessNewController.recordSave(objDecisionProcess);
+            DecisionProcessNewController.doCheckOpenApproval(objOpportunity.Id, objDecisionProcess.Type__c);
+            DecisionProcessNewController.doSave(objOpportunity.Id, objDecisionProcess, objDecisionProcess.Id);
+
+        } catch (Exception e) {
+            system.debug('DecisionProcessNewController_test  error : ' + e.getMessage() + ' (Line : ' + e.getLineNumber() + ')');
+        }
+        test.stopTest(); 
+    }
+
+    @IsTest
+    static void DecisionProcessNewController_test10() {
+        test.startTest();
+
+        try {
+            Opportunity objOpportunity = [SELECT Id FROM Opportunity LIMIT 1];
+
+            DecisionProcess__c objDecisionProcess = new DecisionProcess__c();
+            objDecisionProcess.Name = '법인(사용) 인감 신청서';
+            objDecisionProcess.DocStatus__c = '임시저장';
+            objDecisionProcess.DocId__c = '046B9F0DC91A';
+            objDecisionProcess.totalLineCount__c = 2;
+            objDecisionProcess.approvedCount__c = 1;
+            objDecisionProcess.approvedUserName__c = '김성진님';
+            objDecisionProcess.approvedUserType__c = '기안자';
+            objDecisionProcess.approvedUserCode__c = '1000000245';
+            objDecisionProcess.approvedDate__c = '"2023-01-20 16:01:54';
+            objDecisionProcess.Type__c = 'CRM002';
+            objDecisionProcess.Opportunity__c = objOpportunity.Id;
+
+            PageReference pageRef = Page.ESM_SealUse;
+            Test.setCurrentPage(pageRef);
+            ApexPages.currentPage().getParameters().put('Id', objOpportunity.Id);
+
+            Test.setMock(HttpCalloutMock.class, new HttpCalloutSuccessMock());
+
+            DecisionProcessNewController.getOwner(objOpportunity.Id, objOpportunity);
+            DecisionProcessNewController.getInitData();
+            DecisionProcessNewController.recordSave(objDecisionProcess);
+            DecisionProcessNewController.doCheckOpenApproval(objOpportunity.Id, objDecisionProcess.Type__c);
+            DecisionProcessNewController.doSave(objOpportunity.Id, objDecisionProcess, objDecisionProcess.Id);
+
+        } catch (Exception e) {
+            system.debug('DecisionProcessNewController_test  error : ' + e.getMessage() + ' (Line : ' + e.getLineNumber() + ')');
+        }
+        test.stopTest(); 
+    }
+
+    @IsTest
+    static void DecisionProcessNewController_test11() {
+        test.startTest();
+
+        try {
+            Opportunity objOpportunity = [SELECT Id FROM Opportunity LIMIT 1];
+
+            DecisionProcess__c objDecisionProcess = new DecisionProcess__c();
+            objDecisionProcess.Name = '사용인감 반출 신청서';
+            objDecisionProcess.DocStatus__c = '임시저장';
+            objDecisionProcess.DocId__c = '046B9F0DC91A';
+            objDecisionProcess.totalLineCount__c = 2;
+            objDecisionProcess.approvedCount__c = 1;
+            objDecisionProcess.approvedUserName__c = '김성진님';
+            objDecisionProcess.approvedUserType__c = '기안자';
+            objDecisionProcess.approvedUserCode__c = '1000000245';
+            objDecisionProcess.approvedDate__c = '"2023-01-20 16:01:54';
+            objDecisionProcess.Type__c = 'CRM003';
+            objDecisionProcess.Opportunity__c = objOpportunity.Id;
+
+            PageReference pageRef = Page.ESM_SealCarryOut;
+            Test.setCurrentPage(pageRef);
+            ApexPages.currentPage().getParameters().put('Id', objOpportunity.Id);
+
+            Test.setMock(HttpCalloutMock.class, new HttpCalloutSuccessMock());
+
+            DecisionProcessNewController.getOwner(objOpportunity.Id, objOpportunity);
+            DecisionProcessNewController.getInitData();
+            DecisionProcessNewController.recordSave(objDecisionProcess);
+            DecisionProcessNewController.doCheckOpenApproval(objOpportunity.Id, objDecisionProcess.Type__c);
+            DecisionProcessNewController.doSave(objOpportunity.Id, objDecisionProcess, objDecisionProcess.Id);
 
         } catch (Exception e) {
             system.debug('DecisionProcessNewController_test  error : ' + e.getMessage() + ' (Line : ' + e.getLineNumber() + ')');

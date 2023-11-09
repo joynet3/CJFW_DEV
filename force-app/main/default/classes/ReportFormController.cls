@@ -8,7 +8,7 @@
 
  * @author            : eunyoung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 11-07-2023
+ * @last modified on  : 11-09-2023
  * @last modified by  : yeonji.lim@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -49,6 +49,7 @@ public with sharing class ReportFormController {
     public String selectedContract { get; set; }   //계약서 종류
     public String selectedDelivery { get; set; }   //배송횟수
     public String selectedExclusiveDeal { get; set; }   //단독거래
+    public String selectedpaymentTOBE { get; set; }   //TOBE 결제 수단
 
     /* picklist */
     public List<SelectOption> collateralPickList { get; set; } // 담보제공종류
@@ -56,6 +57,7 @@ public with sharing class ReportFormController {
     public List<SelectOption> contractPickList { get; set; } // 계약서종류
     public List<SelectOption> deliveryPickList { get; set; } // 배송횟수종류
     public List<SelectOption> exclusiveDealPickList { get; set; } // 단독거래
+    public List<SelectOption> paymentTOBEPickList { get; set; } // TOBE 결제 수단
 
     /* 날짜형식변환 */
     public String collateralPeriod { get; set; } // 담보 제공 기간
@@ -67,6 +69,12 @@ public with sharing class ReportFormController {
     public String collateralEnd { get; set; } // 담보 종료기간
     public String collateralStartAdd { get; set; } // 담보 시작기간(추가)
     public String collateralEndAdd { get; set; } // 담보 종료기간(추가)
+    public String contractStartDateTOBE { get; set; } // TOBE 계약시작
+    public String contractEndDateTOBE { get; set; } // TOBE 계약종료
+    public String collateralStartTOBE { get; set; } // TOBE 담보 시작기간
+    public String collateralEndTOBE { get; set; } // TOBE 담보 종료기간
+    public String collateralStartAddTOBE { get; set; } // TOBE 담보 시작기간(추가)
+    public String collateralEndAddTOBE { get; set; } // TOBE 담보 종료기간(추가)
 
 
     /* 
@@ -113,7 +121,8 @@ public with sharing class ReportFormController {
                             OurSales__c, // currency
                             Address__c,
                             Phone ,
-                            PV_EXISTSUP__c 
+                            PV_EXISTSUP__c ,
+                            CustomerID__c       //고객코드 (급식 변경 전용)
                         FROM Account 
                         WHERE Id = :accountId 
                     ];
@@ -122,7 +131,8 @@ public with sharing class ReportFormController {
             'RepresentativeName__c',
             'BusinessPath__c',
             'Address__c',
-            'PV_EXISTSUP__c'
+            'PV_EXISTSUP__c',
+            'CustomerID__c'
         };
 
         for (String defaultSet : defaultValSet) {
@@ -149,18 +159,21 @@ public with sharing class ReportFormController {
        Schema.DescribeFieldResult contractTypePick = CJFW_ExpectedIncomeExpenses__c.ContractType__c.getDescribe(); // 계약서종류 
        Schema.DescribeFieldResult deliveryTypePick = CJFW_ExpectedIncomeExpenses__c.DeliveryCnt__c.getDescribe(); // 배송횟수 
        Schema.DescribeFieldResult exclusiveDealPick = CJFW_ExpectedIncomeExpenses__c.ExclusiveDeal__c.getDescribe(); // 단독거래
+       Schema.DescribeFieldResult paymentTOBEPick = CJFW_ExpectedIncomeExpenses__c.PaymentTOBE__c.getDescribe(); // TOBE 결제 수단
        
        List<Schema.PicklistEntry> collateralValues = collateralResult.getPicklistValues();
        List<Schema.PicklistEntry> paymentValues = paymentPick.getPicklistValues();
        List<Schema.PicklistEntry> contractValues = contractTypePick.getPicklistValues();
        List<Schema.PicklistEntry> deliveryValues = deliveryTypePick.getPicklistValues();
        List<Schema.PicklistEntry> exclusiveDealValues = exclusiveDealPick.getPicklistValues();
+       List<Schema.PicklistEntry> paymentTOBEValues = paymentTOBEPick.getPicklistValues();
 
        collateralPickList = new List<SelectOption>();
        paymentPickList = new List<SelectOption>();
        contractPickList = new List<SelectOption>();
        deliveryPickList = new List<SelectOption>();
        exclusiveDealPickList = new List<SelectOption>();
+       paymentTOBEPickList = new List<SelectOption>();
 
         for (Schema.PicklistEntry picklistValue : collateralValues) {
             collateralPickList.add(new SelectOption(picklistValue.getValue(), picklistValue.getLabel()));
@@ -177,8 +190,11 @@ public with sharing class ReportFormController {
         for (Schema.PicklistEntry picklistValue : exclusiveDealValues) { // 단독거래
             exclusiveDealPickList.add(new SelectOption(picklistValue.getValue(), picklistValue.getLabel()));
         }
+        for (Schema.PicklistEntry picklistValue : paymentTOBEValues) { // TOBE 결제 수단
+            paymentTOBEPickList.add(new SelectOption(picklistValue.getValue(), picklistValue.getLabel()));
+        }
 
-        // System.debug(' 배송횟수 테스트  test ' + deliveryPickList);
+        System.debug(' TOBE 결제 수단 PickList => ' + paymentTOBEPickList);
 
     }
 
@@ -250,6 +266,7 @@ public with sharing class ReportFormController {
             'ExclusiveDeal__c, ' +          // 단독거래       
             'UnitPrice__c, ' +              // 단가       
             'Exception__c, ' +              // 예외가       
+            'Comment__c, ' +                // 비고       
 
             // 거래처 상세내용
             'ContractStartDate__c, ' +      // 계약시작기간
@@ -261,7 +278,25 @@ public with sharing class ReportFormController {
             'CollateralStartAdd__c, ' +     // 담보 시작기간(추가)
             'CollateralEndAdd__c, ' +       // 담보 종료기간(추가)
             'ContractPaymentNum__c, ' +     // 약정결제일(일 수)
-            
+            'CommentASIS__c, ' +            // ASIS 비고
+
+            'ContractStartDateTOBE__c, ' +      // TOBE 계약 시작기간
+            'ContractEndDateTOBE__c, ' +        // TOBE 계약 종료기간
+            'CollateralAmountTOBE__c, ' +       // TOBE 담보 금액
+            'CollateralAmountAddTOBE__c, ' +    // TOBE 담보 금액(추가)
+            'CollateralStartTOBE__c, ' +        // TOBE 담보 시작기간
+            'CollateralEndTOBE__c, ' +          // TOBE 담보 종료기간
+            'CollateralStartAddTOBE__c, ' +     // TOBE 담보 시작기간(추가)
+            'CollateralEndAddTOBE__c, ' +       // TOBE 담보 종료기간(추가)
+            'DeprecAmountTOBE__c, ' +           // TOBE 약정감가 지원(%)
+            'IncentiveSupportTOBE__c, ' +       // TOBE 장려금 지원(%)
+            'SalesFeeSupportTOBE__c, ' +        // TOBE 판매수수료 지원(%)
+            'DonationSupportTOBE__c, ' +        // TOBE 후원금 지원(%)
+            'OtherSupportTOBE__c, ' +           // TOBE 기타지원 식재, 기물 外 지원(%)
+            'PaymentTOBE__c, ' +                // TOBE 결제 수단
+            'ContractPaymentNumTOBE__c, ' +     // TOBE 약정결제일(일 수)
+            'CommentTOBE__c, ' +                // TOBE 비고
+
             'BondCollateral__c, ' +         // 채권담보
             'SecurityCollateral__c, ' +     // 보증금담보
             'PrimaryContract__c, ' +        // 상품공급기본계약서
@@ -340,7 +375,13 @@ public with sharing class ReportFormController {
                 'SalesSupportExpect__c',
                 'CollateralAmount__c',
                 'ChefFee__c',
-                'CreditLoanAmount__c'
+                'CreditLoanAmount__c',
+                // TO-BE
+                'DeprecAmountTOBE__c',
+                'IncentiveSupportTOBE__c',
+                'SalesFeeSupportTOBE__c',
+                'DonationSupportTOBE__c',
+                'OtherSupportTOBE__c'
             };
             for (String defaultSet : defaultValSet) {
                 Object fieldValue = IncomeExpensesInfo.get(defaultSet);
@@ -355,7 +396,12 @@ public with sharing class ReportFormController {
                 'Exception__c',               //예외가
                 'CollateralAmount__c',        //담보 제공 금액(백만)
                 'CollateralAmountAdd__c',     //담보 금액(추가)
-                'ContractPaymentNum__c'       //약정결제일(일 수)
+                'ContractPaymentNum__c',       //약정결제일(일 수)
+                // TO-BE
+                'CollateralAmountTOBE__c',           //TOBE 담보 금액
+                'CollateralAmountAddTOBE__c',        //TOBE 담보 금액(추가)
+                'ContractPaymentNumTOBE__c'          //TOBE 약정결제일(일 수)
+
             };
             for (String defaultSet : defaultValPerSet) {
                 Object fieldPerValue = IncomeExpensesInfo.get(defaultSet);
@@ -364,13 +410,15 @@ public with sharing class ReportFormController {
                 IncomeExpensesInfo.put(defaultSet, fieldPerValue);
             }
 
+            /* pickList 값 담아주기 */
             selectedCollateral = IncomeExpensesInfo.CollateralType__c;  // 담보종류
             selectedPayment = IncomeExpensesInfo.PaymentMethod__c;      // 결제수단 
             selectedContract = IncomeExpensesInfo.ContractType__c	;   // 계약서종류 
             selectedDelivery = IncomeExpensesInfo.DeliveryCnt__c	;   // 배송횟수 
             selectedExclusiveDeal = IncomeExpensesInfo.ExclusiveDeal__c	;   // 단독거래
+            selectedpaymentTOBE = IncomeExpensesInfo.PaymentTOBE__c	;           // TOBE 결제 수단
 
-            // ContractPaymentDate__c 필드를 yyyy-MM-dd 형식의 문자열로 변환
+            /* ContractPaymentDate__c 필드를 yyyy-MM-dd 형식의 문자열로 변환 */
             String collateralPeriodString = String.valueOf(IncomeExpensesInfo.collateralPeriod__c);
             String contractPaymentDateString = String.valueOf(IncomeExpensesInfo.contractPaymentDate__c); 
             String initialDateString = String.valueOf(IncomeExpensesInfo.InitialDate__c);           // 초도일자 
@@ -380,29 +428,35 @@ public with sharing class ReportFormController {
             String collateralEndString = String.valueOf(IncomeExpensesInfo.CollateralEnd__c);           // 담보 종료기간 
             String collateralStartAddString = String.valueOf(IncomeExpensesInfo.CollateralStartAdd__c); // 담보 시작기간(추가) 
             String collateralEndAddString = String.valueOf(IncomeExpensesInfo.CollateralEndAdd__c);     // 담보 종료기간(추가) 
+            String contractStartTOBEString = String.valueOf(IncomeExpensesInfo.ContractStartDateTOBE__c);       // TOBE 계약시작일자 
+            String contractEndTOBEString = String.valueOf(IncomeExpensesInfo.ContractEndDateTOBE__c);           // TOBE 계약종료일자 
+            String collateralStartTOBEString = String.valueOf(IncomeExpensesInfo.CollateralStartTOBE__c);       // TOBE 담보 시작기간 
+            String collateralEndTOBEString = String.valueOf(IncomeExpensesInfo.CollateralEndTOBE__c);           // TOBE 담보 종료기간 
+            String collateralStartAddTOBEString = String.valueOf(IncomeExpensesInfo.CollateralStartAddTOBE__c); // TOBE 담보 시작기간(추가) 
+            String collateralEndAddTOBEString = String.valueOf(IncomeExpensesInfo.CollateralEndAddTOBE__c);     // TOBE 담보 종료기간(추가) 
 
-            System.debug('contractStartString ===' + contractStartString);
-            System.debug('contractEndString ===' + contractEndString);
-            
             collateralPeriod = collateralPeriodString != null ? collateralPeriodString.substring(0, 10) : null;
             contractPaymentDate = contractPaymentDateString != null ? contractPaymentDateString.substring(0, 10) : null;
             initialDate = initialDateString != null ? initialDateString.substring(0, 10) : null;
             contractStartDate = contractStartString != null ? contractStartString.substring(0, 10) : null;
             contractEndDate = contractEndString != null ? contractEndString.substring(0, 10) : null;
-            collateralStart = contractEndString != null ? collateralStartString.substring(0, 10) : null;
-            collateralEnd = contractEndString != null ? collateralEndString.substring(0, 10) : null;
-            collateralStartAdd = contractEndString != null ? collateralStartAddString.substring(0, 10) : null;
-            collateralEndAdd = contractEndString != null ? collateralEndAddString.substring(0, 10) : null;
-            
-            System.debug('contractStartDate ===' + contractStartDate);
-            System.debug('contractEndDate ===' + contractEndDate);
+            collateralStart = collateralStartString != null ? collateralStartString.substring(0, 10) : null;
+            collateralEnd = collateralEndString != null ? collateralEndString.substring(0, 10) : null;
+            collateralStartAdd = collateralStartAddString != null ? collateralStartAddString.substring(0, 10) : null;
+            collateralEndAdd = collateralEndAddString != null ? collateralEndAddString.substring(0, 10) : null;
+            contractStartDateTOBE = contractStartTOBEString != null ? contractStartTOBEString.substring(0, 10) : null;
+            contractEndDateTOBE = contractEndTOBEString != null ? contractEndTOBEString.substring(0, 10) : null;
+            collateralStartTOBE = collateralStartTOBEString != null ? collateralStartTOBEString.substring(0, 10) : null;
+            collateralEndTOBE = collateralEndTOBEString != null ? collateralEndTOBEString.substring(0, 10) : null;
+            collateralStartAddTOBE = collateralStartAddTOBEString != null ? collateralStartAddTOBEString.substring(0, 10) : null;
+            collateralEndAddTOBE = collateralEndAddTOBEString != null ? collateralEndAddTOBEString.substring(0, 10) : null;
 
             // System.debug('# paymentPickList ->' + paymentPickList ); 
             // System.debug('# collateralPickList ->' + collateralPickList ); 
             // System.debug('# 담보제공 날짜 ->' + collateralPeriod ); 
             // System.debug('# 채권 날짜 ->' + contractPaymentDate ); 
             // System.debug('# 담보종류 ->' + selectedCollateral ); 
-            System.debug('# 결제수단 ->' + selectedPayment ); 
+            // System.debug('# 결제수단 ->' + selectedPayment ); 
 
             // 급식 보증금개설에서 결제수단필드에 저장된 value값 담아서 넘겨주기 (예상손익에 결제수단에 따라 계산이 달라지기 때문)
             paymentMethod = IncomeExpensesInfo.PaymentMethod__c != null ? IncomeExpensesInfo.PaymentMethod__c : '';
@@ -410,7 +464,15 @@ public with sharing class ReportFormController {
             // 2. 거래처 현황 account info 값을 참고로 IncomeExpensesInfo 에 담아주기 : IncomeExpensesInfo 필드에 값이 있는지 먼저 체크 > 값이 없으면 accountInfo 에서 값 땡겨옴
             // 거래처명 (text)
             if( IncomeExpensesInfo.ClientCompanyName__c == '' || IncomeExpensesInfo.ClientCompanyName__c == null ){
-                IncomeExpensesInfo.put('ClientCompanyName__c', accountInfo.get('Name') );
+                // [금식 보증금 변경 양식] Account에 고객코드가 있는 경우 거래처명에 "[고객코드]거래처명" 으로 담아주기
+                if(accountInfo.get('CustomerID__c') == '' || accountInfo.get('CustomerID__c') == null){
+                    System.debug('====== 고객코드 없음 ========');
+                    IncomeExpensesInfo.put('ClientCompanyName__c', accountInfo.get('Name') );
+                }else {
+                    System.debug('====== 고객코드 있음 ========');
+                    IncomeExpensesInfo.put('ClientCompanyName__c', '['+ accountInfo.get('CustomerID__c')+'] '+ accountInfo.get('Name'));
+                }
+                // System.debug('고개코드 확인!!!!! ' + IncomeExpensesInfo.get('ClientCompanyName__c'));
             }
             // 대표자명 (text)
             if(IncomeExpensesInfo.RepresentativeName__c == '' || IncomeExpensesInfo.RepresentativeName__c == null ){
@@ -426,9 +488,6 @@ public with sharing class ReportFormController {
             if(IncomeExpensesInfo.SalesMonthly__c == 0 || IncomeExpensesInfo.SalesMonthly__c == null){
                 IncomeExpensesInfo.put('SalesMonthly__c', accountInfo.get('SalesMonthly__c') );
             }
-
-            System.debug('당사규모 확인용 > ' + IncomeExpensesInfo.OurSales__c );
-            System.debug('당사규모 정보 확인용 > ' +  accountInfo.get('OurSales__c') );
 
             // 당사규모 (decimal)
             if(IncomeExpensesInfo.OurSales__c == 0 || IncomeExpensesInfo.OurSales__c == null){
@@ -558,13 +617,6 @@ public with sharing class ReportFormController {
 
                 System.debug('IncomeManager !! check > '+  IncomeManager );
                 System.debug('IncomeManager 라바코스트 > '+  IncomeManager.LaborCost__c );
-
-                //for (String defaultSet : defaultValSet) {
-                //    Object fieldValue = IncomeManager.get(defaultSet);
-                //    // 필드 값이 null이면 기본값을 0.00 으로 설정
-                //    if (fieldValue == null)  fieldValue = 0.00; 
-                //    IncomeManager.put(defaultSet, fieldValue);
-                //}
             }
 
     }
@@ -635,38 +687,36 @@ public with sharing class ReportFormController {
             }
 
             /* 거래처 현황 */
-            if (dataMap.containsKey('accountName')) { // 거래처명 (text)
+            if (dataMap.containsKey('accountName') && dataMap.get('accountName') !='') { // 거래처명 (text)
                 expectIncome.ClientCompanyName__c = (String) dataMap.get('accountName');
             }
-            if (dataMap.containsKey('ownerName')) { // 대표자명 (text)
+            if (dataMap.containsKey('ownerName') && dataMap.get('ownerName') !='') { // 대표자명 (text)
                 expectIncome.RepresentativeName__c = (String) dataMap.get('ownerName');
             }
-            if (dataMap.containsKey('accountChannel')) { // 경로 (text)
+            if (dataMap.containsKey('accountChannel') && dataMap.get('accountChannel') !='') { // 경로 (text)
                 expectIncome.BusinessPath__c = (String) dataMap.get('accountChannel');
             }
-            if (dataMap.containsKey('outwardEntire')) { // 전체외형 (정수)
+            if (dataMap.containsKey('outwardEntire') && dataMap.get('outwardEntire') !='') { // 전체외형 (정수)
                 expectIncome.SalesMonthly__c = convertToDecimal(dataMap.get('outwardEntire'));
             }
-            if (dataMap.containsKey('outwardCompanySize')) { // 당사규모 (decimal)
+            if (dataMap.containsKey('outwardCompanySize') && dataMap.get('outwardCompanySize') !='') { // 당사규모 (decimal)
                 expectIncome.OurSales__c = convertToDecimal(dataMap.get('outwardCompanySize'));
             }
-            //System.debug('초도일자' + dataMap.get('firstDraft') ); 
             if (dataMap.containsKey('firstDraft') && dataMap.get('firstDraft') !='') { // 초도일자 (date)
                 expectIncome.InitialDate__c = Date.valueOf(((String) dataMap.get('firstDraft')));
             }
-            if (dataMap.containsKey('exclusiveDeal')) { // 단독거래 (PickList)
+            if (dataMap.containsKey('exclusiveDeal') && dataMap.get('exclusiveDeal') !='') { // 단독거래 (PickList)
                 expectIncome.ExclusiveDeal__c = (String) dataMap.get('exclusiveDeal');
             }
-            if (dataMap.containsKey('accountAddress')) { // 주소 (text)
+            if (dataMap.containsKey('accountAddress') && dataMap.get('accountAddress') !='') { // 주소 (text)
                 expectIncome.Address__c = (String) dataMap.get('accountAddress');
             }
-            if (dataMap.containsKey('accountPhone')) { // 연락처 (phone)
+            if (dataMap.containsKey('accountPhone') && dataMap.get('accountPhone') !='') { // 연락처 (phone)
                 expectIncome.RepresentativePhone__c = (String)dataMap.get('accountPhone');
             }
-            if (dataMap.containsKey('existGoods')) { // 기존납품처 (text)
+            if (dataMap.containsKey('existGoods') && dataMap.get('existGoods') !='') { // 기존납품처 (text)
                 expectIncome.PV_EXISTSUP__c = (String) dataMap.get('existGoods');
             }
-            // System.debug('단가/예외가' + dataMap.get('exceptionPrice') );
             if (dataMap.containsKey('exceptionPrice') && dataMap.get('exceptionPrice') !='') { // 단가/예외가 (decimal)
                 expectIncome.ExceptionPrice__c = convertToDecimal(dataMap.get('exceptionPrice')) ;
             }
@@ -676,8 +726,11 @@ public with sharing class ReportFormController {
             if (dataMap.containsKey('exception') && dataMap.get('exception') !='') { // 예외가 (number)
                 expectIncome.Exception__c = convertToDecimal(dataMap.get('exception')) ;
             }
-            if (dataMap.containsKey('existCenter')) { // 센터
+            if (dataMap.containsKey('existCenter') && dataMap.get('existCenter') !='') { // 센터
                 expectIncome.Center__c = (String)dataMap.get('existCenter') ;
+            }
+            if (dataMap.containsKey('comment') && dataMap.get('comment') !='') { // 비고
+                expectIncome.Comment__c = (String)dataMap.get('comment');
             }
 
             /* 거래처 상세 내용 */
@@ -730,9 +783,64 @@ public with sharing class ReportFormController {
             if (dataMap.containsKey('contractPaymentNum') && dataMap.get('contractPaymentNum') !='') { // 약정결제일(일 수)
                 expectIncome.ContractPaymentNum__c = convertToDecimal(dataMap.get('contractPaymentNum')) ;
             }
+            if (dataMap.containsKey('commentASIS') && dataMap.get('commentASIS') !='') { // ASIS 비고
+                expectIncome.CommentASIS__c = (String) dataMap.get('commentASIS');
+            }
             if (dataMap.containsKey('contract-payment-period') && dataMap.get('contract-payment-period') !='') { // 채권담보
                 expectIncome.ContractPaymentDate__c = Date.valueOf(((String) dataMap.get('contract-payment-period')));
             }
+
+            /* 거래처 상세 내용 TO-BE (보증금 변경 전용) */
+            if (dataMap.containsKey('contractStartDateTOBE') && dataMap.get('contractStartDateTOBE') !='') { // 계약기간시작 TOBE 
+                expectIncome.ContractStartDateTOBE__c = Date.valueOf(((String) dataMap.get('contractStartDateTOBE')));
+            }
+            if (dataMap.containsKey('contractEndDateTOBE') && dataMap.get('contractEndDateTOBE') !='') { // 계약기간종료 TOBE
+                expectIncome.ContractEndDateTOBE__c = Date.valueOf(((String) dataMap.get('contractEndDateTOBE')));
+            }
+            if (dataMap.containsKey('collateralAmountTOBE') && dataMap.get('collateralAmountTOBE') !='') { // 담보 금액 TOBE
+                expectIncome.CollateralAmountTOBE__c = convertToDecimal(dataMap.get('collateralAmountTOBE')) ;
+            }
+            if (dataMap.containsKey('collateralAmountAddTOBE') && dataMap.get('collateralAmountAddTOBE') !='') { // 담보 금액(추가) TOBE
+                expectIncome.CollateralAmountAddTOBE__c = convertToDecimal(dataMap.get('collateralAmountAddTOBE')) ;
+            }
+            if (dataMap.containsKey('collateralStartTOBE') && dataMap.get('collateralStartTOBE') !='') { // 담보 시작기간 TOBE
+                expectIncome.CollateralStartTOBE__c = Date.valueOf(((String) dataMap.get('collateralStartTOBE')));
+            }
+            if (dataMap.containsKey('collateralEndTOBE') && dataMap.get('collateralEndTOBE') !='') { // 담보 종료기간 TOBE
+                expectIncome.CollateralEndTOBE__c = Date.valueOf(((String) dataMap.get('collateralEndTOBE')));
+            }
+            if (dataMap.containsKey('collateralStartAddTOBE') && dataMap.get('collateralStartAddTOBE') !='') { // 담보 시작기간(추가) TOBE
+                expectIncome.CollateralStartAddTOBE__c = Date.valueOf(((String) dataMap.get('collateralStartAddTOBE')));
+            }
+            if (dataMap.containsKey('collateralEndAddTOBE') && dataMap.get('collateralEndAddTOBE') !='') { // 담보 종료기간(추가) TOBE
+                expectIncome.CollateralEndAddTOBE__c = Date.valueOf(((String) dataMap.get('collateralEndAddTOBE')));
+            }
+            //지원(%)
+            if (dataMap.containsKey('deprecAmountTOBE') && dataMap.get('deprecAmountTOBE') !='') { // 약정감가 TOBE
+                expectIncome.DeprecAmountTOBE__c = convertToDecimal(dataMap.get('deprecAmountTOBE')) ;
+            } 
+            if (dataMap.containsKey('incentiveSupportTOBE') && dataMap.get('incentiveSupportTOBE') !='') { // 장려금 TOBE
+                expectIncome.IncentiveSupportTOBE__c = convertToDecimal(dataMap.get('incentiveSupportTOBE')) ;
+            } 
+            if (dataMap.containsKey('salesFeeSupportTOBE') && dataMap.get('salesFeeSupportTOBE') !='') { // 판매수수료 TOBE
+                expectIncome.SalesFeeSupportTOBE__c = convertToDecimal(dataMap.get('salesFeeSupportTOBE')) ;
+            } 
+            if (dataMap.containsKey('donationSupportTOBE') && dataMap.get('donationSupportTOBE') !='') { // 후원금 TOBE
+                expectIncome.DonationSupportTOBE__c = convertToDecimal(dataMap.get('donationSupportTOBE')) ;
+            } 
+            if (dataMap.containsKey('otherSupportTOBE') && dataMap.get('otherSupportTOBE') !='') { // 기타지원 TOBE
+                expectIncome.OtherSupportTOBE__c = convertToDecimal(dataMap.get('otherSupportTOBE')) ;
+            } 
+            if (dataMap.containsKey('paymentTOBE')) { // 결제수단 (PickList) TOBE
+                expectIncome.PaymentMethod__c = (String) dataMap.get('paymentTOBE');
+            }
+            if (dataMap.containsKey('contractPaymentNumTOBE') && dataMap.get('contractPaymentNumTOBE') !='') { // 약정결제일(일 수) TOBE
+                expectIncome.ContractPaymentNumTOBE__c = convertToDecimal(dataMap.get('contractPaymentNumTOBE')) ;
+            }
+            if (dataMap.containsKey('commentTOBE') && dataMap.get('commentTOBE') !='') { // TOBE 비고
+                expectIncome.commentTOBE__c = (String) dataMap.get('commentTOBE');
+            }
+
             // boolean
             if (dataMap.containsKey('bondCollateral') && dataMap.get('bondCollateral') !='') { // 채권담보
                 expectIncome.BondCollateral__c = Boolean.valueOf(dataMap.get('bondCollateral'));
@@ -747,7 +855,6 @@ public with sharing class ReportFormController {
                 expectIncome.SpecialCollateral__c = Boolean.valueOf(dataMap.get('specialCollateral'));
             }
 
-            
             if (dataMap.containsKey('otherDetail')) { // 기타 세부 내역
                 expectIncome.OtherSupportDetail__c = (String)dataMap.get('otherDetail') ;
             }

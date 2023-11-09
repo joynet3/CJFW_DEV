@@ -91,6 +91,8 @@ public with sharing class IFN_LIF1012_Callout_TEST {
 
         callout.getResponse(interfaceId, Json.serialize(params));
 
+        
+
         Test.stopTest();
 
     }
