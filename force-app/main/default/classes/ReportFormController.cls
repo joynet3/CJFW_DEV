@@ -301,6 +301,16 @@ public with sharing class ReportFormController {
             'SecurityCollateral__c, ' +     // 보증금담보
             'PrimaryContract__c, ' +        // 상품공급기본계약서
             'SpecialCollateral__c, ' +      // 영업보증금 특약계약서
+
+            // 예상손익 (보증금 변경)
+            'SalesTwoMonth__c, ' +                  // ASIS 매출 전전월 실적
+            'SalesOneMonth__c, ' +                  // ASIS 매출 전월 실적
+            'SalesMonth__c, ' +                     // ASIS 매출 당월 예상 실적
+            'SalesBefore__c, ' +                    // TOBE 지원 전 매출실적
+            'SalesSupportTwoMonth__c, ' +           // ASIS 매출이익 전전월 실적
+            'SalesSupportOneMonth__c, ' +           // ASIS 매출이익 전월 실적
+            'SalesSupportMonth__c, ' +              // ASIS 매출이익 당월 예상 실적
+            'SalesSupportRateBefore__c, ' +         // TOBE 지원 전 매출이익실적
             
             // 기타
             'OtherSupportDetail__c, ' +     // 기타 지원세부 내역
@@ -381,7 +391,16 @@ public with sharing class ReportFormController {
                 'IncentiveSupportTOBE__c',
                 'SalesFeeSupportTOBE__c',
                 'DonationSupportTOBE__c',
-                'OtherSupportTOBE__c'
+                'OtherSupportTOBE__c',
+                // 예상손익 (보증금 변경)
+                'SalesTwoMonth__c',
+                'SalesOneMonth__c',
+                'SalesMonth__c',
+                'SalesBefore__c',
+                'SalesSupportTwoMonth__c',
+                'SalesSupportOneMonth__c',
+                'SalesSupportMonth__c',
+                'SalesSupportRateBefore__c'
             };
             for (String defaultSet : defaultValSet) {
                 Object fieldValue = IncomeExpensesInfo.get(defaultSet);
@@ -416,7 +435,7 @@ public with sharing class ReportFormController {
             selectedContract = IncomeExpensesInfo.ContractType__c	;   // 계약서종류 
             selectedDelivery = IncomeExpensesInfo.DeliveryCnt__c	;   // 배송횟수 
             selectedExclusiveDeal = IncomeExpensesInfo.ExclusiveDeal__c	;   // 단독거래
-            selectedpaymentTOBE = IncomeExpensesInfo.PaymentTOBE__c	;           // TOBE 결제 수단
+            selectedPaymentTOBE = IncomeExpensesInfo.PaymentTOBE__c	;       // TOBE 결제 수단
 
             /* ContractPaymentDate__c 필드를 yyyy-MM-dd 형식의 문자열로 변환 */
             String collateralPeriodString = String.valueOf(IncomeExpensesInfo.collateralPeriod__c);
@@ -747,7 +766,7 @@ public with sharing class ReportFormController {
                 expectIncome.CollateralAmountAdd__c = convertToDecimal(dataMap.get('collateralAmountAdd')) ;
             }
             if (dataMap.containsKey('collateral-period') && dataMap.get('collateral-period') !='') { // 담보제공기간
-            expectIncome.CollateralPeriod__c = Date.valueOf(((String) dataMap.get('collateral-period')));
+                expectIncome.CollateralPeriod__c = Date.valueOf(((String) dataMap.get('collateral-period')));
             }
             if (dataMap.containsKey('collateralStart') && dataMap.get('collateralStart') !='') { // 담보 시작기간
                 expectIncome.CollateralStart__c = Date.valueOf(((String) dataMap.get('collateralStart')));
@@ -832,7 +851,7 @@ public with sharing class ReportFormController {
                 expectIncome.OtherSupportTOBE__c = convertToDecimal(dataMap.get('otherSupportTOBE')) ;
             } 
             if (dataMap.containsKey('paymentTOBE')) { // 결제수단 (PickList) TOBE
-                expectIncome.PaymentMethod__c = (String) dataMap.get('paymentTOBE');
+                expectIncome.PaymentTOBE__c = (String) dataMap.get('paymentTOBE');
             }
             if (dataMap.containsKey('contractPaymentNumTOBE') && dataMap.get('contractPaymentNumTOBE') !='') { // 약정결제일(일 수) TOBE
                 expectIncome.ContractPaymentNumTOBE__c = convertToDecimal(dataMap.get('contractPaymentNumTOBE')) ;

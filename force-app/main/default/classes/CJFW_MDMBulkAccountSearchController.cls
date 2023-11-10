@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 11-06-2023
+ * @last modified on  : 11-09-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkAccountSearchController {
@@ -115,6 +115,7 @@ public with sharing class CJFW_MDMBulkAccountSearchController {
                     System.debug(' AND CreatedDate >= ' + dateValues.get('end'));
                 }
             }
+            strQuery += ' ORDER BY CustomerID__c';
 
             System.debug('============> strQuery : '+strQuery);
             

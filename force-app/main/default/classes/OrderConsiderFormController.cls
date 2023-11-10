@@ -5,7 +5,7 @@
 
  * @author            : seol.kim@dkbmc.com
  * @group             : 
- * @last modified on  : 11-08-2023
+ * @last modified on  : 11-09-2023
  * @last modified by  : seol.kim@dkbmc.com
 **/
 public with sharing class OrderConsiderFormController {
@@ -583,10 +583,31 @@ public with sharing class OrderConsiderFormController {
             'StockMoneyOriginalTen__c, ' +            //재고금액 기존 10  
             'StockMoneyPlanTen__c, ' +            //재고금액 계획 10
             'MonthSaleTen__c, ' +            //매출 10
-            'MonthSalesProfitTen__c' +            //매출이익 10 
-            
-            
+            'MonthSalesProfitTen__c, ' +            //매출이익 10 
 
+            'MultipleSkuRoomTemperature__c, ' +            //매출
+            'MultipleSkuRefrigeration__c, ' +            //매출
+            'MultipleSkuFreezer__c, ' +                     //매출
+            'MultiplePltRoomTemperature__c, ' +            //매출
+            'MultiplePltRefrigeration__c, ' +            //매출
+            'MultiplePltFreezer__c, ' +            //매출
+
+            'StorageSkuRoomTemperature__c, ' +            //매출
+            'StorageSkuRefrigeration__c, ' +            //매출
+            'StorageSkuFreezer__c, ' +            //매출
+            'StoragePltRoomTemperature__c, ' +            //매출
+            'StoragePltRefrigeration__c, ' +            //매출
+            'StoragePltFreezer__c, ' +            //매출
+
+            'ReductionSkuRoomTemperature__c, ' +            //매출
+            'ReductionSkuRefrigeration__c, ' +            //매출
+            'ReductionSkuFreezer__c, ' +            //매출
+            'ReductionPltRoomTemperature__c, ' +            //매출
+            'ReductionPltRefrigeration__c, ' +           
+            'ReductionPltFreezer__c' +        
+
+
+            
             ' FROM CJFW_ExpectedIncomeExpenses__c';
 
             if (incomeExpensesId != null) {
@@ -838,7 +859,28 @@ public with sharing class OrderConsiderFormController {
             'StockMoneyOriginalTen__c',
             'StockMoneyPlanTen__c',
             'MonthSaleTen__c',
-            'MonthSalesProfitTen__c'
+            'MonthSalesProfitTen__c',
+
+            'MultipleSkuRoomTemperature__c',
+            'MultipleSkuRefrigeration__c',
+            'MultipleSkuFreezer__c',
+            'MultiplePltRoomTemperature__c',
+            'MultiplePltRefrigeration__c',
+            'MultiplePltFreezer__c',
+
+            'StorageSkuRoomTemperature__c',
+            'StorageSkuRefrigeration__c',
+            'StorageSkuFreezer__c',
+            'StoragePltRoomTemperature__c',
+            'StoragePltRefrigeration__c',
+            'StoragePltFreezer__c',
+
+            'ReductionSkuRoomTemperature__c',
+            'ReductionSkuRefrigeration__c',
+            'ReductionSkuFreezer__c',
+            'ReductionPltRoomTemperature__c',
+            'ReductionPltRefrigeration__c',
+            'ReductionPltFreezer__c'
             
         };
 
@@ -1476,321 +1518,376 @@ public with sharing class OrderConsiderFormController {
 
             /* ===== 8. 재고 운영 개선사항(체인 전용) ===== */
 
-            if (dataMap.containsKey('ProductNameOne')) { // 테스트
+            if (dataMap.containsKey('productNameOne')) { // 테스트
                 expectIncome.ProductNameOne__c = (String) dataMap.get('ProductNameOne');
             }            
-            if (dataMap.containsKey('StorageConditionOne')) { // 테스트
-                expectIncome.StorageConditionOne__c = (String) dataMap.get('StorageConditionOne');
+            if (dataMap.containsKey('storageConditionOne')) { // 테스트
+                expectIncome.StorageConditionOne__c = (String) dataMap.get('storageConditionOne');
             }            
-            if (dataMap.containsKey('ReleaseUnitOne')) { // 테스트
-                expectIncome.ReleaseUnitOne__c = (String) dataMap.get('ReleaseUnitOne');
+            if (dataMap.containsKey('releaseUnitOne')) { // 테스트
+                expectIncome.ReleaseUnitOne__c = (String) dataMap.get('releaseUnitOne');
             }            
             if (dataMap.containsKey('EnforcementMonthOne')) { // 테스트
                 expectIncome.EnforcementMonthOne__c = (String) dataMap.get('EnforcementMonthOne');
             }            
-            if (dataMap.containsKey('PltOriginalOne')) { // 테스트
-                expectIncome.PltOriginalOne__c = convertToDecimal(dataMap.get('PltOriginalOne'));
+            if (dataMap.containsKey('pltOriginalOne')) { // 테스트
+                expectIncome.PltOriginalOne__c = convertToDecimal(dataMap.get('pltOriginalOne'));
             }
-            if (dataMap.containsKey('PltPlanOne')) { // 테스트
-                expectIncome.PltPlanOne__c = convertToDecimal(dataMap.get('PltPlanOne'));
+            if (dataMap.containsKey('pltPlanOne')) { // 테스트
+                expectIncome.PltPlanOne__c = convertToDecimal(dataMap.get('pltPlanOne'));
             }
-            if (dataMap.containsKey('StockMoneyOriginalOne')) { // 테스트
-                expectIncome.StockMoneyOriginalOne__c = convertToDecimal(dataMap.get('StockMoneyOriginalOne'));
+            if (dataMap.containsKey('stockMoneyOriginalOne')) { // 테스트
+                expectIncome.StockMoneyOriginalOne__c = convertToDecimal(dataMap.get('stockMoneyOriginalOne'));
             }
-            if (dataMap.containsKey(' StockMoneyPlanOne')) { // 테스트
-                expectIncome.StockMoneyPlanOne__c = convertToDecimal(dataMap.get('StockMoneyPlanOne'));
+            if (dataMap.containsKey('stockMoneyPlanOne')) { // 테스트
+                expectIncome.StockMoneyPlanOne__c = convertToDecimal(dataMap.get('stockMoneyPlanOne'));
             }
-            if (dataMap.containsKey('MonthSaleOne')) { // 테스트
-                expectIncome.MonthSaleOne__c = convertToDecimal(dataMap.get('MonthSaleOne'));
+            if (dataMap.containsKey('monthSaleOne')) { // 테스트
+                expectIncome.MonthSaleOne__c = convertToDecimal(dataMap.get('monthSaleOne'));
             }
-            if (dataMap.containsKey('MonthSalesProfitOne')) { // 테스트
+            if (dataMap.containsKey('monthSalesProfitOne')) { // 테스트
                 expectIncome.MonthSalesProfitOne__c = convertToDecimal(dataMap.get('MonthSalesProfitOne'));
             }
 
             
-            if (dataMap.containsKey('ProductNameTwo')) { // 테스트
+            if (dataMap.containsKey('productNameTwo')) { // 테스트
                 expectIncome.ProductNameTwo__c = (String) dataMap.get('ProductNameTwo');
             }            
-            if (dataMap.containsKey('StorageConditionTwo')) { // 테스트
-                expectIncome.StorageConditionTwo__c = (String) dataMap.get('StorageConditionTwo');
+            if (dataMap.containsKey('storageConditionTwo')) { // 테스트
+                expectIncome.StorageConditionTwo__c = (String) dataMap.get('storageConditionTwo');
             }            
-            if (dataMap.containsKey('ReleaseUnitTwo')) { // 테스트
-                expectIncome.ReleaseUnitTwo__c = (String) dataMap.get('ReleaseUnitTwo');
+            if (dataMap.containsKey('releaseUnitTwo')) { // 테스트
+                expectIncome.ReleaseUnitTwo__c = (String) dataMap.get('releaseUnitTwo');
             }            
             if (dataMap.containsKey('EnforcementMonthTwo')) { // 테스트
                 expectIncome.EnforcementMonthTwo__c = (String) dataMap.get('EnforcementMonthTwo');
             }            
-            if (dataMap.containsKey('PltOriginalTwo')) { // 테스트
-                expectIncome.PltOriginalTwo__c = convertToDecimal(dataMap.get('PltOriginalTwo'));
+            if (dataMap.containsKey('pltOriginalTwo')) { // 테스트
+                expectIncome.PltOriginalTwo__c = convertToDecimal(dataMap.get('pltOriginalTwo'));
             }
-            if (dataMap.containsKey('PltPlanTwo')) { // 테스트
-                expectIncome.PltPlanTwo__c = convertToDecimal(dataMap.get('PltPlanTwo'));
+            if (dataMap.containsKey('pltPlanTwo')) { // 테스트
+                expectIncome.PltPlanTwo__c = convertToDecimal(dataMap.get('pltPlanTwo'));
             }
-            if (dataMap.containsKey('StockMoneyOriginalTwo')) { // 테스트
-                expectIncome.StockMoneyOriginalTwo__c = convertToDecimal(dataMap.get('StockMoneyOriginalTwo'));
+            if (dataMap.containsKey('stockMoneyOriginalTwo')) { // 테스트
+                expectIncome.StockMoneyOriginalTwo__c = convertToDecimal(dataMap.get('stockMoneyOriginalTwo'));
             }
-            if (dataMap.containsKey('StockMoneyPlanTwo')) { // 테스트
-                expectIncome.StockMoneyPlanTwo__c = convertToDecimal(dataMap.get('StockMoneyPlanTwo'));
+            if (dataMap.containsKey('stockMoneyPlanTwo')) { // 테스트
+                expectIncome.StockMoneyPlanTwo__c = convertToDecimal(dataMap.get('stockMoneyPlanTwo'));
             }
-            if (dataMap.containsKey('MonthSaleTwo')) { // 테스트
-                expectIncome.MonthSaleTwo__c = convertToDecimal(dataMap.get('MonthSaleTwo'));
+            if (dataMap.containsKey('monthSaleTwo')) { // 테스트
+                expectIncome.MonthSaleTwo__c = convertToDecimal(dataMap.get('monthSaleTwo'));
             }
-            if (dataMap.containsKey('MonthSalesProfitTwo')) { // 테스트
-                expectIncome.MonthSalesProfitTwo__c = convertToDecimal(dataMap.get('MonthSalesProfitTwo'));
+            if (dataMap.containsKey('monthSalesProfitTwo')) { // 테스트
+                expectIncome.MonthSalesProfitTwo__c = convertToDecimal(dataMap.get('monthSalesProfitTwo'));
             }
 
-            if (dataMap.containsKey('ProductNameThree')) { // 테스트
+            if (dataMap.containsKey('productNameThree')) { // 테스트
                 expectIncome.ProductNameThree__c = (String) dataMap.get('ProductNameThree');
             }            
-            if (dataMap.containsKey('StorageConditionThree')) { // 테스트
-                expectIncome.StorageConditionThree__c = (String) dataMap.get('StorageConditionThree');
+            if (dataMap.containsKey('storageConditionThree')) { // 테스트
+                expectIncome.StorageConditionThree__c = (String) dataMap.get('storageConditionThree');
             }            
-            if (dataMap.containsKey('ReleaseUnitThree')) { // 테스트
-                expectIncome.ReleaseUnitThree__c = (String) dataMap.get('ReleaseUnitThree');
+            if (dataMap.containsKey('releaseUnitThree')) { // 테스트
+                expectIncome.ReleaseUnitThree__c = (String) dataMap.get('releaseUnitThree');
             }            
             if (dataMap.containsKey('EnforcementMonthThree')) { // 테스트
                 expectIncome.EnforcementMonthThree__c = (String) dataMap.get('EnforcementMonthThree');
             }            
-            if (dataMap.containsKey('PltOriginalThree')) { // 테스트
-                expectIncome.PltOriginalThree__c = convertToDecimal(dataMap.get('PltOriginalThree'));
+            if (dataMap.containsKey('pltOriginalThree')) { // 테스트
+                expectIncome.PltOriginalThree__c = convertToDecimal(dataMap.get('pltOriginalThree'));
             }
-            if (dataMap.containsKey('PltPlanThree')) { // 테스트
-                expectIncome.PltPlanThree__c = convertToDecimal(dataMap.get('PltPlanThree'));
+            if (dataMap.containsKey('pltPlanThree')) { // 테스트
+                expectIncome.PltPlanThree__c = convertToDecimal(dataMap.get('pltPlanThree'));
             }
-            if (dataMap.containsKey('StockMoneyOriginalThree')) { // 테스트
-                expectIncome.StockMoneyOriginalThree__c = convertToDecimal(dataMap.get('StockMoneyOriginalThree'));
+            if (dataMap.containsKey('stockMoneyOriginalThree')) { // 테스트
+                expectIncome.StockMoneyOriginalThree__c = convertToDecimal(dataMap.get('stockMoneyOriginalThree'));
             }
-            if (dataMap.containsKey('StockMoneyPlanThree')) { // 테스트
-                expectIncome.StockMoneyPlanThree__c = convertToDecimal(dataMap.get('StockMoneyPlanThree'));
+            if (dataMap.containsKey('stockMoneyPlanThree')) { // 테스트
+                expectIncome.StockMoneyPlanThree__c = convertToDecimal(dataMap.get('stockMoneyPlanThree'));
             }
-            if (dataMap.containsKey('MonthSaleThree')) { // 테스트
-                expectIncome.MonthSaleThree__c = convertToDecimal(dataMap.get('MonthSaleThree'));
+            if (dataMap.containsKey('monthSaleThree')) { // 테스트
+                expectIncome.MonthSaleThree__c = convertToDecimal(dataMap.get('monthSaleThree'));
             }
-            if (dataMap.containsKey('MonthSalesProfitThree')) { // 테스트
-                expectIncome.MonthSalesProfitThree__c = convertToDecimal(dataMap.get('MonthSalesProfitThree'));
+            if (dataMap.containsKey('monthSalesProfitThree')) { // 테스트
+                expectIncome.MonthSalesProfitThree__c = convertToDecimal(dataMap.get('monthSalesProfitThree'));
             }
 
-            if (dataMap.containsKey('ProductNameFour')) { // 테스트
+            if (dataMap.containsKey('productNameFour')) { // 테스트
                 expectIncome.ProductNameFour__c = (String) dataMap.get('ProductNameFour');
             }            
-            if (dataMap.containsKey('StorageConditionFour')) { // 테스트
-                expectIncome.StorageConditionFour__c = (String) dataMap.get('StorageConditionFour');
+            if (dataMap.containsKey('storageConditionFour')) { // 테스트
+                expectIncome.StorageConditionFour__c = (String) dataMap.get('storageConditionFour');
             }            
-            if (dataMap.containsKey('ReleaseUnitFour')) { // 테스트
-                expectIncome.ReleaseUnitFour__c = (String) dataMap.get('ReleaseUnitFour');
+            if (dataMap.containsKey('releaseUnitFour')) { // 테스트
+                expectIncome.ReleaseUnitFour__c = (String) dataMap.get('releaseUnitFour');
             }            
             if (dataMap.containsKey('EnforcementMonthFour')) { // 테스트
                 expectIncome.EnforcementMonthFour__c = (String) dataMap.get('EnforcementMonthFour');
             }            
-            if (dataMap.containsKey('PltOriginalFour')) { // 테스트
-                expectIncome.PltOriginalFour__c = convertToDecimal(dataMap.get('PltOriginalFour'));
+            if (dataMap.containsKey('pltOriginalFour')) { // 테스트
+                expectIncome.PltOriginalFour__c = convertToDecimal(dataMap.get('pltOriginalFour'));
             }
-            if (dataMap.containsKey('PltPlanFour')) { // 테스트
-                expectIncome.PltPlanFour__c = convertToDecimal(dataMap.get('PltPlanFour'));
+            if (dataMap.containsKey('pltPlanFour')) { // 테스트
+                expectIncome.PltPlanFour__c = convertToDecimal(dataMap.get('pltPlanFour'));
             }
-            if (dataMap.containsKey('StockMoneyOriginalFour')) { // 테스트
-                expectIncome.StockMoneyOriginalFour__c = convertToDecimal(dataMap.get('StockMoneyOriginalFour'));
+            if (dataMap.containsKey('stockMoneyOriginalFour')) { // 테스트
+                expectIncome.StockMoneyOriginalFour__c = convertToDecimal(dataMap.get('stockMoneyOriginalFour'));
             }
-            if (dataMap.containsKey('StockMoneyPlanFour')) { // 테스트
-                expectIncome.StockMoneyPlanFour__c = convertToDecimal(dataMap.get('StockMoneyPlanFour'));
+            if (dataMap.containsKey('stockMoneyPlanFour')) { // 테스트
+                expectIncome.StockMoneyPlanFour__c = convertToDecimal(dataMap.get('stockMoneyPlanFour'));
             }
-            if (dataMap.containsKey('MonthSaleFour')) { // 테스트
-                expectIncome.MonthSaleFour__c = convertToDecimal(dataMap.get('MonthSaleFour'));
+            if (dataMap.containsKey('monthSaleFour')) { // 테스트
+                expectIncome.MonthSaleFour__c = convertToDecimal(dataMap.get('monthSaleFour'));
             }
-            if (dataMap.containsKey('MonthSalesProfitFour')) { // 테스트
-                expectIncome.MonthSalesProfitFour__c = convertToDecimal(dataMap.get('MonthSalesProfitFour'));
+            if (dataMap.containsKey('monthSalesProfitFour')) { // 테스트
+                expectIncome.MonthSalesProfitFour__c = convertToDecimal(dataMap.get('monthSalesProfitFour'));
             }
 
-            if (dataMap.containsKey('ProductNameFive')) { // 테스트
+            if (dataMap.containsKey('productNameFive')) { // 테스트
                 expectIncome.ProductNameFive__c = (String) dataMap.get('ProductNameFive');
             }            
-            if (dataMap.containsKey('StorageConditionFive')) { // 테스트
-                expectIncome.StorageConditionFive__c = (String) dataMap.get('StorageConditionFive');
+            if (dataMap.containsKey('storageConditionFive')) { // 테스트
+                expectIncome.StorageConditionFive__c = (String) dataMap.get('storageConditionFive');
             }            
-            if (dataMap.containsKey('ReleaseUnitFive')) { // 테스트
-                expectIncome.ReleaseUnitFive__c = (String) dataMap.get('ReleaseUnitFive');
+            if (dataMap.containsKey('releaseUnitFive')) { // 테스트
+                expectIncome.ReleaseUnitFive__c = (String) dataMap.get('releaseUnitFive');
             }            
             if (dataMap.containsKey('EnforcementMonthFive')) { // 테스트
                 expectIncome.EnforcementMonthFive__c = (String) dataMap.get('EnforcementMonthFive');
             }            
-            if (dataMap.containsKey('PltOriginalFive')) { // 테스트
-                expectIncome.PltOriginalFive__c = convertToDecimal(dataMap.get('PltOriginalFive'));
+            if (dataMap.containsKey('pltOriginalFive')) { // 테스트
+                expectIncome.PltOriginalFive__c = convertToDecimal(dataMap.get('pltOriginalFive'));
             }
-            if (dataMap.containsKey('PltPlanFive')) { // 테스트
-                expectIncome.PltPlanFive__c = convertToDecimal(dataMap.get('PltPlanFive'));
+            if (dataMap.containsKey('pltPlanFive')) { // 테스트
+                expectIncome.PltPlanFive__c = convertToDecimal(dataMap.get('pltPlanFive'));
             }
-            if (dataMap.containsKey('StockMoneyOriginalFive')) { // 테스트
-                expectIncome.StockMoneyOriginalFive__c = convertToDecimal(dataMap.get('StockMoneyOriginalFive'));
+            if (dataMap.containsKey('stockMoneyOriginalFive')) { // 테스트
+                expectIncome.StockMoneyOriginalFive__c = convertToDecimal(dataMap.get('stockMoneyOriginalFive'));
             }
-            if (dataMap.containsKey('StockMoneyPlanFive')) { // 테스트
-                expectIncome.StockMoneyPlanFive__c = convertToDecimal(dataMap.get('StockMoneyPlanFive'));
+            if (dataMap.containsKey('stockMoneyPlanFive')) { // 테스트
+                expectIncome.StockMoneyPlanFive__c = convertToDecimal(dataMap.get('stockMoneyPlanFive'));
             }
-            if (dataMap.containsKey('MonthSaleFive')) { // 테스트
-                expectIncome.MonthSaleFive__c = convertToDecimal(dataMap.get('MonthSaleFive'));
+            if (dataMap.containsKey('monthSaleFive')) { // 테스트
+                expectIncome.MonthSaleFive__c = convertToDecimal(dataMap.get('monthSaleFive'));
             }
-            if (dataMap.containsKey('MonthSalesProfitFive')) { // 테스트
-                expectIncome.MonthSalesProfitFive__c = convertToDecimal(dataMap.get('MonthSalesProfitFive'));
+            if (dataMap.containsKey('monthSalesProfitFive')) { // 테스트
+                expectIncome.MonthSalesProfitFive__c = convertToDecimal(dataMap.get('monthSalesProfitFive'));
             }
 
-            if (dataMap.containsKey('ProductNameSix')) { // 테스트
+            if (dataMap.containsKey('productNameSix')) { // 테스트
                 expectIncome.ProductNameSix__c = (String) dataMap.get('ProductNameSix');
             }            
-            if (dataMap.containsKey('StorageConditionSix')) { // 테스트
-                expectIncome.StorageConditionSix__c = (String) dataMap.get('StorageConditionSix');
+            if (dataMap.containsKey('storageConditionSix')) { // 테스트
+                expectIncome.StorageConditionSix__c = (String) dataMap.get('storageConditionSix');
             }            
-            if (dataMap.containsKey('ReleaseUnitSix')) { // 테스트
-                expectIncome.ReleaseUnitSix__c = (String) dataMap.get('ReleaseUnitSix');
+            if (dataMap.containsKey('releaseUnitSix')) { // 테스트
+                expectIncome.ReleaseUnitSix__c = (String) dataMap.get('releaseUnitSix');
             }            
             if (dataMap.containsKey('EnforcementMonthSix')) { // 테스트
                 expectIncome.EnforcementMonthSix__c = (String) dataMap.get('EnforcementMonthSix');
             }            
-            if (dataMap.containsKey('PltOriginalSix')) { // 테스트
-                expectIncome.PltOriginalSix__c = convertToDecimal(dataMap.get('PltOriginalSix'));
+            if (dataMap.containsKey('pltOriginalSix')) { // 테스트
+                expectIncome.PltOriginalSix__c = convertToDecimal(dataMap.get('pltOriginalSix'));
             }
-            if (dataMap.containsKey('PltPlanSix')) { // 테스트
-                expectIncome.PltPlanSix__c = convertToDecimal(dataMap.get('PltPlanSix'));
+            if (dataMap.containsKey('pltPlanSix')) { // 테스트
+                expectIncome.PltPlanSix__c = convertToDecimal(dataMap.get('pltPlanSix'));
             }
-            if (dataMap.containsKey('StockMoneyOriginalSix')) { // 테스트
-                expectIncome.StockMoneyOriginalSix__c = convertToDecimal(dataMap.get('StockMoneyOriginalSix'));
+            if (dataMap.containsKey('stockMoneyOriginalSix')) { // 테스트
+                expectIncome.StockMoneyOriginalSix__c = convertToDecimal(dataMap.get('stockMoneyOriginalSix'));
             }
-            if (dataMap.containsKey('StockMoneyPlanSix')) { // 테스트
-                expectIncome.StockMoneyPlanSix__c = convertToDecimal(dataMap.get('StockMoneyPlanSix'));
+            if (dataMap.containsKey('stockMoneyPlanSix')) { // 테스트
+                expectIncome.StockMoneyPlanSix__c = convertToDecimal(dataMap.get('stockMoneyPlanSix'));
             }
-            if (dataMap.containsKey('MonthSaleSix')) { // 테스트
-                expectIncome.MonthSaleSix__c = convertToDecimal(dataMap.get('MonthSaleSix'));
+            if (dataMap.containsKey('monthSaleSix')) { // 테스트
+                expectIncome.MonthSaleSix__c = convertToDecimal(dataMap.get('monthSaleSix'));
             }
-            if (dataMap.containsKey('MonthSalesProfitSix')) { // 테스트
+            if (dataMap.containsKey('monthSalesProfitSix')) { // 테스트
                 expectIncome.MonthSalesProfitSix__c = convertToDecimal(dataMap.get('MonthSalesProfitSix'));
             }
 
-            if (dataMap.containsKey('ProductNameSeven')) { // 테스트
+            if (dataMap.containsKey('productNameSeven')) { // 테스트
                 expectIncome.ProductNameSeven__c = (String) dataMap.get('ProductNameSeven');
             }            
-            if (dataMap.containsKey('StorageConditionSeven')) { // 테스트
-                expectIncome.StorageConditionSeven__c = (String) dataMap.get('StorageConditionSeven');
+            if (dataMap.containsKey('storageConditionSeven')) { // 테스트
+                expectIncome.StorageConditionSeven__c = (String) dataMap.get('storageConditionSeven');
             }            
-            if (dataMap.containsKey('ReleaseUnitSeven')) { // 테스트
-                expectIncome.ReleaseUnitSeven__c = (String) dataMap.get('ReleaseUnitSeven');
+            if (dataMap.containsKey('releaseUnitSeven')) { // 테스트
+                expectIncome.ReleaseUnitSeven__c = (String) dataMap.get('releaseUnitSeven');
             }            
             if (dataMap.containsKey('EnforcementMonthSeven')) { // 테스트
                 expectIncome.EnforcementMonthSeven__c = (String) dataMap.get('EnforcementMonthSeven');
             }            
-            if (dataMap.containsKey('PltOriginalSeven')) { // 테스트
-                expectIncome.PltOriginalSeven__c = convertToDecimal(dataMap.get('PltOriginalSeven'));
+            if (dataMap.containsKey('pltOriginalSeven')) { // 테스트
+                expectIncome.PltOriginalSeven__c = convertToDecimal(dataMap.get('pltOriginalSeven'));
             }
-            if (dataMap.containsKey('PltPlanSeven')) { // 테스트
-                expectIncome.PltPlanSeven__c = convertToDecimal(dataMap.get('PltPlanSeven'));
+            if (dataMap.containsKey('pltPlanSeven')) { // 테스트
+                expectIncome.PltPlanSeven__c = convertToDecimal(dataMap.get('pltPlanSeven'));
             }
-            if (dataMap.containsKey('StockMoneyOriginalSeven')) { // 테스트
-                expectIncome.StockMoneyOriginalSeven__c = convertToDecimal(dataMap.get('StockMoneyOriginalSeven'));
+            if (dataMap.containsKey('stockMoneyOriginalSeven')) { // 테스트
+                expectIncome.StockMoneyOriginalSeven__c = convertToDecimal(dataMap.get('stockMoneyOriginalSeven'));
             }
-            if (dataMap.containsKey('StockMoneyPlanSeven')) { // 테스트
-                expectIncome.StockMoneyPlanSeven__c = convertToDecimal(dataMap.get('StockMoneyPlanSeven'));
+            if (dataMap.containsKey('stockMoneyPlanSeven')) { // 테스트
+                expectIncome.StockMoneyPlanSeven__c = convertToDecimal(dataMap.get('stockMoneyPlanSeven'));
             }
-            if (dataMap.containsKey('MonthSaleSeven')) { // 테스트
-                expectIncome.MonthSaleSeven__c = convertToDecimal(dataMap.get('MonthSaleSeven'));
+            if (dataMap.containsKey('monthSaleSeven')) { // 테스트
+                expectIncome.MonthSaleSeven__c = convertToDecimal(dataMap.get('monthSaleSeven'));
             }
             if (dataMap.containsKey('MonthSalesProfitSeven')) { // 테스트
-                expectIncome.MonthSalesProfitSeven__c = convertToDecimal(dataMap.get('MonthSalesProfitSeven'));
+                expectIncome.MonthSalesProfitSeven__c = convertToDecimal(dataMap.get('monthSalesProfitSeven'));
             }
 
-            if (dataMap.containsKey('ProductNameEight')) { // 테스트
+            if (dataMap.containsKey('productNameEight')) { // 테스트
                 expectIncome.ProductNameEight__c = (String) dataMap.get('ProductNameEight');
             }            
-            if (dataMap.containsKey('StorageConditionEight')) { // 테스트
-                expectIncome.StorageConditionEight__c = (String) dataMap.get('StorageConditionEight');
+            if (dataMap.containsKey('storageConditionEight')) { // 테스트
+                expectIncome.StorageConditionEight__c = (String) dataMap.get('storageConditionEight');
             }            
-            if (dataMap.containsKey('ReleaseUnitEight')) { // 테스트
-                expectIncome.ReleaseUnitEight__c = (String) dataMap.get('ReleaseUnitEight');
+            if (dataMap.containsKey('releaseUnitEight')) { // 테스트
+                expectIncome.ReleaseUnitEight__c = (String) dataMap.get('releaseUnitEight');
             }            
-            if (dataMap.containsKey('EnforcementMonthEight')) { // 테스트
-                expectIncome.EnforcementMonthEight__c = (String) dataMap.get('EnforcementMonthEight');
+            if (dataMap.containsKey('enforcementMonthEight')) { // 테스트
+                expectIncome.EnforcementMonthEight__c = (String) dataMap.get('enforcementMonthEight');
             }            
-            if (dataMap.containsKey('PltOriginalEight')) { // 테스트
-                expectIncome.PltOriginalEight__c = convertToDecimal(dataMap.get('PltOriginalEight'));
+            if (dataMap.containsKey('pltOriginalEight')) { // 테스트
+                expectIncome.PltOriginalEight__c = convertToDecimal(dataMap.get('pltOriginalEight'));
             }
-            if (dataMap.containsKey('PltPlanEight')) { // 테스트
-                expectIncome.PltPlanEight__c = convertToDecimal(dataMap.get('PltPlanEight'));
+            if (dataMap.containsKey('pltPlanEight')) { // 테스트
+                expectIncome.PltPlanEight__c = convertToDecimal(dataMap.get('pltPlanEight'));
             }
-            if (dataMap.containsKey('StockMoneyOriginalEight')) { // 테스트
-                expectIncome.StockMoneyOriginalEight__c = convertToDecimal(dataMap.get('StockMoneyOriginalEight'));
+            if (dataMap.containsKey('stockMoneyOriginalEight')) { // 테스트
+                expectIncome.StockMoneyOriginalEight__c = convertToDecimal(dataMap.get('stockMoneyOriginalEight'));
             }
-            if (dataMap.containsKey('StockMoneyPlanEight')) { // 테스트
-                expectIncome.StockMoneyPlanEight__c = convertToDecimal(dataMap.get('StockMoneyPlanEight'));
+            if (dataMap.containsKey('stockMoneyPlanEight')) { // 테스트
+                expectIncome.StockMoneyPlanEight__c = convertToDecimal(dataMap.get('stockMoneyPlanEight'));
             }
-            if (dataMap.containsKey('MonthSaleEight')) { // 테스트
-                expectIncome.MonthSaleEight__c = convertToDecimal(dataMap.get('MonthSaleEight'));
+            if (dataMap.containsKey('monthSaleEight')) { // 테스트
+                expectIncome.MonthSaleEight__c = convertToDecimal(dataMap.get('monthSaleEight'));
             }
-            if (dataMap.containsKey('MonthSalesProfitEight')) { // 테스트
-                expectIncome.MonthSalesProfitEight__c = convertToDecimal(dataMap.get('MonthSalesProfitEight'));
+            if (dataMap.containsKey('monthSalesProfitEight')) { // 테스트
+                expectIncome.MonthSalesProfitEight__c = convertToDecimal(dataMap.get('monthSalesProfitEight'));
             }
 
-            if (dataMap.containsKey('ProductNameNine')) { // 테스트
+            if (dataMap.containsKey('productNameNine')) { // 테스트
                 expectIncome.ProductNameNine__c = (String) dataMap.get('ProductNameNine');
             }            
-            if (dataMap.containsKey('StorageConditionNine')) { // 테스트
-                expectIncome.StorageConditionNine__c = (String) dataMap.get('StorageConditionNine');
+            if (dataMap.containsKey('storageConditionNine')) { // 테스트
+                expectIncome.StorageConditionNine__c = (String) dataMap.get('storageConditionNine');
             }            
-            if (dataMap.containsKey('ReleaseUnitNine')) { // 테스트
-                expectIncome.ReleaseUnitNine__c = (String) dataMap.get('ReleaseUnitNine');
+            if (dataMap.containsKey('releaseUnitNine')) { // 테스트
+                expectIncome.ReleaseUnitNine__c = (String) dataMap.get('releaseUnitNine');
             }            
-            if (dataMap.containsKey('EnforcementMonthNine')) { // 테스트
-                expectIncome.EnforcementMonthNine__c = (String) dataMap.get('EnforcementMonthNine');
+            if (dataMap.containsKey('enforcementMonthNine')) { // 테스트
+                expectIncome.EnforcementMonthNine__c = (String) dataMap.get('enforcementMonthNine');
             }            
-            if (dataMap.containsKey('PltOriginalNine')) { // 테스트
-                expectIncome.PltOriginalNine__c = convertToDecimal(dataMap.get('PltOriginalNine'));
+            if (dataMap.containsKey('pltOriginalNine')) { // 테스트
+                expectIncome.PltOriginalNine__c = convertToDecimal(dataMap.get('pltOriginalNine'));
             }
-            if (dataMap.containsKey('PltPlanNine')) { // 테스트
-                expectIncome.PltPlanNine__c = convertToDecimal(dataMap.get('PltPlanNine'));
+            if (dataMap.containsKey('pltPlanNine')) { // 테스트
+                expectIncome.PltPlanNine__c = convertToDecimal(dataMap.get('pltPlanNine'));
             }
-            if (dataMap.containsKey('StockMoneyOriginalNine')) { // 테스트
-                expectIncome.StockMoneyOriginalNine__c = convertToDecimal(dataMap.get('StockMoneyOriginalNine'));
+            if (dataMap.containsKey('stockMoneyOriginalNine')) { // 테스트
+                expectIncome.StockMoneyOriginalNine__c = convertToDecimal(dataMap.get('stockMoneyOriginalNine'));
             }
-            if (dataMap.containsKey('StockMoneyPlanNine')) { // 테스트
-                expectIncome.StockMoneyPlanNine__c = convertToDecimal(dataMap.get('StockMoneyPlanNine'));
+            if (dataMap.containsKey('stockMoneyPlanNine')) { // 테스트
+                expectIncome.StockMoneyPlanNine__c = convertToDecimal(dataMap.get('stockMoneyPlanNine'));
             }
-            if (dataMap.containsKey('MonthSaleNine')) { // 테스트
-                expectIncome.MonthSaleNine__c = convertToDecimal(dataMap.get('MonthSaleNine'));
+            if (dataMap.containsKey('monthSaleNine')) { // 테스트
+                expectIncome.MonthSaleNine__c = convertToDecimal(dataMap.get('monthSaleNine'));
             }
-            if (dataMap.containsKey('MonthSalesProfitNine')) { // 테스트
-                expectIncome.MonthSalesProfitNine__c = convertToDecimal(dataMap.get('MonthSalesProfitNine'));
+            if (dataMap.containsKey('monthSalesProfitNine')) { // 테스트
+                expectIncome.MonthSalesProfitNine__c = convertToDecimal(dataMap.get('monthSalesProfitNine'));
             }
 
-            if (dataMap.containsKey('ProductNameTen')) { // 테스트
+            if (dataMap.containsKey('productNameTen')) { // 테스트
                 expectIncome.ProductNameTen__c = (String) dataMap.get('ProductNameTen');
             }            
-            if (dataMap.containsKey('StorageConditionTen')) { // 테스트
-                expectIncome.StorageConditionTen__c = (String) dataMap.get('StorageConditionTen');
+            if (dataMap.containsKey('storageConditionTen')) { // 테스트
+                expectIncome.StorageConditionTen__c = (String) dataMap.get('storageConditionTen');
             }            
-            if (dataMap.containsKey('ReleaseUnitTen')) { // 테스트
-                expectIncome.ReleaseUnitTen__c = (String) dataMap.get('ReleaseUnitTen');
+            if (dataMap.containsKey('releaseUnitTen')) { // 테스트
+                expectIncome.ReleaseUnitTen__c = (String) dataMap.get('releaseUnitTen');
             }            
-            if (dataMap.containsKey('EnforcementMonthTen')) { // 테스트
-                expectIncome.EnforcementMonthTen__c = (String) dataMap.get('EnforcementMonthTen');
+            if (dataMap.containsKey('enforcementMonthTen')) { // 테스트
+                expectIncome.EnforcementMonthTen__c = (String) dataMap.get('enforcementMonthTen');
             }            
-            if (dataMap.containsKey('PltOriginalTen')) { // 테스트
-                expectIncome.PltOriginalTen__c = convertToDecimal(dataMap.get('PltOriginalTen'));
+            if (dataMap.containsKey('pltOriginalTen')) { // 테스트
+                expectIncome.PltOriginalTen__c = convertToDecimal(dataMap.get('pltOriginalTen'));
             }
-            if (dataMap.containsKey('PltPlanTen')) { // 테스트
+            if (dataMap.containsKey('pltPlanTen')) { // 테스트
                 expectIncome.PltPlanTen__c = convertToDecimal(dataMap.get('PltPlanTen'));
             }
-            if (dataMap.containsKey('StockMoneyOriginalTen')) { // 테스트
-                expectIncome.StockMoneyOriginalTen__c = convertToDecimal(dataMap.get('StockMoneyOriginalTen'));
+            if (dataMap.containsKey('stockMoneyOriginalTen')) { // 테스트
+                expectIncome.StockMoneyOriginalTen__c = convertToDecimal(dataMap.get('stockMoneyOriginalTen'));
             }
-            if (dataMap.containsKey('StockMoneyPlanTen')) { // 테스트
-                expectIncome.StockMoneyPlanTen__c = convertToDecimal(dataMap.get('StockMoneyPlanTen'));
+            if (dataMap.containsKey('stockMoneyPlanTen')) { // 테스트
+                expectIncome.StockMoneyPlanTen__c = convertToDecimal(dataMap.get('stockMoneyPlanTen'));
             }
-            if (dataMap.containsKey('MonthSaleTen')) { // 테스트
-                expectIncome.MonthSaleTen__c = convertToDecimal(dataMap.get('MonthSaleTen'));
+            if (dataMap.containsKey('monthSaleTen')) { // 테스트
+                expectIncome.MonthSaleTen__c = convertToDecimal(dataMap.get('monthSaleTen'));
             }
-            if (dataMap.containsKey('MonthSalesProfitTen')) { // 테스트
-                expectIncome.MonthSalesProfitTen__c = convertToDecimal(dataMap.get('MonthSalesProfitTen'));
+            if (dataMap.containsKey('monthSalesProfitTen')) { // 테스트
+                expectIncome.MonthSalesProfitTen__c = convertToDecimal(dataMap.get('monthSalesProfitTen'));
             }
 
-    
+            if (dataMap.containsKey('multipleSkuRoomTemperature')) { // 테스트
+                expectIncome.MultipleSkuRoomTemperature__c = convertToDecimal(dataMap.get('multipleSkuRoomTemperature'));
+            }
+            if (dataMap.containsKey('multipleSkuRefrigeration')) { // 테스트
+                expectIncome.MultipleSkuRefrigeration__c = convertToDecimal(dataMap.get('multipleSkuRefrigeration'));
+            }
+            if (dataMap.containsKey('multipleSkuFreezer')) { // 테스트
+                expectIncome.MultipleSkuFreezer__c = convertToDecimal(dataMap.get('multipleSkuFreezer'));
+            }
+            if (dataMap.containsKey('multiplePltRoomTemperature')) { // 테스트
+                expectIncome.MultiplePltRoomTemperature__c = convertToDecimal(dataMap.get('multiplePltRoomTemperature'));
+            }
+            if (dataMap.containsKey('multiplePltRefrigeration')) { // 테스트
+                expectIncome.MultiplePltRefrigeration__c = convertToDecimal(dataMap.get('multiplePltRefrigeration'));
+            }
+            if (dataMap.containsKey('multiplePltFreezer')) { // 테스트
+                expectIncome.MultiplePltFreezer__c = convertToDecimal(dataMap.get('multiplePltFreezer'));
+            }
 
+            if (dataMap.containsKey('storageSkuRoomTemperature')) { // 테스트
+                expectIncome.StorageSkuRoomTemperature__c = convertToDecimal(dataMap.get('storageSkuRoomTemperature'));
+            }
+            if (dataMap.containsKey('storageSkuRefrigeration')) { // 테스트
+                expectIncome.StorageSkuRefrigeration__c = convertToDecimal(dataMap.get('storageSkuRefrigeration'));
+            }
+            if (dataMap.containsKey('storageSkuFreezer')) { // 테스트
+                expectIncome.StorageSkuFreezer__c = convertToDecimal(dataMap.get('storageSkuFreezer'));
+            }
+            if (dataMap.containsKey('storagePltRoomTemperature')) { // 테스트
+                expectIncome.StoragePltRoomTemperature__c = convertToDecimal(dataMap.get('storagePltRoomTemperature'));
+            }
+            if (dataMap.containsKey('storagePltRefrigeration')) { // 테스트
+                expectIncome.StoragePltRefrigeration__c = convertToDecimal(dataMap.get('storagePltRefrigeration'));
+            }
+            if (dataMap.containsKey('storagePltFreezer')) { // 테스트
+                expectIncome.StoragePltFreezer__c = convertToDecimal(dataMap.get('storagePltFreezer'));
+            }
 
+            if (dataMap.containsKey('reductionSkuRoomTemperature')) { // 테스트
+                expectIncome.ReductionSkuRoomTemperature__c = convertToDecimal(dataMap.get('reductionSkuRoomTemperature'));
+            }
+            if (dataMap.containsKey('reductionSkuRefrigeration')) { // 테스트
+                expectIncome.ReductionSkuRefrigeration__c = convertToDecimal(dataMap.get('reductionSkuRefrigeration'));
+            }
+            if (dataMap.containsKey('reductionSkuFreezer')) { // 테스트
+                expectIncome.ReductionSkuFreezer__c = convertToDecimal(dataMap.get('reductionSkuFreezer'));
+            }
+            if (dataMap.containsKey('reductionPltRoomTemperature')) { // 테스트
+                expectIncome.ReductionPltRoomTemperature__c = convertToDecimal(dataMap.get('reductionPltRoomTemperature'));
+            }
+            if (dataMap.containsKey('reductionPltRefrigeration')) { // 테스트
+                expectIncome.ReductionPltRefrigeration__c = convertToDecimal(dataMap.get('reductionPltRefrigeration'));
+            }
+            if (dataMap.containsKey('reductionPltFreezer')) { // 테스트
+                expectIncome.ReductionPltFreezer__c = convertToDecimal(dataMap.get('reductionPltFreezer'));
+            }
             upsert expectIncome;
+
+ 
             return 'success';
         } catch (Exception e) {
             String errorMessage = e.getMessage(); 
@@ -1800,7 +1897,212 @@ public with sharing class OrderConsiderFormController {
 
             return 'error';
         }
+        //     upsert expectIncome;
+
+        //     // 실적현황 insert 
+        //     if(expectIncome.Id !=null){
+        //         upsertSalesSolution(expectIncome.Id , dataMap);
+        //     }
+
+        //     return 'success';
+        // } catch (Exception e) {
+        //     String errorMessage = e.getMessage(); 
+        //     String errorStackTrace = e.getStackTraceString(); 
+        //     System.debug('에러 메시지: ' + errorMessage);
+        //     System.debug('에러 라인: ' + errorStackTrace);
+
+        //     return 'error';
+        // }
     }
+
+    /* 
+    추진사항정보 upsert
+    @param : 신규개설품의Id , VF page 에서 수정데이터가 내용이담긴 dataMap
+    */
+    // public static void upsertPromoteIssues(String expectIncomeId , Map<String, Object> dataMap) {
+    //     System.debug(' 실적현황 insert 2 ' + expectIncomeId );
+    //     System.debug(' dataMap !' + dataMap );
+    //     CJFW_PromoteIssues__c promoteIssues;
+
+    //     if (expectIncomeId != null && expectIncomeId != '') {
+    //         System.debug('실적현황 update ★-> ' + expectIncomeId);
+    //         promoteIssues = [SELECT Id FROM 	CJFW_PromoteIssues__c WHERE PromoteExpectedId__c  = :expectIncomeId LIMIT 1];
+    //     }else{
+    //         System.debug('실적현황 insert ★-> ' );
+    //         promoteIssues = new 	CJFW_PromoteIssues__c();
+    //         promoteIssues.PromoteExpectedId__c = expectIncomeId; // 필수값 
+    //     }
+    //     // 솔루션 ㅣㅣ구분
+    //     if (dataMap.containsKey('beforeSales')) { 
+    //         promoteIssues.BeforeSales__c = convertToDecimal(dataMap.get('beforeSales'));
+    //     }
+
+
+
+    //     upsert promoteIssues;
+    // }
+
+    /* 
+    실적현황 가져오기 
+    @param : 신규개설품의Id
+    */
+    // public void getSalesPerform(String expectIncomeId) {
+
+    //     System.debug(' 실적현황 가져오기 ~ ' + expectIncomeId );
+    //     try{
+
+    //         salesPerformance = [
+    //             SELECT  Id,
+    //             SolutionDivisionOne__c,         // 추진사항 솔루션 구분
+    //             SolutionDetailsTwo__c,
+    //             SolutionDivisionThree__c,
+    //             SolutionDivisionFour__c,
+    //             SolutionDivisionFive__c,
+    //             SolutionDivisionFive__c,
+    //             SolutionDivisionFive__c,
+
+    //             SolutionDetailsOne__c,
+    //             SolutionDetailsTwo__c,
+    //             SolutionDetailsThree__c,
+    //             SolutionDetailsFour__c,
+    //             SolutionDetailsFive__c,
+
+    //                     SolutionNewOne__c,
+    //                     SolutionNewTwo__c,
+    //                     SolutionNewThree__c,
+    //                     SolutionNewFour__c,
+    //                     SolutionNewFive__c,
+
+    //                     SolutionUseOne__c,
+    //                     SolutionUseTwo__c,
+    //                     SolutionUseThree__c,
+    //                     SolutionUseFour__c,
+    //                     SolutionUseFive__c,
+                        
+    //                     SolutionStoreOne__c,
+    //                     SolutionProductNameTwo__c,
+    //                     SolutionStoreThree__c,
+    //                     SolutionProductNameFour__c,
+    //                     SolutionProductNameFive__c,
+
+    //                     SolutionStoreOne__c,
+    //                     SolutionStoreTwo__c,
+    //                     SolutionStoreThree__c,
+    //                     SolutionStoreFour__c,
+    //                     SolutionStoreFive__c,
+                        
+    //                     SolutionReleaseUnitOne__c,
+    //                     SolutionReleaseUnitTwo__c,
+    //                     SolutionReleaseUnitThree__c,
+    //                     SolutionReleaseUnitFour__c,
+    //                     SolutionReleaseUnitFive__c,
+
+    //                     ManageEnforcementMonthOne__c,
+    //                     ManageEnforcementMonthTwo__c,
+    //                     ManageEnforcementMonthThree__c,
+    //                     ManageEnforcementMonthFour__c,
+    //                     ManageEnforcementMonthFive__c,
+
+    //                     ManagePltOne__c,
+    //                     ManageStockMoneyTwo__c,
+    //                     ManagePltThree__c,
+    //                     ManagePltFour__c,
+    //                     ManagePltFive__c,
+
+    //                     ManageStockMoneyOne__c,
+    //                     ManageStockMoneyTwo__c,
+    //                     ManageStockMoneyThree__c,
+    //                     ManageStockMoneyFour__c,
+    //                     ManageStockMoneyFive__c,
+
+    //                     ResultSaleOne__c,
+    //                     ResultSaleTwo__c,
+    //                     ResultSaleThree__c,
+    //                     ResultSaleFour__c,
+    //                     ResultSaleFive__c,
+
+    //                     ResultSalesProfitOne__c,
+    //                     ResultSalesProfitTwo__c,
+    //                     ResultSalesProfitThree__c,
+    //                     ResultSalesProfitFour__c,
+    //                     ResultSalesProfitFive__c,
+
+    //                     ExpectedIncomeExpensesId__c 
+    //             FROM CJFW_SalesPerformance__c WHERE ExpectedIncomeExpensesId__c =: expectIncomeId LIMIT 1  ];
+
+
+    //             // 조회된내용이 없을때 계산식에 오류가 발생하기때문에 아래와같이 default로 0.00 으로 세팅한다 
+    //             String[] defaultValSet = new String[] {
+    //                 'BeforeSales__c', // 매출
+    //                 'SalesElevenAgo__c',
+    //                 'SalesTenAgo__c',
+    //                 'SalesNineAgo__c',
+    //                 'SalesEightAgo__c',
+    //                 'SalesSevenAgo__c',
+    //                 'SalesSixAgo__c',
+    //                 'SalesFiveAgo__c',
+    //                 'SalesFourAgo__c',
+    //                 'SalesThreeAgo__c',
+    //                 'SalesTwoAgo__c',
+    //                 'SalesOneAgo__c',
+    //                 'BeforeSalesProfit__c', // 매출이익
+    //                 'SalesProfitElevenAgo__c',
+    //                 'SalesProfitTenAgo__c',
+    //                 'SalesProfitNineAgo__c',
+    //                 'SalesProfitEightAgo__c',
+    //                 'SalesProfitSevenAgo__c',
+    //                 'SalesProfitSixAgo__c',
+    //                 'SalesProfitFiveAgo__c',
+    //                 'SalesProfitFourAgo__c',
+    //                 'SalesProfitThreeAgo__c',
+    //                 'SalesProfitTwoAgo__c',
+    //                 'SalesProfitOneAgo__c',
+
+
+                    
+    //             };
+
+    //             String[] defaultZeroSet = new String[] {
+
+    //                 'BeforeSalesStore__c', // 매장수
+    //                 'SalesStoreElevenAgo__c',
+    //                 'SalesStoreTenAgo__c',
+    //                 'SalesStoreNineAgo__c',
+    //                 'SalesStoreEightAgo__c',
+    //                 'SalesStoreSevenAgo__c',
+    //                 'SalesStoreSixAgo__c',
+    //                 'SalesStoreFiveAgo__c',
+    //                 'SalesStoreFourAgo__c',
+    //                 'SalesStoreThreeAgo__c',
+    //                 'SalesStoreTwoAgo__c',
+    //                 'SalesStoreOneAgo__c'
+    //             };    
+
+    //             for (String defaultSet : defaultValSet) {
+    //                 Object fieldValue = salesPerformance.get(defaultSet);
+    //                 // 필드 값이 null이면 기본값을 0.00으로 설정
+    //                 if (fieldValue == null) fieldValue = 0.00; 
+    //                 salesPerformance.put(defaultSet, fieldValue);
+    //             }
+
+    //             for (String defaultSet : defaultZeroSet) {
+    //                 Object fieldValue = salesPerformance.get(defaultSet);
+    //                 // 필드 값이 null이면 기본값을 0.00으로 설정
+    //                 if (fieldValue == null) fieldValue = 0; 
+    //                 salesPerformance.put(defaultSet, fieldValue);
+    //             }
+
+
+    //     }catch(Exception e){
+    //         String errorMessage = e.getMessage();
+    //         String errorStackTrace = e.getStackTraceString(); 
+    //         System.debug(' 실적현황쪽 에러 메시지: ' + errorMessage);
+    //         System.debug(' 실적현황쪽 에러 라인: ' + errorStackTrace);
+    //     }
+    //     System.debug(' 실적현황 가져오기 ~ ' + salesPerformance  );
+    // }
+
+
 
     /* 
     품의지정 버튼 클릭시 , 품의지정 check 
@@ -1862,10 +2164,6 @@ public with sharing class OrderConsiderFormController {
      */
     public void getDistributeCost() {
         System.debug('# ReportFormController # getDistributeCost ');
-
-        
-        
-
         // 파람값 들어오면 변경예정 231024
         //String ReportType1 ='외식SU';
         //String ReportType2 ='급식SU';

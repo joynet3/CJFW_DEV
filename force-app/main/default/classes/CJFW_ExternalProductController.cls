@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : doyeon.kim@dkbmc.com
  * @group             : 
- * @last modified on  : 11-06-2023
+ * @last modified on  : 11-09-2023
  * @last modified by  : doyeon.kim@dkbmc.com
 **/
 public with sharing class CJFW_ExternalProductController {
@@ -10,7 +10,7 @@ public with sharing class CJFW_ExternalProductController {
     @AuraEnabled
     public static List<Product2> getIFData(List<String> codeList){
         try {
-            System.debug('codeList : '+ codeList);
+            System.debug('외부창고 상품코드 : '+ codeList);
             
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());

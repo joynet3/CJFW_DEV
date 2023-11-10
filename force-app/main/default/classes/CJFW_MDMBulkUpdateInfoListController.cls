@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 11-06-2023
+ * @last modified on  : 11-09-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkUpdateInfoListController {
@@ -15,6 +15,7 @@ public with sharing class CJFW_MDMBulkUpdateInfoListController {
         List<String> ids = new List<String>();
 
         for(MDMRegRequestCustomer__c mdm : mdms) {
+            System.debug(mdm.PV_KUNNR__c);
             ids.add(mdm.PV_KUNNR__c);
         }
 
@@ -291,6 +292,11 @@ public with sharing class CJFW_MDMBulkUpdateInfoListController {
         Integer startIndex = (pageNumber - 1) * pageSize;
         Integer endIndex = Math.min(startIndex + pageSize, resultSize);
         Integer lastPageNumber = resultSize / pageSize;
+
+        // 실수면 올림
+        if (Math.mod(resultSize, pageSize) != 0) {
+            lastPageNumber += 1;
+        }
         if(lastPageNumber == 0) {
             lastPageNumber = 1;
         }

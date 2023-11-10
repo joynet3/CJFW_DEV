@@ -2,7 +2,7 @@
  * @description       :
  * @author            : sunkyung.choi@dkbmc.com
  * @group             :
- * @last modified on  : 11-07-2023
+ * @last modified on  : 11-09-2023
  * @last modified by  : sunkyung.choi@dkbmc.com
 **/
 public with sharing class CJFW_Survey_tr extends TriggerHandler {
@@ -13,12 +13,12 @@ public with sharing class CJFW_Survey_tr extends TriggerHandler {
         mapNew = (Map<Id, CJFW_Survey__c>)Trigger.newMap;
         mapOld = (Map<Id, CJFW_Survey__c>)Trigger.oldMap;
     }
-
+    
     /*** TriggerHandler ***/
-    private List<CJFW_Survey__c> listNew { get;set;}
-    private List<CJFW_Survey__c> listOld{ get;set;}
-    private Map<Id, CJFW_Survey__c> mapNew { get;set;}
-    private Map<Id, CJFW_Survey__c> mapOld { get;set;}
+    @testVisible private List<CJFW_Survey__c> listNew { get;set;}
+    @testVisible private List<CJFW_Survey__c> listOld{ get;set;}
+    @testVisible private Map<Id, CJFW_Survey__c> mapNew { get;set;}
+    @testVisible private Map<Id, CJFW_Survey__c> mapOld { get;set;}
 
     public override void beforeInsert() {
         doClone();
@@ -29,7 +29,7 @@ public with sharing class CJFW_Survey_tr extends TriggerHandler {
     public override void beforeUpdate() {
         checkSuFieldChanges();
     }
-    private void doClone() {
+    @testVisible private void doClone() {
         system.debug('doClone  START');
         List<CJFW_Survey__c> newSurveyLists = listNew;
         Set<Id> surveyIdSet = new Set<Id>();
@@ -88,7 +88,7 @@ public with sharing class CJFW_Survey_tr extends TriggerHandler {
         }
     }
 
-    private void doCloneInsert() {
+    @testVisible private void doCloneInsert() {
         system.debug('doCloneInsert  START');
         List<CJFW_Survey__c> newSurveyLists = listNew;
         system.debug('22222 : >> ' + newSurveyLists);
@@ -176,7 +176,7 @@ public with sharing class CJFW_Survey_tr extends TriggerHandler {
         }
         insert surveyFollowList;
     }
-    private void checkSuFieldChanges() {
+    @testVisible private void checkSuFieldChanges() {
         List<CJFW_Survey__c> newSurveyLists = listNew;
         List<CJFW_Survey__c> oldSurveysList = listOld;
         Map<String, CJFW_Survey__c> suCheckMap = new Map<String, CJFW_Survey__c>();

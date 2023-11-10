@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : yeonji.lim@dkbmc.com
  * @group             : 
- * @last modified on  : 11-03-2023
+ * @last modified on  : 11-09-2023
  * @last modified by  : jieun.lee3@dkbmc.com
 **/
 public with sharing class CJFW_ExpectedIncoExpenRelatedController {
@@ -18,11 +18,13 @@ public with sharing class CJFW_ExpectedIncoExpenRelatedController {
              System.debug('옵티 Id'+ Id);
             
             Opportunity objOppty = [
-                SELECT Id, Type, Owner.HeadOffice__c
+                SELECT Id, Type, OwnerId, Owner.HeadOffice__c
                  FROM Opportunity
                  WHERE Id =: Id
             ];
                 
+            System.debug('objoppty '+ objOppty);
+            System.debug('objoppty headoffice '+ objOppty.Owner.HeadOffice__c);
             String headLabel = objOppty.Owner.HeadOffice__c;
             String type = objOppty.Type;
             System.debug('headlabel'+ headLabel);
