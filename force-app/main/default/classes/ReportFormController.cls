@@ -1,14 +1,14 @@
 /**
- * @description       : 하위 품의서에 노출시킬 데이터 가져오는 용도의 Controller
+ * @description       : 급식관련 품의서에 노출시킬 데이터 가져오는 용도의 Controller
  * 
-  [품의서종류 참고사항]
-  (급식솔루션,헬씨,아이누리)_신규개설품의 page : CJFW_NewOpenReport
-  (급식)_보증금양식 page : CJFW_DepositForm
-  (아이누리)_신규개설품의 page : CJFW_NewInuriOpenReport
+  [급식관련 품의서종류 참고사항]
+  (급식솔루션,헬씨,아이누리) 신규개설품의 PAGE : CJFW_NewOpenReport
+  (급식)보증금개설 PAGE: CJFW_DepositForm
+  (급식)보증금변경 PAGE: CJFW_ChangeDepositForm
 
  * @author            : eunyoung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 11-09-2023
+ * @last modified on  : 11-13-2023
  * @last modified by  : yeonji.lim@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -93,6 +93,15 @@ public with sharing class ReportFormController {
         System.debug('# incomeExpensesId ->' + incomeExpensesId );
         System.debug('# showtable ->' + showtable );
         System.debug('# reportType ->' + reportType );
+
+        String pageReferenceString = ApexPages.currentPage().getUrl();
+        String testReContract = '/apex/CJFW_NewOpenReport';
+        System.debug(' 급식신규 테스트 모드 ' + testReContract );
+        if (pageReferenceString == testReContract) {
+            opportunityId = '0060w00000D8uikAAB';
+            incomeExpensesId = 'a1lH2000001YZ22IAG';
+            showtable = 'false';
+        }
 
         getPicklistValues(); // picklist label/value 값 담기 [1]
         getAccountInfo();    // 고객사 정보 가져오기 [2]
@@ -676,29 +685,21 @@ public with sharing class ReportFormController {
 
             expectIncome.saveResult__c = DataList;
 
-            // 개요
-            if (dataMap.containsKey('summary')) { 
-                expectIncome.Summary__c = (String) dataMap.get('summary');
+            // 23-11-10 id 값수정 (급식신규) ↓
+            if (dataMap.containsKey('collateralType')) { // 담보제공종류
+                expectIncome.CollateralType__c = (String) dataMap.get('collateralType');
             }
-            expectIncome.CollateralType__c = (String)dataMap.get('detail-collateral-kind') != null ? (String)dataMap.get('detail-collateral-kind') : ''; // 담보제공 종류
-            expectIncome.PaymentMethod__c = (String)dataMap.get('payment-picklist') != null ? (String)dataMap.get('payment-picklist') : ''; // 결제수단 종류
-            expectIncome.CreditLoanAmount__c = convertToDecimal(dataMap.get('detail-creditLoan-amount')); // 신용여신금액 
-            expectIncome.ContractDepreciationSupport__c = convertToDecimal(dataMap.get('detail-deprec-amount'));
-            expectIncome.IncentiveSupport__c = convertToDecimal(dataMap.get('detail-incentive-amount'));
-            expectIncome.SalesFeeSupport__c = convertToDecimal(dataMap.get('detail-fee-amount'));
-            expectIncome.DonationSupport__c = convertToDecimal(dataMap.get('detail-donation-amount'));
-            expectIncome.OtherSupport__c = convertToDecimal(dataMap.get('detail-other-amount'));
-            expectIncome.FarmSupportExpect__c = convertToDecimal(dataMap.get('farm-before'));  //농산 지원 월예상 
-            expectIncome.MarineSupportExpect__c = convertToDecimal(dataMap.get('marin-before')); //수산 지원 월예상
-            expectIncome.LivestockSupportExpect__c = convertToDecimal(dataMap.get('livestock-before')); // 축산 지원 월예상
-            expectIncome.ManufactureSupportExpect__c = convertToDecimal(dataMap.get('manufacture-before')); // 가공식품 지원 월예상
-            expectIncome.NonFoodSupportExpect__c = convertToDecimal(dataMap.get('nonfood-before')); // 비식품 지원 월예상
-            expectIncome.SalesSupportExpect__c = convertToDecimal(dataMap.get('sales-support')); // 매출이익률
-            expectIncome.CollateralAmount__c = convertToDecimal(dataMap.get('detail-collateral-amount')); // 담보제공금액 
-            expectIncome.ChefSupportCnt__c = convertToDecimal(dataMap.get('chef-support')); // 쉐프지원 
-
-            String collateralPeriod = (String)dataMap.get('collateral-period');
-            String contractPeriod = (String)dataMap.get('contract-payment-period');
+            if (dataMap.containsKey('creditLoanAmount')) { // 신용여신금액
+                expectIncome.CreditLoanAmount__c = convertToDecimal(dataMap.get('creditLoanAmount'));
+            }
+            if (dataMap.containsKey('chefSupport')) { // 신용여신금액
+                expectIncome.ChefSupportCnt__c = convertToDecimal(dataMap.get('chefSupport'));
+            }
+            if (dataMap.containsKey('contractType')) { // 계약서종류
+                System.debug('계약서종류 !! '  + (String) dataMap.get('contractType') );
+                expectIncome.ContractType__c = (String) dataMap.get('contractType');
+            }
+            // 23-11-10 id 값수정 (급식신규) ↑
 
             /* 개요 */
             if (dataMap.containsKey('summary')) { 
@@ -894,9 +895,36 @@ public with sharing class ReportFormController {
             if (dataMap.containsKey('nonfoodBefore') && dataMap.get('nonfoodBefore') !='') { // 비식품
                 expectIncome.NonFoodSupportExpect__c = convertToDecimal(dataMap.get('nonfoodBefore')) ;
             }
-            if (dataMap.containsKey('salesSupportBefore') && dataMap.get('salesSupportBefore') !='') { //  매출이익 데이터
+            if (dataMap.containsKey('salesSupportBefore')) { //  매출이익 데이터
                 expectIncome.SalesSupportExpect__c = convertToDecimal(dataMap.get('salesSupportBefore')) ;
             }
+
+            // 금식 보증금 변경양식 전용 ↓
+            if (dataMap.containsKey('salesTwoMonth') && dataMap.get('salesTwoMonth') !='') { // ASIS 매출 전전월 실적
+                expectIncome.SalesTwoMonth__c = convertToDecimal(dataMap.get('salesTwoMonth')) ;
+            }
+            if (dataMap.containsKey('salesOneMonth') && dataMap.get('salesOneMonth') !='') { // ASIS 매출 전월 실적
+                expectIncome.SalesOneMonth__c = convertToDecimal(dataMap.get('salesOneMonth')) ;
+            }
+            if (dataMap.containsKey('salesMonth') && dataMap.get('salesMonth') !='') { // ASIS 매출 당월 예상 실적
+                expectIncome.SalesMonth__c = convertToDecimal(dataMap.get('salesMonth')) ;
+            }
+            if (dataMap.containsKey('salesBefore') && dataMap.get('salesBefore') !='') { // TOBE 지원 전 매출실적
+                expectIncome.SalesBefore__c = convertToDecimal(dataMap.get('salesBefore')) ;
+            }
+            if (dataMap.containsKey('salesSupportTwoMonth') && dataMap.get('salesSupportTwoMonth') !='') { // ASIS 매출이익 전전월 실적
+                expectIncome.SalesSupportTwoMonth__c = convertToDecimal(dataMap.get('salesSupportTwoMonth')) ;
+            }
+            if (dataMap.containsKey('salesSupportOneMonth') && dataMap.get('salesSupportOneMonth') !='') { // ASIS 매출이익 전월 실적
+                expectIncome.SalesSupportOneMonth__c = convertToDecimal(dataMap.get('salesSupportOneMonth')) ;
+            }
+            if (dataMap.containsKey('salesSupportMonth') && dataMap.get('salesSupportMonth') !='') { // ASIS 매출이익 당월 예상 실적
+                expectIncome.SalesSupportMonth__c = convertToDecimal(dataMap.get('salesSupportMonth')) ;
+            }
+            if (dataMap.containsKey('salesSupportRateBefore') && dataMap.get('salesSupportRateBefore') !='') { // TOBE 지원 전 매출이익실적
+                expectIncome.SalesSupportRateBefore__c = convertToDecimal(dataMap.get('salesSupportRateBefore')) ;
+            }
+
 
             if (dataMap.containsKey('changeReason')) { // 회당 20만원 산정 수정내역 (급식신규사용)
                 expectIncome.ChangeReason__c = (String)dataMap.get('changeReason') ;

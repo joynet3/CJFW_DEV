@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : jieun.lee3@dkbmc.com
  * @group             : 
- * @last modified on  : 11-09-2023
+ * @last modified on  : 11-13-2023
  * @last modified by  : jieun.lee3@dkbmc.com
 **/
 @isTest
@@ -30,10 +30,10 @@ public with sharing class CJFW_ExpectedExpenRelatedController_Test {
         insert objOppty;
 
         // 신규개설품의
-        CJFW_ExpectedIncomeExpenses__c objExIncome1 = new CJFW_ExpectedIncomeExpenses__c();
-        objExIncome1 = COMM_ReportTestDataFactory.createExpectedIncome(objOppty.Id);
-        objExIncome1.Opportunity__c = objOppty.Id;
-        objExIncome1.ReportType__c = 'CRM008';
+        CJFW_ExpectedIncomeExpenses__c objExIncome1 = new CJFW_ExpectedIncomeExpenses__c(Opportunity__c = objOppty.Id, ReportType__c = 'CRM008', Version__c = 1 , IsReportCheck__c = false);
+        // objExIncome1 = COMM_ReportTestDataFactory.createExpectedIncome(objOppty.Id);
+        // objExIncome1.Opportunity__c = objOppty.Id;
+        // objExIncome1.ReportType__c = 'CRM008';
         insert objExIncome1;
 
         CJFW_ExpectedIncomeExpenses__c objExIncome2 = new CJFW_ExpectedIncomeExpenses__c();
@@ -62,6 +62,7 @@ public with sharing class CJFW_ExpectedExpenRelatedController_Test {
         System.debug('objExIncome1'+objExIncome1.ReportType__c);
         objOppty.Owner = objUser;
         objOppty.Owner.HeadOffice__c = '3001';
+        System.debug('기회 =>'+objOppty);
         // objExIncome.Opportunity__c = objOppty.Id;
         // objExIncome.ReportType__c = 'CRM008';
 

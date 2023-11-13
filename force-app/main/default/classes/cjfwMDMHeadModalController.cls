@@ -2,7 +2,7 @@
  * @description       : 삭제예정
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 10-10-2023
+ * @last modified on  : 11-10-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -228,7 +228,8 @@ public with sharing class cjfwMDMHeadModalController {
                         PV_ZUAWA_lu__c, PV_AKONT_lu__c, PV_CUHR1_lu__c, PV_KONDA_lu__c, PV_KVGR1_lu__c, PV_WAERS_lu__c, PV_KVGR3_lu__c,
                         PV_KVGR3_BOT_lu__c, PV_ZTERM_VV_lu__c, PV_OLD_BIZPLACE_NEW_lu__c, PV_DELIGROUP_lu__c, PV_KATR10_lu__c, PV_WAERS__c,
                         PV_PERNR_lu__c, PV_ADMINMA_lu__c, PV_HKUNNR_lu__c, PV_PAYCUST_lu__c, IsSelf_PV_PAYCUST__c, PV_CHARGECUST_lu__c,
-                        IsSelf_PV_CHARGECUST__c, Status__c, WF_DESCRIPTION__c, PV_SELLER_lu__c
+                        IsSelf_PV_CHARGECUST__c, Status__c, WF_DESCRIPTION__c
+                        //, PV_SELLER_lu__c
                 FROM    MDMRegRequestCustomer__c
                 WHERE   Id =:mdmCustomerId];
 

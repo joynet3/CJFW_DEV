@@ -1862,7 +1862,7 @@ public with sharing class OrderConsiderReContractFormController {
             salesPromoteIssue.ExpectedIncomeExpensesId__c = expectIncomeId; // 필수값 
         }
 
-        // 시너지 
+        // 시너지 1
         if (dataMap.containsKey('synergyDivisionOne')) {  // 구분
             salesPromoteIssue.SynergyDivisionOne__c = (String)dataMap.get('synergyDivisionOne');
         }
@@ -1877,6 +1877,39 @@ public with sharing class OrderConsiderReContractFormController {
         }
         if (dataMap.containsKey('synergyRemarkOne')) {    // 주요내용
             salesPromoteIssue.SynergyRemarkOne__c = (String)dataMap.get('synergyRemarkOne');
+        }
+        // 시너지 2
+        if (dataMap.containsKey('synergyDivisionTwo')) {  // 구분
+            salesPromoteIssue.SynergyDivisionTwo__c = (String)dataMap.get('synergyDivisionTwo');
+        }
+        if (dataMap.containsKey('synergyTypeTwo')) {      // 경로구분
+            salesPromoteIssue.SynergyTypeTwo__c = (String)dataMap.get('synergyTypeTwo');
+        }
+        if (dataMap.containsKey('synergySaleTwo')) {      // 매출 (소수)
+            salesPromoteIssue.SynergySaleTwo__c = convertToDecimal(dataMap.get('synergySaleTwo'));
+        }
+        if (dataMap.containsKey('synergySaleRateTwo')) {  // 매익률 (소수)
+            salesPromoteIssue.SynergySaleRateTwo__c = convertToDecimal(dataMap.get('synergySaleRateTwo'));
+        }
+        if (dataMap.containsKey('synergyRemarkTwo')) {    // 주요내용
+            salesPromoteIssue.SynergyRemarkTwo__c = (String)dataMap.get('synergyRemarkTwo');
+        }
+
+        // 시너지 3
+        if (dataMap.containsKey('synergyDivisionThree')) {  // 구분
+            salesPromoteIssue.SynergyDivisionThree__c = (String)dataMap.get('synergyDivisionThree');
+        }
+        if (dataMap.containsKey('synergyTypeThree')) {      // 경로구분
+            salesPromoteIssue.SynergyTypeThree__c = (String)dataMap.get('synergyTypeThree');
+        }
+        if (dataMap.containsKey('synergySaleThree')) {      // 매출 (소수)
+            salesPromoteIssue.SynergySaleThree__c = convertToDecimal(dataMap.get('synergySaleThree'));
+        }
+        if (dataMap.containsKey('synergySaleRateThree')) {  // 매익률 (소수)
+            salesPromoteIssue.SynergySaleRateThree__c = convertToDecimal(dataMap.get('synergySaleRateThree'));
+        }
+        if (dataMap.containsKey('synergyRemarkThree')) {    // 주요내용
+            salesPromoteIssue.SynergyRemarkThree__c = (String)dataMap.get('synergyRemarkThree');
         }
 
         upsert salesPromoteIssue;

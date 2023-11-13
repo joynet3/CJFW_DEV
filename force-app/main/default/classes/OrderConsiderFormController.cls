@@ -5,7 +5,7 @@
 
  * @author            : seol.kim@dkbmc.com
  * @group             : 
- * @last modified on  : 11-09-2023
+ * @last modified on  : 11-13-2023
  * @last modified by  : seol.kim@dkbmc.com
 **/
 public with sharing class OrderConsiderFormController {
@@ -29,6 +29,8 @@ public with sharing class OrderConsiderFormController {
 
     /* 계산값 가져오기 */
     public CJFW_ExpectedIncomeManager__c IncomeManager {get;set;} // 예상손익관리 
+    public CJFW_PromoteIssues__c PromoteIssues {get;set;} // 실적현황
+
     // public CJFW_DistributionCost__c DistributeCost {get;set;} // 물류비관리 
 
 
@@ -83,9 +85,6 @@ public with sharing class OrderConsiderFormController {
         this.showtable = ApexPages.currentPage().getParameters().get('showtable');
         this.reportType = ApexPages.currentPage().getParameters().get('type');
 
-
-
-
         // 리포트 타입에 따라서 물류비 picklist 선정해주기 
         if( reportType == 'CRM009' || reportType == 'CRM010' ){ // 외식 품의서 
             this.headOfficeLabel = '6000'; // 외식코드
@@ -93,11 +92,6 @@ public with sharing class OrderConsiderFormController {
         }else{ // 급식품의서 
             this.headOfficeLabel = '3001'; // 급식코드 
         }
-
-
-
-
-
 
 
         System.debug('# opportunityId ->' + opportunityId );
@@ -118,16 +112,14 @@ public with sharing class OrderConsiderFormController {
             getOpptyInfo();         // 담당자 정보 가져오기
             getAccountInfo();       // 고객사 정보 가져오기
             getIncomeExpenses();    // 신규개설품의 obj 값 가져오기
-            getExpectManager();  // 품의서 관리자 작성 obj 값 가져오기 [4] 
-            getDistributeCost(); // 물류비관리 값 가져오기 [5]
+            getExpectManager();  // 품의서 관리자 작성 obj 값 가져오기
+
+            if( incomeExpensesId != null ){
+                incomeExpensesId = 'a1lH2000001YcjWIAS';
+                System.debug('예상손익  id -> ' + incomeExpensesId );
+                getPromoteIssue(incomeExpensesId); // 추진사항정보 가져오기
+            }
         }
-
-
-
-
-
-
-
     }
 
     /* 
@@ -1885,9 +1877,14 @@ public with sharing class OrderConsiderFormController {
             if (dataMap.containsKey('reductionPltFreezer')) { // 테스트
                 expectIncome.ReductionPltFreezer__c = convertToDecimal(dataMap.get('reductionPltFreezer'));
             }
+
             upsert expectIncome;
 
- 
+            // 실적현황 insert 
+            if(expectIncome.Id !=null){
+                upsertPromoteIssues(expectIncome.Id , dataMap);
+            }
+
             return 'success';
         } catch (Exception e) {
             String errorMessage = e.getMessage(); 
@@ -1897,212 +1894,7 @@ public with sharing class OrderConsiderFormController {
 
             return 'error';
         }
-        //     upsert expectIncome;
-
-        //     // 실적현황 insert 
-        //     if(expectIncome.Id !=null){
-        //         upsertSalesSolution(expectIncome.Id , dataMap);
-        //     }
-
-        //     return 'success';
-        // } catch (Exception e) {
-        //     String errorMessage = e.getMessage(); 
-        //     String errorStackTrace = e.getStackTraceString(); 
-        //     System.debug('에러 메시지: ' + errorMessage);
-        //     System.debug('에러 라인: ' + errorStackTrace);
-
-        //     return 'error';
-        // }
     }
-
-    /* 
-    추진사항정보 upsert
-    @param : 신규개설품의Id , VF page 에서 수정데이터가 내용이담긴 dataMap
-    */
-    // public static void upsertPromoteIssues(String expectIncomeId , Map<String, Object> dataMap) {
-    //     System.debug(' 실적현황 insert 2 ' + expectIncomeId );
-    //     System.debug(' dataMap !' + dataMap );
-    //     CJFW_PromoteIssues__c promoteIssues;
-
-    //     if (expectIncomeId != null && expectIncomeId != '') {
-    //         System.debug('실적현황 update ★-> ' + expectIncomeId);
-    //         promoteIssues = [SELECT Id FROM 	CJFW_PromoteIssues__c WHERE PromoteExpectedId__c  = :expectIncomeId LIMIT 1];
-    //     }else{
-    //         System.debug('실적현황 insert ★-> ' );
-    //         promoteIssues = new 	CJFW_PromoteIssues__c();
-    //         promoteIssues.PromoteExpectedId__c = expectIncomeId; // 필수값 
-    //     }
-    //     // 솔루션 ㅣㅣ구분
-    //     if (dataMap.containsKey('beforeSales')) { 
-    //         promoteIssues.BeforeSales__c = convertToDecimal(dataMap.get('beforeSales'));
-    //     }
-
-
-
-    //     upsert promoteIssues;
-    // }
-
-    /* 
-    실적현황 가져오기 
-    @param : 신규개설품의Id
-    */
-    // public void getSalesPerform(String expectIncomeId) {
-
-    //     System.debug(' 실적현황 가져오기 ~ ' + expectIncomeId );
-    //     try{
-
-    //         salesPerformance = [
-    //             SELECT  Id,
-    //             SolutionDivisionOne__c,         // 추진사항 솔루션 구분
-    //             SolutionDetailsTwo__c,
-    //             SolutionDivisionThree__c,
-    //             SolutionDivisionFour__c,
-    //             SolutionDivisionFive__c,
-    //             SolutionDivisionFive__c,
-    //             SolutionDivisionFive__c,
-
-    //             SolutionDetailsOne__c,
-    //             SolutionDetailsTwo__c,
-    //             SolutionDetailsThree__c,
-    //             SolutionDetailsFour__c,
-    //             SolutionDetailsFive__c,
-
-    //                     SolutionNewOne__c,
-    //                     SolutionNewTwo__c,
-    //                     SolutionNewThree__c,
-    //                     SolutionNewFour__c,
-    //                     SolutionNewFive__c,
-
-    //                     SolutionUseOne__c,
-    //                     SolutionUseTwo__c,
-    //                     SolutionUseThree__c,
-    //                     SolutionUseFour__c,
-    //                     SolutionUseFive__c,
-                        
-    //                     SolutionStoreOne__c,
-    //                     SolutionProductNameTwo__c,
-    //                     SolutionStoreThree__c,
-    //                     SolutionProductNameFour__c,
-    //                     SolutionProductNameFive__c,
-
-    //                     SolutionStoreOne__c,
-    //                     SolutionStoreTwo__c,
-    //                     SolutionStoreThree__c,
-    //                     SolutionStoreFour__c,
-    //                     SolutionStoreFive__c,
-                        
-    //                     SolutionReleaseUnitOne__c,
-    //                     SolutionReleaseUnitTwo__c,
-    //                     SolutionReleaseUnitThree__c,
-    //                     SolutionReleaseUnitFour__c,
-    //                     SolutionReleaseUnitFive__c,
-
-    //                     ManageEnforcementMonthOne__c,
-    //                     ManageEnforcementMonthTwo__c,
-    //                     ManageEnforcementMonthThree__c,
-    //                     ManageEnforcementMonthFour__c,
-    //                     ManageEnforcementMonthFive__c,
-
-    //                     ManagePltOne__c,
-    //                     ManageStockMoneyTwo__c,
-    //                     ManagePltThree__c,
-    //                     ManagePltFour__c,
-    //                     ManagePltFive__c,
-
-    //                     ManageStockMoneyOne__c,
-    //                     ManageStockMoneyTwo__c,
-    //                     ManageStockMoneyThree__c,
-    //                     ManageStockMoneyFour__c,
-    //                     ManageStockMoneyFive__c,
-
-    //                     ResultSaleOne__c,
-    //                     ResultSaleTwo__c,
-    //                     ResultSaleThree__c,
-    //                     ResultSaleFour__c,
-    //                     ResultSaleFive__c,
-
-    //                     ResultSalesProfitOne__c,
-    //                     ResultSalesProfitTwo__c,
-    //                     ResultSalesProfitThree__c,
-    //                     ResultSalesProfitFour__c,
-    //                     ResultSalesProfitFive__c,
-
-    //                     ExpectedIncomeExpensesId__c 
-    //             FROM CJFW_SalesPerformance__c WHERE ExpectedIncomeExpensesId__c =: expectIncomeId LIMIT 1  ];
-
-
-    //             // 조회된내용이 없을때 계산식에 오류가 발생하기때문에 아래와같이 default로 0.00 으로 세팅한다 
-    //             String[] defaultValSet = new String[] {
-    //                 'BeforeSales__c', // 매출
-    //                 'SalesElevenAgo__c',
-    //                 'SalesTenAgo__c',
-    //                 'SalesNineAgo__c',
-    //                 'SalesEightAgo__c',
-    //                 'SalesSevenAgo__c',
-    //                 'SalesSixAgo__c',
-    //                 'SalesFiveAgo__c',
-    //                 'SalesFourAgo__c',
-    //                 'SalesThreeAgo__c',
-    //                 'SalesTwoAgo__c',
-    //                 'SalesOneAgo__c',
-    //                 'BeforeSalesProfit__c', // 매출이익
-    //                 'SalesProfitElevenAgo__c',
-    //                 'SalesProfitTenAgo__c',
-    //                 'SalesProfitNineAgo__c',
-    //                 'SalesProfitEightAgo__c',
-    //                 'SalesProfitSevenAgo__c',
-    //                 'SalesProfitSixAgo__c',
-    //                 'SalesProfitFiveAgo__c',
-    //                 'SalesProfitFourAgo__c',
-    //                 'SalesProfitThreeAgo__c',
-    //                 'SalesProfitTwoAgo__c',
-    //                 'SalesProfitOneAgo__c',
-
-
-                    
-    //             };
-
-    //             String[] defaultZeroSet = new String[] {
-
-    //                 'BeforeSalesStore__c', // 매장수
-    //                 'SalesStoreElevenAgo__c',
-    //                 'SalesStoreTenAgo__c',
-    //                 'SalesStoreNineAgo__c',
-    //                 'SalesStoreEightAgo__c',
-    //                 'SalesStoreSevenAgo__c',
-    //                 'SalesStoreSixAgo__c',
-    //                 'SalesStoreFiveAgo__c',
-    //                 'SalesStoreFourAgo__c',
-    //                 'SalesStoreThreeAgo__c',
-    //                 'SalesStoreTwoAgo__c',
-    //                 'SalesStoreOneAgo__c'
-    //             };    
-
-    //             for (String defaultSet : defaultValSet) {
-    //                 Object fieldValue = salesPerformance.get(defaultSet);
-    //                 // 필드 값이 null이면 기본값을 0.00으로 설정
-    //                 if (fieldValue == null) fieldValue = 0.00; 
-    //                 salesPerformance.put(defaultSet, fieldValue);
-    //             }
-
-    //             for (String defaultSet : defaultZeroSet) {
-    //                 Object fieldValue = salesPerformance.get(defaultSet);
-    //                 // 필드 값이 null이면 기본값을 0.00으로 설정
-    //                 if (fieldValue == null) fieldValue = 0; 
-    //                 salesPerformance.put(defaultSet, fieldValue);
-    //             }
-
-
-    //     }catch(Exception e){
-    //         String errorMessage = e.getMessage();
-    //         String errorStackTrace = e.getStackTraceString(); 
-    //         System.debug(' 실적현황쪽 에러 메시지: ' + errorMessage);
-    //         System.debug(' 실적현황쪽 에러 라인: ' + errorStackTrace);
-    //     }
-    //     System.debug(' 실적현황 가져오기 ~ ' + salesPerformance  );
-    // }
-
-
 
     /* 
     품의지정 버튼 클릭시 , 품의지정 check 
@@ -2365,4 +2157,421 @@ public with sharing class OrderConsiderFormController {
         System.debug('IncomeManager !! check > '+  IncomeManager );
 
     }
+    /* 
+    추진사항정보(CJFW_PromoteIssues__c) 가져오기 
+    @param : 신규개설품의Id
+    */
+    public void getPromoteIssue(String expectIncomeId) {
+        System.debug(' 추진사항정보 가져오기 ~ ' + expectIncomeId );
+        try{   
+            promoteIssues = [
+                 SELECT  Id,
+                        SolutionDivisionOne__c,     // 솔루션 구분
+                        SolutionDivisionTwo__c,
+                        SolutionDivisionThree__c,
+                        SolutionDivisionFour__c,
+                        SolutionDivisionFive__c,
+                        SolutionDetailsOne__c,      // 솔루션 세부구분
+                        SolutionDetailsTwo__c,
+                        SolutionDetailsThree__c,
+                        SolutionDetailsFour__c,
+                        SolutionDetailsFive__c,
+                        SolutionNewOne__c,         // 솔루션 신규/상품전환
+                        SolutionNewTwo__c,
+                        SolutionNewThree__c,
+                        SolutionNewFour__c,
+                        SolutionNewFive__c,
+                        SolutionUseOne__c,          //솔류션 전용/범용
+                        SolutionUseTwo__c,
+                        SolutionUseThree__c,
+                        SolutionUseFour__c,
+                        SolutionUseFive__c,
+                        SolutionProductNameOne__c,  // 솔루션 상품명
+                        SolutionProductNameTwo__c,
+                        SolutionProductNameThree__c,
+                        SolutionProductNameFour__c,
+                        SolutionProductNameFive__c,
+                        SolutionStoreOne__c,            //솔루션 저장조건
+                        SolutionStoreTwo__c,
+                        SolutionStoreThree__c,
+                        SolutionStoreFour__c,
+                        SolutionStoreFive__c,
+                        SolutionReleaseUnitOne__c,      // 솔루션 출고단위
+                        SolutionReleaseUnitTwo__c,
+                        SolutionReleaseUnitThree__c,
+                        SolutionReleaseUnitFour__c,
+                        SolutionReleaseUnitFive__c,
+                        ManageEnforcementMonthOne__c,   // 재고운영 시행월
+                        ManageEnforcementMonthTwo__c,
+                        ManageEnforcementMonthThree__c,
+                        ManageEnforcementMonthFour__c,
+                        ManageEnforcementMonthFive__c,
+                        ManagePltOne__c,                // 재고운영 PLT
+                        ManagePltTwo__c,
+                        ManagePltThree__c,
+                        ManagePltFour__c,
+                        ManagePltFive__c,
+                        ManageStockMoneyOne__c, // 재고운영 재고금액
+                        ManageStockMoneyTwo__c,
+                        ManageStockMoneyThree__c,
+                        ManageStockMoneyFour__c,
+                        ManageStockMoneyFive__c,
+                        ResultSaleOne__c,   // 상품실적 매출
+                        ResultSaleTwo__c,
+                        ResultSaleThree__c,
+                        ResultSaleFour__c,
+                        ResultSaleFive__c,
+                        ResultSalesProfitOne__c, // 상품실적 매출이익
+                        ResultSalesProfitTwo__c,
+                        ResultSalesProfitThree__c,
+                        ResultSalesProfitFour__c,
+                        ResultSalesProfitFive__c,
+
+                        SynergyDivisionOne__c,  // 시너지 1
+                        SynergyTypeOne__c,
+                        SynergySaleOne__c,
+                        SynergySaleRateOne__c,
+                        SynergyRemarkOne__c,
+                        SynergyDivisionTwo__c,
+                        SynergyTypeTwo__c,       // 시너지 2
+                        SynergySaleTwo__c,
+                        SynergySaleRateTwo__c,
+                        SynergyRemarkTwo__c,
+                        SynergyDivisionThree__c, // 시너지 3
+                        SynergyTypeThree__c,
+                        SynergySaleThree__c,
+                        SynergySaleRateThree__c,
+                        SynergyRemarkThree__c,
+                        CreatedDate 
+                 FROM CJFW_PromoteIssues__c WHERE ExpectedIncomeExpensesId__c =: expectIncomeId LIMIT 1  ];
+
+                 // 매출 , 매익률 값이 없을경우 default 0.00 으로 세팅 
+                 String[] defaultValSet = new String[] {
+                    'ManagePltOne__c', 
+                    'ManageStockMoneyTwo__c', 
+                    'ManagePltThree__c', 
+                    'ManagePltFour__c', 
+                    'ManagePltFive__c', 
+
+                    'ManageStockMoneyOne__c', 
+                    'ManageStockMoneyTwo__c', 
+                    'ManageStockMoneyThree__c', 
+                    'ManageStockMoneyFour__c', 
+                    'ManageStockMoneyFive__c', 
+
+                    'ResultSaleOne__c', 
+                    'ResultSaleTwo__c', 
+                    'ResultSaleThree__c', 
+                    'ResultSaleFour__c', 
+                    'ResultSaleFive__c', 
+
+                    'ResultSalesProfitOne__c', 
+                    'ResultSalesProfitTwo__c', 
+                    'ResultSalesProfitThree__c', 
+                    'ResultSalesProfitFour__c', 
+                    'ResultSalesProfitFive__c',
+
+                    'SynergySaleOne__c', 
+                    'SynergySaleRateOne__c',
+                    'SynergySaleTwo__c',
+                    'SynergySaleRateTwo__c',
+                    'SynergySaleThree__c',
+                    'SynergySaleRateThree__c'
+
+                };    
+
+                String[] defaultZeroSet = new String[] {
+                    'ManageEnforcementMonthOne__c',   
+                    'ManageEnforcementMonthTwo__c',
+                    'ManageEnforcementMonthThree__c',
+                    'ManageEnforcementMonthFour__c',
+                    'ManageEnforcementMonthFive__c'
+
+                };  
+
+
+                for (String defaultSet : defaultValSet) {
+                    Object fieldValue = promoteIssues.get(defaultSet);
+                    // 필드 값이 null이면 기본값을 0.00으로 설정
+                    if (fieldValue == null) fieldValue = 0.00; 
+                    promoteIssues.put(defaultSet, fieldValue);
+                }
+                for (String defaultSet : defaultZeroSet) {
+                    Object fieldValue = promoteIssues.get(defaultSet);
+                    // 필드 값이 null이면 기본값을 0으로 설정
+                    if (fieldValue == null) fieldValue = 0; 
+                    promoteIssues.put(defaultSet, fieldValue);
+                }
+
+        }catch(Exception e){
+            String errorMessage = e.getMessage();
+            String errorStackTrace = e.getStackTraceString(); 
+            System.debug(' 추진사항정보 에러 메시지: ' + errorMessage);
+            System.debug(' 추진사항정보 에러 라인: ' + errorStackTrace);
+        }
+    }
+    /* 
+    추진사항(CJFW_PromoteIssues__c) upsert
+    @param : 신규개설품의Id , VF page 에서 수정데이터가 내용이담긴 dataMap
+    */
+    public static void upsertPromoteIssues(String expectIncomeId , Map<String, Object> dataMap) {
+        System.debug(' 추진사항 upsert ~ ' + expectIncomeId );
+        System.debug(' dataMap !' + dataMap );
+        CJFW_PromoteIssues__c salesPromoteIssue;
+
+        if (expectIncomeId != null && expectIncomeId != '') {
+            System.debug('추진사항 update ★-> ' + expectIncomeId);
+            salesPromoteIssue = [SELECT Id FROM CJFW_PromoteIssues__c WHERE ExpectedIncomeExpensesId__c  = :expectIncomeId LIMIT 1];
+        }else{
+            System.debug('추진사항 insert ★-> ' );
+            salesPromoteIssue = new CJFW_PromoteIssues__c();
+            salesPromoteIssue.ExpectedIncomeExpensesId__c = expectIncomeId; // 필수값 
+        }
+
+        // 솔루션 ㅣㅣ구분
+        if (dataMap.containsKey('solutionDivisionOne')) { 
+            salesPromoteIssue.SolutionDivisionOne__c = (String)dataMap.get('solutionDivisionOne');
+        }
+        if (dataMap.containsKey('solutionDivisionTwo')) { 
+            salesPromoteIssue.SolutionDetailsTwo__c = (String)dataMap.get('solutionDivisionTwo');
+        }
+        if (dataMap.containsKey('solutionDivisionThree')) { 
+            salesPromoteIssue.SolutionDivisionThree__c = (String)dataMap.get('solutionDivisionThree');
+        }
+        if (dataMap.containsKey('solutionDivisionFour')) { 
+            salesPromoteIssue.SolutionDivisionFour__c = (String)dataMap.get('solutionDivisionFour');
+        }
+        if (dataMap.containsKey('solutionDivisionFive')) { 
+            salesPromoteIssue.SolutionDivisionFive__c = (String)dataMap.get('solutionDivisionFive');
+        }
+        // 솔루션 ㅣㅣ 세부구분        
+        if (dataMap.containsKey('solutionDetailsOne')) { 
+            salesPromoteIssue.SolutionDetailsOne__c = (String)dataMap.get('solutionDetailsOne');
+        }
+        if (dataMap.containsKey('solutionDetailsTwo')) { 
+            salesPromoteIssue.SolutionDetailsTwo__c = (String)dataMap.get('solutionDetailsTwo');
+        }
+        if (dataMap.containsKey('solutionDetailsThree')) { 
+            salesPromoteIssue.SolutionDetailsThree__c = (String)dataMap.get('solutionDetailsThree');
+        }
+        if (dataMap.containsKey('solutionDetailsFour')) { 
+            salesPromoteIssue.SolutionDetailsFour__c = (String)dataMap.get('solutionDetailsFour');
+        }
+        if (dataMap.containsKey('solutionDetailsFive')) { 
+            salesPromoteIssue.SolutionDetailsFive__c = (String)dataMap.get('solutionDetailsFive');
+        }
+        // 솔루션 ㅣㅣ 신규/상품전환        
+        if (dataMap.containsKey('solutionNewOne')) { 
+            salesPromoteIssue.SolutionNewOne__c = (String)dataMap.get('solutionNewOne');
+        }
+        if (dataMap.containsKey('solutionNewTwo')) { 
+            salesPromoteIssue.SolutionNewTwo__c = (String)dataMap.get('solutionNewTwo');
+        }
+        if (dataMap.containsKey('solutionNewThree')) { 
+            salesPromoteIssue.SolutionNewThree__c = (String)dataMap.get('solutionNewThree');
+        }
+        if (dataMap.containsKey('solutionNewFour')) { 
+            salesPromoteIssue.SolutionNewFour__c = (String)dataMap.get('solutionNewFour');
+        }
+        if (dataMap.containsKey('solutionNewFive')) { 
+            salesPromoteIssue.SolutionNewFive__c = (String)dataMap.get('solutionNewFive');
+        }
+        // 솔루션 ㅣㅣ 전용/범용        
+        if (dataMap.containsKey('solutionUseOne')) { 
+            salesPromoteIssue.SolutionUseOne__c = (String)dataMap.get('solutionUseOne');
+        }
+        if (dataMap.containsKey('solutionUseTwo')) { 
+            salesPromoteIssue.SolutionUseTwo__c = (String)dataMap.get('solutionUseTwo');
+        }
+        if (dataMap.containsKey('solutionUseThree')) { 
+            salesPromoteIssue.SolutionUseThree__c = (String)dataMap.get('solutionUseThree');
+        }
+        if (dataMap.containsKey('solutionUseFour')) { 
+            salesPromoteIssue.SolutionUseFour__c = (String)dataMap.get('solutionUseFour');
+        }
+        if (dataMap.containsKey('solutionUseFive')) { 
+            salesPromoteIssue.SolutionUseFive__c = (String)dataMap.get('solutionUseFive');
+        }
+        // 솔루션 ㅣㅣ 상품명        
+        if (dataMap.containsKey('solutionProductNameOne')) { 
+            salesPromoteIssue.SolutionProductNameOne__c = (String)dataMap.get('solutionProductNameOne');
+        }
+        if (dataMap.containsKey('solutionProductNameTwo')) { 
+            salesPromoteIssue.SolutionProductNameTwo__c = (String)dataMap.get('solutionProductNameTwo');
+        }
+        if (dataMap.containsKey('solutionProductNameThree')) { 
+            salesPromoteIssue.SolutionProductNameThree__c = (String)dataMap.get('solutionProductNameThree');
+        }
+        if (dataMap.containsKey('solutionProductNameFour')) { 
+            salesPromoteIssue.SolutionProductNameFour__c = (String)dataMap.get('solutionProductNameFour');
+        }
+        if (dataMap.containsKey('solutionProductNameFive')) { 
+            salesPromoteIssue.SolutionProductNameFive__c = (String)dataMap.get('solutionProductNameFive');
+        }
+        // 솔루션 ㅣㅣ 저장조건        
+        if (dataMap.containsKey('solutionStoreOne')) { 
+            salesPromoteIssue.SolutionStoreOne__c = (String)dataMap.get('solutionStoreOne');
+        }
+        if (dataMap.containsKey('solutionStoreTwo')) { 
+            salesPromoteIssue.SolutionStoreTwo__c = (String)dataMap.get('solutionStoreTwo');
+        }
+        if (dataMap.containsKey('solutionStoreThree')) { 
+            salesPromoteIssue.SolutionStoreThree__c = (String)dataMap.get('solutionStoreThree');
+        }
+        if (dataMap.containsKey('solutionStoreFour')) { 
+            salesPromoteIssue.SolutionStoreFour__c = (String)dataMap.get('solutionStoreFour');
+        }
+        if (dataMap.containsKey('solutionStoreFive')) { 
+            salesPromoteIssue.SolutionStoreFive__c = (String)dataMap.get('solutionStoreFive');
+        }
+        // 솔루션 ㅣㅣ 출고단위        
+        if (dataMap.containsKey('solutionReleaseUnitOne')) { 
+            salesPromoteIssue.SolutionReleaseUnitOne__c = (String)dataMap.get('solutionReleaseUnitOne');
+        }
+        if (dataMap.containsKey('solutionReleaseUnitTwo')) { 
+            salesPromoteIssue.SolutionReleaseUnitTwo__c = (String)dataMap.get('solutionReleaseUnitTwo');
+        }
+        if (dataMap.containsKey('solutionReleaseUnitThree')) { 
+            salesPromoteIssue.SolutionReleaseUnitThree__c = (String)dataMap.get('solutionReleaseUnitThree');
+        }
+        if (dataMap.containsKey('solutionReleaseUnitFour')) { 
+            salesPromoteIssue.SolutionReleaseUnitFour__c = (String)dataMap.get('solutionReleaseUnitFour');
+        }
+        if (dataMap.containsKey('solutionReleaseUnitFive')) { 
+            salesPromoteIssue.SolutionReleaseUnitFive__c = (String)dataMap.get('solutionReleaseUnitFive');
+        }
+        // 재고운영 ㅣㅣ 시행월        
+        if (dataMap.containsKey('manageEnforcementMonthOne')) { 
+            salesPromoteIssue.ManageEnforcementMonthOne__c = convertToDecimal(dataMap.get('manageEnforcementMonthOne'));
+        }
+        if (dataMap.containsKey('manageEnforcementMonthTwo')) { 
+            salesPromoteIssue.ManageEnforcementMonthTwo__c = convertToDecimal(dataMap.get('manageEnforcementMonthTwo'));
+        }
+        if (dataMap.containsKey('manageEnforcementMonthThree')) { 
+            salesPromoteIssue.ManageEnforcementMonthThree__c = convertToDecimal(dataMap.get('manageEnforcementMonthThree'));
+        }
+        if (dataMap.containsKey('manageEnforcementMonthFour')) { 
+            salesPromoteIssue.ManageEnforcementMonthFour__c = convertToDecimal(dataMap.get('manageEnforcementMonthFour'));
+        }
+        if (dataMap.containsKey('manageEnforcementMonthFive')) { 
+            salesPromoteIssue.ManageEnforcementMonthFive__c = convertToDecimal(dataMap.get('manageEnforcementMonthFive'));
+        }
+        // 재고운영 ㅣㅣ PLT        
+        if (dataMap.containsKey('managePltOne')) { 
+            salesPromoteIssue.ManagePltOne__c = convertToDecimal(dataMap.get('managePltOne'));
+        }
+        if (dataMap.containsKey('managePltTwo')) { 
+            salesPromoteIssue.ManagePltTwo__c = convertToDecimal(dataMap.get('managePltTwo'));
+        }
+        if (dataMap.containsKey('managePltThree')) { 
+            salesPromoteIssue.ManagePltThree__c = convertToDecimal(dataMap.get('managePltThree'));
+        }
+        if (dataMap.containsKey('managePltFour')) { 
+            salesPromoteIssue.ManagePltFour__c = convertToDecimal(dataMap.get('managePltFour'));
+        }
+        if (dataMap.containsKey('managePltFive')) { 
+            salesPromoteIssue.ManagePltFive__c = convertToDecimal(dataMap.get('managePltFive'));
+        }
+        // 재고운영 ㅣㅣ 재고금액        
+        if (dataMap.containsKey('manageStockMoneyOne')) { 
+            salesPromoteIssue.ManageStockMoneyOne__c = convertToDecimal(dataMap.get('manageStockMoneyOne'));
+        }
+        if (dataMap.containsKey('manageStockMoneyTwo')) { 
+            salesPromoteIssue.ManageStockMoneyTwo__c = convertToDecimal(dataMap.get('manageStockMoneyTwo'));
+        }
+        if (dataMap.containsKey('manageStockMoneyThree')) { 
+            salesPromoteIssue.ManageStockMoneyThree__c = convertToDecimal(dataMap.get('manageStockMoneyThree'));
+        }
+        if (dataMap.containsKey('manageStockMoneyFour')) { 
+            salesPromoteIssue.ManageStockMoneyFour__c = convertToDecimal(dataMap.get('manageStockMoneyFour'));
+        }
+        if (dataMap.containsKey('manageStockMoneyFive')) { 
+            salesPromoteIssue.ManageStockMoneyFive__c = convertToDecimal(dataMap.get('manageStockMoneyFive'));
+        }
+        // 상품실적 ㅣㅣ 매출        
+        if (dataMap.containsKey('resultSaleOne')) { 
+            salesPromoteIssue.ResultSaleOne__c = convertToDecimal(dataMap.get('resultSaleOne'));
+        }
+        if (dataMap.containsKey('resultSaleTwo')) { 
+            salesPromoteIssue.ResultSaleTwo__c = convertToDecimal(dataMap.get('resultSaleTwo'));
+        }
+        if (dataMap.containsKey('resultSaleThree')) { 
+            salesPromoteIssue.ResultSaleThree__c = convertToDecimal(dataMap.get('resultSaleThree'));
+        }
+        if (dataMap.containsKey('resultSaleFour')) { 
+            salesPromoteIssue.ResultSaleFour__c = convertToDecimal(dataMap.get('resultSaleFour'));
+        }
+        if (dataMap.containsKey('resultSaleFive')) { 
+            salesPromoteIssue.ResultSaleFive__c = convertToDecimal(dataMap.get('resultSaleFive'));
+        }
+        // 상품실적 ㅣㅣ 매출이익      
+        if (dataMap.containsKey('resultSalesProfitOne')) { 
+            salesPromoteIssue.ResultSalesProfitOne__c = convertToDecimal(dataMap.get('resultSalesProfitOne'));
+        }
+        if (dataMap.containsKey('resultSalesProfitTwo')) { 
+            salesPromoteIssue.ResultSalesProfitTwo__c = convertToDecimal(dataMap.get('resultSalesProfitTwo'));
+        }
+        if (dataMap.containsKey('resultSalesProfitThree')) { 
+            salesPromoteIssue.ResultSalesProfitThree__c = convertToDecimal(dataMap.get('resultSalesProfitThree'));
+        }
+        if (dataMap.containsKey('resultSalesProfitFour')) { 
+            salesPromoteIssue.ResultSalesProfitFour__c = convertToDecimal(dataMap.get('resultSalesProfitFour'));
+        }
+        if (dataMap.containsKey('resultSalesProfitFive')) { 
+            salesPromoteIssue.ResultSalesProfitFive__c = convertToDecimal(dataMap.get('resultSalesProfitFive'));
+        }
+        // 시너지 1
+        if (dataMap.containsKey('synergyDivisionOne')) {  // 구분
+            salesPromoteIssue.SynergyDivisionOne__c = (String)dataMap.get('synergyDivisionOne');
+        }
+        if (dataMap.containsKey('synergyTypeOne')) {      // 경로구분
+            salesPromoteIssue.SynergyTypeOne__c = (String)dataMap.get('synergyTypeOne');
+        }
+        if (dataMap.containsKey('synergySaleOne')) {      // 매출 (소수)
+            salesPromoteIssue.SynergySaleOne__c = convertToDecimal(dataMap.get('synergySaleOne'));
+        }
+        if (dataMap.containsKey('synergySaleRateOne')) {  // 매익률 (소수)
+            salesPromoteIssue.SynergySaleRateOne__c = convertToDecimal(dataMap.get('synergySaleRateOne'));
+        }
+        if (dataMap.containsKey('synergyRemarkOne')) {    // 주요내용
+            salesPromoteIssue.SynergyRemarkOne__c = (String)dataMap.get('synergyRemarkOne');
+        }
+        // 시너지 2
+        if (dataMap.containsKey('synergyDivisionTwo')) {  // 구분
+            salesPromoteIssue.SynergyDivisionTwo__c = (String)dataMap.get('synergyDivisionTwo');
+        }
+        if (dataMap.containsKey('synergyTypeTwo')) {      // 경로구분
+            salesPromoteIssue.SynergyTypeTwo__c = (String)dataMap.get('synergyTypeTwo');
+        }
+        if (dataMap.containsKey('synergySaleTwo')) {      // 매출 (소수)
+            salesPromoteIssue.SynergySaleTwo__c = convertToDecimal(dataMap.get('synergySaleTwo'));
+        }
+        if (dataMap.containsKey('synergySaleRateTwo')) {  // 매익률 (소수)
+            salesPromoteIssue.SynergySaleRateTwo__c = convertToDecimal(dataMap.get('synergySaleRateTwo'));
+        }
+        if (dataMap.containsKey('synergyRemarkTwo')) {    // 주요내용
+            salesPromoteIssue.SynergyRemarkTwo__c = (String)dataMap.get('synergyRemarkTwo');
+        }
+
+        // 시너지 3
+        if (dataMap.containsKey('synergyDivisionThree')) {  // 구분
+            salesPromoteIssue.SynergyDivisionThree__c = (String)dataMap.get('synergyDivisionThree');
+        }
+        if (dataMap.containsKey('synergyTypeThree')) {      // 경로구분
+            salesPromoteIssue.SynergyTypeThree__c = (String)dataMap.get('synergyTypeThree');
+        }
+        if (dataMap.containsKey('synergySaleThree')) {      // 매출 (소수)
+            salesPromoteIssue.SynergySaleThree__c = convertToDecimal(dataMap.get('synergySaleThree'));
+        }
+        if (dataMap.containsKey('synergySaleRateThree')) {  // 매익률 (소수)
+            salesPromoteIssue.SynergySaleRateThree__c = convertToDecimal(dataMap.get('synergySaleRateThree'));
+        }
+        if (dataMap.containsKey('synergyRemarkThree')) {    // 주요내용
+            salesPromoteIssue.SynergyRemarkThree__c = (String)dataMap.get('synergyRemarkThree');
+        }
+
+        upsert salesPromoteIssue;
+
+    }
+    
 }

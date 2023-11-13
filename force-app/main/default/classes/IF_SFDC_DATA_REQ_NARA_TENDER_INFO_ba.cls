@@ -186,7 +186,7 @@ global with sharing class IF_SFDC_DATA_REQ_NARA_TENDER_INFO_ba implements Databa
                             uptLead.Phone__c                = item.ntceInsttOfclTelNo;
                             uptLead.Email__c                = item.ntceInsttOfclEmailAdrs;
                             //uptLead.LeadSource = 'NaraMarket';    //2023.10.17 사용안함
-                            uptLead.BidNoticeStatus__c      = item.ntceKindNm;
+                            uptLead.BidNoticeStatus__c      = item.ntceKindNm;          //공고의 공고상태명으로 일반, 변경, 취소, 재입찰, 연기, 긴급, 갱신, 긴급갱신 구분
                             if (Integer.valueOf(item.bidNtceOrd) < 10) {
                                 Integer ord = Integer.valueOf(item.bidNtceOrd);
                                 uptLead.BidNoticeNumber__c      = item.bidNtceNo+'-0'+ String.valueOf(ord);
@@ -342,13 +342,13 @@ global with sharing class IF_SFDC_DATA_REQ_NARA_TENDER_INFO_ba implements Databa
                             // uptLead.d2bMngStdIndstryClsfcCdList__c  = item.d2bMngStdIndstryClsfcCdList;
                             // uptLead.chgNtceRsn__c           = item.chgNtceRsn;
                             uptLead.Keyword__c              = keywordList[targetIndex].Keyword__c;
-                            if (operationName == 'getBidPblancListInfoServcPPSSrch') {
+                            if (operationName == 'getBidPblancListInfoServcPPSSrch01') {
                                 uptLead.bsnsDivNm__c = '용역';
-                            }else if (operationName == 'getBidPblancListInfoFrgcptPPSSrch') {
+                            }else if (operationName == 'getBidPblancListInfoFrgcptPPSSrch01') {
                                 uptLead.bsnsDivNm__c = '외자';
-                            }else if (operationName == 'getBidPblancListInfoThngPPSSrch') {
+                            }else if (operationName == 'getBidPblancListInfoThngPPSSrch01') {
                                 uptLead.bsnsDivNm__c = '물품';
-                            }else if (operationName == 'getBidPblancListInfoEtcPPSSrch') {
+                            }else if (operationName == 'getBidPblancListInfoEtcPPSSrch01') {
                                 uptLead.bsnsDivNm__c = '기타';
                             }
                             uptLead.RecordtypeId            = recordId;
@@ -528,13 +528,13 @@ global with sharing class IF_SFDC_DATA_REQ_NARA_TENDER_INFO_ba implements Databa
                                     // leadObj.d2bMngStdIndstryClsfcCdList__c  = item.d2bMngStdIndstryClsfcCdList;
                                     // leadObj.chgNtceRsn__c           = item.chgNtceRsn;
                                     leadObj.Keyword__c              = keywordList[targetIndex].Keyword__c;
-                                    if (operationName == 'getBidPblancListInfoServcPPSSrch') {
+                                    if (operationName == 'getBidPblancListInfoServcPPSSrch01') {
                                         leadObj.bsnsDivNm__c = '용역';
-                                    }else if (operationName == 'getBidPblancListInfoFrgcptPPSSrch') {
+                                    }else if (operationName == 'getBidPblancListInfoFrgcptPPSSrch01') {
                                         leadObj.bsnsDivNm__c = '외자';
-                                    }else if (operationName == 'getBidPblancListInfoThngPPSSrch') {
+                                    }else if (operationName == 'getBidPblancListInfoThngPPSSrch01') {
                                         leadObj.bsnsDivNm__c = '물품';
-                                    }else if (operationName == 'getBidPblancListInfoEtcPPSSrch') {
+                                    }else if (operationName == 'getBidPblancListInfoEtcPPSSrch01') {
                                         leadObj.bsnsDivNm__c = '기타';
                                     }
                                     leadObj.RecordtypeId = recordId;
