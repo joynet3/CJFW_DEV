@@ -1,15 +1,16 @@
-/**                                     
- * @Class : IFX_PMDS_WEEKPRICE_SearchQueueable_TEST                     
- * @Description : 원료시황 주별 가격정보 호출 Queueable test class                      
- * @Author : 조일근
- * @Date : 2021-07-28
- * @Version : 1.0                               
- * @Modified :                                  
- *  ---------------------------------------------                       
- *  NO | Date       | Modifier      | Description               
- *  ---------------------------------------------                       
- *  1. | 2021-07-28 | 조일근  | 최초작성                           
- */
+/**
+ * @Class : IFN_LIF1002_SE001_MD002_01_QUE_TEST.cls
+ * @group Framework : 
+ * @Author :  조일근 
+ * @Date : 2023.11.13
+ * @Version : 1.0
+ * @Description :검색엔진을 통한 상품 대분류 카테고리 검색 저장 Queueable test class 
+ * @Modified :
+ * ----------------------------------------------
+ *  NO | Date       | Modifier       | Description
+ * ----------------------------------------------
+ *  1. | 2023.11.13 | 조일근  | 최초작성
+ * */
 @isTest
 public with sharing class IFN_LIF1002_SE001_MD002_01_QUE_TEST {
     @TestSetup

@@ -78,7 +78,8 @@ public with sharing class OrderConsiderFormController {
     /* 생성자 */
     public OrderConsiderFormController(){
         // this.opportunityId = '0060w00000D9x0BAAR'; // 테스트 
-        // this.incomeExpensesId = 'a1l0w000001N1yUAAS'; // 테스트
+        // this.incomeExpensesId = 'a1lH2000001YcjWIAS'; // 테스트
+
 
         this.opportunityId = ApexPages.currentPage().getParameters().get('opportunityId');
         this.incomeExpensesId = ApexPages.currentPage().getParameters().get('incomeExpensesId');
@@ -113,12 +114,7 @@ public with sharing class OrderConsiderFormController {
             getAccountInfo();       // 고객사 정보 가져오기
             getIncomeExpenses();    // 신규개설품의 obj 값 가져오기
             getExpectManager();  // 품의서 관리자 작성 obj 값 가져오기
-
-            if( incomeExpensesId != null ){
-                incomeExpensesId = 'a1lH2000001YcjWIAS';
-                System.debug('예상손익  id -> ' + incomeExpensesId );
-                getPromoteIssue(incomeExpensesId); // 추진사항정보 가져오기
-            }
+            getPromoteIssue(incomeExpensesId); // 추진사항정보 가져오기     
         }
     }
 
@@ -2164,7 +2160,8 @@ public with sharing class OrderConsiderFormController {
     public void getPromoteIssue(String expectIncomeId) {
         System.debug(' 추진사항정보 가져오기 ~ ' + expectIncomeId );
         try{   
-            promoteIssues = [
+            if(expectIncomeId !=null){  
+                promoteIssues = [
                  SELECT  Id,
                         SolutionDivisionOne__c,     // 솔루션 구분
                         SolutionDivisionTwo__c,
@@ -2244,64 +2241,65 @@ public with sharing class OrderConsiderFormController {
                         SynergyRemarkThree__c,
                         CreatedDate 
                  FROM CJFW_PromoteIssues__c WHERE ExpectedIncomeExpensesId__c =: expectIncomeId LIMIT 1  ];
+            }else {
+                PromoteIssues = new CJFW_PromoteIssues__c();
+            }
+            // 매출 , 매익률 값이 없을경우 default 0.00 으로 세팅 
+            String[] defaultValSet = new String[] {
+            'ManagePltOne__c', 
+            'ManagePltTwo__c', 
+            'ManagePltThree__c', 
+            'ManagePltFour__c', 
+            'ManagePltFive__c', 
 
-                 // 매출 , 매익률 값이 없을경우 default 0.00 으로 세팅 
-                 String[] defaultValSet = new String[] {
-                    'ManagePltOne__c', 
-                    'ManageStockMoneyTwo__c', 
-                    'ManagePltThree__c', 
-                    'ManagePltFour__c', 
-                    'ManagePltFive__c', 
+            'ManageStockMoneyOne__c', 
+            'ManageStockMoneyTwo__c', 
+            'ManageStockMoneyThree__c', 
+            'ManageStockMoneyFour__c', 
+            'ManageStockMoneyFive__c', 
 
-                    'ManageStockMoneyOne__c', 
-                    'ManageStockMoneyTwo__c', 
-                    'ManageStockMoneyThree__c', 
-                    'ManageStockMoneyFour__c', 
-                    'ManageStockMoneyFive__c', 
+            'ResultSaleOne__c', 
+            'ResultSaleTwo__c', 
+            'ResultSaleThree__c', 
+            'ResultSaleFour__c', 
+            'ResultSaleFive__c', 
 
-                    'ResultSaleOne__c', 
-                    'ResultSaleTwo__c', 
-                    'ResultSaleThree__c', 
-                    'ResultSaleFour__c', 
-                    'ResultSaleFive__c', 
+            'ResultSalesProfitOne__c', 
+            'ResultSalesProfitTwo__c', 
+            'ResultSalesProfitThree__c', 
+            'ResultSalesProfitFour__c', 
+            'ResultSalesProfitFive__c',
 
-                    'ResultSalesProfitOne__c', 
-                    'ResultSalesProfitTwo__c', 
-                    'ResultSalesProfitThree__c', 
-                    'ResultSalesProfitFour__c', 
-                    'ResultSalesProfitFive__c',
+            'SynergySaleOne__c', 
+            'SynergySaleRateOne__c',
+            'SynergySaleTwo__c',
+            'SynergySaleRateTwo__c',
+            'SynergySaleThree__c',
+            'SynergySaleRateThree__c'
+            };    
 
-                    'SynergySaleOne__c', 
-                    'SynergySaleRateOne__c',
-                    'SynergySaleTwo__c',
-                    'SynergySaleRateTwo__c',
-                    'SynergySaleThree__c',
-                    'SynergySaleRateThree__c'
+            String[] defaultZeroSet = new String[] {
+                'ManageEnforcementMonthOne__c',   
+                'ManageEnforcementMonthTwo__c',
+                'ManageEnforcementMonthThree__c',
+                'ManageEnforcementMonthFour__c',
+                'ManageEnforcementMonthFive__c'
 
-                };    
-
-                String[] defaultZeroSet = new String[] {
-                    'ManageEnforcementMonthOne__c',   
-                    'ManageEnforcementMonthTwo__c',
-                    'ManageEnforcementMonthThree__c',
-                    'ManageEnforcementMonthFour__c',
-                    'ManageEnforcementMonthFive__c'
-
-                };  
+            };  
 
 
-                for (String defaultSet : defaultValSet) {
-                    Object fieldValue = promoteIssues.get(defaultSet);
-                    // 필드 값이 null이면 기본값을 0.00으로 설정
-                    if (fieldValue == null) fieldValue = 0.00; 
-                    promoteIssues.put(defaultSet, fieldValue);
-                }
-                for (String defaultSet : defaultZeroSet) {
-                    Object fieldValue = promoteIssues.get(defaultSet);
-                    // 필드 값이 null이면 기본값을 0으로 설정
-                    if (fieldValue == null) fieldValue = 0; 
-                    promoteIssues.put(defaultSet, fieldValue);
-                }
+            for (String defaultSet : defaultValSet) {
+                Object fieldValue = promoteIssues.get(defaultSet);
+                // 필드 값이 null이면 기본값을 0.00으로 설정
+                if (fieldValue == null) fieldValue = 0.00; 
+                promoteIssues.put(defaultSet, fieldValue);
+            }
+            for (String defaultSet : defaultZeroSet) {
+                Object fieldValue = promoteIssues.get(defaultSet);
+                // 필드 값이 null이면 기본값을 0으로 설정
+                if (fieldValue == null) fieldValue = 0; 
+                promoteIssues.put(defaultSet, fieldValue);
+            }
 
         }catch(Exception e){
             String errorMessage = e.getMessage();
@@ -2333,7 +2331,7 @@ public with sharing class OrderConsiderFormController {
             salesPromoteIssue.SolutionDivisionOne__c = (String)dataMap.get('solutionDivisionOne');
         }
         if (dataMap.containsKey('solutionDivisionTwo')) { 
-            salesPromoteIssue.SolutionDetailsTwo__c = (String)dataMap.get('solutionDivisionTwo');
+            salesPromoteIssue.SolutionDivisionTwo__c = (String)dataMap.get('solutionDivisionTwo');
         }
         if (dataMap.containsKey('solutionDivisionThree')) { 
             salesPromoteIssue.SolutionDivisionThree__c = (String)dataMap.get('solutionDivisionThree');

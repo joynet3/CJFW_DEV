@@ -2,8 +2,8 @@
  * @description       : 품의서전용 데이터 팩토리 
  * @author            : eunyoung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 10-26-2023
- * @last modified by  : yeonji.lim@dkbmc.com
+ * @last modified on  : 11-13-2023
+ * @last modified by  : jieun.lee3@dkbmc.com
 **/
 
 global with sharing class COMM_ReportTestDataFactory {
@@ -92,7 +92,7 @@ global with sharing class COMM_ReportTestDataFactory {
         return user;
     }
 
-    
+
 
     /**
      * 고객사 생성 Account 정보 만들기 
@@ -125,9 +125,15 @@ global with sharing class COMM_ReportTestDataFactory {
     /**
      * 영업기회 (Opportunity) 테스트데이터 
      */
-    global static Opportunity createOpportunity(Id recordTypeId, String name, Id accountId, Date closeDate ){
+    global static Opportunity createOpportunity(String rcdTypeDevName, String name, Id accountId, Date closeDate ){
+
+            RecordType recordType = [SELECT Id, Name, DeveloperName, SobjectType, IsActive 
+            FROM RecordType 
+            WHERE SobjectType = 'Opportunity' 
+            AND DeveloperName = :rcdTypeDevName];
+
         Opportunity oppty = new Opportunity(
-            RecordTypeId = recordTypeId
+            RecordTypeId = recordType.id
             , Name = name
             , AccountId = accountId
             , CloseDate = closeDate

@@ -318,6 +318,8 @@ public with sharing class CJFW_SchoolCafeteriaDetailsController {
             String districtCounty;                                            // 동/군/구
             String schoolName;                                                // 학교명
 
+            result.put('params', params);
+
             Map<String,SelectOption> districtCountyOptionMap = new Map<String,SelectOption>();
             List<SelectOption> districtCountyOptionList = (List<SelectOption>) getDistrictCountryOptionList(citiyCountry).get('dependencyOptionList');
             for(SelectOption districtCountyOption : districtCountyOptionList) {
@@ -370,6 +372,90 @@ public with sharing class CJFW_SchoolCafeteriaDetailsController {
         }
     }
 
+    @AuraEnabled
+    public static Map<String,Object> getSchoolCafeteriaDetails(Map<String,Object> params){
+        try {
+            Map<String,Object> result = new Map<String,Object>();
+
+            String fromStr = (String) params.get('fromDateStr');
+            String toStr   = (String) params.get('toDateStr');
+            String schoolCode = (String) params.get('schoolCode');
+
+            result.put('params', params);
+
+            //학교급식 - 학교별 급식정보
+            IFN_EIF1004_DT001_MD002.Output              outputObj   = new IFN_EIF1004_DT001_MD002.Output();
+            IFN_EIF1004_DT001_MD002                     ifCon      = new IFN_EIF1004_DT001_MD002();
+            IFN_EIF1004_DT001_MD002.MD002RequstWrapper  reqmap      = new IFN_EIF1004_DT001_MD002.MD002RequstWrapper();
+
+            //https://dotop.kr/Service/API/?serviceKey=944FB5A82EAE4149B3F8AAE5C48E7752&serviceDiv=A02&NeisCodeStd=7569036&StartDate=20231001&EndDate=20231030
+            reqmap.NeisCodeStd  = schoolCode;        //학교코드
+            reqmap.StartDate    = fromStr;       //시작일
+            reqmap.EndDate      = toStr;       //종료일
+
+            outputObj = ifCon.callout(reqmap);
+
+            System.debug('outputObj:' + outputObj);
+
+            if('0'.equals(outputObj.meta[0].result_code)) {
+
+                Map<String, Map<String, SchoolCafeteriaDetails>> dateCategoryScDetailsMap =new Map<String, Map<String, SchoolCafeteriaDetails>>();
+
+                List<SchoolCafeteriaDetails> scDetailsList = new List<SchoolCafeteriaDetails>();
+
+                for(IFN_EIF1004_DT001_MD002.item ifDetails  : outputObj.item) {
+                    String keyDate = ifDetails.MealDate;
+                    
+                    //급식날짜로 데이터 Set
+                    if(dateCategoryScDetailsMap.containsKey(keyDate)) {
+                        Map<String, SchoolCafeteriaDetails> categoryScDetailsMap = dateCategoryScDetailsMap.get(keyDate);
+                        String keyCategory = ifDetails.MealDivText;
+                        //조,중식으로 데이터 Set
+                        if(categoryScDetailsMap.containsKey(keyCategory)) { 
+                            categoryScDetailsMap.get(keyCategory).menu += '\n'+ ifDetails.MenuTitle;
+                        }else {
+                            SchoolCafeteriaDetails scDetails = new SchoolCafeteriaDetails();
+                            scDetails.keyDate = keyDate;
+                            scDetails.viewDate = keyDate.right(5);
+                            scDetails.category = ifDetails.MealDivText;
+                            scDetails.menu = ifDetails.MenuTitle; 
+                            scDetails.neisCodeStd = ifDetails.NeisCodeStd;
+                            categoryScDetailsMap.put(scDetails.category, scDetails);
+                        }
+
+                    }else {
+                        SchoolCafeteriaDetails scDetails = new SchoolCafeteriaDetails();
+                        scDetails.keyDate = keyDate;
+                        scDetails.viewDate = keyDate.right(5);
+                        scDetails.category = ifDetails.MealDivText;
+                        scDetails.menu = ifDetails.MenuTitle; 
+                        scDetails.neisCodeStd = ifDetails.NeisCodeStd;
+                        
+                        dateCategoryScDetailsMap.put(keyDate, new Map<String, SchoolCafeteriaDetails>{
+                            scDetails.category => scDetails
+                        });
+                    }
+
+                }
+
+                for(String keyDate : dateCategoryScDetailsMap.keySet()) {
+                    scDetailsList.addAll(dateCategoryScDetailsMap.get(keyDate).values());
+                }
+
+                System.debug('scDetailsList:: ');
+                System.debug(
+                    JSON.serializePretty(scDetailsList)
+                );
+
+                result.put('scDetailsList', scDetailsList);
+            }
+
+            return result;
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage() + ' (Line : ' + e.getLineNumber() + ')');
+        }
+    }
+
 
     public class SchoolInfo {
         @AuraEnabled public String schoolName;          // 학교명
@@ -397,5 +483,13 @@ public with sharing class CJFW_SchoolCafeteriaDetailsController {
             this(label, value);
             this.dependencyValue = dependencyValue;
         }       
+    }
+
+    public class SchoolCafeteriaDetails {
+        @AuraEnabled public String keyDate;        //yyyyMMdd
+        @AuraEnabled public String viewDate;           //MM-dd 화면에 표출용
+        @AuraEnabled public String category;       //조식,중식,석식 정보
+        @AuraEnabled public String menu;           //메뉴
+        @AuraEnabled public String neisCodeStd;    //학교코드
     }
 }

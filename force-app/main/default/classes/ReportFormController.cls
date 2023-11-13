@@ -111,51 +111,60 @@ public with sharing class ReportFormController {
 
     }
 
-    /* 
-    Oppty 에 있는 Account 값을 가져오는 메소드
-    */
-   public void getAccountInfo() {
-
-    // 기회 레코드에서 계정 ID 가져오기
-    Id accountId = [SELECT AccountId FROM Opportunity WHERE Id = :opportunityId LIMIT 1].AccountId;
-    
-    if (accountId != null) {
-        // 계정 정보를 쿼리
-        accountInfo = [SELECT 
-                            Id,
-                            Name,
-                            RepresentativeName__c,
-                            BusinessPath__c, // picklist 너무 많아서 텍스트로 입력하는것으로
-                            SalesMonthly__c, // 포뮬라
-                            OurSales__c, // currency
-                            Address__c,
-                            Phone ,
-                            PV_EXISTSUP__c ,
-                            CustomerID__c       //고객코드 (급식 변경 전용)
-                        FROM Account 
-                        WHERE Id = :accountId 
-                    ];
-
-        String[] defaultValSet = new String[] {
-            'RepresentativeName__c',
-            'BusinessPath__c',
-            'Address__c',
-            'PV_EXISTSUP__c',
-            'CustomerID__c'
-        };
-
-        for (String defaultSet : defaultValSet) {
-            Object fieldValue = accountInfo.get(defaultSet);
-            // 필드 값이 null이면 기본값을 공백
-            if (fieldValue == null)  fieldValue = ''; 
-            accountInfo.put(defaultSet, fieldValue);
+    public void getAccountInfo() {
+        // 기회 레코드에서 계정 ID 가져오기
+        List<Opportunity> opportunities = [SELECT AccountId FROM Opportunity WHERE Id = :opportunityId LIMIT 1];
+       
+        if (opportunities.isEmpty()) {
+            System.debug('# 해당 기회 ID에 대한 레코드를 찾을 수 없습니다.');
+            return; // 레코드가 없으면 메소드를 종료
         }
-
-        System.debug('# 잘 가져왔니 ?->' + accountInfo );
-    } else {
-        System.debug('# 계정 ID를 찾을 수 없습니다.');
+ 
+        Id accountId = opportunities[0].AccountId;
+       
+        if (accountId != null) {
+            // 계정 정보를 쿼리
+            List<Account> accounts = [SELECT
+                Id,
+                Name,
+                RepresentativeName__c,
+                BusinessPath__c,
+                SalesMonthly__c,
+                OurSales__c,
+                Address__c,
+                Phone,
+                PV_EXISTSUP__c,
+                CustomerID__c
+                FROM Account
+                WHERE Id = :accountId
+            ];
+ 
+            if (!accounts.isEmpty()) {
+                accountInfo = accounts[0];
+ 
+                String[] defaultValSet = new String[] {
+                    'RepresentativeName__c',
+                    'BusinessPath__c',
+                    'Address__c',
+                    'PV_EXISTSUP__c',
+                    'CustomerID__c'
+                };
+ 
+                for (String defaultSet : defaultValSet) {
+                    Object fieldValue = accountInfo.get(defaultSet);
+                    // 필드 값이 null이면 기본값을 공백
+                    if (fieldValue == null)  fieldValue = '';
+                    accountInfo.put(defaultSet, fieldValue);
+                }
+ 
+                System.debug('# 잘 가져왔니 ?->' + accountInfo);
+            } else {
+                System.debug('# 해당 계정 ID에 대한 레코드를 찾을 수 없습니다.');
+            }
+        } else {
+            System.debug('# 계정 ID를 찾을 수 없습니다.');
+        }
     }
-}
 
 
     /* 

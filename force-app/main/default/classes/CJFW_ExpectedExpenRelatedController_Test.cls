@@ -56,10 +56,10 @@ public with sharing class CJFW_ExpectedExpenRelatedController_Test {
         Test.startTest();
 
 
-        Opportunity objOppty = [SELECT Id FROM Opportunity LIMIT 1]; 
+        Opportunity objOppty = [SELECT Id, Type, OwnerId, Owner.HeadOffice__c FROM Opportunity LIMIT 1]; 
         
-        CJFW_ExpectedIncomeExpenses__c objExIncome1 = [SELECT Id, ReportType__c  FROM CJFW_ExpectedIncomeExpenses__c LIMIT 1];
-        System.debug('objExIncome1'+objExIncome1.ReportType__c);
+        CJFW_ExpectedIncomeExpenses__c objExIncome1 = [SELECT Id, ReportType__c, Opportunity__c  FROM CJFW_ExpectedIncomeExpenses__c LIMIT 1];
+        System.debug('objExIncome1'+objExIncome1);
         objOppty.Owner = objUser;
         objOppty.Owner.HeadOffice__c = '3001';
         System.debug('기회 =>'+objOppty);
@@ -79,7 +79,7 @@ public with sharing class CJFW_ExpectedExpenRelatedController_Test {
 
         Test.startTest();
 
-        Opportunity objOppty = [SELECT Id FROM Opportunity LIMIT 1]; 
+        Opportunity objOppty = [SELECT Id, Type, OwnerId, Owner.HeadOffice__c FROM Opportunity LIMIT 1]; 
         CJFW_ExpectedIncomeExpenses__c objExIncome2 = [SELECT Id, ReportType__c FROM CJFW_ExpectedIncomeExpenses__c LIMIT 1];
         System.debug('objExIncome2'+objExIncome2.ReportType__c);
 

@@ -1,21 +1,23 @@
 /**
- * @description       : 
+ * @description       : 급식 품의서 전용 테스트코드 
  * @author            : jieun.lee3@dkbmc.com
  * @group             : 
- * @last modified on  : 10-16-2023
- * @last modified by  : jieun.lee3@dkbmc.com
+ * @last modified on  : 11-13-2023
+ * @last modified by  : eunyoung.choi@dkbmc.com
 **/
 @IsTest
 public with sharing class ReportFormController_test {
 
     @isTest
     static void ReportFormController_test() {
-        Account objAccount = TestObjectCreator.getObjAccount();
-        insert objAccount;
+
+        Account objAcc = new Account();
+        objAcc = COMM_ReportTestDataFactory.createAccount('test', 'ExistingCustomer');
+        insert objAcc;
 
         Opportunity objOppty = new Opportunity();
         objOppty.Name = 'Test Oppty';
-        objOppty.AccountId = objAccount.Id;
+        objOppty.AccountId = objAcc.Id;
         objOppty.CloseDate = date.valueOf('2023-10-01');
         objOppty.StageName = 'Negotiation';
         insert objOppty;
@@ -42,7 +44,12 @@ public with sharing class ReportFormController_test {
         Test.startTest();
 
         ReportFormController controller = new ReportFormController();
+        
+        controller.opportunityId = objOppty.id;
 
+        //controller.incomeExpensesId = exIncomeId;
+
+        controller.getPicklistValues();
         controller.getAccountInfo();
         controller.getIncomeExpenses();
         // ReportFormController.getPicklistValues();
