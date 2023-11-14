@@ -30,13 +30,15 @@ public class IFN_GET_KAKAOGEO_INFO {
         String responsedata = '';
         String result_code = 'S';
         String result_message = '';
-
+        IFN_GET_KAKAOGEO_INFO.SearcXY xyData = new IFN_GET_KAKAOGEO_INFO.SearcXY();
 
         IFN_CMM_ERRUTIL.ErrorValueWrapper errWr = new IFN_CMM_ERRUTIL.ErrorValueWrapper();
 
         try{
 
 
+
+            IFN_GET_KAKAOGEO_INFO.SearcData infResponse = new IFN_GET_KAKAOGEO_INFO.SearcData();  
 
             Date dateToday = Date.today();    
             this.logWrap.RequestTime = Datetime.now();
@@ -51,6 +53,14 @@ public class IFN_GET_KAKAOGEO_INFO {
             if(response.getStatusCode() == 200) {
 
                 responsedata = response.getBody();
+                infResponse =  (IFN_GET_KAKAOGEO_INFO.SearcData)JSON.deserializeStrict((String)responsedata, IFN_GET_KAKAOGEO_INFO.SearcData.class);
+
+                xyData.XPoint =  infResponse.documents[0].x;
+                xyData.YPoint =  infResponse.documents[0].y;
+
+                this.logWrap.LogText.add('xyData >>>>>>> ' + JSON.serialize(xyData));                
+
+
                 this.logWrap.ResponseBody = (String)responsedata;
                 this.logWrap.ResponseTime = Datetime.now();
             } else {
@@ -89,7 +99,7 @@ public class IFN_GET_KAKAOGEO_INFO {
         result.setResult(
             result_code
             , result_message
-            , responsedata
+            , xyData
         );
 
         return result;
@@ -102,9 +112,21 @@ public class IFN_GET_KAKAOGEO_INFO {
      * 조회 결과  ===============================================
      ============================================================= */
 
+
+
+     public class SearcXY {
+        public String XPoint {get;set;}
+        public String YPoint {get;set;}
+
+     }
+     
+     
      public class SearcData {
         public List<SearcDoc> documents{get;set;}
         public SearcMeta meta{get;set;}
+        public String errorType {get;set;}
+        public String message {get;set;}
+
      }
 
      public class SearcMeta {

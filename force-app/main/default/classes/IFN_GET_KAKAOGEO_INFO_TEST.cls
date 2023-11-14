@@ -24,7 +24,10 @@ public class IFN_GET_KAKAOGEO_INFO_TEST {
         Test.startTest();
         Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator());
         IFN_GET_KAKAOGEO_INFO api = new IFN_GET_KAKAOGEO_INFO();
-        api.getResponse('경기도 파주시 성재길 3');
+        IFN_CalloutResult resData = api.getResponse('경기도 파주시 성재길 3');
+        IFN_GET_KAKAOGEO_INFO.SearcXY ccc = (IFN_GET_KAKAOGEO_INFO.SearcXY) resData.response;
+        System.debug(Json.serialize(ccc.XPoint));
+        System.debug(Json.serialize(ccc.YPoint));
 
         
         Test.stopTest();

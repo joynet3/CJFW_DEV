@@ -205,6 +205,11 @@ public with sharing class IFN_ApiGateWay {
             }
 
 
+            System.debug('>>>>>>>>>>>>>>>>>>>>>>>>>>> Interface_id' + request.getHeader('Interface_id'));
+            System.debug('>>>>>>>>>>>>>>>>>>>>>>>>>>> Interface_auth_key' + request.getHeader('Interface_auth_key'));
+            System.debug('>>>>>>>>>>>>>>>>>>>>>>>>>>> Content-Type' + request.getHeader('Content-Type'));
+
+
             request.setEndpoint(endPointUrl);
             
             response = http.send(request);
