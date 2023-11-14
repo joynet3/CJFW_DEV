@@ -1,26 +1,26 @@
 /**
- * @Class : IFN_LIF1012_PO002_MD002.cls
+ * @Class : IFN_LIF1012_PO001_MD002.cls
  * @group Framework : 
  * @Author :  조일근 
  * @Date : 2023.11.08
  * @Version : 1.0
- * @Description :
+ * @Description : 미개약 상품 조회 인터페이스
  * @Modified :
  * ----------------------------------------------
  *  NO | Date       | Modifier       | Description
  * ----------------------------------------------
  *  1. | 2023.11.08 | 조일근  | 최초작성
  * */
-public class IFN_LIF1012_PO002_MD002 {
+public class IFN_LIF1012_PO001_MD002 {
 
-    public String interfaceId = 'IFN_LIF1012_PO002_MD002';
+    public String interfaceId = 'IFN_LIF1012_PO001_MD002';
 
     public IFN_CommonLog.LogWrap logWrap{get;set;}
     public IFN_CommonLog commlog;
 
 
-    public PO002_MD002ResWrapper callout( PO002_MD002ReqWrapper params){
-        PO002_MD002ResWrapper result = new PO002_MD002ResWrapper();
+    public PO001_MD002ResWrapper callout( PO001_MD002ReqWrapper params){
+        PO001_MD002ResWrapper result = new PO001_MD002ResWrapper();
 
         this.logWrap = new IFN_CommonLog.logWrap(this.interfaceId, 'Real');
         this.commlog = new IFN_CommonLog();
@@ -30,7 +30,7 @@ public class IFN_LIF1012_PO002_MD002 {
             IFN_LIF1012_Callout callout = new IFN_LIF1012_Callout(this.interfaceId, 'Real');
             IFN_CalloutResult calloutRes = callout.getResponse(this.interfaceId, Json.serialize(params));
 
-            result = (PO002_MD002ResWrapper)calloutRes.response;
+            result = (PO001_MD002ResWrapper)calloutRes.response;
 
             this.logWrap.LogText.add(Json.serialize(result));
             
@@ -56,7 +56,7 @@ public class IFN_LIF1012_PO002_MD002 {
     /**
      * 요청 파라메터 
      */
-    public class PO002_MD002ReqWrapper{
+    public class PO001_MD002ReqWrapper{
         public ZMMT1380_ITM ZMMT1380 {get;set;}
     }
     public class ZMMT1380_ITM {
@@ -70,7 +70,7 @@ public class IFN_LIF1012_PO002_MD002 {
     /**
      * 수신 데이터
      */
-     public class PO002_MD002ResWrapper{
+     public class PO001_MD002ResWrapper{
         public T_RETURN_ITM T_RETURN {get;set;}
     }
 

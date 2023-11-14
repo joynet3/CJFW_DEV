@@ -29,8 +29,8 @@ public class IFN_LIF1012_Callout {
         
         try {
             switch on interfaceId {
-                when 'IFN_LIF1012_PO002_MD002'{ 
-                    result = IFN_LIF1012_PO002_MD002(interfaceId, params);
+                when 'IFN_LIF1012_PO001_MD002'{ 
+                    result = IFN_LIF1012_PO001_MD002(interfaceId, params);
                 }
 
             }
@@ -42,7 +42,7 @@ public class IFN_LIF1012_Callout {
 
  /**
      * 미계약 상품 상품 조회
-     * @param interfaceId IFN_LIF1012_PO002_MD002
+     * @param interfaceId IFN_LIF1012_PO001_MD002
      * @param params 
      * @return  
      * @request Sample
@@ -57,14 +57,14 @@ public class IFN_LIF1012_Callout {
             "code": ""
         }
      */
-    public IFN_CalloutResult IFN_LIF1012_PO002_MD002(String interfaceId, Object params){
+    public IFN_CalloutResult IFN_LIF1012_PO001_MD002(String interfaceId, Object params){
         IFN_CalloutResult result = new IFN_CalloutResult();
 
         String responsedata = '';
         String result_code = 'S';
         String result_message = '';
         
-        IFN_LIF1012_PO002_MD002.PO002_MD002ResWrapper infResponse = new IFN_LIF1012_PO002_MD002.PO002_MD002ResWrapper();  
+        IFN_LIF1012_PO001_MD002.PO001_MD002ResWrapper infResponse = new IFN_LIF1012_PO001_MD002.PO001_MD002ResWrapper();  
         
 
         IFN_CMM_ERRUTIL.ErrorValueWrapper errWr = new IFN_CMM_ERRUTIL.ErrorValueWrapper();
@@ -77,8 +77,8 @@ public class IFN_LIF1012_Callout {
 
             this.logWrap.LogText.add(Json.serialize(params));
 
-            IFN_LIF1012_PO002_MD002.PO002_MD002ReqWrapper reqparam = new IFN_LIF1012_PO002_MD002.PO002_MD002ReqWrapper();
-            reqparam = (IFN_LIF1012_PO002_MD002.PO002_MD002ReqWrapper)JSON.deserializeStrict((String) params, IFN_LIF1012_PO002_MD002.PO002_MD002ReqWrapper.class);
+            IFN_LIF1012_PO001_MD002.PO001_MD002ReqWrapper reqparam = new IFN_LIF1012_PO001_MD002.PO001_MD002ReqWrapper();
+            reqparam = (IFN_LIF1012_PO001_MD002.PO001_MD002ReqWrapper)JSON.deserializeStrict((String) params, IFN_LIF1012_PO001_MD002.PO001_MD002ReqWrapper.class);
 
 
             IFN_ApiGateWay gateway = new IFN_ApiGateWay(interfaceId);
@@ -90,7 +90,7 @@ public class IFN_LIF1012_Callout {
             if(response.getStatusCode() == 200) {
 
                 responsedata = response.getBody();
-                infResponse =  (IFN_LIF1012_PO002_MD002.PO002_MD002ResWrapper)JSON.deserializeStrict((String)responsedata, IFN_LIF1012_PO002_MD002.PO002_MD002ResWrapper.class);
+                infResponse =  (IFN_LIF1012_PO001_MD002.PO001_MD002ResWrapper)JSON.deserializeStrict((String)responsedata, IFN_LIF1012_PO001_MD002.PO001_MD002ResWrapper.class);
                 this.logWrap.LogText.add('infResponse.search >>>>>>>>>> ' + JSON.serialize(infResponse.T_RETURN));
                 this.logWrap.ResponseBody = (String)responsedata;
                 this.logWrap.ResponseTime = Datetime.now();
