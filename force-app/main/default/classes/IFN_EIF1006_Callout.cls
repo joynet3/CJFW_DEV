@@ -136,7 +136,7 @@ public class IFN_EIF1006_Callout {
 
         } catch(Exception e) {
             result_code = 'E';
-            result_message = 'Interface Exception';
+            result_message = 'Interface Exception:' + e;
         }  
 
         result.setResult(

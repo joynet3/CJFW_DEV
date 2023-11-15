@@ -2,7 +2,7 @@
  * @description       : 미완료된 배송처에 관해 이메일 알림을 보냅니다. (17시 실행) TODO
  * @author            : yejoo.lee@dkbmc.com
  * @group             : 
- * @last modified on  : 10-23-2023
+ * @last modified on  : 11-15-2023
  * @last modified by  : yejoo.lee@dkbmc.com
 **/
 public with sharing class CJFW_DeliveryDstMgmtNotiEmailBatch implements  Database.Batchable<SObject>, Database.Stateful, Database.AllowsCallouts, Schedulable{
@@ -19,6 +19,7 @@ public with sharing class CJFW_DeliveryDstMgmtNotiEmailBatch implements  Databas
         String query = ' SELECT '
                     // +     ' Id '
                     +      allFieldString
+                    +  ', Account__r.Name '
                     +  ' FROM CJFW_DeliveryDestinationMgmt__c '
                     +  ' WHERE LastActivityDate = null OR Completed__c = false ';
                     // +  ' WHERE LastActivityDate = null';

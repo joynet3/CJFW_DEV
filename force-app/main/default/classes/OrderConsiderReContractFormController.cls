@@ -997,219 +997,219 @@ public with sharing class OrderConsiderReContractFormController {
 
         // System.debug(' 실적현황 가져오기 ~ ' + expectIncomeId );
         // System.debug(' 실적현황  refExInfoId check  ~ ' + refExInfoId );
-        
+        List < CJFW_SalesPerformance__c > salesPerformanceList = new List < CJFW_SalesPerformance__c >();
         try{
-            
-            List < CJFW_SalesPerformance__c > salesPerformanceList = [
-                SELECT  Id,
-                        BeforeSales__c,     // 매출라인
-                        SalesElevenAgo__c, 
-                        SalesTenAgo__c, 
-                        SalesNineAgo__c, 
-                        SalesEightAgo__c, 
-                        SalesSevenAgo__c, 
-                        SalesSixAgo__c, 
-                        SalesFiveAgo__c, 
-                        SalesFourAgo__c, 
-                        SalesThreeAgo__c, 
-                        SalesTwoAgo__c, 
-                        SalesOneAgo__c, 
-                        BeforeSalesProfit__c,     // 매출이익라인
-                        SalesProfitElevenAgo__c, 
-                        SalesProfitTenAgo__c, 
-                        SalesProfitNineAgo__c, 
-                        SalesProfitEightAgo__c, 
-                        SalesProfitSevenAgo__c, 
-                        SalesProfitSixAgo__c, 
-                        SalesProfitFiveAgo__c, 
-                        SalesProfitFourAgo__c, 
-                        SalesProfitThreeAgo__c, 
-                        SalesProfitTwoAgo__c, 
-                        SalesProfitOneAgo__c, 
-                        BeforeSalesStore__c,      // 매장수 
-                        SalesStoreElevenAgo__c, 
-                        SalesStoreTenAgo__c, 
-                        SalesStoreNineAgo__c, 
-                        SalesStoreEightAgo__c, 
-                        SalesStoreSevenAgo__c, 
-                        SalesStoreSixAgo__c, 
-                        SalesStoreFiveAgo__c, 
-                        SalesStoreFourAgo__c, 
-                        SalesStoreThreeAgo__c, 
-                        SalesStoreTwoAgo__c, 
-                        SalesStoreOneAgo__c, 
-                        BeforeDistribute__c,      // 물류비 
-                        DistributeElevenAgo__c, 
-                        DistributeTenAgo__c, 
-                        DistributeNineAgo__c, 
-                        DistributeEightAgo__c, 
-                        DistributeSevenAgo__c, 
-                        DistributeSixAgo__c, 
-                        DistributeFiveAgo__c, 
-                        DistributeFourAgo__c, 
-                        DistributeThreeAgo__c, 
-                        DistributeTwoAgo__c, 
-                        DistributeOneAgo__c, 
-                        BeforeDistributeDir__c,    // 직접물류비 
-                        DistributeDirElevenAgo__c, 
-                        DistributeDirTenAgo__c, 
-                        DistributeDirNineAgo__c, 
-                        DistributeDirEightAgo__c, 
-                        DistributeDirSevenAgo__c, 
-                        DistributeDirSixAgo__c, 
-                        DistributeDirFiveAgo__c, 
-                        DistributeDirFourAgo__c, 
-                        DistributeDirThreeAgo__c, 
-                        DistributeDirTwoAgo__c, 
-                        DistributeDirOneAgo__c, 
-                        BeforeDistributeInDir__c,   // 간접물류비
-                        DistributeInDirElevenAgo__c, 
-                        DistributeInDirTenAgo__c, 
-                        DistributeInDirNineAgo__c, 
-                        DistributeInDirEightAgo__c, 
-                        DistributeInDirSevenAgo__c, 
-                        DistributeInDirSixAgo__c, 
-                        DistributeInDirFiveAgo__c, 
-                        DistributeInDirFourAgo__c, 
-                        DistributeInDirThreeAgo__c, 
-                        DistributeInDirTwoAgo__c, 
-                        DistributeInDirOneAgo__c, 
-                        BeforeContribute__c,        // 공헌이익
-                        ContributeElevenAgo__c, 
-                        ContributeTenAgo__c, 
-                        ContributeNineAgo__c, 
-                        ContributeEightAgo__c, 
-                        ContributeSevenAgo__c, 
-                        ContributeSixAgo__c, 
-                        ContributeFiveAgo__c, 
-                        ContributeFourAgo__c, 
-                        ContributeThreeAgo__c, 
-                        ContributeTwoAgo__c, 
-                        ContributeOneAgo__c, 
-                        ExpectedIncomeExpensesId__c 
-                FROM CJFW_SalesPerformance__c WHERE ExpectedIncomeExpensesId__c =: refExInfoId LIMIT 1  ];
-                    
-                // expectIncomeId를 key 값으로 신규개설품의(master) id 값이 없으면 신규생성 
-                if(expectIncomeId ==null && refExInfoId ==null ){ 
-                    // System.debug( ' version 1 , 초기 신규 생성 '  );
-                    salesPerformance = new CJFW_SalesPerformance__c();
-                }else if(expectIncomeId ==null && !salesPerformanceList.isEmpty() ){
-                    // System.debug( ' version 2 이상  , 신규 생성 '  );
-                    salesPerformance = new CJFW_SalesPerformance__c();
-                    salesPerformance = salesPerformanceList[0];
-                }else{ 
-                    // System.debug( ' update '  );
-                    salesPerformance = salesPerformanceList[0];
-                }
 
+            if (refExInfoId != null) {
+                salesPerformanceList = [
+                    SELECT  Id,
+                            BeforeSales__c,     // 매출라인
+                            SalesElevenAgo__c, 
+                            SalesTenAgo__c, 
+                            SalesNineAgo__c, 
+                            SalesEightAgo__c, 
+                            SalesSevenAgo__c, 
+                            SalesSixAgo__c, 
+                            SalesFiveAgo__c, 
+                            SalesFourAgo__c, 
+                            SalesThreeAgo__c, 
+                            SalesTwoAgo__c, 
+                            SalesOneAgo__c, 
+                            BeforeSalesProfit__c,     // 매출이익라인
+                            SalesProfitElevenAgo__c, 
+                            SalesProfitTenAgo__c, 
+                            SalesProfitNineAgo__c, 
+                            SalesProfitEightAgo__c, 
+                            SalesProfitSevenAgo__c, 
+                            SalesProfitSixAgo__c, 
+                            SalesProfitFiveAgo__c, 
+                            SalesProfitFourAgo__c, 
+                            SalesProfitThreeAgo__c, 
+                            SalesProfitTwoAgo__c, 
+                            SalesProfitOneAgo__c, 
+                            BeforeSalesStore__c,      // 매장수 
+                            SalesStoreElevenAgo__c, 
+                            SalesStoreTenAgo__c, 
+                            SalesStoreNineAgo__c, 
+                            SalesStoreEightAgo__c, 
+                            SalesStoreSevenAgo__c, 
+                            SalesStoreSixAgo__c, 
+                            SalesStoreFiveAgo__c, 
+                            SalesStoreFourAgo__c, 
+                            SalesStoreThreeAgo__c, 
+                            SalesStoreTwoAgo__c, 
+                            SalesStoreOneAgo__c, 
+                            BeforeDistribute__c,      // 물류비 
+                            DistributeElevenAgo__c, 
+                            DistributeTenAgo__c, 
+                            DistributeNineAgo__c, 
+                            DistributeEightAgo__c, 
+                            DistributeSevenAgo__c, 
+                            DistributeSixAgo__c, 
+                            DistributeFiveAgo__c, 
+                            DistributeFourAgo__c, 
+                            DistributeThreeAgo__c, 
+                            DistributeTwoAgo__c, 
+                            DistributeOneAgo__c, 
+                            BeforeDistributeDir__c,    // 직접물류비 
+                            DistributeDirElevenAgo__c, 
+                            DistributeDirTenAgo__c, 
+                            DistributeDirNineAgo__c, 
+                            DistributeDirEightAgo__c, 
+                            DistributeDirSevenAgo__c, 
+                            DistributeDirSixAgo__c, 
+                            DistributeDirFiveAgo__c, 
+                            DistributeDirFourAgo__c, 
+                            DistributeDirThreeAgo__c, 
+                            DistributeDirTwoAgo__c, 
+                            DistributeDirOneAgo__c, 
+                            BeforeDistributeInDir__c,   // 간접물류비
+                            DistributeInDirElevenAgo__c, 
+                            DistributeInDirTenAgo__c, 
+                            DistributeInDirNineAgo__c, 
+                            DistributeInDirEightAgo__c, 
+                            DistributeInDirSevenAgo__c, 
+                            DistributeInDirSixAgo__c, 
+                            DistributeInDirFiveAgo__c, 
+                            DistributeInDirFourAgo__c, 
+                            DistributeInDirThreeAgo__c, 
+                            DistributeInDirTwoAgo__c, 
+                            DistributeInDirOneAgo__c, 
+                            BeforeContribute__c,        // 공헌이익
+                            ContributeElevenAgo__c, 
+                            ContributeTenAgo__c, 
+                            ContributeNineAgo__c, 
+                            ContributeEightAgo__c, 
+                            ContributeSevenAgo__c, 
+                            ContributeSixAgo__c, 
+                            ContributeFiveAgo__c, 
+                            ContributeFourAgo__c, 
+                            ContributeThreeAgo__c, 
+                            ContributeTwoAgo__c, 
+                            ContributeOneAgo__c, 
+                            ExpectedIncomeExpensesId__c 
+                    FROM CJFW_SalesPerformance__c WHERE ExpectedIncomeExpensesId__c =: refExInfoId LIMIT 1  ];
+                
+            }
 
+            // expectIncomeId를 key 값으로 신규개설품의(master) id 값이 없으면 신규생성 
+            if(expectIncomeId ==null && refExInfoId ==null ){ 
+                // System.debug( ' version 1 , 초기 신규 생성 '  );
+                salesPerformance = new CJFW_SalesPerformance__c();
+            }else if(expectIncomeId ==null && !salesPerformanceList.isEmpty() ){
+                // System.debug( ' version 2 이상  , 신규 생성 '  );
+                salesPerformance = new CJFW_SalesPerformance__c();
+                salesPerformance = salesPerformanceList[0];
+            }else{ 
+                // System.debug( ' update '  );
+                salesPerformance = salesPerformanceList[0];
+            }
 
-                // 조회된내용이 없을때 계산식에 오류가 발생하기때문에 아래와같이 default로 0.00 으로 세팅한다 
-                String[] defaultValSet = new String[] {
-                    'BeforeSales__c', // 매출
-                    'SalesElevenAgo__c',
-                    'SalesTenAgo__c',
-                    'SalesNineAgo__c',
-                    'SalesEightAgo__c',
-                    'SalesSevenAgo__c',
-                    'SalesSixAgo__c',
-                    'SalesFiveAgo__c',
-                    'SalesFourAgo__c',
-                    'SalesThreeAgo__c',
-                    'SalesTwoAgo__c',
-                    'SalesOneAgo__c',
-                    'BeforeSalesProfit__c', // 매출이익
-                    'SalesProfitElevenAgo__c',
-                    'SalesProfitTenAgo__c',
-                    'SalesProfitNineAgo__c',
-                    'SalesProfitEightAgo__c',
-                    'SalesProfitSevenAgo__c',
-                    'SalesProfitSixAgo__c',
-                    'SalesProfitFiveAgo__c',
-                    'SalesProfitFourAgo__c',
-                    'SalesProfitThreeAgo__c',
-                    'SalesProfitTwoAgo__c',
-                    'SalesProfitOneAgo__c',
-                    'BeforeDistribute__c', // 물류비
-                    'DistributeElevenAgo__c',
-                    'DistributeTenAgo__c',
-                    'DistributeNineAgo__c',
-                    'DistributeEightAgo__c',
-                    'DistributeSevenAgo__c',
-                    'DistributeSixAgo__c',
-                    'DistributeFiveAgo__c',
-                    'DistributeFourAgo__c',
-                    'DistributeThreeAgo__c',
-                    'DistributeTwoAgo__c',
-                    'DistributeOneAgo__c',
-                    'BeforeDistributeDir__c', // 직접물류비
-                    'DistributeDirElevenAgo__c',
-                    'DistributeDirTenAgo__c',
-                    'DistributeDirNineAgo__c',
-                    'DistributeDirEightAgo__c',
-                    'DistributeDirSevenAgo__c',
-                    'DistributeDirSixAgo__c',
-                    'DistributeDirFiveAgo__c',
-                    'DistributeDirFourAgo__c',
-                    'DistributeDirThreeAgo__c',
-                    'DistributeDirTwoAgo__c',
-                    'DistributeDirOneAgo__c',
-                    'BeforeDistributeInDir__c', // 간접물류비
-                    'DistributeInDirElevenAgo__c',
-                    'DistributeInDirTenAgo__c',
-                    'DistributeInDirNineAgo__c',
-                    'DistributeInDirEightAgo__c',
-                    'DistributeInDirSevenAgo__c',
-                    'DistributeInDirSixAgo__c',
-                    'DistributeInDirFiveAgo__c',
-                    'DistributeInDirFourAgo__c',
-                    'DistributeInDirThreeAgo__c',
-                    'DistributeInDirTwoAgo__c',
-                    'DistributeInDirOneAgo__c',
-                    'BeforeContribute__c', // 공헌이익
-                    'ContributeElevenAgo__c',
-                    'ContributeTenAgo__c',
-                    'ContributeNineAgo__c',
-                    'ContributeEightAgo__c',
-                    'ContributeSevenAgo__c',
-                    'ContributeSixAgo__c',
-                    'ContributeFiveAgo__c',
-                    'ContributeFourAgo__c',
-                    'ContributeThreeAgo__c',
-                    'ContributeTwoAgo__c',
-                    'ContributeOneAgo__c'
-                    
-                };
+            // 조회된내용이 없을때 계산식에 오류가 발생하기때문에 아래와같이 default로 0.00 으로 세팅한다 
+            String[] defaultValSet = new String[] {
+                'BeforeSales__c', // 매출
+                'SalesElevenAgo__c',
+                'SalesTenAgo__c',
+                'SalesNineAgo__c',
+                'SalesEightAgo__c',
+                'SalesSevenAgo__c',
+                'SalesSixAgo__c',
+                'SalesFiveAgo__c',
+                'SalesFourAgo__c',
+                'SalesThreeAgo__c',
+                'SalesTwoAgo__c',
+                'SalesOneAgo__c',
+                'BeforeSalesProfit__c', // 매출이익
+                'SalesProfitElevenAgo__c',
+                'SalesProfitTenAgo__c',
+                'SalesProfitNineAgo__c',
+                'SalesProfitEightAgo__c',
+                'SalesProfitSevenAgo__c',
+                'SalesProfitSixAgo__c',
+                'SalesProfitFiveAgo__c',
+                'SalesProfitFourAgo__c',
+                'SalesProfitThreeAgo__c',
+                'SalesProfitTwoAgo__c',
+                'SalesProfitOneAgo__c',
+                'BeforeDistribute__c', // 물류비
+                'DistributeElevenAgo__c',
+                'DistributeTenAgo__c',
+                'DistributeNineAgo__c',
+                'DistributeEightAgo__c',
+                'DistributeSevenAgo__c',
+                'DistributeSixAgo__c',
+                'DistributeFiveAgo__c',
+                'DistributeFourAgo__c',
+                'DistributeThreeAgo__c',
+                'DistributeTwoAgo__c',
+                'DistributeOneAgo__c',
+                'BeforeDistributeDir__c', // 직접물류비
+                'DistributeDirElevenAgo__c',
+                'DistributeDirTenAgo__c',
+                'DistributeDirNineAgo__c',
+                'DistributeDirEightAgo__c',
+                'DistributeDirSevenAgo__c',
+                'DistributeDirSixAgo__c',
+                'DistributeDirFiveAgo__c',
+                'DistributeDirFourAgo__c',
+                'DistributeDirThreeAgo__c',
+                'DistributeDirTwoAgo__c',
+                'DistributeDirOneAgo__c',
+                'BeforeDistributeInDir__c', // 간접물류비
+                'DistributeInDirElevenAgo__c',
+                'DistributeInDirTenAgo__c',
+                'DistributeInDirNineAgo__c',
+                'DistributeInDirEightAgo__c',
+                'DistributeInDirSevenAgo__c',
+                'DistributeInDirSixAgo__c',
+                'DistributeInDirFiveAgo__c',
+                'DistributeInDirFourAgo__c',
+                'DistributeInDirThreeAgo__c',
+                'DistributeInDirTwoAgo__c',
+                'DistributeInDirOneAgo__c',
+                'BeforeContribute__c', // 공헌이익
+                'ContributeElevenAgo__c',
+                'ContributeTenAgo__c',
+                'ContributeNineAgo__c',
+                'ContributeEightAgo__c',
+                'ContributeSevenAgo__c',
+                'ContributeSixAgo__c',
+                'ContributeFiveAgo__c',
+                'ContributeFourAgo__c',
+                'ContributeThreeAgo__c',
+                'ContributeTwoAgo__c',
+                'ContributeOneAgo__c'
+                
+            };
 
-                String[] defaultZeroSet = new String[] {
-                    'BeforeSalesStore__c', // 매장수 (매장수는 정수)
-                    'SalesStoreElevenAgo__c',
-                    'SalesStoreTenAgo__c',
-                    'SalesStoreNineAgo__c',
-                    'SalesStoreEightAgo__c',
-                    'SalesStoreSevenAgo__c',
-                    'SalesStoreSixAgo__c',
-                    'SalesStoreFiveAgo__c',
-                    'SalesStoreFourAgo__c',
-                    'SalesStoreThreeAgo__c',
-                    'SalesStoreTwoAgo__c',
-                    'SalesStoreOneAgo__c'
-                };    
+            String[] defaultZeroSet = new String[] {
+                'BeforeSalesStore__c', // 매장수 (매장수는 정수)
+                'SalesStoreElevenAgo__c',
+                'SalesStoreTenAgo__c',
+                'SalesStoreNineAgo__c',
+                'SalesStoreEightAgo__c',
+                'SalesStoreSevenAgo__c',
+                'SalesStoreSixAgo__c',
+                'SalesStoreFiveAgo__c',
+                'SalesStoreFourAgo__c',
+                'SalesStoreThreeAgo__c',
+                'SalesStoreTwoAgo__c',
+                'SalesStoreOneAgo__c'
+            };    
 
-                for (String defaultSet : defaultValSet) {
-                    Object fieldValue = salesPerformance.get(defaultSet);
-                    // 필드 값이 null이면 기본값을 0.00으로 설정
-                    if (fieldValue == null) fieldValue = defaultZero; 
-                    salesPerformance.put(defaultSet, fieldValue);
-                }
+            for (String defaultSet : defaultValSet) {
+                Object fieldValue = salesPerformance.get(defaultSet);
+                // 필드 값이 null이면 기본값을 0.00으로 설정
+                if (fieldValue == null) fieldValue = defaultZero; 
+                salesPerformance.put(defaultSet, fieldValue);
+            }
 
-                for (String defaultSet : defaultZeroSet) {
-                    Object fieldValue = salesPerformance.get(defaultSet);
-                    // 필드 값이 null이면 기본값을 0으로 설정
-                    if (fieldValue == null) fieldValue = 0; 
-                    salesPerformance.put(defaultSet, fieldValue);
-                }
-
+            for (String defaultSet : defaultZeroSet) {
+                Object fieldValue = salesPerformance.get(defaultSet);
+                // 필드 값이 null이면 기본값을 0으로 설정
+                if (fieldValue == null) fieldValue = 0; 
+                salesPerformance.put(defaultSet, fieldValue);
+            }
                 
 
         }catch(Exception e){
@@ -1227,11 +1227,14 @@ public with sharing class OrderConsiderReContractFormController {
     @param : 신규개설품의Id
     */
     public void getPromoteIssue(String expectIncomeId) {
-        // System.debug(' 추진사항 정보가져가기 ');
+        System.debug(' 추진사항 정보가져가기 ');
+        System.debug(' 추진사항 expectIncomeId => ' + expectIncomeId );
+        System.debug(' 추진사항 refExInfoId => ' + refExInfoId );
+        List<CJFW_PromoteIssues__c> promoteIssuesList = new List<CJFW_PromoteIssues__c>();
 
         try {
             if (refExInfoId != null) {
-                List < CJFW_PromoteIssues__c > promoteIssuesList = [
+                promoteIssuesList = [
                     SELECT Id,
                     SolutionDivisionOne__c,     // 솔루션 구분
                     SolutionDivisionTwo__c,
@@ -1312,20 +1315,20 @@ public with sharing class OrderConsiderReContractFormController {
                     CreatedDate
                     FROM CJFW_PromoteIssues__c WHERE ExpectedIncomeExpensesId__c =: refExInfoId LIMIT 1
                 ];
-
-                if(expectIncomeId ==null && refExInfoId ==null ){ 
-                    // System.debug( ' version 1 , 초기 신규 생성 '  );
-                    promoteIssues = new CJFW_PromoteIssues__c();
-                }else if(expectIncomeId ==null && !promoteIssuesList.isEmpty() ){
-                    // System.debug( ' version 2 이상  , 신규 생성 '  );
-                    promoteIssues = new CJFW_PromoteIssues__c();
-                    promoteIssues = promoteIssuesList[0];
-                }else{ 
-                    // System.debug( ' update '  );
-                    promoteIssues = promoteIssuesList[0];
-                }
-
             }
+
+            if(expectIncomeId ==null && refExInfoId ==null ){ 
+                    System.debug( ' version 1 , 초기 신규 생성 '  );
+                promoteIssues = new CJFW_PromoteIssues__c();
+            }else if(expectIncomeId ==null && !promoteIssuesList.isEmpty() ){
+                    System.debug( ' version 2 이상  , 신규 생성 '  );
+                promoteIssues = new CJFW_PromoteIssues__c();
+                promoteIssues = promoteIssuesList[0];
+            }else{ 
+                    System.debug( ' update '  );
+                promoteIssues = promoteIssuesList[0];
+            }
+
 
             // 매출 , 매익률 값이 없을경우 default 0.00 으로 세팅 
             String[] defaultValSet = new String[] {
@@ -2714,42 +2717,37 @@ public with sharing class OrderConsiderReContractFormController {
     }
 
 
-
-
-
-
     /* 
     품의지정 버튼 클릭시 , 품의지정 check 
     : 기존 품의지정된 내역은 삭제 후 신규 품의지정된 1개만 품의체크
     */
-   @RemoteAction
-   public static String ReportCheck(String incomeExpensesId , String opportunityId ){
 
-       try{
-           List<CJFW_ExpectedIncomeExpenses__c> RemoveList = [SELECT Id, IsReportCheck__c FROM CJFW_ExpectedIncomeExpenses__c WHERE Opportunity__c = :opportunityId AND Id != :incomeExpensesId];
-           CJFW_ExpectedIncomeExpenses__c checkList = [SELECT Id, IsReportCheck__c FROM CJFW_ExpectedIncomeExpenses__c WHERE  Id = :incomeExpensesId];
-
-           if(RemoveList <> null ){
-               for(CJFW_ExpectedIncomeExpenses__c data : RemoveList) {
-                   data.IsReportCheck__c = false;
-               }
-               update RemoveList;
-           }
-
-           if(checkList <> null){
-               checkList.IsReportCheck__c =true;
-               System.debug(' checkList ' + checkList );
-               update checkList;
-           }
-
-           return 'success';
-
-       }catch (Exception e) {
-           System.debug('에러 메시지: ' + e.getMessage());
-           System.debug('에러 라인: ' + e.getStackTraceString());
-           return 'error';
-       }
-   }
+    @RemoteAction
+    public static String ReportCheck(String incomeExpensesId, String opportunityId) {
+        try {
+            List<CJFW_ExpectedIncomeExpenses__c> expenseList = [SELECT Id, IsReportCheck__c FROM CJFW_ExpectedIncomeExpenses__c WHERE Opportunity__c = :opportunityId AND Id != :incomeExpensesId];
+   
+            for (CJFW_ExpectedIncomeExpenses__c expense : expenseList) {
+                expense.IsReportCheck__c = false;
+            }
+            update expenseList;
+   
+            CJFW_ExpectedIncomeExpenses__c currentExpense = [SELECT Id, IsReportCheck__c FROM CJFW_ExpectedIncomeExpenses__c WHERE Id = :incomeExpensesId];
+            if (currentExpense != null) {
+                currentExpense.IsReportCheck__c = !currentExpense.IsReportCheck__c;
+                update currentExpense;
+ 
+                return String.valueOf(currentExpense.IsReportCheck__c);
+            }
+   
+            return 'false';
+   
+        } catch (Exception e) {
+            System.debug('에러 메시지: ' + e.getMessage());
+            System.debug('에러 라인: ' + e.getStackTraceString());
+            return 'error';
+        }
+    }
 
     /* 
     Decimal 값으로 변환하기위해 사용되는 메소드

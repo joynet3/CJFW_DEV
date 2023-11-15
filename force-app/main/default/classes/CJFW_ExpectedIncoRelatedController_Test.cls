@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : jieun.lee3@dkbmc.com
  * @group             : 
- * @last modified on  : 11-14-2023
+ * @last modified on  : 11-15-2023
  * @last modified by  : jieun.lee3@dkbmc.com
 **/
 @isTest
@@ -18,7 +18,7 @@ public with sharing class CJFW_ExpectedIncoRelatedController_Test {
         // 사용자
         User objUser = new User();
         objUser = COMM_ReportTestDataFactory.createUser('00e5i0000022sAxAAI');
-        objUser.HeadOffice__c = '6000';
+        objUser.HeadOffice__c = '3001';
         insert objUser;
 
         // 기회
@@ -52,30 +52,34 @@ public with sharing class CJFW_ExpectedIncoRelatedController_Test {
     @isTest
     public static void test1(){
 
-        User objUser = [SELECT Id FROM User LIMIT 1];
-        Test.startTest();
+        User objUser = [SELECT Id, HeadOffice__c FROM User LIMIT 1];
+        System.runAs(objUser){
 
-
-        Opportunity objOppty = [SELECT Id, Type, OwnerId, Owner.HeadOffice__c FROM Opportunity LIMIT 1]; 
-        
-        CJFW_ExpectedIncomeExpenses__c objExIncome1 = [SELECT Id, ReportType__c, Opportunity__c  FROM CJFW_ExpectedIncomeExpenses__c LIMIT 1];
-
-        System.debug('objExIncome1'+objExIncome1);
-        // objOppty.Owner = objUser;
-        // objOppty.Owner.HeadOffice__c = '3001';
-        System.debug('기회 =>'+objOppty);
-        // objExIncome.Opportunity__c = objOppty.Id;
-        // objExIncome.ReportType__c = 'CRM008';
-
-        objOppty.Owner.HeadOffice__c = '3001';
-
-        // System.debug('HeadOffice__c !!'+ objOppty.Owner.HeadOffice__c);
-        // System.debug('retype Id !!'+ objExIncome.ReportType__c);
-        CJFW_ExpectedIncoExpenRelatedController.getList(objOppty.Id);
-        
-
-
-        Test.stopTest();  
+            Test.startTest();
+    
+    
+            Opportunity objOppty = [SELECT Id, Type, OwnerId, Owner.HeadOffice__c FROM Opportunity LIMIT 1]; 
+            
+            CJFW_ExpectedIncomeExpenses__c objExIncome1 = [SELECT Id, ReportType__c, Opportunity__c  FROM CJFW_ExpectedIncomeExpenses__c LIMIT 1];
+    
+            System.debug('objExIncome1'+objExIncome1);
+            // objOppty.Owner = objUser;
+            // objOppty.Owner.HeadOffice__c = '3001';
+            System.debug('기회 =>'+objOppty);
+            // objExIncome.Opportunity__c = objOppty.Id;
+            // objExIncome.ReportType__c = 'CRM008';
+    
+            objOppty.Owner.HeadOffice__c = '3001';
+            String headLabel = '3001';
+            
+            // System.debug('HeadOffice__c !!'+ objOppty.Owner.HeadOffice__c);
+            // System.debug('retype Id !!'+ objExIncome.ReportType__c);
+            CJFW_ExpectedIncoExpenRelatedController.getList(objOppty.Id);
+            
+    
+    
+            Test.stopTest();  
+        }
     }
 
     @isTest

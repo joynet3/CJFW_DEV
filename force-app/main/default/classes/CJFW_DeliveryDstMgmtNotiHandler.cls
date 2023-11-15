@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : yejoo.lee@dkbmc.com
  * @group             : 
- * @last modified on  : 10-20-2023
+ * @last modified on  : 11-15-2023
  * @last modified by  : yejoo.lee@dkbmc.com
 **/
 public with sharing class CJFW_DeliveryDstMgmtNotiHandler extends NotiHandler{
@@ -18,10 +18,10 @@ public with sharing class CJFW_DeliveryDstMgmtNotiHandler extends NotiHandler{
             String userId = mgmt.OwnerId;
             if(userMgmtMap.containsKey(userId)) {
                 String multiTr = userMgmtMap.get(userId);
-                multiTr += '<tr><td><a href="'+orgDomainUrl+'/'+mgmt.Id+'">'+mgmt.Name+'</a></td></tr>';
+                multiTr += '<tr><td><a href="'+orgDomainUrl+'/'+mgmt.Id+'">'+mgmt.Name+' : '+mgmt.Account__r.Name+'</a></td></tr>';
                 userMgmtMap.put(userId, multiTr);
             }else {
-                userMgmtMap.put(userId, '<tr><td><a href="'+orgDomainUrl+'/'+mgmt.Id+'">'+mgmt.Name+'</a></td></tr>');
+                userMgmtMap.put(userId, '<tr><td><a href="'+orgDomainUrl+'/'+mgmt.Id+'">'+mgmt.Name+' : '+mgmt.Account__r.Name+'</a></td></tr>');
             }
         }
 

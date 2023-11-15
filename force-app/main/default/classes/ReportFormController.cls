@@ -8,7 +8,7 @@
 
  * @author            : eunyoung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 11-14-2023
+ * @last modified on  : 11-15-2023
  * @last modified by  : yeonji.lim@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -75,6 +75,7 @@ public with sharing class ReportFormController {
     public String collateralEndTOBE { get; set; } // TOBE 담보 종료기간
     public String collateralStartAddTOBE { get; set; } // TOBE 담보 시작기간(추가)
     public String collateralEndAddTOBE { get; set; } // TOBE 담보 종료기간(추가)
+    public String salesPerformDate { get; set; } // 품의생성일자
 
 
     /* 
@@ -94,14 +95,14 @@ public with sharing class ReportFormController {
         System.debug('# showtable ->' + showtable );
         System.debug('# reportType ->' + reportType );
 
-        String pageReferenceString = ApexPages.currentPage().getUrl();
-        String testReContract = '/apex/CJFW_NewOpenReport';
-        System.debug(' 급식신규 테스트 모드 ' + testReContract );
-        if (pageReferenceString == testReContract) {
-            opportunityId = '0060w00000D8uikAAB';
-            incomeExpensesId = 'a1lH2000001YZ22IAG';
-            showtable = 'false';
-        }
+        // String pageReferenceString = ApexPages.currentPage().getUrl();
+        // String testReContract = '/apex/CJFW_NewOpenReport';
+        // System.debug(' 급식신규 테스트 모드 ' + testReContract );
+        // if (pageReferenceString == testReContract) {
+        //     opportunityId = '0060w00000D8uikAAB';
+        //     incomeExpensesId = 'a1lH2000001YZ22IAG';
+        //     showtable = 'false';
+        // }
 
         getPicklistValues(); // picklist label/value 값 담기 [1]
         getAccountInfo();    // 고객사 정보 가져오기 [2]
@@ -157,7 +158,7 @@ public with sharing class ReportFormController {
                     accountInfo.put(defaultSet, fieldValue);
                 }
  
-                System.debug('# 잘 가져왔니 ?->' + accountInfo);
+                // System.debug('# 잘 가져왔니 ?->' + accountInfo);
             } else {
                 System.debug('# 해당 계정 ID에 대한 레코드를 찾을 수 없습니다.');
             }
@@ -212,7 +213,7 @@ public with sharing class ReportFormController {
             paymentTOBEPickList.add(new SelectOption(picklistValue.getValue(), picklistValue.getLabel()));
         }
 
-        System.debug(' TOBE 결제 수단 PickList => ' + paymentTOBEPickList);
+        // System.debug(' TOBE 결제 수단 PickList => ' + paymentTOBEPickList);
 
     }
 
@@ -339,6 +340,7 @@ public with sharing class ReportFormController {
             'AttachedDocument__c, ' +       // 첨부서류
             'OpptyDescription__c, ' +       // 특이사항
             
+            'SalesPerformDate__c, ' +       // 실적현황 지정일
             'DeliveryCnt__c, ' +            // 배송횟수
             'InitialDate__c ' +             // 초도일자
 
@@ -359,7 +361,7 @@ public with sharing class ReportFormController {
 
             // query += ' ORDER BY Version__c DESC LIMIT 1';
 
-            System.debug('# query ->' + query );
+            // System.debug('# query ->' + query );
             List<CJFW_ExpectedIncomeExpenses__c> incomeExpensesList = Database.query(query);
 
             // insert 인지 update 구분해서 version up _231101
@@ -388,7 +390,7 @@ public with sharing class ReportFormController {
             System.debug('trace => ' + e.getStackTraceString());
         }
 
-        System.debug('IncomeExpensesInfo '+ IncomeExpensesInfo);
+        // System.debug('IncomeExpensesInfo '+ IncomeExpensesInfo);
         
         try {
             /* 값이없어도 화면에 0.00으로 default setting 되게함  */
@@ -478,6 +480,7 @@ public with sharing class ReportFormController {
             String collateralEndTOBEString = String.valueOf(IncomeExpensesInfo.CollateralEndTOBE__c);           // TOBE 담보 종료기간 
             String collateralStartAddTOBEString = String.valueOf(IncomeExpensesInfo.CollateralStartAddTOBE__c); // TOBE 담보 시작기간(추가) 
             String collateralEndAddTOBEString = String.valueOf(IncomeExpensesInfo.CollateralEndAddTOBE__c);     // TOBE 담보 종료기간(추가) 
+            String salesPerformDateString = String.valueOf(IncomeExpensesInfo.SalesPerformDate__c);             // 예상손익 지정일자 
 
             collateralPeriod = collateralPeriodString != null ? collateralPeriodString.substring(0, 10) : null;
             contractPaymentDate = contractPaymentDateString != null ? contractPaymentDateString.substring(0, 10) : null;
@@ -494,6 +497,14 @@ public with sharing class ReportFormController {
             collateralEndTOBE = collateralEndTOBEString != null ? collateralEndTOBEString.substring(0, 10) : null;
             collateralStartAddTOBE = collateralStartAddTOBEString != null ? collateralStartAddTOBEString.substring(0, 10) : null;
             collateralEndAddTOBE = collateralEndAddTOBEString != null ? collateralEndAddTOBEString.substring(0, 10) : null;
+            salesPerformDate = salesPerformDateString != null ? salesPerformDateString.substring(0, 10) : null;
+
+            // 신규생성시엔 날짜가 안들어가 null 값이뜨는데 , 그럴경우 오늘날짜 기준 1년전을 default 값으로 세팅 
+            if(salesPerformDate == null){
+                DateTime todayDateTime = DateTime.now();
+                salesPerformDate = todayDateTime.format('yyyy-MM-dd');
+                // System.debug('salesPerformDate **************' + salesPerformDate);
+            }
 
             // System.debug('# paymentPickList ->' + paymentPickList ); 
             // System.debug('# collateralPickList ->' + collateralPickList ); 
@@ -510,10 +521,10 @@ public with sharing class ReportFormController {
             if( IncomeExpensesInfo.ClientCompanyName__c == '' || IncomeExpensesInfo.ClientCompanyName__c == null ){
                 // [금식 보증금 변경 양식] Account에 고객코드가 있는 경우 거래처명에 "[고객코드]거래처명" 으로 담아주기
                 if(accountInfo.get('CustomerID__c') == '' || accountInfo.get('CustomerID__c') == null){
-                    System.debug('====== 고객코드 없음 ========');
+                    // System.debug('====== 고객코드 없음 ========');
                     IncomeExpensesInfo.put('ClientCompanyName__c', accountInfo.get('Name') );
                 }else {
-                    System.debug('====== 고객코드 있음 ========');
+                    // System.debug('====== 고객코드 있음 ========');
                     IncomeExpensesInfo.put('ClientCompanyName__c', '['+ accountInfo.get('CustomerID__c')+'] '+ accountInfo.get('Name'));
                 }
                 // System.debug('고개코드 확인!!!!! ' + IncomeExpensesInfo.get('ClientCompanyName__c'));
@@ -560,8 +571,8 @@ public with sharing class ReportFormController {
             // 센터 (Account에 정보없음) 
             
 
-            System.debug('# accountInfo  ->' + accountInfo ); 
-            System.debug('# 품의서정보  ->' + IncomeExpensesInfo ); 
+            // System.debug('# accountInfo  ->' + accountInfo ); 
+            // System.debug('# 품의서정보  ->' + IncomeExpensesInfo ); 
             
         } catch (Exception e) {
             System.debug('message => ' + e.getMessage());
@@ -616,7 +627,7 @@ public with sharing class ReportFormController {
     */
     public void getExpectManager() {
         System.debug('# ReportFormController # getExpectManager');
-        System.debug('# headOfficeLabel ~~ ' + headOfficeLabel );
+        // System.debug('# headOfficeLabel ~~ ' + headOfficeLabel );
  
         try{
  
@@ -721,7 +732,7 @@ public with sharing class ReportFormController {
                 System.debug('incomeExpensesId ' + incomeExpensesId);
                 
             } else { // insert 
-                System.debug('insert ★-> ');
+                // System.debug('insert ★-> ');
                 System.debug(' 품의서종류  -> ' + (String)dataMap.get('reportType')  );
                 expectIncome = new CJFW_ExpectedIncomeExpenses__c();
                 expectIncome.ReportType__c = (String)dataMap.get('reportType') ; // 리포트타입 필수값
@@ -742,7 +753,6 @@ public with sharing class ReportFormController {
                 expectIncome.ChefSupportCnt__c = convertToDecimal(dataMap.get('chefSupport'));
             }
             if (dataMap.containsKey('contractType')) { // 계약서종류
-                System.debug('계약서종류 !! '  + (String) dataMap.get('contractType') );
                 expectIncome.ContractType__c = (String) dataMap.get('contractType');
             }
             /* 개요 */
@@ -990,6 +1000,9 @@ public with sharing class ReportFormController {
             }
             if (dataMap.containsKey('attachDoc')) { // 첨부파일
                 expectIncome.AttachedDocument__c = (String)dataMap.get('attachDoc') ;
+            }
+            if (dataMap.containsKey('salesPerformDate')) {  // 예상손익 지정일자 
+                expectIncome.SalesPerformDate__c = Date.valueOf(((String) dataMap.get('salesPerformDate')));
             }
 
             upsert expectIncome;

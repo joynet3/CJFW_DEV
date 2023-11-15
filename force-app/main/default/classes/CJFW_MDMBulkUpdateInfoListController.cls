@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 11-14-2023
+ * @last modified on  : 11-15-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkUpdateInfoListController {
@@ -153,8 +153,6 @@ public with sharing class CJFW_MDMBulkUpdateInfoListController {
             //                         FROM Account
             //                         WHERE CustomerID__c IN :ids
             //                         ORDER BY CustomerID__c
-            //                         LIMIT 20
-            //                         OFFSET :offsetNum
             // ];
     
             List<Account> accList = Database.query(strQuery);

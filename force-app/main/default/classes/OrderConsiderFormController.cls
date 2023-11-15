@@ -5,7 +5,7 @@
 
  * @author            : seol.kim@dkbmc.com
  * @group             : 
- * @last modified on  : 11-14-2023
+ * @last modified on  : 11-15-2023
  * @last modified by  : seol.kim@dkbmc.com
 **/
 public with sharing class OrderConsiderFormController {
@@ -772,80 +772,51 @@ public with sharing class OrderConsiderFormController {
             'SalesProfitFoGen__c',
             'SalesProfitSoluEx__c',
 
-            'PltOriginalOne__c',
-            'PltPlanOne__c',
             'StockMoneyOriginalOne__c',
             'StockMoneyPlanOne__c',
             'MonthSaleOne__c',
             'MonthSalesProfitOne__c',
 
-
-            'PltOriginalTwo__c',
-            'PltPlanTwo__c',
             'StockMoneyOriginalTwo__c',
             'StockMoneyPlanTwo__c',
             'MonthSaleTwo__c',
             'MonthSalesProfitTwo__c',
 
-
-            
-            'PltOriginalThree__c',
-            'PltPlanThree__c',
             'StockMoneyOriginalThree__c',
             'StockMoneyPlanThree__c',
             'MonthSaleThree__c',
             'MonthSalesProfitThree__c',
 
-            'PltOriginalFour__c',
-            'PltPlanFour__c',
             'StockMoneyOriginalFour__c',
             'StockMoneyPlanFour__c',
             'MonthSaleFour__c',
             'MonthSalesProfitFour__c',
 
-
-            'PltOriginalFive__c',
-            'PltPlanFive__c',
             'StockMoneyOriginalFive__c',
             'StockMoneyPlanFive__c',
             'MonthSaleFive__c',
             'MonthSalesProfitFive__c',
 
-
-            'PltOriginalSix__c',
-            'PltPlanSix__c',
             'StockMoneyOriginalSix__c',
             'StockMoneyPlanSix__c',
             'MonthSaleSix__c',
             'MonthSalesProfitSix__c',
 
-
-            'PltOriginalSeven__c',
-            'PltPlanSeven__c',
             'StockMoneyOriginalSeven__c',
             'StockMoneyPlanSeven__c',
             'MonthSaleSeven__c',
             'MonthSalesProfitSeven__c',
 
-
-            'PltOriginalEight__c',
-            'PltPlanEight__c',
             'StockMoneyOriginalEight__c',
             'StockMoneyPlanEight__c',
             'MonthSaleEight__c',
             'MonthSalesProfitEight__c',
 
-
-            'PltOriginalNine__c',
-            'PltPlanNine__c',
             'StockMoneyOriginalNine__c',
             'StockMoneyPlanNine__c',
             'MonthSaleNine__c',
             'MonthSalesProfitNine__c',
 
-
-            'PltOriginalTen__c',
-            'PltPlanTen__c',
             'StockMoneyOriginalTen__c',
             'StockMoneyPlanTen__c',
             'MonthSaleTen__c',
@@ -896,7 +867,28 @@ public with sharing class OrderConsiderFormController {
             'KgGeneralProduct__c',               //일반상품
             'KgTotalAmount__c',                  //계
             'SkuReleaseBox__c',                  //출고단위 BOX
-            'SkuReleaseEa__c'                    //출고단위 EA           
+            'SkuReleaseEa__c',                    //출고단위 EA  
+            
+            'PltOriginalOne__c',
+            'PltPlanOne__c',
+            'PltOriginalTwo__c',
+            'PltPlanTwo__c',
+            'PltOriginalThree__c',
+            'PltPlanThree__c',
+            'PltOriginalFour__c',
+            'PltPlanFour__c',
+            'PltOriginalFive__c',
+            'PltPlanFive__c',
+            'PltOriginalSix__c',
+            'PltPlanSix__c',
+            'PltOriginalSeven__c',
+            'PltPlanSeven__c',
+            'PltOriginalEight__c',
+            'PltPlanEight__c',
+            'PltOriginalNine__c',
+            'PltPlanNine__c',
+            'PltOriginalTen__c',
+            'PltPlanTen__c'
         };
         for (String defaultSet : defaultValPerSet) {
             Object fieldPerValue = IncomeExpensesInfo.get(defaultSet);
@@ -2275,12 +2267,6 @@ public with sharing class OrderConsiderFormController {
             }
             // 매출 , 매익률 값이 없을경우 default 0.00 으로 세팅 
             String[] defaultValSet = new String[] {
-            'ManagePltOne__c', 
-            'ManagePltTwo__c', 
-            'ManagePltThree__c', 
-            'ManagePltFour__c', 
-            'ManagePltFive__c', 
-
             'ManageStockMoneyOne__c', 
             'ManageStockMoneyTwo__c', 
             'ManageStockMoneyThree__c', 
@@ -2308,6 +2294,12 @@ public with sharing class OrderConsiderFormController {
             };    
 
             String[] defaultZeroSet = new String[] {
+                'ManagePltOne__c', 
+                'ManagePltTwo__c', 
+                'ManagePltThree__c', 
+                'ManagePltFour__c', 
+                'ManagePltFive__c', 
+
                 'ManageEnforcementMonthOne__c',   
                 'ManageEnforcementMonthTwo__c',
                 'ManageEnforcementMonthThree__c',

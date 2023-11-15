@@ -59,7 +59,6 @@ public with sharing class IFN_LIF1002_SE001_MD002_01_QUE_TEST {
 
 
         Test.setMock(HttpCalloutMock.class, new IFN_LIF1002_SE001_MD001_TEST.IFN_LIF1002_SE001_MD001_TESTMock(JSON.serialize(searchitm),200)); 
-        System.enqueueJob(new IFN_LIF1002_SE001_MD002_01_QUE());
         System.enqueueJob(new IFN_LIF1002_SE001_MD002_01_QUE('11'));
         Test.stopTest();
     } //end of testOne()

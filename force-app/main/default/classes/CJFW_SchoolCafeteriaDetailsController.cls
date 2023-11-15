@@ -1,6 +1,6 @@
 /**
 * 두탑 BID 학교별 급식 정보
-*
+*@test CJFW_SchoolCafeteriaDetailsCon_TEST
 *@author 진현욱
 *@since 2023-11-09  최초 작성
 */
@@ -12,7 +12,7 @@ public with sharing class CJFW_SchoolCafeteriaDetailsController {
             Map<String,Object> result = new Map<String,Object>();
             
             List<SelectOption> citiyCountryOptionList = new List<SelectOption>{
-                new SelectOption('지역선택', ''),
+                new SelectOption(System.label.SchoolCafeteriaDetails_SelectRegion, ''),
                 new SelectOption('강원도'         ,'강원'),
                 new SelectOption('경기도'         ,'경기'),
                 new SelectOption('경상남도'       ,'경남'),
@@ -45,8 +45,8 @@ public with sharing class CJFW_SchoolCafeteriaDetailsController {
         try {
             Map<String,Object> result = new Map<String,Object>();
             List<SelectOption> districtCountyOptionList = new List<SelectOption>{
-                new SelectOption('전지역','none','')
-                ,new SelectOption('전지역','none','강원')
+                new SelectOption(System.label.SchoolCafeteriaDetails_Nationwide,'none','')
+                ,new SelectOption(System.label.SchoolCafeteriaDetails_Nationwide,'none','강원')
                 ,new SelectOption('강릉시','강릉시','강원')
                 ,new SelectOption('고성군','고성군','강원')
                 ,new SelectOption('동해시','동해시','강원')
@@ -65,7 +65,7 @@ public with sharing class CJFW_SchoolCafeteriaDetailsController {
                 ,new SelectOption('홍천군','홍천군','강원')
                 ,new SelectOption('화천군','화천군','강원')
                 ,new SelectOption('횡성군','횡성군','강원')
-                ,new SelectOption('전지역','none','경기')
+                ,new SelectOption(System.label.SchoolCafeteriaDetails_Nationwide,'none','경기')
                 ,new SelectOption('가평군','가평군','경기')
                 ,new SelectOption('고양시','고양시','경기')
                 ,new SelectOption('과천시','과천시','경기')
@@ -97,7 +97,7 @@ public with sharing class CJFW_SchoolCafeteriaDetailsController {
                 ,new SelectOption('포천시','포천시','경기')
                 ,new SelectOption('하남시','하남시','경기')
                 ,new SelectOption('화성시','화성시','경기')
-                ,new SelectOption('전지역','none','경남')
+                ,new SelectOption(System.label.SchoolCafeteriaDetails_Nationwide,'none','경남')
                 ,new SelectOption('거제시','거제시','경남')
                 ,new SelectOption('거창군','거창군','경남')
                 ,new SelectOption('고성군','고성군','경남')
@@ -116,7 +116,7 @@ public with sharing class CJFW_SchoolCafeteriaDetailsController {
                 ,new SelectOption('함안군','함안군','경남')
                 ,new SelectOption('함양군','함양군','경남')
                 ,new SelectOption('합천군','합천군','경남')
-                ,new SelectOption('전지역','none','경북')
+                ,new SelectOption(System.label.SchoolCafeteriaDetails_Nationwide,'none','경북')
                 ,new SelectOption('경산시','경산시','경북')
                 ,new SelectOption('경주시','경주시','경북')
                 ,new SelectOption('고령군','고령군','경북')
@@ -139,13 +139,13 @@ public with sharing class CJFW_SchoolCafeteriaDetailsController {
                 ,new SelectOption('청송군','청송군','경북')
                 ,new SelectOption('칠곡군','칠곡군','경북')
                 ,new SelectOption('포항시','포항시','경북')
-                ,new SelectOption('전지역','none','광주')
+                ,new SelectOption(System.label.SchoolCafeteriaDetails_Nationwide,'none','광주')
                 ,new SelectOption('광산구','광산구','광주')
                 ,new SelectOption('남구','남구','광주')
                 ,new SelectOption('동구','동구','광주')
                 ,new SelectOption('북구','북구','광주')
                 ,new SelectOption('서구','서구','광주')
-                ,new SelectOption('전지역','none','대구')
+                ,new SelectOption(System.label.SchoolCafeteriaDetails_Nationwide,'none','대구')
                 ,new SelectOption('군위군','군위군','대구')
                 ,new SelectOption('남구','남구','대구')
                 ,new SelectOption('달서구','달서구','대구')
@@ -155,13 +155,13 @@ public with sharing class CJFW_SchoolCafeteriaDetailsController {
                 ,new SelectOption('서구','서구','대구')
                 ,new SelectOption('수성구','수성구','대구')
                 ,new SelectOption('중구','중구','대구')
-                ,new SelectOption('전지역','none','대전')
+                ,new SelectOption(System.label.SchoolCafeteriaDetails_Nationwide,'none','대전')
                 ,new SelectOption('대덕구','대덕구','대전')
                 ,new SelectOption('동구','동구','대전')
                 ,new SelectOption('서구','서구','대전')
                 ,new SelectOption('유성구','유성구','대전')
                 ,new SelectOption('중구','중구','대전')
-                ,new SelectOption('전지역','none','부산')
+                ,new SelectOption(System.label.SchoolCafeteriaDetails_Nationwide,'none','부산')
                 ,new SelectOption('강서구','강서구','부산')
                 ,new SelectOption('금정구','금정구','부산')
                 ,new SelectOption('기장군','기장군','부산')
@@ -178,7 +178,7 @@ public with sharing class CJFW_SchoolCafeteriaDetailsController {
                 ,new SelectOption('영도구','영도구','부산')
                 ,new SelectOption('중구','중구','부산')
                 ,new SelectOption('해운대구','해운대구','부산')
-                ,new SelectOption('전지역','none','서울')
+                ,new SelectOption(System.label.SchoolCafeteriaDetails_Nationwide,'none','서울')
                 ,new SelectOption('강남구','강남구','서울')
                 ,new SelectOption('강동구','강동구','서울')
                 ,new SelectOption('강북구','강북구','서울')
@@ -223,7 +223,7 @@ public with sharing class CJFW_SchoolCafeteriaDetailsController {
                 ,new SelectOption('연수구','연수구','인천')
                 ,new SelectOption('옹진군','옹진군','인천')
                 ,new SelectOption('중구','중구','인천')
-                ,new SelectOption('전지역','none','전남')
+                ,new SelectOption(System.label.SchoolCafeteriaDetails_Nationwide,'none','전남')
                 ,new SelectOption('강진군','강진군','전남')
                 ,new SelectOption('고흥군','고흥군','전남')
                 ,new SelectOption('곡성군','곡성군','전남')
@@ -246,7 +246,7 @@ public with sharing class CJFW_SchoolCafeteriaDetailsController {
                 ,new SelectOption('함평군','함평군','전남')
                 ,new SelectOption('해남군','해남군','전남')
                 ,new SelectOption('화순군','화순군','전남')
-                ,new SelectOption('전지역','none','전북')
+                ,new SelectOption(System.label.SchoolCafeteriaDetails_Nationwide,'none','전북')
                 ,new SelectOption('고창군','고창군','전북')
                 ,new SelectOption('군산시','군산시','전북')
                 ,new SelectOption('김제시','김제시','전북')
@@ -261,10 +261,10 @@ public with sharing class CJFW_SchoolCafeteriaDetailsController {
                 ,new SelectOption('전주시','전주시','전북')
                 ,new SelectOption('정읍시','정읍시','전북')
                 ,new SelectOption('진안군','진안군','전북')
-                ,new SelectOption('전지역','none','제주')
+                ,new SelectOption(System.label.SchoolCafeteriaDetails_Nationwide,'none','제주')
                 ,new SelectOption('서귀포시','서귀포시','제주')
                 ,new SelectOption('제주시','제주시','제주')
-                ,new SelectOption('전지역','none','충남')
+                ,new SelectOption(System.label.SchoolCafeteriaDetails_Nationwide,'none','충남')
                 ,new SelectOption('계룡시','계룡시','충남')
                 ,new SelectOption('공주시','공주시','충남')
                 ,new SelectOption('금산군','금산군','충남')
@@ -280,7 +280,7 @@ public with sharing class CJFW_SchoolCafeteriaDetailsController {
                 ,new SelectOption('청양군','청양군','충남')
                 ,new SelectOption('태안군','태안군','충남')
                 ,new SelectOption('홍성군','홍성군','충남')
-                ,new SelectOption('전지역','none','충북')
+                ,new SelectOption(System.label.SchoolCafeteriaDetails_Nationwide,'none','충북')
                 ,new SelectOption('괴산군','괴산군','충북')
                 ,new SelectOption('단양군','단양군','충북')
                 ,new SelectOption('보은군','보은군','충북')

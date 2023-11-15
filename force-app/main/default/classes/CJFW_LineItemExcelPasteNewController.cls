@@ -79,16 +79,21 @@ public without sharing class CJFW_LineItemExcelPasteNewController {
 
         for ( Map<String, Object> objData : listValidTargetData ){
             System.debug('objData ' + objData);
-            if ( setProductCode.contains(String.valueOf(objData.get('ProductCode__c')))){
-                setDupInputProductCode.add(String.valueOf(objData.get('ProductCode__c')));
+
+            if (objData.get('ProductCode__c') == '') {//사용자 직접입력 상품
+                System.debug('==== Dummy Product Check ====');
+            }else {//맵핑상품
+                if ( setProductCode.contains(String.valueOf(objData.get('ProductCode__c')))){
+                    setDupInputProductCode.add(String.valueOf(objData.get('ProductCode__c')));
+                }
+                else{
+                    setProductCode.add(String.valueOf(objData.get('ProductCode__c')));
+                }
+                setExtId.add(String.valueOf(objData.get('LogisticsCenter__c'))+'_'+String.valueOf(objData.get('ProductCode__c')));
+                String strMonth = String.valueOf(objData.get('Month__c'));
+                if ( mapMonthValue.get(strMonth) != null)
+                    setMonth.add(mapMonthValue.get(strMonth)+'__c');
             }
-            else{
-                setProductCode.add(String.valueOf(objData.get('ProductCode__c')));
-            }
-            setExtId.add(String.valueOf(objData.get('LogisticsCenter__c'))+'_'+String.valueOf(objData.get('ProductCode__c')));
-            String strMonth = String.valueOf(objData.get('Month__c'));
-            if ( mapMonthValue.get(strMonth) != null)
-                setMonth.add(mapMonthValue.get(strMonth)+'__c');
         }
         System.debug('setExtId ' + setExtId);
 
@@ -143,6 +148,7 @@ public without sharing class CJFW_LineItemExcelPasteNewController {
         Integer orderCount = 1;
         List<Map<String, Object>> listInvalidData = new List<Map<String, Object>>();
         for ( Map<String, Object> objData : listValidTargetData ){
+            
             Map<String, Object> objLineItem = new Map<String, Object> ();
             String strProductCode = String.valueOf(objData.get('ProductCode__c'));
             String strMonth = String.valueOf(objData.get('Month__c'));
@@ -150,49 +156,58 @@ public without sharing class CJFW_LineItemExcelPasteNewController {
             String strUnitPrice = String.valueOf(objData.get('UnitPrice__c'));
             String strProfitMargin = String.valueOf(objData.get('ProfitMargin__c'));
             String strExtId = String.valueOf(objData.get('LogisticsCenter__c'))+'_'+String.valueOf(objData.get('ProductCode__c'));
-            if ( mapCenterValue.get(strCenter) == null){
-                objData.put('result','['+orderCount+'] [물류센터] 값에 오류가 있습니다.');
-                listInvalidData.add(objData);
-                isValid = false;
-            } else if ( mapMonthValue.get(strMonth) == null){
-                objData.put('result','['+orderCount+'] [월] 값에 오류가 있습니다.');
-                listInvalidData.add(objData);
-                isValid = false;
-            } else if( strProductCode.length() != 6){
-                objData.put('result','['+orderCount+'] [제품코드] 값에 오류가 있습니다.');
-                listInvalidData.add(objData);
-                isValid = false;
-            } else if( setDupInputProductCode.contains(strProductCode)){
-                objData.put('result','['+orderCount+'] 중복입력된 [제품코드] 입니다 .');
-                listInvalidData.add(objData);
-                isValid = false;
-            } else if( listExistProductCode.contains(strProductCode)){
-                objData.put('result','['+orderCount+'] 이미 추가된 [제품코드] 입니다 .');
-                listInvalidData.add(objData);
-                isValid = false;
-            } else if ( !mapPriceBookEntry.keySet().contains(strExtId)){
-                System.debug('setProductCode ' + setProductCode);                
-                objData.put('result','['+orderCount+'] 해당 센터에 존재하지 않는 [제품코드] 입니다.');
-                listInvalidData.add(objData);
-                isValid = false;
-            } else if (mapPriceBookEntry.get(strExtId).get(mapMonthValue.get(strMonth)+'__c') == null ){   
-                objData.put('result','['+orderCount+'] 해당[월]에 [기준매입가]가 지정되어 있지 않습니다.');
-                listInvalidData.add(objData);
-                isValid = false;
-            } else if (mapPriceBookEntry.get(strExtId).get(mapMonthValue.get(strMonth)+'__c') == 0 ){
-                objData.put('result','['+orderCount+'] 해당[월]에 [기준매입가]가 지정되어 있지 않습니다.');
-                listInvalidData.add(objData);
-                isValid = false;
-            } else if ( strUnitPrice != null && !strUnitPrice.isNumeric()){
-                objData.put('result','['+orderCount+'] [가격] 값에 오류가 있습니다.');
-                listInvalidData.add(objData);
-                isValid = false;
-            } else if ( strProfitMargin != null && !strProfitMargin.isNumeric()){
-                objData.put('result','['+orderCount+'] [매익률] 값에 오류가 있습니다.');
-                listInvalidData.add(objData);
-                isValid = false;
-            } 
-            orderCount++;
+            
+                
+                if ( mapCenterValue.get(strCenter) == null){
+                    objData.put('result','['+orderCount+'] [물류센터] 값에 오류가 있습니다.');
+                    listInvalidData.add(objData);
+                    isValid = false;
+                } else if ( mapMonthValue.get(strMonth) == null){
+                    objData.put('result','['+orderCount+'] [월] 값에 오류가 있습니다.');
+                    listInvalidData.add(objData);
+                    isValid = false;
+                } else {
+
+                    if (strProductCode == '') {
+                        System.debug('==== Dummy ProductCode Check ====' + strProductCode);
+                    }else {
+                        if( strProductCode.length() != 6){
+                            objData.put('result','['+orderCount+'] [제품코드] 값에 오류가 있습니다.');
+                            listInvalidData.add(objData);
+                            isValid = false;
+                        } else if( setDupInputProductCode.contains(strProductCode)){
+                            objData.put('result','['+orderCount+'] 중복입력된 [제품코드] 입니다 .');
+                            listInvalidData.add(objData);
+                            isValid = false;
+                        } else if( listExistProductCode.contains(strProductCode)){
+                            objData.put('result','['+orderCount+'] 이미 추가된 [제품코드] 입니다 .');
+                            listInvalidData.add(objData);
+                            isValid = false;
+                        } else if ( !mapPriceBookEntry.keySet().contains(strExtId)){
+                            System.debug('setProductCode ' + setProductCode);                
+                            objData.put('result','['+orderCount+'] 해당 센터에 존재하지 않는 [제품코드] 입니다.');
+                            listInvalidData.add(objData);
+                            isValid = false;
+                        } else if (mapPriceBookEntry.get(strExtId).get(mapMonthValue.get(strMonth)+'__c') == null ){   
+                            objData.put('result','['+orderCount+'] 해당[월]에 [기준매입가]가 지정되어 있지 않습니다.');
+                            listInvalidData.add(objData);
+                            isValid = false;
+                        } else if (mapPriceBookEntry.get(strExtId).get(mapMonthValue.get(strMonth)+'__c') == 0 ){
+                            objData.put('result','['+orderCount+'] 해당[월]에 [기준매입가]가 지정되어 있지 않습니다.');
+                            listInvalidData.add(objData);
+                            isValid = false;
+                        } else if ( strUnitPrice != null && !strUnitPrice.isNumeric()){
+                            objData.put('result','['+orderCount+'] [가격] 값에 오류가 있습니다.');
+                            listInvalidData.add(objData);
+                            isValid = false;
+                        } else if ( strProfitMargin != null && !strProfitMargin.isNumeric()){
+                            objData.put('result','['+orderCount+'] [매익률] 값에 오류가 있습니다.');
+                            listInvalidData.add(objData);
+                            isValid = false;
+                        } 
+                }
+                orderCount++;
+            }
         }
 
         // 유효성 체크 성공 시 견적 리스트로 들어갈 수 있게 가공
