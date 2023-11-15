@@ -121,11 +121,12 @@ global class IFN_LIF1002_SE001_MD002_01_QUE  implements Queueable , Database.All
             if('11'.equals(this.searchSp)) System.enqueueJob(new IFN_LIF1002_SE001_MD002_01_QUE('12'));
             if('12'.equals(this.searchSp)) System.enqueueJob(new IFN_LIF1002_SE001_MD002_01_QUE('13'));
             if('13'.equals(this.searchSp)) System.enqueueJob(new IFN_LIF1002_SE001_MD002_01_QUE('14'));            
+        } else {
+            //다음 스케줄 체크
+            String currentClassName = 'IFN_LIF1002_SE001_MD002_01_QUE';  
+            if(isSchedule) IFN_Util.NextScheduleCheck(currentClassName);
         }
         
-        //다음 스케줄 체크
-        String currentClassName = String.valueOf(this).substring(0, String.valueOf(this).indexOf(':'));        
-        if(isSchedule) IFN_Util.NextScheduleCheck(currentClassName);
         
     } //end of execute()
 

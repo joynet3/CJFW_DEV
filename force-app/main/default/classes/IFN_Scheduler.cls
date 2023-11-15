@@ -19,7 +19,7 @@ public class IFN_Scheduler implements Schedulable {
     public IFN_Scheduler(String scheduleClass,String scopSize)
     {
         this.scheduleClass = scheduleClass;
-        this.scopSize = Integer.valueOf(scopSize);
+        this.scopSize = String.isBlank(scopSize) ? 1 : Integer.valueOf(scopSize);
     }
 
     //system.schedule('[PLMX] B2BI_PLMX_EA_COLORDEVORDER_01 (ColorDevOrder Search)', '0 22 * * * ?', new IFN_Scheduler());
