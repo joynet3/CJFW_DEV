@@ -2,8 +2,8 @@
  * @description       : 
  * @author            : jieun.lee3@dkbmc.com
  * @group             : 
- * @last modified on  : 10-30-2023
- * @last modified by  : yeonji.lim@dkbmc.com
+ * @last modified on  : 11-14-2023
+ * @last modified by  : jieun.lee3@dkbmc.com
 **/
 
 public without sharing class CJFW_ExpectedIncomeExpenses_tr extends TriggerHandler {
@@ -36,6 +36,7 @@ public without sharing class CJFW_ExpectedIncomeExpenses_tr extends TriggerHandl
     *  Trigger : Before Insert, Before Update
     *  내용    : 신규개설품의 품의지정 1개만 등록되게 처리
     ************************************************************************************************************/ 
+    @testVisible
     private void doCheckOne(){
         Set<Id> opportunityIds = new Set<Id>();
 

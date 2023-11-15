@@ -57,6 +57,10 @@ public class IFN_LIF1012_PO001_MD003 {
      * 요청 파라메터 
      */
     public class PO001_MD003ReqWrapper{
+        public String XROWS {get;set;} // 파라메터 요청 갯수(리스트 요청일 경우)
+        public String XSYS {get;set;} // SD 고정
+        public String XDATS {get;set;} // 요청일자
+        public String XTIMS {get;set;} // 요청시간
         public T_INPUT_ITM T_INPUT {get;set;}
     }
     public class T_INPUT_ITM {

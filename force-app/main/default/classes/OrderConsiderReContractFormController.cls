@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : yeonji.lim@dkbmc.com
  * @group             : 
- * @last modified on  : 11-13-2023
+ * @last modified on  : 11-15-2023
  * @last modified by  : eunyoung.choi@dkbmc.com
 **/
 public with sharing class OrderConsiderReContractFormController {
@@ -15,6 +15,8 @@ public with sharing class OrderConsiderReContractFormController {
     public String showtable { get; set; }
     public String reportType { get; set; } // 품의서 유형
     public String headOfficeLabel { get; set; } // 본부구분 
+    public Decimal defaultZero { get; set; } // 0.00 기본세팅
+    public String refExInfoId { get; set; } // 예상손익 새버전 insert 시 전버전 참고값 
 
     // 물류비 - 외식(SU)
     public Decimal DistributeDirCap {get;set;}  // 수도권-직접
@@ -48,7 +50,6 @@ public with sharing class OrderConsiderReContractFormController {
     public String selectedPayment { get; set; }    // 결제수단종류 
     public String selectedContract { get; set; }   // 계약서 종류
     public String selectedDelivery { get; set; }   //배송횟수
-    public String selectedBefore { get; set; }   //실적전월 SalesBeforeMonth__c
 
     /* picklist */
     public List<SelectOption> brandChannelPickList { get; set; } // 브랜드 경로
@@ -57,7 +58,6 @@ public with sharing class OrderConsiderReContractFormController {
     public List<SelectOption> paymentPickList { get; set; }    // 결제수단종류 
     public List<SelectOption> contractPickList { get; set; }    // 계약서종류
     public List<SelectOption> deliveryPickList { get; set; }    // 배송횟수종류
-    public List<SelectOption> beforePickList { get; set; }    // 실적전월종류
 
 
     /* 날짜형식변환 */
@@ -66,7 +66,7 @@ public with sharing class OrderConsiderReContractFormController {
     public String contractEndDate { get; set; } // 계약종료
     public String collateralPeriod { get; set; } // 담보 제공 기간
     public String contractPaymentDate { get; set; } // 약정결제일
-    public String createdDate { get; set; } // 품의생성일자
+    public String salesPerformDate { get; set; } // 품의생성일자
 
     
     /* 생성자 */
@@ -75,7 +75,7 @@ public with sharing class OrderConsiderReContractFormController {
         this.incomeExpensesId = ApexPages.currentPage().getParameters().get('incomeExpensesId');
         this.showtable = ApexPages.currentPage().getParameters().get('showtable');
         this.reportType = ApexPages.currentPage().getParameters().get('type');
-
+        this.defaultZero = 0.00;
         //System.debug('# opportunityId ->' + opportunityId );
         //System.debug('# incomeExpensesId ->' + incomeExpensesId );
         //System.debug('# showtable ->' + showtable );
@@ -92,15 +92,15 @@ public with sharing class OrderConsiderReContractFormController {
         String testReContract = '/apex/CJFW_OrderConsiderReContractForm';
 
         // 테스트용 (삭제예정)
-        System.debug(' 테스트 모드1' + pageReferenceString );
-        System.debug(' 테스트 모드2' + testReContract );
-        if (pageReferenceString == testReContract) {
-            System.debug(' 테스트 모드3');
-            opportunityId = '006H200000DTM7EIAX';
-            incomeExpensesId = 'a1lH2000001YWdgIAG';
-            showtable = 'false';
-            this.headOfficeLabel = '6000'; // 외식코드
-        }
+        //System.debug(' 테스트 모드1' + pageReferenceString );
+        //System.debug(' 테스트 모드2' + testReContract );
+        //if (pageReferenceString == testReContract) {
+        //    System.debug(' 테스트 모드3');
+        //    opportunityId = '006H200000DTM7EIAX';
+        //    incomeExpensesId = 'a1lH2000001YWdgIAG';
+        //    showtable = 'false';
+        //    this.headOfficeLabel = '6000'; // 외식코드
+        //}
 
         // test Class에서 객체 생성시 다른 메소드들이 실행되지 않게 분기처리
         if(Test.isRunningTest()){
@@ -114,6 +114,8 @@ public with sharing class OrderConsiderReContractFormController {
             getIncomeExpenses();    // 신규개설품의 obj 값 가져오기
             getExpectManager();     // 품의서 관리자 작성 obj 값 가져오기    
             getDistributeCost();    // 물류비관리 값 가져오기
+
+            
             getSalesPerform(incomeExpensesId); // 실적현황 가져오기
             getPromoteIssue(incomeExpensesId); // 추진사항정보 가져오기
         }
@@ -135,8 +137,6 @@ public with sharing class OrderConsiderReContractFormController {
         Schema.DescribeFieldResult contractTypePick = CJFW_ExpectedIncomeExpenses__c.ContractType__c.getDescribe();
         // 배송횟수  
         Schema.DescribeFieldResult deliveryTypePick = CJFW_ExpectedIncomeExpenses__c.DeliveryCnt__c.getDescribe();
-        // 실적전월 
-        Schema.DescribeFieldResult beforeTypePick = CJFW_ExpectedIncomeExpenses__c.SalesBeforeMonth__c.getDescribe();
 
         List<Schema.PicklistEntry> brandChannelValues = brandChannelResult.getPicklistValues();
         List<Schema.PicklistEntry> collateralValues = collateralResult.getPicklistValues();
@@ -144,7 +144,6 @@ public with sharing class OrderConsiderReContractFormController {
         List<Schema.PicklistEntry> paymentValues = paymentPick.getPicklistValues();
         List<Schema.PicklistEntry> contractValues = contractTypePick.getPicklistValues();
         List<Schema.PicklistEntry> deliveryValues = deliveryTypePick.getPicklistValues();
-        List<Schema.PicklistEntry> beforeValues = beforeTypePick.getPicklistValues();
         
         brandChannelPickList = new List<SelectOption>();
         collateralPickList = new List<SelectOption>();
@@ -152,7 +151,6 @@ public with sharing class OrderConsiderReContractFormController {
         paymentPickList = new List<SelectOption>();
         contractPickList = new List<SelectOption>();
         deliveryPickList = new List<SelectOption>();
-        beforePickList = new List<SelectOption>();
  
         for (Schema.PicklistEntry picklistValue : brandChannelValues) {
             brandChannelPickList.add(new SelectOption(picklistValue.getValue(), picklistValue.getLabel()));
@@ -172,9 +170,7 @@ public with sharing class OrderConsiderReContractFormController {
         for (Schema.PicklistEntry picklistValue : deliveryValues) { // 배송횟수
             deliveryPickList.add(new SelectOption(picklistValue.getValue(), picklistValue.getLabel()));
         }
-        for (Schema.PicklistEntry picklistValue : beforeValues) { // 실적전월 
-            beforePickList.add(new SelectOption(picklistValue.getValue(), picklistValue.getLabel()));
-        }
+
 
         // System.debug(' 브랜드 경로 pickList 값 ' + brandChannelPickList);
         // System.debug(' 담보제공종류 pickList 값 ' + collateralPickList);
@@ -232,9 +228,9 @@ public with sharing class OrderConsiderReContractFormController {
     Oppty 에 있는 Account 값을 가져오는 메소드
     */
     public void getAccountInfo() {
-        System.debug('# opportunityId ->' + opportunityId );
-        System.debug('# incomeExpensesId ->' + incomeExpensesId );
-        System.debug('# showtable ->' + showtable );
+        // System.debug('# opportunityId ->' + opportunityId );
+        // System.debug('# incomeExpensesId ->' + incomeExpensesId );
+        // System.debug('# showtable ->' + showtable );
 
         
         // 기회 레코드에서 계정 ID 가져오기 
@@ -258,9 +254,6 @@ public with sharing class OrderConsiderReContractFormController {
                 'PV_EXISTSUP__c'
             };
 
-            System.debug('# account 전체외형 ->' + accountInfo.SalesMonthly__c );
-            // accountInfo.SalesMonthly__c
-
             for (String defaultSet : defaultValSet) {
                 Object fieldValue = accountInfo.get(defaultSet);
                 // 필드 값이 null이면 기본값을 공백
@@ -268,9 +261,9 @@ public with sharing class OrderConsiderReContractFormController {
                 accountInfo.put(defaultSet, fieldValue);
             }
 
-            System.debug('# 잘 가져왔니 ?->' + accountInfo );
+            // System.debug('# account 정보 ->' + accountInfo );
         } else {
-            System.debug('# 계정 ID를 찾을 수 없습니다.');
+            // System.debug('# 계정 ID를 찾을 수 없습니다.');
         }
     }
 
@@ -279,32 +272,29 @@ public with sharing class OrderConsiderReContractFormController {
     VF Page 초기호출시  
     */
     public void getIncomeExpenses() {
-        System.debug('# ReportFormController # getIncomeExpenses  ==================================');
+        System.debug('# ReportFormController # getIncomeExpenses #신규개설품의에서 값가져오기');
         
         try {
             String query = 'SELECT Id, ' +
             'Version__c, ' +                        
             'IsReportCheck__c, ' +                        
-            'CreatedDate, ' +                        
             'KeyMan__c, ' +                         //키맨    
             'Competitor__c, ' +                     //경쟁업체
             'CompetitorSuggestions__c, ' +          //경제업제 제안 
             'ObtainOrder__c, ' +                    //수주팀
             'MainMA__c, ' +                         //담당MA
-            
             'ClientCompanyName__c, ' +              //거래처명
             'RepresentativeName__c, ' +             //대표자명
             'BrandLaunching__c, ' +                 //브랜드 런칭
             'BrandManage__c, ' +                    //운영 브랜드
             'BrandChannel__c, ' +                   //브랜드 경로
             'BrandBusinessCondition__c, ' +         //업태
-            'SalesMonthly__c, ' +                  //외형 전체
+            'SalesMonthly__c, ' +                   //외형 전체
             'OutwardCompanySize__c, ' +             //당사규모
             'OutwardDifference__c, ' +              //외형 차이
             'InitialDate__c, ' +                    //초도일자
             'Address__c, ' +                        //주소
             'PV_EXISTSUP__c, ' +                    //기존납품처
-
             'ContractStartDate__c, ' +              //계약시작기간
             'ContractEndDate__c, ' +                //계약종료기간
             'CollateralType__c, ' +                 //담보종류
@@ -321,19 +311,17 @@ public with sharing class OrderConsiderReContractFormController {
             'PaymentMethod__c, ' +                  //결제수단
             'ContractPaymentDate__c, ' +            //약정결제일
             'ContractType__c, ' +                   //계약서 종류
-
-            'Sales__c, ' +                           //수주가이드 매출
-            'ExclusiveSaveSkuSales__c, ' +           //전용저장 sku매출
-            'DropSize__c, ' +                        //회당 Drop Size
-            'AverageSales__c, ' +                    //점당 평균매출
-            'DeliveryNumber__c, ' +                  //배송 횟수
-            'ContributionMargin__c, ' +              //공헌이익%
-            'KgExclusiveProduct__c, ' +              //전용상품
-            'KgGeneralProduct__c, ' +                //일반상품
-            'KgTotalAmount__c, ' +                   //KG단가 계
+            'Sales__c, ' +                          //수주가이드 매출
+            'ExclusiveSaveSkuSales__c, ' +          //전용저장 sku매출
+            'DropSize__c, ' +                       //회당 Drop Size
+            'AverageSales__c, ' +                   //점당 평균매출
+            'DeliveryNumber__c, ' +                 //배송 횟수
+            'ContributionMargin__c, ' +             //공헌이익%
+            'KgExclusiveProduct__c, ' +             //전용상품
+            'KgGeneralProduct__c, ' +               //일반상품
+            'KgTotalAmount__c, ' +                  //KG단가 계
             'SkuReleaseEa__c,' +                    //출고단위 EA
             'SkuReleaseBox__c, ' +                  //출고단위 BOX
-
             'SalesMoreThousand__c, ' +              //매출액 1천이상
             'SalesMoreFiveHundred__c, ' +           //매출액 5백이상
             'SalesLessFiveHundred__c, ' +           //매출액 5백미만
@@ -341,197 +329,288 @@ public with sharing class OrderConsiderReContractFormController {
             'StoreMoreThousand__c, ' +              //점포수 1천이상
             'StoreMoreFiveHundred__c, ' +           //점포수 5백이상
             'StoreLessFiveHundred__c, ' +           //점포수 5백미만
-            'StoreLessThreeHundred__c, ' +           //점포수 3백미만
-
-            'OtherSupportDetail__c, ' + // 기타 지원세부 내역
-            'AttachedDocument__c, ' + // 첨부서류
-            'OpptyDescription__c, ' + // 특이사항
-
-            'SalesCapitalExclusive__c, ' + // 외식전용 필드 ↓ :매출 수도권 전용
-
-            'SalesNameOne__c, ' +    // 매출 전용입력1
-            'SalesNameTwo__c, ' +    // 매출 전용입력2
-            'SalesNameThree__c, ' +  // 매출 전용입력3
-            'SalesNameFour__c, ' +   // 매출 전용입력4
-
-            'SalesCapitalGeneral__c, ' + // 매출 수도권 일반
-            'SalesEastExclusive__c, ' + // 매출 동부권 전용
-            'SalesEastGeneral__c, ' + // 매출 동부권 일반
-            'SalesWestExclusive__c, ' + // 매출 서부권 전용
-            'SalesWestGeneral__c, ' + // 매출 서부권 일반 
-            'SalesJejuExclusive__c, ' + // 매출 제주권 전용 
-            'SalesJejuGeneral__c, ' + // 매출 제주권 일반 
-            'SalesSolutionExclusive__c, ' + // 매출 솔루션 전용 
-            'SalesSolutionGeneral__c, ' + // 매출 솔루션 전용 
-            'SalesImproveResultExclusive__c, ' + // 매출 개선실적 전용
-            'SalesImproveResultGeneral__c, ' + // 매출 개선실적 전용
-
-            'SalesProfitCaptialExclusive__c, ' + // 매출이익 수도권 전용
-            'SalesProfitCapitalGeneral__c, ' + // 매출이익 수도권 일반
-            'SalesProfitEastExclusive__c, ' + // 매출이익 동부권 전용
-            'SalesProfitEastGeneral__c, ' + // 매출이익 동부권 일반
-            'SalesProfitWestExclusive__c, ' + // 매출이익 서부권 전용
-            'SalesProfitWestGeneral__c, ' + // 매출이익 서부권 일반
-            'SalesProfitJejuExclusive__c, ' + // 매출이익 제주권 전용
-            'SalesProfitJejuGeneral__c, ' + // 매출이익 제주권 일반
-
-            'SalesProfitNameOne__c, ' +    // 매출이익 전용입력1
-            'SalesProfitNameTwo__c, ' +    // 매출이익 전용입력2
-            'SalesProfitNameThree__c, ' +  // 매출이익 전용입력3
-            'SalesProfitNameFour__c, ' +   // 매출이익 전용입력4
-
-            //'SalesProfitThreeOne__c, ' +   // 매출이익 재계약 3개월 평균실적
-            //'SalesProfitThreeTwo__c, ' +   // 매출이익 재계약 3개월 평균실적
-            //'SalesProfitThreeThree__c, ' +   // 매출이익 재계약 3개월 평균실적
-            //'SalesProfitThreeFour__c, ' +   // 매출이익 재계약 3개월 평균실적
-
-            'ProfitRateCapitalExclusive__c, ' + // 매익률 수도권 전용
-            'ProfitRateEastExclusive__c, ' + // 매익률 동부권 전용
-            'ProfitRateWestExclusive__c, ' + // 매익률 서부권 전용
-            'ProfitRateJejuExclusive__c, ' + // 매익률 제주권 전용
-            'ProfitRateCapitalGeneral__c, ' + // 매익률 수도권 일반
-            'ProfitRateEastGeneral__c, ' + // 매익률 동부권 일반
-            'ProfitRateWestGeneral__c, ' + // 매익률 서부권 일반
-            'ProfitRateJejuGeneral__c, ' + // 매익률 제주권 일반
-            'ProfitRateExclusive__c, ' + // 전용매익률
-            'ProfitRateGeneral__c, ' + // 전용매익률 (지급후)
-
-            'SalesLocationCntThree__c, ' + // 매익률 3개월전 판매처수
-            'SalesLocationCntCapital__c, ' + // 매익률 수도권 판매처수
-            'SalesLocationCntEast__c, ' + // 매익률 동부권 판매처수
-            'SalesLocationCntWest__c, ' + // 매익률 서부권 판매처수
-            'SalesLocationCntJeju__c, ' + // 매익률 제주권 판매처수
-            'SalesLocationCntFo__c, ' + // 매익률 FO 판매처수
-            'SalesLocationCntImpMonth__c, ' + // 매익률 솔루션 예상실적
-
-            'SalesPerStoreCapital__c, ' + // 매익률 수도권 점당매출
-            'SalesPerStoreEast__c, ' + // 매익률 동부권 점당매출
-            'SalesPerStoreWest__c, ' + // 매익률 서부권 점당매출
-            'SalesPerStoreJeju__c, ' + // 매익률 제주권 점당매출
-
-            'DropSizeCapital__c, ' + // 매익률 수도권 DROP-SIZE
-            'DropSizeEast__c, ' + // 매익률 동부권 DROP-SIZE
-            'DropSizeWest__c, ' + // 매익률 서부권 DROP-SIZE
-            'DropSizeJeju__c, ' + // 매익률 제주권 DROP-SIZE
-            'DeliveryCnt__c, ' + // 배송횟수
-
-            'SalesReAverageResultExclusive__c, ' + // ----------외식 재계약 전용 필드 ↓ : 3개월 평균실적 전용매출
+            'StoreLessThreeHundred__c, ' +          //점포수 3백미만
+            'OtherSupportDetail__c, ' +             // 기타 지원세부 내역
+            'AttachedDocument__c, ' +               // 첨부서류
+            'OpptyDescription__c, ' +               // 특이사항
+            'SalesCapitalExclusive__c, ' +          // 외식전용 필드 ↓ :매출 수도권 전용
+            'SalesNameOne__c, ' +                   // 매출 전용입력1
+            'SalesNameTwo__c, ' +                   // 매출 전용입력2
+            'SalesNameThree__c, ' +                 // 매출 전용입력3
+            'SalesNameFour__c, ' +                  // 매출 전용입력4
+            'SalesCapitalGeneral__c, ' +            // 매출 수도권 일반
+            'SalesEastExclusive__c, ' +             // 매출 동부권 전용
+            'SalesEastGeneral__c, ' +               // 매출 동부권 일반
+            'SalesWestExclusive__c, ' +             // 매출 서부권 전용
+            'SalesWestGeneral__c, ' +               // 매출 서부권 일반 
+            'SalesJejuExclusive__c, ' +             // 매출 제주권 전용 
+            'SalesJejuGeneral__c, ' +               // 매출 제주권 일반 
+            'SalesSolutionExclusive__c, ' +         // 매출 솔루션 전용 
+            'SalesSolutionGeneral__c, ' +           // 매출 솔루션 전용 
+            'SalesImproveResultExclusive__c, ' +    // 매출 개선실적 전용
+            'SalesImproveResultGeneral__c, ' +      // 매출 개선실적 전용
+            'SalesProfitCaptialExclusive__c, ' +    // 매출이익 수도권 전용
+            'SalesProfitCapitalGeneral__c, ' +      // 매출이익 수도권 일반
+            'SalesProfitEastExclusive__c, ' +       // 매출이익 동부권 전용
+            'SalesProfitEastGeneral__c, ' +         // 매출이익 동부권 일반
+            'SalesProfitWestExclusive__c, ' +       // 매출이익 서부권 전용
+            'SalesProfitWestGeneral__c, ' +         // 매출이익 서부권 일반
+            'SalesProfitJejuExclusive__c, ' +       // 매출이익 제주권 전용
+            'SalesProfitJejuGeneral__c, ' +         // 매출이익 제주권 일반
+            'SalesProfitNameOne__c, ' +             // 매출이익 전용입력1
+            'SalesProfitNameTwo__c, ' +             // 매출이익 전용입력2
+            'SalesProfitNameThree__c, ' +           // 매출이익 전용입력3
+            'SalesProfitNameFour__c, ' +            // 매출이익 전용입력4
+            'ProfitRateCapitalExclusive__c, ' +     // 매익률 수도권 전용
+            'ProfitRateEastExclusive__c, ' +        // 매익률 동부권 전용
+            'ProfitRateWestExclusive__c, ' +        // 매익률 서부권 전용
+            'ProfitRateJejuExclusive__c, ' +        // 매익률 제주권 전용
+            'ProfitRateCapitalGeneral__c, ' +       // 매익률 수도권 일반
+            'ProfitRateEastGeneral__c, ' +          // 매익률 동부권 일반
+            'ProfitRateWestGeneral__c, ' +          // 매익률 서부권 일반
+            'ProfitRateJejuGeneral__c, ' +          // 매익률 제주권 일반
+            'ProfitRateExclusive__c, ' +            // 전용매익률
+            'ProfitRateGeneral__c, ' +              // 전용매익률 (지급후)
+            'SalesLocationCntThree__c, ' +          // 매익률 3개월전 판매처수
+            'SalesLocationCntCapital__c, ' +        // 매익률 수도권 판매처수
+            'SalesLocationCntEast__c, ' +           // 매익률 동부권 판매처수
+            'SalesLocationCntWest__c, ' +           // 매익률 서부권 판매처수
+            'SalesLocationCntJeju__c, ' +           // 매익률 제주권 판매처수
+            'SalesLocationCntFo__c, ' +             // 매익률 FO 판매처수
+            'SalesLocationCntImpMonth__c, ' +       // 매익률 솔루션 예상실적
+            'SalesPerStoreCapital__c, ' +           // 매익률 수도권 점당매출
+            'SalesPerStoreEast__c, ' +              // 매익률 동부권 점당매출
+            'SalesPerStoreWest__c, ' +              // 매익률 서부권 점당매출
+            'SalesPerStoreJeju__c, ' +              // 매익률 제주권 점당매출
+            'DropSizeCapital__c, ' +                // 매익률 수도권 DROP-SIZE
+            'DropSizeEast__c, ' +                   // 매익률 동부권 DROP-SIZE
+            'DropSizeWest__c, ' +                   // 매익률 서부권 DROP-SIZE
+            'DropSizeJeju__c, ' +                   // 매익률 제주권 DROP-SIZE
+            'DeliveryCnt__c, ' +                    // 배송횟수
+            'SalesPerformDate__c, ' +               // 실적현황 지정일
+            'SalesReAverageResultExclusive__c, ' + 
             'SalesReAverageResultGeneral__c, ' + 
             'SalesProfitReAverageResultExclusive__c, ' + 
             'SalesProfitReAverageResultGeneral__c, ' + 
             'LocationReAverageResult__c, ' + 
             'DistDirReAverageResult__c, ' + 
-            'SalesBeforeMonth__c, ' +  
-
-            'SalesThreeOne__c, ' + // 개선이후 query
+            'SalesThreeOne__c, ' + 
             'SalesThreeTwo__c, ' + 
             'SalesThreeThree__c, ' + 
             'SalesThreeFour__c, ' + 
-
             'SalesCapOne__c, ' + 
             'SalesCapTwo__c, ' + 
             'SalesCapThree__c, ' + 
             'SalesCapFour__c, ' + 
-
             'SalesEastOne__c, ' + 
             'SalesEastTwo__c, ' + 
             'SalesEastThree__c, ' + 
             'SalesEastFour__c, ' + 
-
             'SalesWestOne__c, ' + 
             'SalesWestTwo__c, ' + 
             'SalesWestThree__c, ' + 
             'SalesWestFour__c, ' + 
-
             'SalesJejuOne__c, ' + 
             'SalesJejuTwo__c, ' + 
             'SalesJejuThree__c, ' + 
             'SalesJejuFour__c, ' + 
-
             'SalesMonthFoOne__c, ' + 
             'SalesMonthFoTwo__c, ' + 
             'SalesMonthFoThree__c, ' + 
             'SalesMonthFoFour__c, ' + 
-
             'SalesSoluOne__c, ' + 
             'SalesSoluTwo__c, ' + 
             'SalesSoluThree__c, ' + 
             'SalesSoluFour__c, ' + 
-
             'SalesFoEx__c, ' + 
             'SalesFoGen__c, ' + 
-
             'SalesImpMonthOne__c, ' + 
             'SalesImpMonthTwo__c, ' + 
             'SalesImpMonthThree__c, ' + 
             'SalesImpMonthFour__c, ' + 
-
             'salesProfitThreeOne__c, ' + 
             'salesProfitThreeTwo__c, ' + 
             'salesProfitThreeThree__c, ' + 
             'salesProfitThreeFour__c, ' + 
-
             'SalesProfitCapOne__c, ' + 
             'SalesProfitCapTwo__c, ' + 
             'SalesProfitCapThree__c, ' + 
             'SalesProfitCapFour__c, ' + 
-
             'SalesProfitEastOne__c, ' + 
             'SalesProfitEastTwo__c, ' + 
             'SalesProfitEastThree__c, ' + 
             'SalesProfitEastFour__c, ' + 
-
             'SalesProfitWestOne__c, ' + 
             'SalesProfitWestTwo__c, ' + 
             'SalesProfitWestThree__c, ' + 
             'SalesProfitWestFour__c, ' + 
-
             'SalesProfitJejuOne__c, ' + 
             'SalesProfitJejuTwo__c, ' + 
             'SalesProfitJejuThree__c, ' + 
             'SalesProfitJejuFour__c, ' + 
-
             'SalesProfitFoOne__c, ' + 
             'SalesProfitFoTwo__c, ' + 
             'SalesProfitFoThree__c, ' + 
             'SalesProfitFoFour__c, ' + 
-            
             'SalesProfitImpMonthOne__c, ' + 
             'SalesProfitImpMonthTwo__c, ' + 
             'SalesProfitImpMonthThree__c, ' + 
             'SalesProfitImpMonthFour__c, ' + 
-            
             'SalesProfitFoEx__c, ' + 
             'SalesProfitFoGen__c, ' + 
             'SalesProfitImpMonthEx__c, ' + 
             'SalesProfitImpMonthGen__c, ' + 
-
             'ProfitRateNameOne__c, ' + 
             'ProfitRateNameTwo__c, ' + 
             'ProfitRateNameThree__c, ' + 
             'ProfitRateNameFour__c, ' + 
-
             'DistributeDirImpMonth__c, ' + 
             'DistributeInDirImpMonth__c, ' + 
-
             'DistributeDirCap__c, ' + 
             'DistributeDirEast__c, ' + 
             'DistributeDirWest__c, ' + 
             'DistributeDirJeju__c, ' + 
-
             'DistributeInDirCap__c, ' + 
             'DistributeInDirEast__c, ' + 
             'DistributeInDirWest__c, ' + 
             'DistributeInDirJeju__c, ' + 
-
             'DistributeDirFo__c, ' + 
             'DistributeInDirFo__c, ' + 
+            'DistInDirReAverageResult__c, ' + 
+
+            'MultipleSkuRoomTemperature__c, ' +     // 점당매출액 관련 
+            'MultipleSkuRefrigeration__c, ' +     
+            'MultipleSkuFreezer__c, ' +              
+            'MultiplePltRoomTemperature__c, ' +     
+            'MultiplePltRefrigeration__c, ' +     
+            'MultiplePltFreezer__c, ' +     
+
+            'StorageSkuRoomTemperature__c, ' + 
+            'StorageSkuRefrigeration__c, ' +        
+            'StorageSkuFreezer__c, ' +        
+            'StoragePltRoomTemperature__c, ' +        
+            'StoragePltRefrigeration__c, ' +        
+            'StoragePltFreezer__c, ' +        
+
+            'ReductionSkuRoomTemperature__c, ' +           
+            'ReductionSkuRefrigeration__c, ' +           
+            'ReductionSkuFreezer__c, ' +           
+            'ReductionPltRoomTemperature__c, ' +           
+            'ReductionPltRefrigeration__c, ' +      
+            'ReductionPltFreezer__c,' +   
+
+            'ProductNameOne__c, ' +             // 재고운영사항 (체인전용)
+            'StorageConditionOne__c, ' +        //저장조건 1 
+            'ReleaseUnitOne__c, ' +             //출고단위 1 
+            'EnforcementMonthOne__c, ' +        //시행월 1
+            'PltOriginalOne__c, ' +             //PTL운영 계획 1  
+            'PltPlanOne__c, ' +                 //PTL운영 기존 1  
+            'StockMoneyOriginalOne__c, ' +      //재고금액 기존 1  
+            'StockMoneyPlanOne__c, ' +          //재고금액 계획 1
+            'MonthSaleOne__c, ' +               //매출 1
+            'MonthSalesProfitOne__c, ' +        //매출이익 1 
+
+            'ProductNameTwo__c, ' +     
+            'StorageConditionTwo__c, ' +      
+            'ReleaseUnitTwo__c, ' +      
+            'EnforcementMonthTwo__c, ' +    
+            'PltOriginalTwo__c, ' +           
+            'PltPlanTwo__c, ' +           
+            'StockMoneyOriginalTwo__c, ' +          
+            'StockMoneyPlanTwo__c, ' +        
+            'MonthSaleTwo__c, ' +   
+            'MonthSalesProfitTwo__c, ' +      
+
+            'ProductNameThree__c, ' +     
+            'StorageConditionThree__c, ' +      
+            'ReleaseUnitThree__c, ' +      
+            'EnforcementMonthThree__c, ' +    
+            'PltOriginalThree__c, ' +           
+            'PltPlanThree__c, ' +           
+            'StockMoneyOriginalThree__c, ' +          
+            'StockMoneyPlanThree__c, ' +        
+            'MonthSaleThree__c, ' +   
+            'MonthSalesProfitThree__c, ' +      
+
+            'ProductNameFour__c, ' +     
+            'StorageConditionFour__c, ' +      
+            'ReleaseUnitFour__c, ' +      
+            'EnforcementMonthFour__c, ' +    
+            'PltOriginalFour__c, ' +           
+            'PltPlanFour__c, ' +           
+            'StockMoneyOriginalFour__c, ' +          
+            'StockMoneyPlanFour__c, ' +        
+            'MonthSaleFour__c, ' +   
+            'MonthSalesProfitFour__c, ' +      
+
+            'ProductNameFive__c, ' +     
+            'StorageConditionFive__c, ' +      
+            'ReleaseUnitFive__c, ' +      
+            'EnforcementMonthFive__c, ' +    
+            'PltOriginalFive__c, ' +           
+            'PltPlanFive__c, ' +           
+            'StockMoneyOriginalFive__c, ' +          
+            'StockMoneyPlanFive__c, ' +        
+            'MonthSaleFive__c, ' +   
+            'MonthSalesProfitFive__c, ' +   
+
+            'ProductNameSix__c, ' +     
+            'StorageConditionSix__c, ' +      
+            'ReleaseUnitSix__c, ' +      
+            'EnforcementMonthSix__c, ' +    
+            'PltOriginalSix__c, ' +           
+            'PltPlanSix__c, ' +           
+            'StockMoneyOriginalSix__c, ' +          
+            'StockMoneyPlanSix__c, ' +        
+            'MonthSaleSix__c, ' +   
+            'MonthSalesProfitSix__c, ' +      
+
+            'ProductNameSeven__c, ' +     
+            'StorageConditionSeven__c, ' +      
+            'ReleaseUnitSeven__c, ' +      
+            'EnforcementMonthSeven__c, ' +    
+            'PltOriginalSeven__c, ' +           
+            'PltPlanSeven__c, ' +           
+            'StockMoneyOriginalSeven__c, ' +          
+            'StockMoneyPlanSeven__c, ' +        
+            'MonthSaleSeven__c, ' +   
+            'MonthSalesProfitSeven__c, ' +      
+
+            'ProductNameEight__c, ' +     
+            'StorageConditionEight__c, ' +      
+            'ReleaseUnitEight__c, ' +      
+            'EnforcementMonthEight__c, ' +    
+            'PltOriginalEight__c, ' +           
+            'PltPlanEight__c, ' +           
+            'StockMoneyOriginalEight__c, ' +          
+            'StockMoneyPlanEight__c, ' +        
+            'MonthSaleEight__c, ' +   
+            'MonthSalesProfitEight__c, ' +      
+
+            'ProductNameNine__c, ' +     
+            'StorageConditionNine__c, ' +      
+            'ReleaseUnitNine__c, ' +      
+            'EnforcementMonthNine__c, ' +    
+            'PltOriginalNine__c, ' +           
+            'PltPlanNine__c, ' +           
+            'StockMoneyOriginalNine__c, ' +          
+            'StockMoneyPlanNine__c, ' +        
+            'MonthSaleNine__c, ' +   
+            'MonthSalesProfitNine__c, ' +      
+            
+            'ProductNameTen__c, ' +     
+            'StorageConditionTen__c, ' +      
+            'ReleaseUnitTen__c, ' +      
+            'EnforcementMonthTen__c, ' +    
+            'PltOriginalTen__c, ' +           
+            'PltPlanTen__c, ' +           
+            'StockMoneyOriginalTen__c, ' +          
+            'StockMoneyPlanTen__c, ' +        
+            'MonthSaleTen__c, ' +   
+            'MonthSalesProfitTen__c, ' +      
 
 
-
-
-
-            'DistInDirReAverageResult__c ' + 
+            'CreatedDate ' + 
 
             'FROM CJFW_ExpectedIncomeExpenses__c';
 
@@ -562,22 +641,19 @@ public with sharing class OrderConsiderReContractFormController {
                     versionCheck = ( incomeExpensesList[0].Version__c );
                     reportCheck = ( incomeExpensesList[0].IsReportCheck__c );
                 }
-                //System.debug(' 업데이트 versionCheck ' + versionCheck );
-                //System.debug(' 업데이트 품의지정여부 ' + reportCheck );
             } else { // 품의 초기생성시 
                 versionCheck = 1;
                 IncomeExpensesInfo = new CJFW_ExpectedIncomeExpenses__c();
             } 
-
             System.debug('versionCheck -> '+ versionCheck);
 
         }catch (QueryException e) {
             IncomeExpensesInfo = new CJFW_ExpectedIncomeExpenses__c(); // 빈 레코드로 초기화
-            System.debug(' 에러 message => ' + e.getMessage());
-            System.debug(' 에러 trace => ' + e.getStackTraceString());
+            System.debug(' 신규개설품의 조회 에러 message => ' + e.getMessage());
+            System.debug(' 신규개설품의 조회 에러 trace => ' + e.getStackTraceString());
         }
 
-        System.debug('IncomeExpensesInfo 쿼리결과 = '+ IncomeExpensesInfo);
+        // System.debug('IncomeExpensesInfo 쿼리결과 = '+ IncomeExpensesInfo);
 
         // 조회된내용이 없을때 계산식에 오류가 발생하기때문에 아래와같이 default로 0.00 으로 세팅한다 
         String[] defaultValSet = new String[] {
@@ -595,7 +671,7 @@ public with sharing class OrderConsiderReContractFormController {
             'SalesMoreThousand__c',              //매출액 1천이상
             'SalesMoreFiveHundred__c',           //매출액 5백이상
             'SalesLessFiveHundred__c',           //매출액 5백미만
-            'SalesLessThreeHundred__c',           //매출액 3백미만
+            'SalesLessThreeHundred__c',          //매출액 3백미만
             'CollateralAmount__c',
             'SalesCapitalExclusive__c',
             'SalesEastExclusive__c',
@@ -729,14 +805,100 @@ public with sharing class OrderConsiderReContractFormController {
             'DistributeInDirJeju__c' ,
             'DistributeDirFo__c' , 
             'DistributeInDirFo__c' , 
+
+            'MultipleSkuRoomTemperature__c',
+            'MultipleSkuRefrigeration__c',
+            'MultipleSkuFreezer__c',
+            'MultiplePltRoomTemperature__c',
+            'MultiplePltRefrigeration__c',
+            'MultiplePltFreezer__c',
+
+            'StorageSkuRoomTemperature__c',
+            'StorageSkuRefrigeration__c',
+            'StorageSkuFreezer__c',
+            'StoragePltRoomTemperature__c',
+            'StoragePltRefrigeration__c',
+            'StoragePltFreezer__c',
+
+            'ReductionSkuRoomTemperature__c',
+            'ReductionSkuRefrigeration__c',
+            'ReductionSkuFreezer__c',
+            'ReductionPltRoomTemperature__c',
+            'ReductionPltRefrigeration__c',
+            'ReductionPltFreezer__c',
+
+            'PltOriginalOne__c', // 재고 운영 개선사항 (체인전용)
+            'PltPlanOne__c',
+            'StockMoneyOriginalOne__c',
+            'StockMoneyPlanOne__c',
+            'MonthSaleOne__c',
+            'MonthSalesProfitOne__c',
+            'PltOriginalTwo__c',
+            'PltPlanTwo__c',
+            'StockMoneyOriginalTwo__c',
+            'StockMoneyPlanTwo__c',
+            'MonthSaleTwo__c',
+            'MonthSalesProfitTwo__c',
+            'PltOriginalThree__c',
+            'PltPlanThree__c',
+            'StockMoneyOriginalThree__c',
+            'StockMoneyPlanThree__c',
+            'MonthSaleThree__c',
+            'MonthSalesProfitThree__c',
+            'PltOriginalFour__c',
+            'PltPlanFour__c',
+            'StockMoneyOriginalFour__c',
+            'StockMoneyPlanFour__c',
+            'MonthSaleFour__c',
+            'MonthSalesProfitFour__c',
+            'PltOriginalFive__c',
+            'PltPlanFive__c',
+            'StockMoneyOriginalFive__c',
+            'StockMoneyPlanFive__c',
+            'MonthSaleFive__c',
+            'MonthSalesProfitFive__c',
+            'PltOriginalSix__c',
+            'PltPlanSix__c',
+            'StockMoneyOriginalSix__c',
+            'StockMoneyPlanSix__c',
+            'MonthSaleSix__c',
+            'MonthSalesProfitSix__c',
+            'PltOriginalSeven__c',
+            'PltPlanSeven__c',
+            'StockMoneyOriginalSeven__c',
+            'StockMoneyPlanSeven__c',
+            'MonthSaleSeven__c',
+            'MonthSalesProfitSeven__c',
+            'PltOriginalEight__c',
+            'PltPlanEight__c',
+            'StockMoneyOriginalEight__c',
+            'StockMoneyPlanEight__c',
+            'MonthSaleEight__c',
+            'MonthSalesProfitEight__c',
+            'PltOriginalNine__c',
+            'PltPlanNine__c',
+            'StockMoneyOriginalNine__c',
+            'StockMoneyPlanNine__c',
+            'MonthSaleNine__c',
+            'MonthSalesProfitNine__c',
+            'PltOriginalTen__c',
+            'PltPlanTen__c',
+            'StockMoneyOriginalTen__c',
+            'StockMoneyPlanTen__c',
+            'MonthSaleTen__c',
+            'MonthSalesProfitTen__c',
+
+
+
             'CreditLoanAmount__c'
+
         };
 
-        // 조회된내용이 없을때 계산식에 오류가 발생하기때문에 아래와같이 default로 0.00 으로 세팅한다 
+        // 조회된내용이 없을때 계산식에 오류가 발생하기때문에 아래와같이 default로 defaultZero 으로 세팅한다 
         for (String defaultSet : defaultValSet) {
             Object fieldValue = IncomeExpensesInfo.get(defaultSet);
 
-            if (fieldValue == null) fieldValue = 0.00; 
+            if (fieldValue == null) fieldValue = defaultZero; 
             IncomeExpensesInfo.put(defaultSet, fieldValue);
         }
 
@@ -749,7 +911,6 @@ public with sharing class OrderConsiderReContractFormController {
             'StoreMoreFiveHundred__c',           //점포수 5백이상
             'StoreLessFiveHundred__c',           //점포수 5백미만
             'StoreLessThreeHundred__c',          //점포수 3백미만
-
             'DeliveryNumber__c',                 //배송 횟수
             'KgExclusiveProduct__c',             //전용상품
             'KgGeneralProduct__c',               //일반상품
@@ -766,20 +927,25 @@ public with sharing class OrderConsiderReContractFormController {
 
 
         /* Date 필드를 yyyy-MM-dd 형식의 문자열로 변환 */
-        String initialDateString = String.valueOf(IncomeExpensesInfo.InitialDate__c);           // 초도일자 
-        String contractStartString = String.valueOf(IncomeExpensesInfo.ContractStartDate__c);   // 계약시작일자
-        String contractEndString = String.valueOf(IncomeExpensesInfo.ContractEndDate__c);       // 계약종료일자 
-        String collateralPeriodString = String.valueOf(IncomeExpensesInfo.CollateralPeriod__c); // 담보기간
-        String contractPaymentDateString = String.valueOf(IncomeExpensesInfo.ContractPaymentDate__c);   //약정결제일
-        String createdDateString = String.valueOf(IncomeExpensesInfo.CreatedDate);      // 생성일자
-
+        String initialDateString = String.valueOf(IncomeExpensesInfo.InitialDate__c);                   // 초도일자 
+        String contractStartString = String.valueOf(IncomeExpensesInfo.ContractStartDate__c);           // 계약시작일자
+        String contractEndString = String.valueOf(IncomeExpensesInfo.ContractEndDate__c);               // 계약종료일자 
+        String collateralPeriodString = String.valueOf(IncomeExpensesInfo.CollateralPeriod__c);         // 담보기간
+        String contractPaymentDateString = String.valueOf(IncomeExpensesInfo.ContractPaymentDate__c);   // 약정결제일
+        String salesPerformDateString = String.valueOf(IncomeExpensesInfo.SalesPerformDate__c);         // 실적현황 지정일자 
+        
         initialDate = initialDateString != null ? initialDateString.substring(0, 10) : null;
         contractStartDate = contractStartString != null ? contractStartString.substring(0, 10) : null;
         contractEndDate = contractEndString != null ? contractEndString.substring(0, 10) : null;
         collateralPeriod = collateralPeriodString != null ? collateralPeriodString.substring(0, 10) : null;
         contractPaymentDate = contractPaymentDateString != null ? contractPaymentDateString.substring(0, 10) : null;
-        createdDate = createdDateString != null ? createdDateString.substring(0, 10) : null;
-
+        salesPerformDate = salesPerformDateString != null ? salesPerformDateString.substring(0, 10) : null;
+        
+        // 신규생성시엔 날짜가 안들어가 null 값이뜨는데 , 그럴경우 오늘날짜 기준 1년전을 default 값으로 세팅 
+        if(salesPerformDate == null){
+            DateTime todayDateTime = DateTime.now();
+            salesPerformDate = (todayDateTime.addMonths(-12)).format('yyyy-MM-dd');
+        }
 
         /* pickList 저장된 값 가져오기 */
         selectedBrandChannel = IncomeExpensesInfo.BrandChannel__c;      // 브랜드 경로
@@ -788,7 +954,6 @@ public with sharing class OrderConsiderReContractFormController {
         selectedPayment = IncomeExpensesInfo.PaymentMethod__c;          // 결제수단 
         selectedContract = IncomeExpensesInfo.ContractType__c	;       // 계약서종류 
         selectedDelivery = IncomeExpensesInfo.DeliveryCnt__c	;       // 배송횟수 
-        selectedBefore = IncomeExpensesInfo.SalesBeforeMonth__c	;       // 전월실적 
 
         /* keyman info 값을 참고로 IncomeExpensesInfo 에 담아주기 
             -> IncomeExpensesInfo 필드에 값이 있는지 먼저 체크 > 값이 없고 keymanInfo가 null이 아닐때 keymanInfo 에서 값 땡겨옴 
@@ -820,7 +985,8 @@ public with sharing class OrderConsiderReContractFormController {
             IncomeExpensesInfo.put('SalesMonthly__c', accountInfo.get('SalesMonthly__c') );
         }
 
-        System.debug('# 품의서정보  ->' + IncomeExpensesInfo ); 
+        //System.debug('# 품의서정보  ->' + IncomeExpensesInfo.id ); 
+        refExInfoId = IncomeExpensesInfo.id;
     }
 
     /* 
@@ -829,104 +995,114 @@ public with sharing class OrderConsiderReContractFormController {
     */
     public void getSalesPerform(String expectIncomeId) {
 
-        System.debug(' 실적현황 가져오기 ~ ' + expectIncomeId );
+        // System.debug(' 실적현황 가져오기 ~ ' + expectIncomeId );
+        // System.debug(' 실적현황  refExInfoId check  ~ ' + refExInfoId );
+        
         try{
             
-            if(expectIncomeId !=null){  
+            List < CJFW_SalesPerformance__c > salesPerformanceList = [
+                SELECT  Id,
+                        BeforeSales__c,     // 매출라인
+                        SalesElevenAgo__c, 
+                        SalesTenAgo__c, 
+                        SalesNineAgo__c, 
+                        SalesEightAgo__c, 
+                        SalesSevenAgo__c, 
+                        SalesSixAgo__c, 
+                        SalesFiveAgo__c, 
+                        SalesFourAgo__c, 
+                        SalesThreeAgo__c, 
+                        SalesTwoAgo__c, 
+                        SalesOneAgo__c, 
+                        BeforeSalesProfit__c,     // 매출이익라인
+                        SalesProfitElevenAgo__c, 
+                        SalesProfitTenAgo__c, 
+                        SalesProfitNineAgo__c, 
+                        SalesProfitEightAgo__c, 
+                        SalesProfitSevenAgo__c, 
+                        SalesProfitSixAgo__c, 
+                        SalesProfitFiveAgo__c, 
+                        SalesProfitFourAgo__c, 
+                        SalesProfitThreeAgo__c, 
+                        SalesProfitTwoAgo__c, 
+                        SalesProfitOneAgo__c, 
+                        BeforeSalesStore__c,      // 매장수 
+                        SalesStoreElevenAgo__c, 
+                        SalesStoreTenAgo__c, 
+                        SalesStoreNineAgo__c, 
+                        SalesStoreEightAgo__c, 
+                        SalesStoreSevenAgo__c, 
+                        SalesStoreSixAgo__c, 
+                        SalesStoreFiveAgo__c, 
+                        SalesStoreFourAgo__c, 
+                        SalesStoreThreeAgo__c, 
+                        SalesStoreTwoAgo__c, 
+                        SalesStoreOneAgo__c, 
+                        BeforeDistribute__c,      // 물류비 
+                        DistributeElevenAgo__c, 
+                        DistributeTenAgo__c, 
+                        DistributeNineAgo__c, 
+                        DistributeEightAgo__c, 
+                        DistributeSevenAgo__c, 
+                        DistributeSixAgo__c, 
+                        DistributeFiveAgo__c, 
+                        DistributeFourAgo__c, 
+                        DistributeThreeAgo__c, 
+                        DistributeTwoAgo__c, 
+                        DistributeOneAgo__c, 
+                        BeforeDistributeDir__c,    // 직접물류비 
+                        DistributeDirElevenAgo__c, 
+                        DistributeDirTenAgo__c, 
+                        DistributeDirNineAgo__c, 
+                        DistributeDirEightAgo__c, 
+                        DistributeDirSevenAgo__c, 
+                        DistributeDirSixAgo__c, 
+                        DistributeDirFiveAgo__c, 
+                        DistributeDirFourAgo__c, 
+                        DistributeDirThreeAgo__c, 
+                        DistributeDirTwoAgo__c, 
+                        DistributeDirOneAgo__c, 
+                        BeforeDistributeInDir__c,   // 간접물류비
+                        DistributeInDirElevenAgo__c, 
+                        DistributeInDirTenAgo__c, 
+                        DistributeInDirNineAgo__c, 
+                        DistributeInDirEightAgo__c, 
+                        DistributeInDirSevenAgo__c, 
+                        DistributeInDirSixAgo__c, 
+                        DistributeInDirFiveAgo__c, 
+                        DistributeInDirFourAgo__c, 
+                        DistributeInDirThreeAgo__c, 
+                        DistributeInDirTwoAgo__c, 
+                        DistributeInDirOneAgo__c, 
+                        BeforeContribute__c,        // 공헌이익
+                        ContributeElevenAgo__c, 
+                        ContributeTenAgo__c, 
+                        ContributeNineAgo__c, 
+                        ContributeEightAgo__c, 
+                        ContributeSevenAgo__c, 
+                        ContributeSixAgo__c, 
+                        ContributeFiveAgo__c, 
+                        ContributeFourAgo__c, 
+                        ContributeThreeAgo__c, 
+                        ContributeTwoAgo__c, 
+                        ContributeOneAgo__c, 
+                        ExpectedIncomeExpensesId__c 
+                FROM CJFW_SalesPerformance__c WHERE ExpectedIncomeExpensesId__c =: refExInfoId LIMIT 1  ];
+                    
+                // expectIncomeId를 key 값으로 신규개설품의(master) id 값이 없으면 신규생성 
+                if(expectIncomeId ==null && refExInfoId ==null ){ 
+                    // System.debug( ' version 1 , 초기 신규 생성 '  );
+                    salesPerformance = new CJFW_SalesPerformance__c();
+                }else if(expectIncomeId ==null && !salesPerformanceList.isEmpty() ){
+                    // System.debug( ' version 2 이상  , 신규 생성 '  );
+                    salesPerformance = new CJFW_SalesPerformance__c();
+                    salesPerformance = salesPerformanceList[0];
+                }else{ 
+                    // System.debug( ' update '  );
+                    salesPerformance = salesPerformanceList[0];
+                }
 
-                salesPerformance = [
-                    SELECT  Id,
-                            BeforeSales__c,     // 매출라인
-                            SalesElevenAgo__c, 
-                            SalesTenAgo__c, 
-                            SalesNineAgo__c, 
-                            SalesEightAgo__c, 
-                            SalesSevenAgo__c, 
-                            SalesSixAgo__c, 
-                            SalesFiveAgo__c, 
-                            SalesFourAgo__c, 
-                            SalesThreeAgo__c, 
-                            SalesTwoAgo__c, 
-                            SalesOneAgo__c, 
-                            BeforeSalesProfit__c,     // 매출이익라인
-                            SalesProfitElevenAgo__c, 
-                            SalesProfitTenAgo__c, 
-                            SalesProfitNineAgo__c, 
-                            SalesProfitEightAgo__c, 
-                            SalesProfitSevenAgo__c, 
-                            SalesProfitSixAgo__c, 
-                            SalesProfitFiveAgo__c, 
-                            SalesProfitFourAgo__c, 
-                            SalesProfitThreeAgo__c, 
-                            SalesProfitTwoAgo__c, 
-                            SalesProfitOneAgo__c, 
-                            BeforeSalesStore__c,      // 매장수 
-                            SalesStoreElevenAgo__c, 
-                            SalesStoreTenAgo__c, 
-                            SalesStoreNineAgo__c, 
-                            SalesStoreEightAgo__c, 
-                            SalesStoreSevenAgo__c, 
-                            SalesStoreSixAgo__c, 
-                            SalesStoreFiveAgo__c, 
-                            SalesStoreFourAgo__c, 
-                            SalesStoreThreeAgo__c, 
-                            SalesStoreTwoAgo__c, 
-                            SalesStoreOneAgo__c, 
-                            BeforeDistribute__c,      // 물류비 
-                            DistributeElevenAgo__c, 
-                            DistributeTenAgo__c, 
-                            DistributeNineAgo__c, 
-                            DistributeEightAgo__c, 
-                            DistributeSevenAgo__c, 
-                            DistributeSixAgo__c, 
-                            DistributeFiveAgo__c, 
-                            DistributeFourAgo__c, 
-                            DistributeThreeAgo__c, 
-                            DistributeTwoAgo__c, 
-                            DistributeOneAgo__c, 
-                            BeforeDistributeDir__c,    // 직접물류비 
-                            DistributeDirElevenAgo__c, 
-                            DistributeDirTenAgo__c, 
-                            DistributeDirNineAgo__c, 
-                            DistributeDirEightAgo__c, 
-                            DistributeDirSevenAgo__c, 
-                            DistributeDirSixAgo__c, 
-                            DistributeDirFiveAgo__c, 
-                            DistributeDirFourAgo__c, 
-                            DistributeDirThreeAgo__c, 
-                            DistributeDirTwoAgo__c, 
-                            DistributeDirOneAgo__c, 
-                            BeforeDistributeInDir__c,   // 간접물류비
-                            DistributeInDirElevenAgo__c, 
-                            DistributeInDirTenAgo__c, 
-                            DistributeInDirNineAgo__c, 
-                            DistributeInDirEightAgo__c, 
-                            DistributeInDirSevenAgo__c, 
-                            DistributeInDirSixAgo__c, 
-                            DistributeInDirFiveAgo__c, 
-                            DistributeInDirFourAgo__c, 
-                            DistributeInDirThreeAgo__c, 
-                            DistributeInDirTwoAgo__c, 
-                            DistributeInDirOneAgo__c, 
-                            BeforeContribute__c,        // 공헌이익
-                            ContributeElevenAgo__c, 
-                            ContributeTenAgo__c, 
-                            ContributeNineAgo__c, 
-                            ContributeEightAgo__c, 
-                            ContributeSevenAgo__c, 
-                            ContributeSixAgo__c, 
-                            ContributeFiveAgo__c, 
-                            ContributeFourAgo__c, 
-                            ContributeThreeAgo__c, 
-                            ContributeTwoAgo__c, 
-                            ContributeOneAgo__c, 
-                            ExpectedIncomeExpensesId__c 
-                    FROM CJFW_SalesPerformance__c WHERE ExpectedIncomeExpensesId__c =: expectIncomeId LIMIT 1  ];
-            
-            }else{
-                System.debug( ' 신규 생성일때 만들어주기  '  );
-                salesPerformance = new CJFW_SalesPerformance__c();
-            }
+
 
                 // 조회된내용이 없을때 계산식에 오류가 발생하기때문에 아래와같이 default로 0.00 으로 세팅한다 
                 String[] defaultValSet = new String[] {
@@ -1023,7 +1199,7 @@ public with sharing class OrderConsiderReContractFormController {
                 for (String defaultSet : defaultValSet) {
                     Object fieldValue = salesPerformance.get(defaultSet);
                     // 필드 값이 null이면 기본값을 0.00으로 설정
-                    if (fieldValue == null) fieldValue = 0.00; 
+                    if (fieldValue == null) fieldValue = defaultZero; 
                     salesPerformance.put(defaultSet, fieldValue);
                 }
 
@@ -1042,61 +1218,178 @@ public with sharing class OrderConsiderReContractFormController {
             System.debug(' 실적현황쪽 에러 메시지: ' + errorMessage);
             System.debug(' 실적현황쪽 에러 라인: ' + errorStackTrace);
         }
-        System.debug(' 실적현황 가져오기 ~ ' + salesPerformance  );
+
     }
 
 
     /* 
-    추진사항정보(CJFW_PromoteIssues__c) 가져오기 
+    #추진사항정보 (CJFW_PromoteIssues__c) 가져오기 
     @param : 신규개설품의Id
     */
     public void getPromoteIssue(String expectIncomeId) {
-        System.debug(' 추진사항정보 가져오기 ~ ' + expectIncomeId );
-        try{   
-            if(expectIncomeId !=null){  
-                promoteIssues = [
-                    SELECT  Id,
-                            SynergyDivisionOne__c,  // 시너지 1
-                            SynergyTypeOne__c,
-                            SynergySaleOne__c,
-                            SynergySaleRateOne__c,
-                            SynergyRemarkOne__c,
-                            SynergyDivisionTwo__c,
-                            SynergyTypeTwo__c,       // 시너지 2
-                            SynergySaleTwo__c,
-                            SynergySaleRateTwo__c,
-                            SynergyRemarkTwo__c,
-                            SynergyDivisionThree__c, // 시너지 3
-                            SynergyTypeThree__c,
-                            SynergySaleThree__c,
-                            SynergySaleRateThree__c,
-                            SynergyRemarkThree__c,
-                            CreatedDate 
-                    FROM CJFW_PromoteIssues__c WHERE ExpectedIncomeExpensesId__c =: expectIncomeId LIMIT 1  ];
-            }else{
-                promoteIssues = new CJFW_PromoteIssues__c();
+        // System.debug(' 추진사항 정보가져가기 ');
+
+        try {
+            if (refExInfoId != null) {
+                List < CJFW_PromoteIssues__c > promoteIssuesList = [
+                    SELECT Id,
+                    SolutionDivisionOne__c,     // 솔루션 구분
+                    SolutionDivisionTwo__c,
+                    SolutionDivisionThree__c,
+                    SolutionDivisionFour__c,
+                    SolutionDivisionFive__c,
+                    SolutionDetailsOne__c,      // 솔루션 세부구분
+                    SolutionDetailsTwo__c,
+                    SolutionDetailsThree__c,
+                    SolutionDetailsFour__c,
+                    SolutionDetailsFive__c,
+                    SolutionNewOne__c,         // 솔루션 신규/상품전환
+                    SolutionNewTwo__c,
+                    SolutionNewThree__c,
+                    SolutionNewFour__c,
+                    SolutionNewFive__c,
+                    SolutionUseOne__c,          //솔류션 전용/범용
+                    SolutionUseTwo__c,
+                    SolutionUseThree__c,
+                    SolutionUseFour__c,
+                    SolutionUseFive__c,
+                    SolutionProductNameOne__c,  // 솔루션 상품명
+                    SolutionProductNameTwo__c,
+                    SolutionProductNameThree__c,
+                    SolutionProductNameFour__c,
+                    SolutionProductNameFive__c,
+                    SolutionStoreOne__c,            //솔루션 저장조건
+                    SolutionStoreTwo__c,
+                    SolutionStoreThree__c,
+                    SolutionStoreFour__c,
+                    SolutionStoreFive__c,
+                    SolutionReleaseUnitOne__c,      // 솔루션 출고단위
+                    SolutionReleaseUnitTwo__c,
+                    SolutionReleaseUnitThree__c,
+                    SolutionReleaseUnitFour__c,
+                    SolutionReleaseUnitFive__c,
+                    ManageEnforcementMonthOne__c,   // 재고운영 시행월
+                    ManageEnforcementMonthTwo__c,
+                    ManageEnforcementMonthThree__c,
+                    ManageEnforcementMonthFour__c,
+                    ManageEnforcementMonthFive__c,
+                    ManagePltOne__c,                // 재고운영 PLT
+                    ManagePltTwo__c,
+                    ManagePltThree__c,
+                    ManagePltFour__c,
+                    ManagePltFive__c,
+                    ManageStockMoneyOne__c, // 재고운영 재고금액
+                    ManageStockMoneyTwo__c,
+                    ManageStockMoneyThree__c,
+                    ManageStockMoneyFour__c,
+                    ManageStockMoneyFive__c,
+                    ResultSaleOne__c,   // 상품실적 매출
+                    ResultSaleTwo__c,
+                    ResultSaleThree__c,
+                    ResultSaleFour__c,
+                    ResultSaleFive__c,
+                    ResultSalesProfitOne__c, // 상품실적 매출이익
+                    ResultSalesProfitTwo__c,
+                    ResultSalesProfitThree__c,
+                    ResultSalesProfitFour__c,
+                    ResultSalesProfitFive__c,
+
+                    SynergyDivisionOne__c, // 시너지 1
+                    SynergyTypeOne__c,
+                    SynergySaleOne__c,
+                    SynergySaleRateOne__c,
+                    SynergyRemarkOne__c,
+                    SynergyDivisionTwo__c,
+                    SynergyTypeTwo__c, // 시너지 2
+                    SynergySaleTwo__c,
+                    SynergySaleRateTwo__c,
+                    SynergyRemarkTwo__c,
+                    SynergyDivisionThree__c, // 시너지 3
+                    SynergyTypeThree__c,
+                    SynergySaleThree__c,
+                    SynergySaleRateThree__c,
+                    SynergyRemarkThree__c,
+                    CreatedDate
+                    FROM CJFW_PromoteIssues__c WHERE ExpectedIncomeExpensesId__c =: refExInfoId LIMIT 1
+                ];
+
+                if(expectIncomeId ==null && refExInfoId ==null ){ 
+                    // System.debug( ' version 1 , 초기 신규 생성 '  );
+                    promoteIssues = new CJFW_PromoteIssues__c();
+                }else if(expectIncomeId ==null && !promoteIssuesList.isEmpty() ){
+                    // System.debug( ' version 2 이상  , 신규 생성 '  );
+                    promoteIssues = new CJFW_PromoteIssues__c();
+                    promoteIssues = promoteIssuesList[0];
+                }else{ 
+                    // System.debug( ' update '  );
+                    promoteIssues = promoteIssuesList[0];
+                }
+
             }
 
             // 매출 , 매익률 값이 없을경우 default 0.00 으로 세팅 
             String[] defaultValSet = new String[] {
-            'SynergySaleOne__c', 
-            'SynergySaleRateOne__c',
-            'SynergySaleTwo__c',
-            'SynergySaleRateTwo__c',
-            'SynergySaleThree__c',
-            'SynergySaleRateThree__c'
-            };    
+                'ManagePltOne__c',          // 솔루션
+                'ManagePltTwo__c', 
+                'ManagePltThree__c', 
+                'ManagePltFour__c', 
+                'ManagePltFive__c', 
+    
+                'ManageStockMoneyOne__c', 
+                'ManageStockMoneyTwo__c', 
+                'ManageStockMoneyThree__c', 
+                'ManageStockMoneyFour__c', 
+                'ManageStockMoneyFive__c', 
+    
+                'ResultSaleOne__c', 
+                'ResultSaleTwo__c', 
+                'ResultSaleThree__c', 
+                'ResultSaleFour__c', 
+                'ResultSaleFive__c', 
+    
+                'ResultSalesProfitOne__c', 
+                'ResultSalesProfitTwo__c', 
+                'ResultSalesProfitThree__c', 
+                'ResultSalesProfitFour__c', 
+                'ResultSalesProfitFive__c',
+    
+                'SynergySaleOne__c',          // 시너지   
+                'SynergySaleRateOne__c',
+                'SynergySaleTwo__c',
+                'SynergySaleRateTwo__c',
+                'SynergySaleThree__c',
+                'SynergySaleRateThree__c'
+            };
 
-            for (String defaultSet : defaultValSet) {
+            // 시행월 0 으로 세팅 
+            String[] defaultZeroSet = new String[] {
+                'ManageEnforcementMonthOne__c',   
+                'ManageEnforcementMonthTwo__c',
+                'ManageEnforcementMonthThree__c',
+                'ManageEnforcementMonthFour__c',
+                'ManageEnforcementMonthFive__c'
+
+            };  
+
+
+            for (String defaultSet: defaultValSet) {
                 Object fieldValue = promoteIssues.get(defaultSet);
                 // 필드 값이 null이면 기본값을 0.00으로 설정
-                if (fieldValue == null) fieldValue = 0.00; 
+                if (fieldValue == null) fieldValue = defaultZero;
                 promoteIssues.put(defaultSet, fieldValue);
             }
 
-        }catch(Exception e){
+            for (String defaultSet : defaultZeroSet) {
+                Object fieldValue = promoteIssues.get(defaultSet);
+                // 필드 값이 null이면 기본값을 0으로 설정
+                if (fieldValue == null) fieldValue = 0; 
+                promoteIssues.put(defaultSet, fieldValue);
+            }
+
+
+        } catch (Exception e) {
             String errorMessage = e.getMessage();
-            String errorStackTrace = e.getStackTraceString(); 
+            String errorStackTrace = e.getStackTraceString();
             System.debug(' 추진사항정보 에러 메시지: ' + errorMessage);
             System.debug(' 추진사항정보 에러 라인: ' + errorStackTrace);
         }
@@ -1107,7 +1400,7 @@ public with sharing class OrderConsiderReContractFormController {
     물류비 관리 (CJFW_DistributionCost__c)에서 값 가져오기 
      */
     public void getDistributeCost() {
-        System.debug('# ReportFormController # getDistributeCost ');
+        System.debug('# ReportFormController # getDistributeCost # 물류비관리 값');
         
         try{
 
@@ -1122,32 +1415,47 @@ public with sharing class OrderConsiderReContractFormController {
                        SU__c 
                 FROM CJFW_DistributionCost__c WHERE StartDate__c <= TODAY AND HeadOffice__c =: headOfficeLabel ];
 
-            system.debug('DistributeCost 외식용 -> ' +  DistributeCostList );
+            if ( !DistributeCostList.isEmpty() ) {
+                System.debug(' 물류비관리 정상적으로 가져올경우 ');
+                // 본부별 최대 8개까지 존재가능한 물류비값을 각각 담아주기 
+                for(CJFW_DistributionCost__c record : DistributeCostList){
 
-            // 본부별 최대 8개까지 존재가능한 물류비값을 각각 담아주기 
-            for(CJFW_DistributionCost__c record : DistributeCostList){
-
-                if(headOfficeLabel == '6000'){ // 외식일때 
-                    if(record.Region__c =='수도권' && record.Type__c  =='직접'){ // Distribute list 안에 CapDirect로 담아주고 싶어 
-                        DistributeDirCap = record.Cost__c;
-                    }else if(record.Region__c =='수도권' && record.Type__c  =='간접'){
-                        DistributeInDirCap = record.Cost__c;
-                    }else if(record.Region__c =='동부권' && record.Type__c  =='직접'){
-                        DistributeDirEast = record.Cost__c;
-                    }else if(record.Region__c =='동부권' && record.Type__c  =='간접'){
-                        DistributeInDirEast = record.Cost__c;
-                    }else if(record.Region__c =='서부권' && record.Type__c  =='직접'){
-                        DistributeDirWest = record.Cost__c;
-                    }else if(record.Region__c =='서부권' && record.Type__c  =='간접'){
-                        DistributeInDirWest = record.Cost__c;
-                    }else if(record.Region__c =='제주권' && record.Type__c  =='직접'){
-                        DistributeDirJeju = record.Cost__c;
-                    }else if(record.Region__c =='제주권' && record.Type__c  =='간접'){
-                        DistributeInDirJeju = record.Cost__c;
+                    if(headOfficeLabel == '6000'){ // 외식일때 
+                        if(record.Region__c =='수도권' && record.Type__c  =='직접'){ // Distribute list 안에 CapDirect로 담아주고 싶어 
+                            DistributeDirCap = record.Cost__c;
+                        }else if(record.Region__c =='수도권' && record.Type__c  =='간접'){
+                            DistributeInDirCap = record.Cost__c;
+                        }else if(record.Region__c =='동부권' && record.Type__c  =='직접'){
+                            DistributeDirEast = record.Cost__c;
+                        }else if(record.Region__c =='동부권' && record.Type__c  =='간접'){
+                            DistributeInDirEast = record.Cost__c;
+                        }else if(record.Region__c =='서부권' && record.Type__c  =='직접'){
+                            DistributeDirWest = record.Cost__c;
+                        }else if(record.Region__c =='서부권' && record.Type__c  =='간접'){
+                            DistributeInDirWest = record.Cost__c;
+                        }else if(record.Region__c =='제주권' && record.Type__c  =='직접'){
+                            DistributeDirJeju = record.Cost__c;
+                        }else if(record.Region__c =='제주권' && record.Type__c  =='간접'){
+                            DistributeInDirJeju = record.Cost__c;
+                        }
+                    }else if(headOfficeLabel == '3001'){ // 급식일때 
+                        DistributeSchool =record.Cost__c;
                     }
-                }else if(headOfficeLabel == '3001'){ // 급식일때 
-                    DistributeSchool =record.Cost__c;
+
                 }
+
+            } else {
+                System.debug(' 적용날짜가 안맞아서 물류비관리 못가져올경우 ' + defaultZero );
+                
+                DistributeDirCap = defaultZero;
+                DistributeInDirCap = defaultZero;
+                DistributeDirEast = defaultZero;
+                DistributeInDirEast = defaultZero;
+                DistributeDirWest = defaultZero;
+                DistributeInDirWest = defaultZero;
+                DistributeDirJeju = defaultZero;
+                DistributeInDirJeju = defaultZero;
+                
             }
 
             if (IncomeExpensesInfo.DistributeDirCap__c == 0 || IncomeExpensesInfo.DistributeDirCap__c == null){
@@ -1162,7 +1470,6 @@ public with sharing class OrderConsiderReContractFormController {
             if (IncomeExpensesInfo.DistributeDirJeju__c == 0 || IncomeExpensesInfo.DistributeDirJeju__c == null){
                 IncomeExpensesInfo.put('DistributeDirJeju__c', DistributeDirJeju );
             }
-
             if (IncomeExpensesInfo.DistributeInDirCap__c == 0 || IncomeExpensesInfo.DistributeInDirCap__c == null){
                 IncomeExpensesInfo.put('DistributeInDirCap__c', DistributeInDirCap );
             }
@@ -1186,34 +1493,44 @@ public with sharing class OrderConsiderReContractFormController {
     }
 
     /* 
-    예산손익관리(CJFW_ExpectedIncomeManager__c) 에서 값 가져오기
+    예상손익관리(CJFW_ExpectedIncomeManager__c) 에서 값 가져오기
     적용시작일 기준으로 값 가져와야함 
     */
     public void getExpectManager() {
-        System.debug('# ReportFormController # getExpectManager');
-        System.debug('# headOfficeLabel ~~ ' + headOfficeLabel );
-        List<CJFW_ExpectedIncomeManager__c> IncomeManagerList  = [
-            SELECT Id, 
-                Name,
-                CurrencyIsoCode,  
-                DistributionCost__c, 
-                LaborCost__c, 
-                GroupCommonCost__c, 
-                GroupCommonCostExclusive__c, 
-                GroupCommonCostGeneral__c, 
-                PromotionFee__c, 
-                CardFee__c, 
-                CollateralFee__c, 
-                ChefFee__c, 
-                OtherFee__c, 
-                SupportFee__c, 
-                StartDate__c, 
-                HeadOffice__c, 
-                SU__c, 
-                Source__c 
-            FROM CJFW_ExpectedIncomeManager__c WHERE StartDate__c <= TODAY AND HeadOffice__c =: headOfficeLabel LIMIT 1];
-            
-            // 조회된내용이 없을때 계산식에 오류가 발생하기때문에 아래와같이 default로 0.00 으로 세팅한다 
+        System.debug('# ReportFormController # getExpectManager # 예상손익관리');
+        // System.debug('# headOfficeLabel ~~ ' + headOfficeLabel );
+
+        try{
+
+            List<CJFW_ExpectedIncomeManager__c> IncomeManagerList  = [
+                SELECT Id, 
+                    Name,
+                    CurrencyIsoCode,  
+                    DistributionCost__c, 
+                    LaborCost__c, 
+                    GroupCommonCost__c, 
+                    GroupCommonCostExclusive__c, 
+                    GroupCommonCostGeneral__c, 
+                    PromotionFee__c, 
+                    CardFee__c, 
+                    CollateralFee__c, 
+                    ChefFee__c, 
+                    OtherFee__c, 
+                    SupportFee__c, 
+                    StartDate__c, 
+                    HeadOffice__c, 
+                    SU__c, 
+                    Source__c 
+                FROM CJFW_ExpectedIncomeManager__c WHERE StartDate__c <= TODAY AND HeadOffice__c =: headOfficeLabel LIMIT 1];
+
+            if(IncomeManagerList.size()>0 ){
+                System.debug(' 관리값 정상적으로 가져올경우');
+            }else{
+                IncomeManager = new CJFW_ExpectedIncomeManager__c();
+                System.debug(' 적용날짜가 안맞아서 관리값 못가져올경우  ');
+            }
+                
+                // 조회된내용이 없을때 계산식에 오류가 발생하기때문에 아래와같이 default로 0.00 으로 세팅한다 
             String[] defaultValSet = new String[] {
                 'DistributionCost__c',
                 'LaborCost__c',
@@ -1229,59 +1546,51 @@ public with sharing class OrderConsiderReContractFormController {
             };
 
             if (IncomeManagerList.size() > 0) {
-                //CJFW_ExpectedIncomeManager__c IncomeManager = IncomeManagerList[0];
                 IncomeManager = IncomeManagerList[0];
-                
-                for (String defaultSet : defaultValSet) {
-                    Object fieldValue = IncomeManager.get(defaultSet);
-                    // 필드 값이 null이면 기본값을 0.00으로 설정
-                    if (fieldValue == null) fieldValue = 0.00; 
-                    IncomeManager.put(defaultSet, fieldValue);
-                }
-
-                // System.debug('IncomeManager !! check > '+  IncomeManager );
-                // System.debug('IncomeManager 라바코스트 > '+  IncomeManager.LaborCost__c );
-
-                //for (String defaultSet : defaultValSet) {
-                //    Object fieldValue = IncomeManager.get(defaultSet);
-                //    // 필드 값이 null이면 기본값을 0.00 으로 설정
-                //    if (fieldValue == null)  fieldValue = 0.00; 
-                //    IncomeManager.put(defaultSet, fieldValue);
-                //}
+            }
+            
+            for (String defaultSet : defaultValSet) {
+                Object fieldValue = IncomeManager.get(defaultSet);
+                // 필드 값이 null이면 기본값을 0.00으로 설정
+                if (fieldValue == null) fieldValue = defaultZero; 
+                IncomeManager.put(defaultSet, fieldValue);
             }
 
+        }catch(Exception e){
+            String errorMessage = e.getMessage();
+            String errorStackTrace = e.getStackTraceString(); 
+            System.debug(' 예상손익관리자 에러 메시지: ' + errorMessage);
+            System.debug(' 예상손익관리자 에러 라인: ' + errorStackTrace);
+        }
     }
+    
     /* 
     CJFW_NewOpenReport_ProfitReview (VF Page) 에서 입력받은 값 update   
     */
     @RemoteAction
     public static String saveIncomeExpenses(String DataList, String opportunityId, Decimal versionCheck, String incomeExpensesId, String reportType) {
+
         try {
-            System.debug('saveIncomeExpenses DataList ' + DataList);
-            System.debug('saveIncomeExpenses opportunityId ' + opportunityId);
-            System.debug('saveIncomeExpenses versionCheck ' + versionCheck);
-            System.debug('saveIncomeExpenses incomeExpensesId ' + incomeExpensesId);
-            System.debug('saveIncomeExpenses reportType ' + reportType);
+            // System.debug('saveIncomeExpenses DataList ' + DataList);
+            // System.debug('saveIncomeExpenses opportunityId ' + opportunityId);
+            // System.debug('saveIncomeExpenses versionCheck ' + versionCheck);
+            // System.debug('saveIncomeExpenses incomeExpensesId ' + incomeExpensesId);
+            // System.debug('saveIncomeExpenses reportType ' + reportType);
 
-
-            
             Map<String, Object> dataMap = (Map<String, Object>) JSON.deserializeUntyped(DataList);
             System.debug('넘어온 데이터! ' + dataMap);
             
             CJFW_ExpectedIncomeExpenses__c expectIncome;
-            String dmlType ='';
 
             if (incomeExpensesId != null && incomeExpensesId != '') {
-                System.debug('update ★-> ' + incomeExpensesId);
+                System.debug('신규개설품의 update ★-> ' + incomeExpensesId);
                 expectIncome = [SELECT Id FROM CJFW_ExpectedIncomeExpenses__c WHERE Id = :incomeExpensesId];
-                dmlType ='update';
             } else { // insert 
-                System.debug('insert ★-> ');
-                dmlType ='insert';
+                System.debug('신규개설품의 insert ★-> ');
                 expectIncome = new CJFW_ExpectedIncomeExpenses__c();
                 expectIncome.Version__c = versionCheck; // 필수값
                 expectIncome.Opportunity__c = opportunityId; //필수값
-                // if(versionCheck == 1) expectIncome.IsReportCheck__c = true; // 초기 insert 시에 품의지정 default 세팅
+                if(versionCheck == 1) expectIncome.IsReportCheck__c = true; // 초기 insert 시에 품의지정 default 세팅
             }
 
             expectIncome.saveResult__c = DataList;
@@ -1823,6 +2132,11 @@ public with sharing class OrderConsiderReContractFormController {
                expectIncome.DistributeInDirImpMonth__c = convertToDecimal(dataMap.get('distributeInDirImpMonth'));
             }
 
+            // 실적현황 지정일자 
+            if (dataMap.containsKey('salesPerformDate')) { 
+                expectIncome.SalesPerformDate__c = Date.valueOf(((String) dataMap.get('salesPerformDate')));
+            }
+
             upsert expectIncome;
 
             // 실적현황 insert 
@@ -1848,17 +2162,210 @@ public with sharing class OrderConsiderReContractFormController {
     @param : 신규개설품의Id , VF page 에서 수정데이터가 내용이담긴 dataMap
     */
     public static void upsertPromoteIssues(String expectIncomeId , Map<String, Object> dataMap) {
-        System.debug(' 추진사항 upsert ~ ' + expectIncomeId );
-        System.debug(' dataMap !' + dataMap );
+
         CJFW_PromoteIssues__c salesPromoteIssue;
 
-        if (expectIncomeId != null && expectIncomeId != '') {
+        List<CJFW_PromoteIssues__c> salesPromoteIssueList = [SELECT Id FROM CJFW_PromoteIssues__c WHERE ExpectedIncomeExpensesId__c  = :expectIncomeId LIMIT 1];
+        if(!salesPromoteIssueList.isEmpty()){
             System.debug('추진사항 update ★-> ' + expectIncomeId);
-            salesPromoteIssue = [SELECT Id FROM CJFW_PromoteIssues__c WHERE ExpectedIncomeExpensesId__c  = :expectIncomeId LIMIT 1];
+            salesPromoteIssue = salesPromoteIssueList[0];
         }else{
             System.debug('추진사항 insert ★-> ' );
             salesPromoteIssue = new CJFW_PromoteIssues__c();
-            salesPromoteIssue.ExpectedIncomeExpensesId__c = expectIncomeId; // 필수값 
+            salesPromoteIssue.ExpectedIncomeExpensesId__c = expectIncomeId;
+        }
+
+        // 솔루션 ㅣㅣ구분
+        if (dataMap.containsKey('solutionDivisionOne')) { 
+            salesPromoteIssue.SolutionDivisionOne__c = (String)dataMap.get('solutionDivisionOne');
+        }
+        if (dataMap.containsKey('solutionDivisionTwo')) { 
+            salesPromoteIssue.SolutionDivisionTwo__c = (String)dataMap.get('solutionDivisionTwo');
+        }
+        if (dataMap.containsKey('solutionDivisionThree')) { 
+            salesPromoteIssue.SolutionDivisionThree__c = (String)dataMap.get('solutionDivisionThree');
+        }
+        if (dataMap.containsKey('solutionDivisionFour')) { 
+            salesPromoteIssue.SolutionDivisionFour__c = (String)dataMap.get('solutionDivisionFour');
+        }
+        if (dataMap.containsKey('solutionDivisionFive')) { 
+            salesPromoteIssue.SolutionDivisionFive__c = (String)dataMap.get('solutionDivisionFive');
+        }
+        // 솔루션 ㅣㅣ 세부구분        
+        if (dataMap.containsKey('solutionDetailsOne')) { 
+            salesPromoteIssue.SolutionDetailsOne__c = (String)dataMap.get('solutionDetailsOne');
+        }
+        if (dataMap.containsKey('solutionDetailsTwo')) { 
+            salesPromoteIssue.SolutionDetailsTwo__c = (String)dataMap.get('solutionDetailsTwo');
+        }
+        if (dataMap.containsKey('solutionDetailsThree')) { 
+            salesPromoteIssue.SolutionDetailsThree__c = (String)dataMap.get('solutionDetailsThree');
+        }
+        if (dataMap.containsKey('solutionDetailsFour')) { 
+            salesPromoteIssue.SolutionDetailsFour__c = (String)dataMap.get('solutionDetailsFour');
+        }
+        if (dataMap.containsKey('solutionDetailsFive')) { 
+            salesPromoteIssue.SolutionDetailsFive__c = (String)dataMap.get('solutionDetailsFive');
+        }
+        // 솔루션 ㅣㅣ 신규/상품전환        
+        if (dataMap.containsKey('solutionNewOne')) { 
+            salesPromoteIssue.SolutionNewOne__c = (String)dataMap.get('solutionNewOne');
+        }
+        if (dataMap.containsKey('solutionNewTwo')) { 
+            salesPromoteIssue.SolutionNewTwo__c = (String)dataMap.get('solutionNewTwo');
+        }
+        if (dataMap.containsKey('solutionNewThree')) { 
+            salesPromoteIssue.SolutionNewThree__c = (String)dataMap.get('solutionNewThree');
+        }
+        if (dataMap.containsKey('solutionNewFour')) { 
+            salesPromoteIssue.SolutionNewFour__c = (String)dataMap.get('solutionNewFour');
+        }
+        if (dataMap.containsKey('solutionNewFive')) { 
+            salesPromoteIssue.SolutionNewFive__c = (String)dataMap.get('solutionNewFive');
+        }
+        // 솔루션 ㅣㅣ 전용/범용        
+        if (dataMap.containsKey('solutionUseOne')) { 
+            salesPromoteIssue.SolutionUseOne__c = (String)dataMap.get('solutionUseOne');
+        }
+        if (dataMap.containsKey('solutionUseTwo')) { 
+            salesPromoteIssue.SolutionUseTwo__c = (String)dataMap.get('solutionUseTwo');
+        }
+        if (dataMap.containsKey('solutionUseThree')) { 
+            salesPromoteIssue.SolutionUseThree__c = (String)dataMap.get('solutionUseThree');
+        }
+        if (dataMap.containsKey('solutionUseFour')) { 
+            salesPromoteIssue.SolutionUseFour__c = (String)dataMap.get('solutionUseFour');
+        }
+        if (dataMap.containsKey('solutionUseFive')) { 
+            salesPromoteIssue.SolutionUseFive__c = (String)dataMap.get('solutionUseFive');
+        }
+        // 솔루션 ㅣㅣ 상품명        
+        if (dataMap.containsKey('solutionProductNameOne')) { 
+            salesPromoteIssue.SolutionProductNameOne__c = (String)dataMap.get('solutionProductNameOne');
+        }
+        if (dataMap.containsKey('solutionProductNameTwo')) { 
+            salesPromoteIssue.SolutionProductNameTwo__c = (String)dataMap.get('solutionProductNameTwo');
+        }
+        if (dataMap.containsKey('solutionProductNameThree')) { 
+            salesPromoteIssue.SolutionProductNameThree__c = (String)dataMap.get('solutionProductNameThree');
+        }
+        if (dataMap.containsKey('solutionProductNameFour')) { 
+            salesPromoteIssue.SolutionProductNameFour__c = (String)dataMap.get('solutionProductNameFour');
+        }
+        if (dataMap.containsKey('solutionProductNameFive')) { 
+            salesPromoteIssue.SolutionProductNameFive__c = (String)dataMap.get('solutionProductNameFive');
+        }
+        // 솔루션 ㅣㅣ 저장조건        
+        if (dataMap.containsKey('solutionStoreOne')) { 
+            salesPromoteIssue.SolutionStoreOne__c = (String)dataMap.get('solutionStoreOne');
+        }
+        if (dataMap.containsKey('solutionStoreTwo')) { 
+            salesPromoteIssue.SolutionStoreTwo__c = (String)dataMap.get('solutionStoreTwo');
+        }
+        if (dataMap.containsKey('solutionStoreThree')) { 
+            salesPromoteIssue.SolutionStoreThree__c = (String)dataMap.get('solutionStoreThree');
+        }
+        if (dataMap.containsKey('solutionStoreFour')) { 
+            salesPromoteIssue.SolutionStoreFour__c = (String)dataMap.get('solutionStoreFour');
+        }
+        if (dataMap.containsKey('solutionStoreFive')) { 
+            salesPromoteIssue.SolutionStoreFive__c = (String)dataMap.get('solutionStoreFive');
+        }
+        // 솔루션 ㅣㅣ 출고단위        
+        if (dataMap.containsKey('solutionReleaseUnitOne')) { 
+            salesPromoteIssue.SolutionReleaseUnitOne__c = (String)dataMap.get('solutionReleaseUnitOne');
+        }
+        if (dataMap.containsKey('solutionReleaseUnitTwo')) { 
+            salesPromoteIssue.SolutionReleaseUnitTwo__c = (String)dataMap.get('solutionReleaseUnitTwo');
+        }
+        if (dataMap.containsKey('solutionReleaseUnitThree')) { 
+            salesPromoteIssue.SolutionReleaseUnitThree__c = (String)dataMap.get('solutionReleaseUnitThree');
+        }
+        if (dataMap.containsKey('solutionReleaseUnitFour')) { 
+            salesPromoteIssue.SolutionReleaseUnitFour__c = (String)dataMap.get('solutionReleaseUnitFour');
+        }
+        if (dataMap.containsKey('solutionReleaseUnitFive')) { 
+            salesPromoteIssue.SolutionReleaseUnitFive__c = (String)dataMap.get('solutionReleaseUnitFive');
+        }
+        // 재고운영 ㅣㅣ 시행월        
+        if (dataMap.containsKey('manageEnforcementMonthOne')) { 
+            salesPromoteIssue.ManageEnforcementMonthOne__c = convertToDecimal(dataMap.get('manageEnforcementMonthOne'));
+        }
+        if (dataMap.containsKey('manageEnforcementMonthTwo')) { 
+            salesPromoteIssue.ManageEnforcementMonthTwo__c = convertToDecimal(dataMap.get('manageEnforcementMonthTwo'));
+        }
+        if (dataMap.containsKey('manageEnforcementMonthThree')) { 
+            salesPromoteIssue.ManageEnforcementMonthThree__c = convertToDecimal(dataMap.get('manageEnforcementMonthThree'));
+        }
+        if (dataMap.containsKey('manageEnforcementMonthFour')) { 
+            salesPromoteIssue.ManageEnforcementMonthFour__c = convertToDecimal(dataMap.get('manageEnforcementMonthFour'));
+        }
+        if (dataMap.containsKey('manageEnforcementMonthFive')) { 
+            salesPromoteIssue.ManageEnforcementMonthFive__c = convertToDecimal(dataMap.get('manageEnforcementMonthFive'));
+        }
+        // 재고운영 ㅣㅣ PLT        
+        if (dataMap.containsKey('managePltOne')) { 
+            salesPromoteIssue.ManagePltOne__c = convertToDecimal(dataMap.get('managePltOne'));
+        }
+        if (dataMap.containsKey('managePltTwo')) { 
+            salesPromoteIssue.ManagePltTwo__c = convertToDecimal(dataMap.get('managePltTwo'));
+        }
+        if (dataMap.containsKey('managePltThree')) { 
+            salesPromoteIssue.ManagePltThree__c = convertToDecimal(dataMap.get('managePltThree'));
+        }
+        if (dataMap.containsKey('managePltFour')) { 
+            salesPromoteIssue.ManagePltFour__c = convertToDecimal(dataMap.get('managePltFour'));
+        }
+        if (dataMap.containsKey('managePltFive')) { 
+            salesPromoteIssue.ManagePltFive__c = convertToDecimal(dataMap.get('managePltFive'));
+        }
+        // 재고운영 ㅣㅣ 재고금액        
+        if (dataMap.containsKey('manageStockMoneyOne')) { 
+            salesPromoteIssue.ManageStockMoneyOne__c = convertToDecimal(dataMap.get('manageStockMoneyOne'));
+        }
+        if (dataMap.containsKey('manageStockMoneyTwo')) { 
+            salesPromoteIssue.ManageStockMoneyTwo__c = convertToDecimal(dataMap.get('manageStockMoneyTwo'));
+        }
+        if (dataMap.containsKey('manageStockMoneyThree')) { 
+            salesPromoteIssue.ManageStockMoneyThree__c = convertToDecimal(dataMap.get('manageStockMoneyThree'));
+        }
+        if (dataMap.containsKey('manageStockMoneyFour')) { 
+            salesPromoteIssue.ManageStockMoneyFour__c = convertToDecimal(dataMap.get('manageStockMoneyFour'));
+        }
+        if (dataMap.containsKey('manageStockMoneyFive')) { 
+            salesPromoteIssue.ManageStockMoneyFive__c = convertToDecimal(dataMap.get('manageStockMoneyFive'));
+        }
+        // 상품실적 ㅣㅣ 매출        
+        if (dataMap.containsKey('resultSaleOne')) { 
+            salesPromoteIssue.ResultSaleOne__c = convertToDecimal(dataMap.get('resultSaleOne'));
+        }
+        if (dataMap.containsKey('resultSaleTwo')) { 
+            salesPromoteIssue.ResultSaleTwo__c = convertToDecimal(dataMap.get('resultSaleTwo'));
+        }
+        if (dataMap.containsKey('resultSaleThree')) { 
+            salesPromoteIssue.ResultSaleThree__c = convertToDecimal(dataMap.get('resultSaleThree'));
+        }
+        if (dataMap.containsKey('resultSaleFour')) { 
+            salesPromoteIssue.ResultSaleFour__c = convertToDecimal(dataMap.get('resultSaleFour'));
+        }
+        if (dataMap.containsKey('resultSaleFive')) { 
+            salesPromoteIssue.ResultSaleFive__c = convertToDecimal(dataMap.get('resultSaleFive'));
+        }
+        // 상품실적 ㅣㅣ 매출이익      
+        if (dataMap.containsKey('resultSalesProfitOne')) { 
+            salesPromoteIssue.ResultSalesProfitOne__c = convertToDecimal(dataMap.get('resultSalesProfitOne'));
+        }
+        if (dataMap.containsKey('resultSalesProfitTwo')) { 
+            salesPromoteIssue.ResultSalesProfitTwo__c = convertToDecimal(dataMap.get('resultSalesProfitTwo'));
+        }
+        if (dataMap.containsKey('resultSalesProfitThree')) { 
+            salesPromoteIssue.ResultSalesProfitThree__c = convertToDecimal(dataMap.get('resultSalesProfitThree'));
+        }
+        if (dataMap.containsKey('resultSalesProfitFour')) { 
+            salesPromoteIssue.ResultSalesProfitFour__c = convertToDecimal(dataMap.get('resultSalesProfitFour'));
+        }
+        if (dataMap.containsKey('resultSalesProfitFive')) { 
+            salesPromoteIssue.ResultSalesProfitFive__c = convertToDecimal(dataMap.get('resultSalesProfitFive'));
         }
 
         // 시너지 1
@@ -1920,279 +2427,290 @@ public with sharing class OrderConsiderReContractFormController {
     @param : 신규개설품의Id , VF page 에서 수정데이터가 내용이담긴 dataMap
     */
     public static void upsertSalesPerform(String expectIncomeId , Map<String, Object> dataMap) {
-        System.debug(' 실적현황 insert 2 ' + expectIncomeId );
-        System.debug(' dataMap !' + dataMap );
-        CJFW_SalesPerformance__c salesPerform;
 
-        if (expectIncomeId != null && expectIncomeId != '') {
-            System.debug('실적현황 update ★-> ' + expectIncomeId);
-            salesPerform = [SELECT Id FROM CJFW_SalesPerformance__c WHERE ExpectedIncomeExpensesId__c  = :expectIncomeId LIMIT 1];
-        }else{
-            System.debug('실적현황 insert ★-> ' );
-            salesPerform = new CJFW_SalesPerformance__c();
-            salesPerform.ExpectedIncomeExpensesId__c = expectIncomeId; // 필수값 
-        }
-        // 매출 라인
-        if (dataMap.containsKey('beforeSales')) { 
-            salesPerform.BeforeSales__c = convertToDecimal(dataMap.get('beforeSales'));
-        }
-        if (dataMap.containsKey('salesElevenAgo')) { 
-            salesPerform.SalesElevenAgo__c = convertToDecimal(dataMap.get('salesElevenAgo'));
-        }
-        if (dataMap.containsKey('salesTenAgo')) { 
-            salesPerform.SalesTenAgo__c = convertToDecimal(dataMap.get('salesTenAgo'));
-        }
-        if (dataMap.containsKey('salesNineAgo')) { 
-            salesPerform.SalesNineAgo__c = convertToDecimal(dataMap.get('salesNineAgo'));
-        }
-        if (dataMap.containsKey('salesEightAgo')) { 
-            salesPerform.SalesEightAgo__c = convertToDecimal(dataMap.get('salesEightAgo'));
-        }
-        if (dataMap.containsKey('salesSevenAgo')) { 
-            salesPerform.SalesSevenAgo__c = convertToDecimal(dataMap.get('salesSevenAgo'));
-        }
-        if (dataMap.containsKey('salesSixAgo')) { 
-            salesPerform.SalesSixAgo__c = convertToDecimal(dataMap.get('salesSixAgo'));
-        }
-        if (dataMap.containsKey('salesFiveAgo')) { 
-            salesPerform.SalesFiveAgo__c = convertToDecimal(dataMap.get('salesFiveAgo'));
-        }
-        if (dataMap.containsKey('salesFourAgo')) { 
-            salesPerform.SalesFourAgo__c = convertToDecimal(dataMap.get('salesFourAgo'));
-        }
-        if (dataMap.containsKey('salesThreeAgo')) { 
-            salesPerform.SalesThreeAgo__c = convertToDecimal(dataMap.get('salesThreeAgo'));
-        }
-        if (dataMap.containsKey('salesTwoAgo')) { 
-            salesPerform.SalesTwoAgo__c = convertToDecimal(dataMap.get('salesTwoAgo'));
-        }
-        if (dataMap.containsKey('salesOneAgo')) { 
-            salesPerform.SalesOneAgo__c = convertToDecimal(dataMap.get('salesOneAgo'));
-        }
-        // 매출 이익 
-        if (dataMap.containsKey('beforesalesProfit')) { 
-            salesPerform.BeforeSalesProfit__c = convertToDecimal(dataMap.get('beforesalesProfit'));
-        }
-        if (dataMap.containsKey('salesProfitElevenAgo')) { 
-            salesPerform.SalesProfitElevenAgo__c = convertToDecimal(dataMap.get('salesProfitElevenAgo'));
-        }
-        if (dataMap.containsKey('salesProfitTenAgo')) { 
-            salesPerform.SalesProfitTenAgo__c = convertToDecimal(dataMap.get('salesProfitTenAgo'));
-        }
-        if (dataMap.containsKey('salesProfitNineAgo')) { 
-            salesPerform.SalesProfitNineAgo__c = convertToDecimal(dataMap.get('salesProfitNineAgo'));
-        }
-        if (dataMap.containsKey('salesProfitEightAgo')) { 
-            salesPerform.SalesProfitEightAgo__c = convertToDecimal(dataMap.get('salesProfitEightAgo'));
-        }
-        if (dataMap.containsKey('salesProfitSevenAgo')) { 
-            salesPerform.SalesProfitSevenAgo__c = convertToDecimal(dataMap.get('salesProfitSevenAgo'));
-        }
-        if (dataMap.containsKey('salesProfitSixAgo')) { 
-            salesPerform.SalesProfitSixAgo__c = convertToDecimal(dataMap.get('salesProfitSixAgo'));
-        }
-        if (dataMap.containsKey('salesProfitFiveAgo')) { 
-            salesPerform.SalesProfitFiveAgo__c = convertToDecimal(dataMap.get('salesProfitFiveAgo'));
-        }
-        if (dataMap.containsKey('salesProfitFourAgo')) { 
-            salesPerform.SalesProfitFourAgo__c = convertToDecimal(dataMap.get('salesProfitFourAgo'));
-        }
-        if (dataMap.containsKey('salesProfitThreeAgo')) { 
-            salesPerform.SalesProfitThreeAgo__c = convertToDecimal(dataMap.get('salesProfitThreeAgo'));
-        }
-        if (dataMap.containsKey('salesProfitTwoAgo')) { 
-            salesPerform.SalesProfitTwoAgo__c = convertToDecimal(dataMap.get('salesProfitTwoAgo'));
-        }
-        if (dataMap.containsKey('salesProfitOneAgo')) { 
-            salesPerform.SalesProfitOneAgo__c = convertToDecimal(dataMap.get('salesProfitOneAgo'));
-        }
-        // 매장수 
-        if (dataMap.containsKey('beforeSalesStore')) { 
-            salesPerform.BeforeSalesStore__c = convertToDecimal(dataMap.get('beforeSalesStore'));
-        }
-        if (dataMap.containsKey('salesStoreElevenAgo')) { 
-            salesPerform.SalesStoreElevenAgo__c = convertToDecimal(dataMap.get('salesStoreElevenAgo'));
-        }
-        if (dataMap.containsKey('salesStoreTenAgo')) { 
-            salesPerform.SalesStoreTenAgo__c = convertToDecimal(dataMap.get('salesStoreTenAgo'));
-        }
-        if (dataMap.containsKey('salesStoreNineAgo')) { 
-            salesPerform.SalesStoreNineAgo__c = convertToDecimal(dataMap.get('salesStoreNineAgo'));
-        }
-        if (dataMap.containsKey('salesStoreEightAgo')) { 
-            salesPerform.SalesStoreEightAgo__c = convertToDecimal(dataMap.get('salesStoreEightAgo'));
-        }
-        if (dataMap.containsKey('salesStoreSevenAgo')) { 
-            salesPerform.SalesStoreSevenAgo__c = convertToDecimal(dataMap.get('salesStoreSevenAgo'));
-        }
-        if (dataMap.containsKey('salesStoreSixAgo')) { 
-            salesPerform.SalesStoreSixAgo__c = convertToDecimal(dataMap.get('salesStoreSixAgo'));
-        }
-        if (dataMap.containsKey('salesStoreFiveAgo')) { 
-            salesPerform.SalesStoreFiveAgo__c = convertToDecimal(dataMap.get('salesStoreFiveAgo'));
-        }
-        if (dataMap.containsKey('salesStoreFourAgo')) { 
-            salesPerform.SalesStoreFourAgo__c = convertToDecimal(dataMap.get('salesStoreFourAgo'));
-        }
-        if (dataMap.containsKey('salesStoreThreeAgo')) { 
-            salesPerform.SalesStoreThreeAgo__c = convertToDecimal(dataMap.get('salesStoreThreeAgo'));
-        }
-        if (dataMap.containsKey('salesStoreTwoAgo')) { 
-            salesPerform.SalesStoreTwoAgo__c = convertToDecimal(dataMap.get('salesStoreTwoAgo'));
-        }
-        if (dataMap.containsKey('salesStoreOneAgo')) { 
-            salesPerform.SalesStoreOneAgo__c = convertToDecimal(dataMap.get('salesStoreOneAgo'));
-        }
-        // 물류비 
-        if (dataMap.containsKey('beforeDistribute')) { 
-            salesPerform.BeforeDistribute__c = convertToDecimal(dataMap.get('beforeDistribute'));
-        }
-        if (dataMap.containsKey('distributeElevenAgo')) { 
-            salesPerform.DistributeElevenAgo__c = convertToDecimal(dataMap.get('distributeElevenAgo'));
-        }
-        if (dataMap.containsKey('distributeTenAgo')) { 
-            salesPerform.DistributeTenAgo__c = convertToDecimal(dataMap.get('distributeTenAgo'));
-        }
-        if (dataMap.containsKey('distributeNineAgo')) { 
-            salesPerform.DistributeNineAgo__c = convertToDecimal(dataMap.get('distributeNineAgo'));
-        }
-        if (dataMap.containsKey('distributeEightAgo')) { 
-            salesPerform.DistributeEightAgo__c = convertToDecimal(dataMap.get('distributeEightAgo'));
-        }
-        if (dataMap.containsKey('distributeSevenAgo')) { 
-            salesPerform.DistributeSevenAgo__c = convertToDecimal(dataMap.get('distributeSevenAgo'));
-        }
-        if (dataMap.containsKey('distributeSixAgo')) { 
-            salesPerform.DistributeSixAgo__c = convertToDecimal(dataMap.get('distributeSixAgo'));
-        }
-        if (dataMap.containsKey('distributeFiveAgo')) { 
-            salesPerform.DistributeFiveAgo__c = convertToDecimal(dataMap.get('distributeFiveAgo'));
-        }
-        if (dataMap.containsKey('distributeFourAgo')) { 
-            salesPerform.DistributeFourAgo__c = convertToDecimal(dataMap.get('distributeFourAgo'));
-        }
-        if (dataMap.containsKey('distributeThreeAgo')) { 
-            salesPerform.DistributeThreeAgo__c = convertToDecimal(dataMap.get('distributeThreeAgo'));
-        }
-        if (dataMap.containsKey('distributeTwoAgo')) { 
-            salesPerform.DistributeTwoAgo__c = convertToDecimal(dataMap.get('distributeTwoAgo'));
-        }
-        if (dataMap.containsKey('distributeOneAgo')) { 
-            salesPerform.DistributeOneAgo__c = convertToDecimal(dataMap.get('distributeOneAgo'));
-        }
-        // 직접 물류비 
-        if (dataMap.containsKey('beforedistributeDir')) { 
-            salesPerform.BeforeDistributeDir__c = convertToDecimal(dataMap.get('beforedistributeDir'));
-        }
-        if (dataMap.containsKey('distributeDirElevenAgo')) { 
-            salesPerform.DistributeDirElevenAgo__c = convertToDecimal(dataMap.get('distributeDirElevenAgo'));
-        }
-        if (dataMap.containsKey('distributeDirTenAgo')) { 
-            salesPerform.DistributeDirTenAgo__c = convertToDecimal(dataMap.get('distributeDirTenAgo'));
-        }
-        if (dataMap.containsKey('distributeDirNineAgo')) { 
-            salesPerform.DistributeDirNineAgo__c = convertToDecimal(dataMap.get('distributeDirNineAgo'));
-        }
-        if (dataMap.containsKey('distributeDirEightAgo')) { 
-            salesPerform.DistributeDirEightAgo__c = convertToDecimal(dataMap.get('distributeDirEightAgo'));
-        }
-        if (dataMap.containsKey('distributeDirSevenAgo')) { 
-            salesPerform.DistributeDirSevenAgo__c = convertToDecimal(dataMap.get('distributeDirSevenAgo'));
-        }
-        if (dataMap.containsKey('distributeDirSixAgo')) { 
-            salesPerform.DistributeDirSixAgo__c = convertToDecimal(dataMap.get('distributeDirSixAgo'));
-        }
-        if (dataMap.containsKey('distributeDirFiveAgo')) { 
-            salesPerform.DistributeDirFiveAgo__c = convertToDecimal(dataMap.get('distributeDirFiveAgo'));
-        }
-        if (dataMap.containsKey('distributeDirFourAgo')) { 
-            salesPerform.DistributeDirFourAgo__c = convertToDecimal(dataMap.get('distributeDirFourAgo'));
-        }
-        if (dataMap.containsKey('distributeDirThreeAgo')) { 
-            salesPerform.DistributeDirThreeAgo__c = convertToDecimal(dataMap.get('distributeDirThreeAgo'));
-        }
-        if (dataMap.containsKey('distributeDirTwoAgo')) { 
-            salesPerform.DistributeDirTwoAgo__c = convertToDecimal(dataMap.get('distributeDirTwoAgo'));
-        }
-        if (dataMap.containsKey('distributeDirOneAgo')) { 
-            salesPerform.DistributeDirOneAgo__c = convertToDecimal(dataMap.get('distributeDirOneAgo'));
-        }
-        // 간접 물류비 
-        if (dataMap.containsKey('beforedistributeInDir')) { 
-            salesPerform.BeforeDistributeInDir__c = convertToDecimal(dataMap.get('beforedistributeInDir'));
-        }
-        if (dataMap.containsKey('distributeInDirElevenAgo')) { 
-            salesPerform.DistributeInDirElevenAgo__c = convertToDecimal(dataMap.get('distributeInDirElevenAgo'));
-        }
-        if (dataMap.containsKey('distributeInDirTenAgo')) { 
-            salesPerform.DistributeInDirTenAgo__c = convertToDecimal(dataMap.get('distributeInDirTenAgo'));
-        }
-        if (dataMap.containsKey('distributeInDirNineAgo')) { 
-            salesPerform.DistributeInDirNineAgo__c = convertToDecimal(dataMap.get('distributeInDirNineAgo'));
-        }
-        if (dataMap.containsKey('distributeInDirEightAgo')) { 
-            salesPerform.DistributeInDirEightAgo__c = convertToDecimal(dataMap.get('distributeInDirEightAgo'));
-        }
-        if (dataMap.containsKey('distributeInDirSevenAgo')) { 
-            salesPerform.DistributeInDirSevenAgo__c = convertToDecimal(dataMap.get('distributeInDirSevenAgo'));
-        }
-        if (dataMap.containsKey('distributeInDirSixAgo')) { 
-            salesPerform.DistributeInDirSixAgo__c = convertToDecimal(dataMap.get('distributeInDirSixAgo'));
-        }
-        if (dataMap.containsKey('distributeInDirFiveAgo')) { 
-            salesPerform.DistributeInDirFiveAgo__c = convertToDecimal(dataMap.get('distributeInDirFiveAgo'));
-        }
-        if (dataMap.containsKey('distributeInDirFourAgo')) { 
-            salesPerform.DistributeInDirFourAgo__c = convertToDecimal(dataMap.get('distributeInDirFourAgo'));
-        }
-        if (dataMap.containsKey('distributeInDirThreeAgo')) { 
-            salesPerform.DistributeInDirThreeAgo__c = convertToDecimal(dataMap.get('distributeInDirThreeAgo'));
-        }
-        if (dataMap.containsKey('distributeInDirTwoAgo')) { 
-            salesPerform.DistributeInDirTwoAgo__c = convertToDecimal(dataMap.get('distributeInDirTwoAgo'));
-        }
-        if (dataMap.containsKey('distributeInDirOneAgo')) { 
-            salesPerform.DistributeInDirOneAgo__c = convertToDecimal(dataMap.get('distributeInDirOneAgo'));
-        }
-        // 공헌이익 
-        if (dataMap.containsKey('beforeContribute')) { 
-            salesPerform.BeforeContribute__c = convertToDecimal(dataMap.get('beforeContribute'));
-        }
-        if (dataMap.containsKey('contributeElevenAgo')) { 
-            salesPerform.ContributeElevenAgo__c = convertToDecimal(dataMap.get('contributeElevenAgo'));
-        }
-        if (dataMap.containsKey('contributeTenAgo')) { 
-            salesPerform.ContributeTenAgo__c = convertToDecimal(dataMap.get('contributeTenAgo'));
-        }
-        if (dataMap.containsKey('contributeNineAgo')) { 
-            salesPerform.ContributeNineAgo__c = convertToDecimal(dataMap.get('contributeNineAgo'));
-        }
-        if (dataMap.containsKey('contributeEightAgo')) { 
-            salesPerform.ContributeEightAgo__c = convertToDecimal(dataMap.get('contributeEightAgo'));
-        }
-        if (dataMap.containsKey('contributeSevenAgo')) { 
-            salesPerform.ContributeSevenAgo__c = convertToDecimal(dataMap.get('contributeSevenAgo'));
-        }
-        if (dataMap.containsKey('contributeSixAgo')) { 
-            salesPerform.ContributeSixAgo__c = convertToDecimal(dataMap.get('contributeSixAgo'));
-        }
-        if (dataMap.containsKey('contributeFiveAgo')) { 
-            salesPerform.ContributeFiveAgo__c = convertToDecimal(dataMap.get('contributeFiveAgo'));
-        }
-        if (dataMap.containsKey('contributeFourAgo')) { 
-            salesPerform.ContributeFourAgo__c = convertToDecimal(dataMap.get('contributeFourAgo'));
-        }
-        if (dataMap.containsKey('contributeThreeAgo')) { 
-            salesPerform.ContributeThreeAgo__c = convertToDecimal(dataMap.get('contributeThreeAgo'));
-        }
-        if (dataMap.containsKey('contributeTwoAgo')) { 
-            salesPerform.ContributeTwoAgo__c = convertToDecimal(dataMap.get('contributeTwoAgo'));
-        }
-        if (dataMap.containsKey('contributeOneAgo')) { 
-            salesPerform.ContributeOneAgo__c = convertToDecimal(dataMap.get('contributeOneAgo'));
-        }
 
-        upsert salesPerform;
+        try{
+     
+            CJFW_SalesPerformance__c salesPerform;
+
+            List<CJFW_SalesPerformance__c> salesPerformList = [SELECT Id FROM CJFW_SalesPerformance__c WHERE ExpectedIncomeExpensesId__c = :expectIncomeId LIMIT 1];
+
+            if(!salesPerformList.isEmpty()){
+                salesPerform = salesPerformList[0];
+                System.debug('실적현황 update ★-> ' + expectIncomeId);
+
+            }else{
+                System.debug('실적현황 insert ★-> ' );
+                salesPerform = new CJFW_SalesPerformance__c();
+                salesPerform.ExpectedIncomeExpensesId__c = expectIncomeId; // 필수값 
+            }
+
+            if (dataMap.containsKey('beforeSales')) { 
+                salesPerform.BeforeSales__c = convertToDecimal(dataMap.get('beforeSales'));
+            }
+            if (dataMap.containsKey('salesElevenAgo')) { 
+                salesPerform.SalesElevenAgo__c = convertToDecimal(dataMap.get('salesElevenAgo'));
+            }
+            if (dataMap.containsKey('salesTenAgo')) { 
+                salesPerform.SalesTenAgo__c = convertToDecimal(dataMap.get('salesTenAgo'));
+            }
+            if (dataMap.containsKey('salesNineAgo')) { 
+                salesPerform.SalesNineAgo__c = convertToDecimal(dataMap.get('salesNineAgo'));
+            }
+            if (dataMap.containsKey('salesEightAgo')) { 
+                salesPerform.SalesEightAgo__c = convertToDecimal(dataMap.get('salesEightAgo'));
+            }
+            if (dataMap.containsKey('salesSevenAgo')) { 
+                salesPerform.SalesSevenAgo__c = convertToDecimal(dataMap.get('salesSevenAgo'));
+            }
+            if (dataMap.containsKey('salesSixAgo')) { 
+                salesPerform.SalesSixAgo__c = convertToDecimal(dataMap.get('salesSixAgo'));
+            }
+            if (dataMap.containsKey('salesFiveAgo')) { 
+                salesPerform.SalesFiveAgo__c = convertToDecimal(dataMap.get('salesFiveAgo'));
+            }
+            if (dataMap.containsKey('salesFourAgo')) { 
+                salesPerform.SalesFourAgo__c = convertToDecimal(dataMap.get('salesFourAgo'));
+            }
+            if (dataMap.containsKey('salesThreeAgo')) { 
+                salesPerform.SalesThreeAgo__c = convertToDecimal(dataMap.get('salesThreeAgo'));
+            }
+            if (dataMap.containsKey('salesTwoAgo')) { 
+                salesPerform.SalesTwoAgo__c = convertToDecimal(dataMap.get('salesTwoAgo'));
+            }
+            if (dataMap.containsKey('salesOneAgo')) { 
+                salesPerform.SalesOneAgo__c = convertToDecimal(dataMap.get('salesOneAgo'));
+            }
+            // 매출 이익 
+            if (dataMap.containsKey('beforesalesProfit')) { 
+                salesPerform.BeforeSalesProfit__c = convertToDecimal(dataMap.get('beforesalesProfit'));
+            }
+            if (dataMap.containsKey('salesProfitElevenAgo')) { 
+                salesPerform.SalesProfitElevenAgo__c = convertToDecimal(dataMap.get('salesProfitElevenAgo'));
+            }
+            if (dataMap.containsKey('salesProfitTenAgo')) { 
+                salesPerform.SalesProfitTenAgo__c = convertToDecimal(dataMap.get('salesProfitTenAgo'));
+            }
+            if (dataMap.containsKey('salesProfitNineAgo')) { 
+                salesPerform.SalesProfitNineAgo__c = convertToDecimal(dataMap.get('salesProfitNineAgo'));
+            }
+            if (dataMap.containsKey('salesProfitEightAgo')) { 
+                salesPerform.SalesProfitEightAgo__c = convertToDecimal(dataMap.get('salesProfitEightAgo'));
+            }
+            if (dataMap.containsKey('salesProfitSevenAgo')) { 
+                salesPerform.SalesProfitSevenAgo__c = convertToDecimal(dataMap.get('salesProfitSevenAgo'));
+            }
+            if (dataMap.containsKey('salesProfitSixAgo')) { 
+                salesPerform.SalesProfitSixAgo__c = convertToDecimal(dataMap.get('salesProfitSixAgo'));
+            }
+            if (dataMap.containsKey('salesProfitFiveAgo')) { 
+                salesPerform.SalesProfitFiveAgo__c = convertToDecimal(dataMap.get('salesProfitFiveAgo'));
+            }
+            if (dataMap.containsKey('salesProfitFourAgo')) { 
+                salesPerform.SalesProfitFourAgo__c = convertToDecimal(dataMap.get('salesProfitFourAgo'));
+            }
+            if (dataMap.containsKey('salesProfitThreeAgo')) { 
+                salesPerform.SalesProfitThreeAgo__c = convertToDecimal(dataMap.get('salesProfitThreeAgo'));
+            }
+            if (dataMap.containsKey('salesProfitTwoAgo')) { 
+                salesPerform.SalesProfitTwoAgo__c = convertToDecimal(dataMap.get('salesProfitTwoAgo'));
+            }
+            if (dataMap.containsKey('salesProfitOneAgo')) { 
+                salesPerform.SalesProfitOneAgo__c = convertToDecimal(dataMap.get('salesProfitOneAgo'));
+            }
+            // 매장수 
+            if (dataMap.containsKey('beforeSalesStore')) { 
+                salesPerform.BeforeSalesStore__c = convertToDecimal(dataMap.get('beforeSalesStore'));
+            }
+            if (dataMap.containsKey('salesStoreElevenAgo')) { 
+                salesPerform.SalesStoreElevenAgo__c = convertToDecimal(dataMap.get('salesStoreElevenAgo'));
+            }
+            if (dataMap.containsKey('salesStoreTenAgo')) { 
+                salesPerform.SalesStoreTenAgo__c = convertToDecimal(dataMap.get('salesStoreTenAgo'));
+            }
+            if (dataMap.containsKey('salesStoreNineAgo')) { 
+                salesPerform.SalesStoreNineAgo__c = convertToDecimal(dataMap.get('salesStoreNineAgo'));
+            }
+            if (dataMap.containsKey('salesStoreEightAgo')) { 
+                salesPerform.SalesStoreEightAgo__c = convertToDecimal(dataMap.get('salesStoreEightAgo'));
+            }
+            if (dataMap.containsKey('salesStoreSevenAgo')) { 
+                salesPerform.SalesStoreSevenAgo__c = convertToDecimal(dataMap.get('salesStoreSevenAgo'));
+            }
+            if (dataMap.containsKey('salesStoreSixAgo')) { 
+                salesPerform.SalesStoreSixAgo__c = convertToDecimal(dataMap.get('salesStoreSixAgo'));
+            }
+            if (dataMap.containsKey('salesStoreFiveAgo')) { 
+                salesPerform.SalesStoreFiveAgo__c = convertToDecimal(dataMap.get('salesStoreFiveAgo'));
+            }
+            if (dataMap.containsKey('salesStoreFourAgo')) { 
+                salesPerform.SalesStoreFourAgo__c = convertToDecimal(dataMap.get('salesStoreFourAgo'));
+            }
+            if (dataMap.containsKey('salesStoreThreeAgo')) { 
+                salesPerform.SalesStoreThreeAgo__c = convertToDecimal(dataMap.get('salesStoreThreeAgo'));
+            }
+            if (dataMap.containsKey('salesStoreTwoAgo')) { 
+                salesPerform.SalesStoreTwoAgo__c = convertToDecimal(dataMap.get('salesStoreTwoAgo'));
+            }
+            if (dataMap.containsKey('salesStoreOneAgo')) { 
+                salesPerform.SalesStoreOneAgo__c = convertToDecimal(dataMap.get('salesStoreOneAgo'));
+            }
+            // 물류비 
+            if (dataMap.containsKey('beforeDistribute')) { 
+                salesPerform.BeforeDistribute__c = convertToDecimal(dataMap.get('beforeDistribute'));
+            }
+            if (dataMap.containsKey('distributeElevenAgo')) { 
+                salesPerform.DistributeElevenAgo__c = convertToDecimal(dataMap.get('distributeElevenAgo'));
+            }
+            if (dataMap.containsKey('distributeTenAgo')) { 
+                salesPerform.DistributeTenAgo__c = convertToDecimal(dataMap.get('distributeTenAgo'));
+            }
+            if (dataMap.containsKey('distributeNineAgo')) { 
+                salesPerform.DistributeNineAgo__c = convertToDecimal(dataMap.get('distributeNineAgo'));
+            }
+            if (dataMap.containsKey('distributeEightAgo')) { 
+                salesPerform.DistributeEightAgo__c = convertToDecimal(dataMap.get('distributeEightAgo'));
+            }
+            if (dataMap.containsKey('distributeSevenAgo')) { 
+                salesPerform.DistributeSevenAgo__c = convertToDecimal(dataMap.get('distributeSevenAgo'));
+            }
+            if (dataMap.containsKey('distributeSixAgo')) { 
+                salesPerform.DistributeSixAgo__c = convertToDecimal(dataMap.get('distributeSixAgo'));
+            }
+            if (dataMap.containsKey('distributeFiveAgo')) { 
+                salesPerform.DistributeFiveAgo__c = convertToDecimal(dataMap.get('distributeFiveAgo'));
+            }
+            if (dataMap.containsKey('distributeFourAgo')) { 
+                salesPerform.DistributeFourAgo__c = convertToDecimal(dataMap.get('distributeFourAgo'));
+            }
+            if (dataMap.containsKey('distributeThreeAgo')) { 
+                salesPerform.DistributeThreeAgo__c = convertToDecimal(dataMap.get('distributeThreeAgo'));
+            }
+            if (dataMap.containsKey('distributeTwoAgo')) { 
+                salesPerform.DistributeTwoAgo__c = convertToDecimal(dataMap.get('distributeTwoAgo'));
+            }
+            if (dataMap.containsKey('distributeOneAgo')) { 
+                salesPerform.DistributeOneAgo__c = convertToDecimal(dataMap.get('distributeOneAgo'));
+            }
+            // 직접 물류비 
+            if (dataMap.containsKey('beforedistributeDir')) { 
+                salesPerform.BeforeDistributeDir__c = convertToDecimal(dataMap.get('beforedistributeDir'));
+            }
+            if (dataMap.containsKey('distributeDirElevenAgo')) { 
+                salesPerform.DistributeDirElevenAgo__c = convertToDecimal(dataMap.get('distributeDirElevenAgo'));
+            }
+            if (dataMap.containsKey('distributeDirTenAgo')) { 
+                salesPerform.DistributeDirTenAgo__c = convertToDecimal(dataMap.get('distributeDirTenAgo'));
+            }
+            if (dataMap.containsKey('distributeDirNineAgo')) { 
+                salesPerform.DistributeDirNineAgo__c = convertToDecimal(dataMap.get('distributeDirNineAgo'));
+            }
+            if (dataMap.containsKey('distributeDirEightAgo')) { 
+                salesPerform.DistributeDirEightAgo__c = convertToDecimal(dataMap.get('distributeDirEightAgo'));
+            }
+            if (dataMap.containsKey('distributeDirSevenAgo')) { 
+                salesPerform.DistributeDirSevenAgo__c = convertToDecimal(dataMap.get('distributeDirSevenAgo'));
+            }
+            if (dataMap.containsKey('distributeDirSixAgo')) { 
+                salesPerform.DistributeDirSixAgo__c = convertToDecimal(dataMap.get('distributeDirSixAgo'));
+            }
+            if (dataMap.containsKey('distributeDirFiveAgo')) { 
+                salesPerform.DistributeDirFiveAgo__c = convertToDecimal(dataMap.get('distributeDirFiveAgo'));
+            }
+            if (dataMap.containsKey('distributeDirFourAgo')) { 
+                salesPerform.DistributeDirFourAgo__c = convertToDecimal(dataMap.get('distributeDirFourAgo'));
+            }
+            if (dataMap.containsKey('distributeDirThreeAgo')) { 
+                salesPerform.DistributeDirThreeAgo__c = convertToDecimal(dataMap.get('distributeDirThreeAgo'));
+            }
+            if (dataMap.containsKey('distributeDirTwoAgo')) { 
+                salesPerform.DistributeDirTwoAgo__c = convertToDecimal(dataMap.get('distributeDirTwoAgo'));
+            }
+            if (dataMap.containsKey('distributeDirOneAgo')) { 
+                salesPerform.DistributeDirOneAgo__c = convertToDecimal(dataMap.get('distributeDirOneAgo'));
+            }
+            // 간접 물류비 
+            if (dataMap.containsKey('beforedistributeInDir')) { 
+                salesPerform.BeforeDistributeInDir__c = convertToDecimal(dataMap.get('beforedistributeInDir'));
+            }
+            if (dataMap.containsKey('distributeInDirElevenAgo')) { 
+                salesPerform.DistributeInDirElevenAgo__c = convertToDecimal(dataMap.get('distributeInDirElevenAgo'));
+            }
+            if (dataMap.containsKey('distributeInDirTenAgo')) { 
+                salesPerform.DistributeInDirTenAgo__c = convertToDecimal(dataMap.get('distributeInDirTenAgo'));
+            }
+            if (dataMap.containsKey('distributeInDirNineAgo')) { 
+                salesPerform.DistributeInDirNineAgo__c = convertToDecimal(dataMap.get('distributeInDirNineAgo'));
+            }
+            if (dataMap.containsKey('distributeInDirEightAgo')) { 
+                salesPerform.DistributeInDirEightAgo__c = convertToDecimal(dataMap.get('distributeInDirEightAgo'));
+            }
+            if (dataMap.containsKey('distributeInDirSevenAgo')) { 
+                salesPerform.DistributeInDirSevenAgo__c = convertToDecimal(dataMap.get('distributeInDirSevenAgo'));
+            }
+            if (dataMap.containsKey('distributeInDirSixAgo')) { 
+                salesPerform.DistributeInDirSixAgo__c = convertToDecimal(dataMap.get('distributeInDirSixAgo'));
+            }
+            if (dataMap.containsKey('distributeInDirFiveAgo')) { 
+                salesPerform.DistributeInDirFiveAgo__c = convertToDecimal(dataMap.get('distributeInDirFiveAgo'));
+            }
+            if (dataMap.containsKey('distributeInDirFourAgo')) { 
+                salesPerform.DistributeInDirFourAgo__c = convertToDecimal(dataMap.get('distributeInDirFourAgo'));
+            }
+            if (dataMap.containsKey('distributeInDirThreeAgo')) { 
+                salesPerform.DistributeInDirThreeAgo__c = convertToDecimal(dataMap.get('distributeInDirThreeAgo'));
+            }
+            if (dataMap.containsKey('distributeInDirTwoAgo')) { 
+                salesPerform.DistributeInDirTwoAgo__c = convertToDecimal(dataMap.get('distributeInDirTwoAgo'));
+            }
+            if (dataMap.containsKey('distributeInDirOneAgo')) { 
+                salesPerform.DistributeInDirOneAgo__c = convertToDecimal(dataMap.get('distributeInDirOneAgo'));
+            }
+            // 공헌이익 
+            if (dataMap.containsKey('beforeContribute')) { 
+                salesPerform.BeforeContribute__c = convertToDecimal(dataMap.get('beforeContribute'));
+            }
+            if (dataMap.containsKey('contributeElevenAgo')) { 
+                salesPerform.ContributeElevenAgo__c = convertToDecimal(dataMap.get('contributeElevenAgo'));
+            }
+            if (dataMap.containsKey('contributeTenAgo')) { 
+                salesPerform.ContributeTenAgo__c = convertToDecimal(dataMap.get('contributeTenAgo'));
+            }
+            if (dataMap.containsKey('contributeNineAgo')) { 
+                salesPerform.ContributeNineAgo__c = convertToDecimal(dataMap.get('contributeNineAgo'));
+            }
+            if (dataMap.containsKey('contributeEightAgo')) { 
+                salesPerform.ContributeEightAgo__c = convertToDecimal(dataMap.get('contributeEightAgo'));
+            }
+            if (dataMap.containsKey('contributeSevenAgo')) { 
+                salesPerform.ContributeSevenAgo__c = convertToDecimal(dataMap.get('contributeSevenAgo'));
+            }
+            if (dataMap.containsKey('contributeSixAgo')) { 
+                salesPerform.ContributeSixAgo__c = convertToDecimal(dataMap.get('contributeSixAgo'));
+            }
+            if (dataMap.containsKey('contributeFiveAgo')) { 
+                salesPerform.ContributeFiveAgo__c = convertToDecimal(dataMap.get('contributeFiveAgo'));
+            }
+            if (dataMap.containsKey('contributeFourAgo')) { 
+                salesPerform.ContributeFourAgo__c = convertToDecimal(dataMap.get('contributeFourAgo'));
+            }
+            if (dataMap.containsKey('contributeThreeAgo')) { 
+                salesPerform.ContributeThreeAgo__c = convertToDecimal(dataMap.get('contributeThreeAgo'));
+            }
+            if (dataMap.containsKey('contributeTwoAgo')) { 
+                salesPerform.ContributeTwoAgo__c = convertToDecimal(dataMap.get('contributeTwoAgo'));
+            }
+            if (dataMap.containsKey('contributeOneAgo')) { 
+                salesPerform.ContributeOneAgo__c = convertToDecimal(dataMap.get('contributeOneAgo'));
+            }
+
+            upsert salesPerform;
+
+
+        }catch (Exception e) {
+            System.debug('실적현황 upsert 에러 메시지: ' + e.getMessage());
+            System.debug('실적현황 upsert 에러 메시지: ' + e.getStackTraceString());
+        }
     }
 
 

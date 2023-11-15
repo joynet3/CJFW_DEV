@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : yejoo.lee@dkbmc.com
  * @group             : 
- * @last modified on  : 11-10-2023
+ * @last modified on  : 11-15-2023
  * @last modified by  : yejoo.lee@dkbmc.com
 **/
 public with sharing class NaverMapController {
@@ -59,6 +59,7 @@ public with sharing class NaverMapController {
                                                         , Account__c
                                                         , Phone__c
                                                         , Homepage__c
+                                                        , CreatedDate
                                                     FROM CJFW_PublicBiddingInformation__c 
                                                     WHERE Id = :recordId];
         resultMap.put('center', center);
@@ -108,6 +109,57 @@ public with sharing class NaverMapController {
                                                                 AND (RecordType.Name = 'ChildCenter' OR RecordType.Name = 'Kindergarten') 
                                                                 AND Id != :recordId
                                                             ];
+        resultMap.put('searchList', searchList);
+        return resultMap;
+    }
+
+    
+    @AuraEnabled
+    public static Map<String, Object> search(String state, String city) {
+        Map<String,Object> resultMap = new  Map<String,Object>();
+        
+        List<AggregateResult> countList = [SELECT COUNT(Id) cnt, RecordType.Name
+                                                FROM CJFW_PublicBiddingInformation__c 
+                                                WHERE State__c = :state AND City__c = :city 
+                                                    AND (RecordType.Name = 'ChildCenter' OR RecordType.Name = 'Kindergarten') 
+                                                GROUP BY RecordType.Name, State__c, City__c ];
+
+        List<AggregateResult> exCountList = [SELECT COUNT(Id) cnt, RecordType.Name
+                                                FROM CJFW_PublicBiddingInformation__c 
+                                                WHERE State__c = :state AND City__c = :city 
+                                                    AND (RecordType.Name = 'ChildCenter' OR RecordType.Name = 'Kindergarten') 
+                                                    AND Account__r.RecordType.Name LIKE 'Existing Customer%'
+                                                GROUP BY RecordType.Name, State__c, City__c ];
+
+        Map<Object, Object> totalCntMap = new Map<Object, Object>();
+        for (AggregateResult rs : countList) {
+            totalCntMap.put(rs.get('Name'), rs.get('cnt'));
+        }
+        resultMap.put('totalCntMap', totalCntMap);
+
+        Map<Object, Object> exCntMap = new Map<Object, Object>();
+        for (AggregateResult rs : exCountList) {
+            totalCntMap.put(rs.get('Name'), rs.get('cnt'));
+        }
+        resultMap.put('exCntMap', exCntMap);
+
+        List<CJFW_PublicBiddingInformation__c> searchList = [SELECT Id, RecordType.Name, Name
+                                                                , AddressDetails__c
+                                                                , Address__c
+                                                                , Location__Latitude__s
+                                                                , Location__Longitude__s
+                                                                , City__c
+                                                                , State__c
+                                                                , Account__r.RecordType.Name
+                                                                , Account__c
+                                                                , Phone__c
+                                                                , Homepage__c
+                                                                , CreatedDate
+                                                            FROM CJFW_PublicBiddingInformation__c 
+                                                            WHERE State__c = :state AND City__c = :city 
+                                                                AND (RecordType.Name = 'ChildCenter' OR RecordType.Name = 'Kindergarten') 
+                                                            ];
+        
         resultMap.put('searchList', searchList);
         return resultMap;
     }

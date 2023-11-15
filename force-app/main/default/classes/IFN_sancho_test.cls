@@ -33,12 +33,12 @@ public with sharing class IFN_sancho_test {
         system.schedule('IF_SFDC_DATA_REQ_EAT_BID_INFO_sc 학교급식 NEAT 02시00분', '0 0 02 * * ?', sch);
 
         //전용유
-        IFN_EIF1001_FS001_MD001 b = new IFN_EIF1001_FS001_MD001();
+        IFN_EIF1002_FS001_MD001 b = new IFN_EIF1002_FS001_MD001();
         Database.executeBatch(b, 1);
 
         //전용유 신규 스케쥴 등록 
-        IFN_EIF1001_FS001_MD001_sc EIF1001_FS001 = new IFN_EIF1001_FS001_MD001_sc();
-        system.schedule('IFN_EIF1001_FS001_MD001_sc 식약청 전용유 01:05', '0 30 01 * * ?', EIF1001_FS001);
+        IFN_EIF1002_FS001_MD001_sc EIF1002_FS001 = new IFN_EIF1002_FS001_MD001_sc();
+        system.schedule('IFN_EIF1002_FS001_MD001_sc 식약청 전용유 01:05', '0 30 01 * * ?', EIF1002_FS001);
 
         //기존 어린이집/지방인허가/나라장터
         /* - 운영 Scheduled Jobs
@@ -199,6 +199,7 @@ public with sharing class IFN_sancho_test {
         reqmap.serviceKey   = '944FB5A82EAE4149B3F8AAE5C48E7752';
         reqmap.serviceDiv   = 'A01';
         reqmap.Address1     = '서울';
+        reqmap.Keyword     = '가양';
         outputObj = iftest.callout(reqmap);
         System.debug('outputObj:' + outputObj);
 
@@ -234,6 +235,23 @@ public with sharing class IFN_sancho_test {
         //System.debug('todayM:' + todayM);
         //Datetime endDt = Datetime.now().addDays(Integer.valueOf(authKey.DateRange__c));
 
+
+    }
+
+    public void makeIFMaster(){
+        
+        List<IFMaster__c> listIFMaster = new List<IFMaster__c>();
+
+        IFMaster__c objIFMaster = new IFMaster__c();
+        objIFMaster.Name                = 'IFN_EIF1004_DT001_MD002';
+        objIFMaster.Type__c             = 'Outbound';
+        objIFMaster.WebserviceType__c   = 'REST';
+        objIFMaster.Method__c           = 'GET';
+        objIFMaster.ContentType__c      = 'application/json';
+        objIFMaster.Endpoint__c         = 'https://dotop.kr/Service/API/';
+        listIFMaster.add(objIFMaster);
+		
+        insert listIFMaster;
 
     }
 

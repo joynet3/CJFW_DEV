@@ -8,7 +8,7 @@
 
  * @author            : eunyoung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 11-13-2023
+ * @last modified on  : 11-14-2023
  * @last modified by  : yeonji.lim@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -315,11 +315,6 @@ public with sharing class ReportFormController {
             'ContractPaymentNumTOBE__c, ' +     // TOBE 약정결제일(일 수)
             'CommentTOBE__c, ' +                // TOBE 비고
 
-            'BondCollateral__c, ' +         // 채권담보
-            'SecurityCollateral__c, ' +     // 보증금담보
-            'PrimaryContract__c, ' +        // 상품공급기본계약서
-            'SpecialCollateral__c, ' +      // 영업보증금 특약계약서
-
             // 예상손익 (보증금 변경)
             'SalesTwoMonth__c, ' +                  // ASIS 매출 전전월 실적
             'SalesOneMonth__c, ' +                  // ASIS 매출 전월 실적
@@ -329,7 +324,16 @@ public with sharing class ReportFormController {
             'SalesSupportOneMonth__c, ' +           // ASIS 매출이익 전월 실적
             'SalesSupportMonth__c, ' +              // ASIS 매출이익 당월 예상 실적
             'SalesSupportRateBefore__c, ' +         // TOBE 지원 전 매출이익실적
+
+            'BondCollateral__c, ' +         // 채권담보
+            'SecurityCollateral__c, ' +     // 보증금담보
+            'PrimaryContract__c, ' +        // 상품공급기본계약서
+            'SpecialCollateral__c, ' +      // 영업보증금 특약계약서
             
+            // 예상손익 추가 2023-11-14
+            'BondGuaranteeInsurance__c, ' +     // 채권보증보험료 (급식 보증금 개설)
+            'BondPledgeFee__c, ' +              // 채권담보수수료 (급식 보증금 변경)
+
             // 기타
             'OtherSupportDetail__c, ' +     // 기타 지원세부 내역
             'AttachedDocument__c, ' +       // 첨부서류
@@ -418,7 +422,10 @@ public with sharing class ReportFormController {
                 'SalesSupportTwoMonth__c',
                 'SalesSupportOneMonth__c',
                 'SalesSupportMonth__c',
-                'SalesSupportRateBefore__c'
+                'SalesSupportRateBefore__c',
+                // 예상손익 추가 2023-11-14
+                'BondGuaranteeInsurance__c',    // 채권보증보험료 (급식 보증금 개설)
+                'BondPledgeFee__c'              // 채권담보수수료 (급식 보증금 변경)
             };
             for (String defaultSet : defaultValSet) {
                 Object fieldValue = IncomeExpensesInfo.get(defaultSet);
@@ -565,7 +572,7 @@ public with sharing class ReportFormController {
 
     /* 
     물류비 관리 (CJFW_DistributionCost__c)에서 값 가져오기 
-     */
+    */
     public void getDistributeCost() {
         System.debug('# ReportFormController # getDistributeCost ');
 
@@ -582,12 +589,16 @@ public with sharing class ReportFormController {
                     SU__c 
                 FROM CJFW_DistributionCost__c WHERE StartDate__c <= TODAY AND HeadOffice__c =: headOfficeLabel ];
 
-            // 본부별 최대 8개까지 존재가능한 물류비값을 각각 담아주기 
-            for(CJFW_DistributionCost__c record : DistributeCostList){
+            if (!DistributeCostList.isEmpty()) {
 
-                if(headOfficeLabel == '3001'){ // 급식일때 
-                    DistributeSchool =record.Cost__c;
+                for(CJFW_DistributionCost__c record : DistributeCostList){
+
+                    if(headOfficeLabel == '3001'){ // 급식일때 
+                        DistributeSchool = record.Cost__c;
+                    }
                 }
+            } else {    //쿼리 결과가 없을때
+                DistributeSchool = 0.00;
             }
 
         }catch(Exception e){
@@ -599,34 +610,52 @@ public with sharing class ReportFormController {
 
     }
 
-    /* 
+    /*
     예산손익관리(CJFW_ExpectedIncomeManager__c) 에서 값 가져오기
-    적용시작일 기준으로 값 가져와야함 
+    적용시작일 기준으로 값 가져와야함
     */
     public void getExpectManager() {
         System.debug('# ReportFormController # getExpectManager');
         System.debug('# headOfficeLabel ~~ ' + headOfficeLabel );
-        List<CJFW_ExpectedIncomeManager__c> IncomeManagerList  = [
-            SELECT Id, 
-                Name,
-                CurrencyIsoCode,  
-                DistributionCost__c, 
-                LaborCost__c, 
-                GroupCommonCost__c, 
-                GroupCommonCostExclusive__c, 
-                GroupCommonCostGeneral__c, 
-                PromotionFee__c, 
-                CardFee__c, 
-                CollateralFee__c, 
-                ChefFee__c, 
-                OtherFee__c, 
-                SupportFee__c, 
-                StartDate__c, 
-                HeadOffice__c, 
-                SU__c, 
-                Source__c 
-            FROM CJFW_ExpectedIncomeManager__c WHERE StartDate__c <= TODAY AND HeadOffice__c =: headOfficeLabel LIMIT 1];
-
+ 
+        try{
+ 
+            List<CJFW_ExpectedIncomeManager__c> IncomeManagerList  = [
+                SELECT Id,
+                    Name,
+                    CurrencyIsoCode,  
+                    DistributionCost__c,
+                    LaborCost__c,
+                    GroupCommonCost__c,
+                    GroupCommonCostExclusive__c,
+                    GroupCommonCostGeneral__c,
+                    PromotionFee__c,
+                    CardFee__c,
+                    CollateralFee__c,
+                    ChefFee__c,
+                    OtherFee__c,
+                    SupportFee__c,
+                    StartDate__c,
+                    HeadOffice__c,
+                    SU__c,
+                    Source__c, 
+                    // 2023-11-13 추가) 급식 보증금 신규&변경 전용 ↓
+                    CardPaymentFee__c,
+                    BondCollateralFee__c,
+                    DepositCollateralFee__c,
+                    InterestRate__c,
+                    SUCommon__c,
+                    CompanyWide__c
+                FROM CJFW_ExpectedIncomeManager__c WHERE StartDate__c <= TODAY AND HeadOffice__c =: headOfficeLabel LIMIT 1];
+ 
+            if(IncomeManagerList.size()>0 ){
+                System.debug(' 관리값 정상적으로 가져올경우');
+            }else{
+                IncomeManager = new CJFW_ExpectedIncomeManager__c();
+                System.debug(' 적용날짜가 안맞아서 관리값 못가져올경우  ');
+            }
+               
+                // 조회된내용이 없을때 계산식에 오류가 발생하기때문에 아래와같이 default로 0.00 으로 세팅한다
             String[] defaultValSet = new String[] {
                 'DistributionCost__c',
                 'LaborCost__c',
@@ -638,27 +667,36 @@ public with sharing class ReportFormController {
                 'CollateralFee__c',
                 'ChefFee__c',
                 'OtherFee__c',
-                'SupportFee__c'
+                'SupportFee__c',
+                // 2023-11-13 추가) 급식 보증금 신규&변경 전용 ↓
+                'CardPaymentFee__c',
+                'BondCollateralFee__c',
+                'CollateralFee__c',
+                'InterestRate__c',
+                'SUCommon__c',
+                'CompanyWide__c'
             };
-
+ 
             if (IncomeManagerList.size() > 0) {
-                //CJFW_ExpectedIncomeManager__c IncomeManager = IncomeManagerList[0];
                 IncomeManager = IncomeManagerList[0];
-                
-                for (String defaultSet : defaultValSet) {
-                    Object fieldValue = IncomeManager.get(defaultSet);
-                    // 필드 값이 null이면 기본값을 0.00으로 설정
-                    if (fieldValue == null) fieldValue = 0.00; 
-                    IncomeManager.put(defaultSet, fieldValue);
-                }
-
-                System.debug('IncomeManager !! check > '+  IncomeManager );
-                System.debug('IncomeManager 라바코스트 > '+  IncomeManager.LaborCost__c );
             }
-
+           
+            for (String defaultSet : defaultValSet) {
+                Object fieldValue = IncomeManager.get(defaultSet);
+                // 필드 값이 null이면 기본값을 0.00으로 설정
+                if (fieldValue == null) fieldValue = 0.00;
+                IncomeManager.put(defaultSet, fieldValue);
+            }
+ 
+        }catch(Exception e){
+            String errorMessage = e.getMessage();
+            String errorStackTrace = e.getStackTraceString();
+            System.debug(' 예상손익관리자 에러 메시지: ' + errorMessage);
+            System.debug(' 예상손익관리자 에러 라인: ' + errorStackTrace);
+        }
     }
-
-
+ 
+ 
     /* 
     CJFW_NewOpenReport_ProfitReview (VF Page) 에서 입력받은 값 update   
     */
@@ -694,7 +732,6 @@ public with sharing class ReportFormController {
 
             expectIncome.saveResult__c = DataList;
 
-            // 23-11-10 id 값수정 (급식신규) ↓
             if (dataMap.containsKey('collateralType')) { // 담보제공종류
                 expectIncome.CollateralType__c = (String) dataMap.get('collateralType');
             }
@@ -708,13 +745,10 @@ public with sharing class ReportFormController {
                 System.debug('계약서종류 !! '  + (String) dataMap.get('contractType') );
                 expectIncome.ContractType__c = (String) dataMap.get('contractType');
             }
-            // 23-11-10 id 값수정 (급식신규) ↑
-
             /* 개요 */
             if (dataMap.containsKey('summary')) { 
                 expectIncome.Summary__c = (String) dataMap.get('summary');
             }
-
             /* 거래처 현황 */
             if (dataMap.containsKey('accountName') && dataMap.get('accountName') !='') { // 거래처명 (text)
                 expectIncome.ClientCompanyName__c = (String) dataMap.get('accountName');
@@ -761,7 +795,6 @@ public with sharing class ReportFormController {
             if (dataMap.containsKey('comment') && dataMap.get('comment') !='') { // 비고
                 expectIncome.Comment__c = (String)dataMap.get('comment');
             }
-
             /* 거래처 상세 내용 */
             if (dataMap.containsKey('contractStartDate') && dataMap.get('contractStartDate') !='') { // 계약기간시작
                 expectIncome.ContractStartDate__c = Date.valueOf(((String) dataMap.get('contractStartDate')));
@@ -818,7 +851,6 @@ public with sharing class ReportFormController {
             if (dataMap.containsKey('contract-payment-period') && dataMap.get('contract-payment-period') !='') { // 채권담보
                 expectIncome.ContractPaymentDate__c = Date.valueOf(((String) dataMap.get('contract-payment-period')));
             }
-
             /* 거래처 상세 내용 TO-BE (보증금 변경 전용) */
             if (dataMap.containsKey('contractStartDateTOBE') && dataMap.get('contractStartDateTOBE') !='') { // 계약기간시작 TOBE 
                 expectIncome.ContractStartDateTOBE__c = Date.valueOf(((String) dataMap.get('contractStartDateTOBE')));
@@ -887,7 +919,6 @@ public with sharing class ReportFormController {
             if (dataMap.containsKey('otherDetail')) { // 기타 세부 내역
                 expectIncome.OtherSupportDetail__c = (String)dataMap.get('otherDetail') ;
             }
-            
             /* 신규 개설 예상 손익 */
             if (dataMap.containsKey('farmBefore') && dataMap.get('farmBefore') !='') { // 농산물
                 expectIncome.FarmSupportExpect__c = convertToDecimal(dataMap.get('farmBefore')) ;
@@ -907,8 +938,7 @@ public with sharing class ReportFormController {
             if (dataMap.containsKey('salesSupportBefore')) { //  매출이익 데이터
                 expectIncome.SalesSupportExpect__c = convertToDecimal(dataMap.get('salesSupportBefore')) ;
             }
-
-            // 금식 보증금 변경양식 전용 ↓
+            // 급식 보증금 변경양식 전용 ↓
             if (dataMap.containsKey('salesTwoMonth') && dataMap.get('salesTwoMonth') !='') { // ASIS 매출 전전월 실적
                 expectIncome.SalesTwoMonth__c = convertToDecimal(dataMap.get('salesTwoMonth')) ;
             }
@@ -933,19 +963,24 @@ public with sharing class ReportFormController {
             if (dataMap.containsKey('salesSupportRateBefore') && dataMap.get('salesSupportRateBefore') !='') { // TOBE 지원 전 매출이익실적
                 expectIncome.SalesSupportRateBefore__c = convertToDecimal(dataMap.get('salesSupportRateBefore')) ;
             }
-
-
             if (dataMap.containsKey('changeReason')) { // 회당 20만원 산정 수정내역 (급식신규사용)
                 expectIncome.ChangeReason__c = (String)dataMap.get('changeReason') ;
             }
-            if (dataMap.containsKey('detail-chef')) { // 회당 20만원 산정 금액 변경 (급식신규사용)
-                expectIncome.ChefFee__c =  convertToDecimal(dataMap.get('detail-chef'));
+            if (dataMap.containsKey('detailChef')) { // 회당 20만원 산정 금액 변경 (급식신규사용)
+                expectIncome.ChefFee__c =  convertToDecimal(dataMap.get('detailChef'));
                 expectIncome.ChangeChefSupport__c = true; // 지원변경을 하면 flag 값주기 
+            }
+            /* 추가 */
+            if (dataMap.containsKey('bondBefore') && dataMap.get('bondBefore') !='') { // 채권보증보험료 (개설)
+                expectIncome.BondGuaranteeInsurance__c = convertToDecimal(dataMap.get('bondBefore')) ;
+            }
+            if (dataMap.containsKey('bondTwoMonth') && dataMap.get('bondTwoMonth') !='') { // 채권담보수수료 (변경)
+                expectIncome.BondPledgeFee__c = convertToDecimal(dataMap.get('bondTwoMonth')) ;
             }
 
             /* 그 외 */
             if (dataMap.containsKey('selectedDelivery')) { // 배송횟수
-                expectIncome.DeliveryCnt__c = (String)dataMap.get('selectedDelivery'); // 결제수단 종류
+                expectIncome.DeliveryCnt__c = (String)dataMap.get('selectedDelivery'); 
             }
             if (dataMap.containsKey('ImproveDetail')) { // 개선방안내역
                 expectIncome.ImprovementPlanDetails__c = (String)dataMap.get('ImproveDetail') ;
@@ -958,6 +993,7 @@ public with sharing class ReportFormController {
             }
 
             upsert expectIncome;
+
             return 'success';
         } catch (Exception e) {
 
@@ -975,35 +1011,28 @@ public with sharing class ReportFormController {
     : 기존 품의지정된 내역은 삭제 후 신규 품의지정된 1개만 품의체크
     */
     @RemoteAction
-    public static String ReportCheck(String incomeExpensesId , String opportunityId ){
-
-        try{
-            //CJFW_ExpectedIncomeExpenses__c RemoveList = [SELECT Id, IsReportCheck__c FROM CJFW_ExpectedIncomeExpenses__c WHERE Opportunity__c =: opportunityId AND Id != :incomeExpensesId];
-            List<CJFW_ExpectedIncomeExpenses__c> RemoveList = [SELECT Id, IsReportCheck__c FROM CJFW_ExpectedIncomeExpenses__c WHERE Opportunity__c = :opportunityId AND Id != :incomeExpensesId];
-            CJFW_ExpectedIncomeExpenses__c checkList = [SELECT Id, IsReportCheck__c FROM CJFW_ExpectedIncomeExpenses__c WHERE  Id = :incomeExpensesId];
-
-            if(RemoveList <> null ){
-                for(CJFW_ExpectedIncomeExpenses__c data : RemoveList) {
-                    data.IsReportCheck__c = false;
-                }
-                update RemoveList;
+    public static String ReportCheck(String incomeExpensesId, String opportunityId) {
+        try {
+            List<CJFW_ExpectedIncomeExpenses__c> expenseList = [SELECT Id, IsReportCheck__c FROM CJFW_ExpectedIncomeExpenses__c WHERE Opportunity__c = :opportunityId AND Id != :incomeExpensesId];
+   
+            for (CJFW_ExpectedIncomeExpenses__c expense : expenseList) {
+                expense.IsReportCheck__c = false;
             }
-
-            if(checkList <> null){
-                checkList.IsReportCheck__c =true;
-                System.debug(' checkList ' + checkList );
-                update checkList;
+            update expenseList;
+   
+            CJFW_ExpectedIncomeExpenses__c currentExpense = [SELECT Id, IsReportCheck__c FROM CJFW_ExpectedIncomeExpenses__c WHERE Id = :incomeExpensesId];
+            if (currentExpense != null) {
+                currentExpense.IsReportCheck__c = !currentExpense.IsReportCheck__c;
+                update currentExpense;
+ 
+                return String.valueOf(currentExpense.IsReportCheck__c);
             }
-
-            return 'success';
-
-        }catch (Exception e) {
-
-            String errorMessage = e.getMessage(); // 에러 메시지
-            String errorStackTrace = e.getStackTraceString(); // 에러 스택 트레이스
-
-            System.debug('에러 메시지: ' + errorMessage);
-            System.debug('에러 라인: ' + errorStackTrace);
+   
+            return 'false';
+   
+        } catch (Exception e) {
+            System.debug('에러 메시지: ' + e.getMessage());
+            System.debug('에러 라인: ' + e.getStackTraceString());
             return 'error';
         }
     }

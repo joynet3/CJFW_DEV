@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : doyeon.kim@dkbmc.com
  * @group             : 
- * @last modified on  : 11-10-2023
+ * @last modified on  : 11-13-2023
  * @last modified by  : doyeon.kim@dkbmc.com
 **/
 public with sharing class CJFW_ExceptionalSellingPriceController {
@@ -12,14 +12,14 @@ public with sharing class CJFW_ExceptionalSellingPriceController {
         System.debug('getInitData !! : ' + recordId);
         Map<String, Object> mapInitData = new Map<String, Object>();
 
-        List<Quote> objQuote = [SELECT  Id, Name, OwnerId, EffectiveStartDate__c, ExpirationDate
+        List<Quote> objQuote = [SELECT  Id, Name, Account.CustomerID__c, EffectiveStartDate__c, ExpirationDate
                                     FROM    Quote
                                     WHERE   Id = :recordId];
 
         System.debug('objQuote : ' + objQuote);
         mapInitData.put('quote', objQuote);
 
-        List<CJFW_QuoteLineItem__c> objItemList = [SELECT   Id, QuoteId__c, ProductName__c, ProductCode__c, LogisticsCenter__c, Batch__c
+        List<CJFW_QuoteLineItem__c> objItemList = [SELECT   Id, QuoteId__c, ProductName__c, ProductCode__c, LogisticsCenter__c, Batch__c, ProfitMargin__c 
                                                     FROM     CJFW_QuoteLineItem__c
                                                     WHERE    QuoteId__c = :recordId
                                                     ORDER BY SortOrder__c ASC

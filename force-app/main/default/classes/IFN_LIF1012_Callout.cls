@@ -216,6 +216,14 @@ public class IFN_LIF1012_Callout {
             IFN_LIF1012_PO001_MD003.PO001_MD003ReqWrapper reqparam = new IFN_LIF1012_PO001_MD003.PO001_MD003ReqWrapper();
             reqparam = (IFN_LIF1012_PO001_MD003.PO001_MD003ReqWrapper)JSON.deserializeStrict((String) params, IFN_LIF1012_PO001_MD003.PO001_MD003ReqWrapper.class);
 
+            String ymdhms = Datetime.now().format('yyyyMMddHHmmss');
+            String yyyymmdd = ymdhms.substring(0, 8);
+            String hhmmss = ymdhms.substring(8);
+            reqparam.XROWS = '1';
+            reqparam.XSYS = 'SD';
+            reqparam.XDATS = yyyymmdd;
+            reqparam.XTIMS = hhmmss;
+
 
             IFN_ApiGateWay gateway = new IFN_ApiGateWay(interfaceId);
             String requestBody = JSON.serialize(reqparam);

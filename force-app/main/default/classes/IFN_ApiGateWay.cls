@@ -164,8 +164,12 @@ public with sharing class IFN_ApiGateWay {
 
             }else if(objIFMaster.Method__c == 'GET' ) {
 
-
-                endPointUrl = String.isNotBlank(requestBody) ?  endPointUrl+'?'+requestBody : endPointUrl;
+                if(endPointUrl.contains('?') || requestBody.contains('?')){
+                    endPointUrl = String.isNotBlank(requestBody) ?  endPointUrl+requestBody : endPointUrl;      // 로직내에서 ? 까지 포함해 조립한 경우
+                }else{
+                    endPointUrl = String.isNotBlank(requestBody) ?  endPointUrl+'?'+requestBody : endPointUrl;
+                }
+                
 
                 endPointUrl = String.isNotBlank(this.objIFMaster.Param1__c) ?                 
                 (endPointUrl.contains('?') ?  endPointUrl + '&' + this.objIFMaster.Param1__c :endPointUrl + '?' + this.objIFMaster.Param1__c)

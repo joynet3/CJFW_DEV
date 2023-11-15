@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 11-09-2023
+ * @last modified on  : 11-14-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkUpdateInfoListController {
@@ -10,313 +10,345 @@ public with sharing class CJFW_MDMBulkUpdateInfoListController {
     /* 대량 수정 요청 Id를 통해 받아 온 리스트를 기존의 것과 조사 */
     @AuraEnabled(cacheable=true)
     public static DataWrapper getAccountInfo (String recordId, Integer pageNumber, Integer pageSize) {
-
-        List<MDMRegRequestCustomer__c> mdms = [SELECT PV_KUNNR__c, PV_OLDCD__c, PV_NAME1__c, PV_NAME_G__c, PV_NAME2__c, PV_KTOKD__c, PV_CUSTTYPE__c, PV_STCD2__c, PV_STCD3__c, PV_GFORM__c, PV_J_1KFREPRE__c, PV_BLCKYN__c, PV_STCD1__c, PV_J_1KFTBUS__c, PV_J_1KFTIND__c, PV_TELF1__c, PV_TELFX__c, PV_PAYCUST__c, PV_CHARGECUST__c, PV_VKGRP__c, PVVF_VKGRP__c, PVRA_VKGRP__c, PV_PERNR__c, PVVF_PERNR__c, PVRA_PERNR__c, PV_ADMINMA__c, PV_STCDT__c, PV_FITYP__c, PV_HDOFFICEYN__c, PV_SUBSIDIARYYN__c, PV_VBUND__c, PV_LAND1__c, PV_KNVKTYPE__c, PV_CLOSEDT__c, PV_REGIO__c, PV_ADRES_ROADADDR1__c, PV_ADRES_ROADADDR2__c, PV_ADRES_ADDR1__c, PV_ADRES_ADDR2__c, PV_BUSAB__c, PV_CESSION_KZ__c, PV_ZUAWA__c, PV_AKONT__c, PV_FDGRV__c, PV_VRSDG__c, PV_TAXKDD__c, PV_KATR5__c, PV_CUHR1__c, PVVF_CUHR1__c, PVRA_CUHR1__c, PV_KONDA__c, PVVF_KONDA__c, PVRA_KONDA__c, PV_KVGR1__c, PVVF_KVGR1__c, PVRA_KVGR1__c, PV_WAERS__c, PV_KDGRP__c, PV_KVGR2__c, PV_VACCPRTEXCYN__c, PV_ZTERM_VV__c, PV_DSTRHISTREGYN__c, PV_KULTG__c, PV_OLD_BIZPLACE_NEW__c, PVVF_OLD_BIZPLACE_NEW__c, PVRA_OLD_BIZPLACE_NEW__c, PV_SHAPE__c, PV_DELIGROUP__c FROM MDMRegRequestCustomer__c WHERE MDMRegRequestBulkCustomer__c = :recordId ORDER BY PV_KUNNR__c];
-        List<String> ids = new List<String>();
-
-        for(MDMRegRequestCustomer__c mdm : mdms) {
-            System.debug(mdm.PV_KUNNR__c);
-            ids.add(mdm.PV_KUNNR__c);
-        }
-
-        System.debug('mdms => ' + mdms);
-        System.debug('ids => ' + ids);
-
-        DataWrapper objWrapper = new DataWrapper();
-
-        // String strQuery = 'SELECT Id, CustomerID__c, Name, fm_empId__c, CustomerIDASIS__c, NameKor__c, NameAlias__c, AccountGroup__c, toLabel(AccountGroup__c) AccountGroupLabel, ';
-        // strQuery += ' CustomerType__c, toLabel(CustomerType__c) CustomerTypeLabel, CompanyRegisterNumber__c, CorporateCode__c, 	SubCompanyRegisterNumber__c, ';
-        // strQuery += ' LegalStatus__c, toLabel(LegalStatus__c) LegalStatusLabel, RepresentativeName__c, PV_BLCKYN__c,	RepresentativeBirthDate__c, BusinessConditions__c, BusinessCategory__c, ';
-        // strQuery += ' Phone, Fax, PaymentAccountCode__c, PaymentAccountName__c, ShippingAccountCode__c, ShippingAccountName__c, PV_VKGRP__c, toLabel(PV_VKGRP__c) PV_VKGRP__LABEL, ';
-        // strQuery += ' PVVF_VKGRP__c, SalesGroupFromDate__c, OwnerId, PVVF_PERNR__c, ResponsibilityMAFromDate__c, ResponsibilityAMA__c, TaxInvoiceType__c, toLabel(TaxInvoiceType__c) TaxInvoiceLabel, ';
-        // strQuery += ' IsHeadShopUseYN__c, IsAffiliatedcompanyYN__c, AffiliatedCompany__c, toLabel(AffiliatedCompany__c) AffiliatedCompanyLabel, CountryKeyCode__c, toLabel(CountryKeyCode__c) CountryKeyCodeLabel, ';
-        // strQuery += ' PV_KNVKTYPE__c, toLabel(PV_KNVKTYPE__c) PV_KNVKTYPE__LABEL, ShutDownDate__c, LocationState__c, toLabel(LocationState__c) LocationStateLabel, Address__c, AddressDetails__c, ';
-        // strQuery += ' Address2__c, AddressDetails2__c, SalesForm__c, toLabel(SalesForm__c) SalesFormLabel, CustomerStatus__c, toLabel(CustomerStatus__c) CustomerStatusLabel, SortKey__c, toLabel(SortKey__c) SortKeyLabel, ';
-        // strQuery += ' MediateAccount__c, toLabel(MediateAccount__c) MediateAccountLabel, CashManagementGroup__c, toLabel(CashManagementGroup__c) CashManagementGroupLabel, IsDeposit__c, toLabel(IsDeposit__c) IsDepositLabel, ';
-        // strQuery += ' TaxClassification__c, toLabel(TaxClassification__c) TaxClassificationLabel, TaxPaymentMethod__c, toLabel(TaxPaymentMethod__c) TaxPaymentMethodLabel, CustomerRoute__c, toLabel(CustomerRoute__c) CustomerRouteLabel, ';
-        // strQuery += ' PV_CUHR1__c, CustomerRouteFromDate__c, PriceGroup__c, toLabel(PriceGroup__c) PriceGroupLabel, UnitPriceGroup__c, toLabel(UnitPriceGroup__c) UnitPriceGroupLabel, CurrencyIsoCode, ';
-        // strQuery += ' toLabel(CurrencyIsoCode) CurrencyIsoLabel, CreditManagement__c, toLabel(CreditManagement__c) CreditManagementLabel, SubsidyType__c, toLabel(SubsidyType__c) SubsidyTypeLabel, ';
-        // strQuery += ' IsPrintVirtualAccount__c, TermsOfPayment__c, toLabel(TermsOfPayment__c) TermsOfPaymentLabel, DisHisRegType__c, toLabel(DisHisRegType__c) DisHisRegTypeLabel, ContractRocationDate__c, TaxationType__c, ';
-        // strQuery += ' CustomerPath__c, toLabel(CustomerPath__c) CustomerPathLabel, Shape__c, DeliveryGroup__c, toLabel(DeliveryGroup__c) DeliveryGroupLabel, ';
-        // strQuery += ' PVVF_KONDA__c, PriceGroupFromDate__c, PVVF_OLD_BIZPLACE_NEW__c, CustomerPathFromDate__c ';
-        // strQuery += ' FROM    Account ';
-        // strQuery += ' WHERE CustomerId__c IN ' + ids + ' ORDER BY CustomerId__c';
-        // System.debug('WHERE CustomerId__c IN ' + ids + ' ORDER BY CustomerId__c');
-
-        List<Account> accList = [SELECT Id
-                                         , CustomerID__c
-                                         , Name
-                                         , fm_empId__c
-                                         , CustomerIDASIS__c
-                                         , NameKor__c
-                                         , NameAlias__c
-                                         , AccountGroup__c
-                                         , toLabel(AccountGroup__c) AccountGroupLabel
-                                         , CustomerType__c
-                                         , toLabel(CustomerType__c) CustomerTypeLabel
-                                         , CompanyRegisterNumber__c
-                                         , CorporateCode__c
-                                         , SubCompanyRegisterNumber__c
-                                         , LegalStatus__c
-                                         , toLabel(LegalStatus__c) LegalStatusLabel
-                                         , RepresentativeName__c
-                                         , PV_BLCKYN__c
-                                         , RepresentativeBirthDate__c
-                                         , BusinessConditions__c
-                                         , BusinessCategory__c
-                                         , Phone
-                                         , Fax
-                                         , PaymentAccountCode__c
-                                         , PaymentAccountName__c
-                                         , ShippingAccountCode__c
-                                         , ShippingAccountName__c
-                                         , PV_VKGRP__c
-                                         , toLabel(PV_VKGRP__c) PV_VKGRP__LABEL
-                                         , PVVF_VKGRP__c
-                                         , SalesGroupFromDate__c
-                                         , OwnerId
-                                         , PVVF_PERNR__c
-                                         , ResponsibilityMAFromDate__c
-                                         , ResponsibilityAMA__c
-                                         , TaxInvoiceType__c
-                                         , toLabel(TaxInvoiceType__c) TaxInvoiceLabel
-                                         , IsHeadShopUseYN__c
-                                         , IsAffiliatedcompanyYN__c
-                                         , AffiliatedCompany__c
-                                         , toLabel(AffiliatedCompany__c) AffiliatedCompanyLabel
-                                         , CountryKeyCode__c
-                                         , toLabel(CountryKeyCode__c) CountryKeyCodeLabel
-                                         , PV_KNVKTYPE__c
-                                         , toLabel(PV_KNVKTYPE__c) PV_KNVKTYPE__LABEL
-                                         , ShutDownDate__c
-                                         , LocationState__c
-                                         , toLabel(LocationState__c) LocationStateLabel
-                                         , Address__c
-                                         , AddressDetails__c
-                                         , Address2__c
-                                         , AddressDetails2__c
-                                         , SalesForm__c
-                                         , toLabel(SalesForm__c) SalesFormLabel
-                                         , CustomerStatus__c
-                                         , toLabel(CustomerStatus__c) CustomerStatusLabel
-                                         , SortKey__c
-                                         , toLabel(SortKey__c) SortKeyLabel
-                                         , MediateAccount__c
-                                         , toLabel(MediateAccount__c) MediateAccountLabel
-                                         , CashManagementGroup__c
-                                         , toLabel(CashManagementGroup__c) CashManagementGroupLabel
-                                         , IsDeposit__c
-                                         , toLabel(IsDeposit__c) IsDepositLabel
-                                         , TaxClassification__c
-                                         , toLabel(TaxClassification__c) TaxClassificationLabel
-                                         , TaxPaymentMethod__c
-                                         , toLabel(TaxPaymentMethod__c) TaxPaymentMethodLabel
-                                         , CustomerRoute__c
-                                         , toLabel(CustomerRoute__c) CustomerRouteLabel
-                                         , PV_CUHR1__c
-                                         , CustomerRouteFromDate__c
-                                         , PriceGroup__c
-                                         , toLabel(PriceGroup__c) PriceGroupLabel
-                                         , UnitPriceGroup__c
-                                         , toLabel(UnitPriceGroup__c) UnitPriceGroupLabel
-                                         , CurrencyIsoCode
-                                         , toLabel(CurrencyIsoCode) CurrencyIsoLabel
-                                         , CreditManagement__c
-                                         , toLabel(CreditManagement__c) CreditManagementLabel
-                                         , SubsidyType__c
-                                         , toLabel(SubsidyType__c) SubsidyTypeLabel
-                                         , IsPrintVirtualAccount__c
-                                         , TermsOfPayment__c
-                                         , toLabel(TermsOfPayment__c) TermsOfPaymentLabel
-                                         , DisHisRegType__c
-                                         , toLabel(DisHisRegType__c) DisHisRegTypeLabel
-                                         , ContractRocationDate__c
-                                         , TaxationType__c
-                                         , CustomerPath__c
-                                         , toLabel(CustomerPath__c) CustomerPathLabel
-                                         , Shape__c
-                                         , DeliveryGroup__c
-                                         , toLabel(DeliveryGroup__c) DeliveryGroupLabel
-                                         , PVVF_KONDA__c
-                                         , PriceGroupFromDate__c
-                                         , PVVF_OLD_BIZPLACE_NEW__c
-                                         , CustomerPathFromDate__c 
-                                 FROM Account
-                                 WHERE CustomerID__c IN :ids
-        ];
-
-        // List<Account> accList = Database.query(strQuery);
         
-        System.debug('accList => ' + accList);
+        DataWrapper objWrapper = new DataWrapper();
+        
+        Integer offsetNum = (pageNumber - 1) * 20;
+        System.debug(offsetNum);
 
-        List<MDMRequest> result = new List<MDMRequest>(); // 해당 페이지에 담은
-        List<MDMRequest> mdmList = new List<MDMRequest>(); // 모든 페이지에 담은
+        try {
+    
+            List<MDMRegRequestCustomer__c> mdmSize = [SELECT PV_KUNNR__c, PV_OLDCD__c, PV_NAME1__c, PV_NAME_G__c, PV_NAME2__c, PV_KTOKD__c, PV_CUSTTYPE__c, PV_STCD2__c, PV_STCD3__c, PV_GFORM__c, PV_J_1KFREPRE__c, PV_BLCKYN__c, PV_STCD1__c, PV_J_1KFTBUS__c, PV_J_1KFTIND__c, PV_TELF1__c, PV_TELFX__c, PV_PAYCUST__c, PV_CHARGECUST__c, PV_VKGRP__c, PVVF_VKGRP__c, PVRA_VKGRP__c, PV_PERNR__c, PVVF_PERNR__c, PVRA_PERNR__c, PV_ADMINMA__c, PV_STCDT__c, PV_FITYP__c, PV_HDOFFICEYN__c, PV_SUBSIDIARYYN__c, PV_VBUND__c, PV_LAND1__c, PV_KNVKTYPE__c, PV_CLOSEDT__c, PV_REGIO__c, PV_ADRES_ROADADDR1__c, PV_ADRES_ROADADDR2__c, PV_ADRES_ADDR1__c, PV_ADRES_ADDR2__c, PV_BUSAB__c, PV_CESSION_KZ__c, PV_ZUAWA__c, PV_AKONT__c, PV_FDGRV__c, PV_VRSDG__c, PV_TAXKDD__c, PV_KATR5__c, PV_CUHR1__c, PVVF_CUHR1__c, PVRA_CUHR1__c, PV_KONDA__c, PVVF_KONDA__c, PVRA_KONDA__c, PV_KVGR1__c, PVVF_KVGR1__c, PVRA_KVGR1__c, PV_WAERS__c, PV_KDGRP__c, PV_KVGR2__c, PV_VACCPRTEXCYN__c, PV_ZTERM_VV__c, PV_DSTRHISTREGYN__c, PV_KULTG__c, PV_OLD_BIZPLACE_NEW__c, PVVF_OLD_BIZPLACE_NEW__c, PVRA_OLD_BIZPLACE_NEW__c, PV_SHAPE__c, PV_DELIGROUP__c, PV_DELICUST__c, PV_SALESCUST__c, PV_BIZPLCODE__c, PVVF_LOGISCENTER__c, PV_LOGISCENTER__c, PVRA_LOGISCENTER__c FROM MDMRegRequestCustomer__c WHERE MDMRegRequestBulkCustomer__c = :recordId ORDER BY PV_KUNNR__c];
 
-        for (Integer i = 0; i < mdms.size(); i++) {
-            MDMRequest mdmRequest = new MDMRequest();
-            mdmRequest.PV_KUNNR           =      String.isBlank(mdms[i].PV_KUNNR__c) ? null : mdms[i].PV_KUNNR__c;
+            String mdmQuery = 'SELECT PV_KUNNR__c, PV_OLDCD__c, PV_NAME1__c, PV_NAME_G__c, PV_NAME2__c, PV_KTOKD__c, PV_CUSTTYPE__c, PV_STCD2__c, PV_STCD3__c, PV_GFORM__c, PV_J_1KFREPRE__c, PV_BLCKYN__c, PV_STCD1__c, PV_J_1KFTBUS__c, PV_J_1KFTIND__c, PV_TELF1__c, PV_TELFX__c, PV_PAYCUST__c, PV_CHARGECUST__c, PV_VKGRP__c, PVVF_VKGRP__c, PVRA_VKGRP__c, PV_PERNR__c, PVVF_PERNR__c, PVRA_PERNR__c, PV_ADMINMA__c, PV_STCDT__c, PV_FITYP__c, PV_HDOFFICEYN__c, PV_SUBSIDIARYYN__c, PV_VBUND__c, PV_LAND1__c, PV_KNVKTYPE__c, PV_CLOSEDT__c, PV_REGIO__c, PV_ADRES_ROADADDR1__c, PV_ADRES_ROADADDR2__c, PV_ADRES_ADDR1__c, PV_ADRES_ADDR2__c, PV_BUSAB__c, PV_CESSION_KZ__c, PV_ZUAWA__c, PV_AKONT__c, PV_FDGRV__c, PV_VRSDG__c, PV_TAXKDD__c, PV_KATR5__c, PV_CUHR1__c, PVVF_CUHR1__c, PVRA_CUHR1__c, PV_KONDA__c, PVVF_KONDA__c, PVRA_KONDA__c, PV_KVGR1__c, PVVF_KVGR1__c, PVRA_KVGR1__c, PV_WAERS__c, PV_KDGRP__c, PV_KVGR2__c, PV_VACCPRTEXCYN__c, PV_ZTERM_VV__c, PV_DSTRHISTREGYN__c, PV_KULTG__c, PV_OLD_BIZPLACE_NEW__c, PVVF_OLD_BIZPLACE_NEW__c, PVRA_OLD_BIZPLACE_NEW__c, PV_SHAPE__c, PV_DELIGROUP__c, PV_DELICUST__c, PV_SALESCUST__c, PV_BIZPLCODE__c, PVVF_LOGISCENTER__c, PV_LOGISCENTER__c, PVRA_LOGISCENTER__c FROM MDMRegRequestCustomer__c WHERE MDMRegRequestBulkCustomer__c = :recordId';
+            mdmQuery += ' ORDER BY PV_KUNNR__c LIMIT 20 OFFSET ' + offsetNum;
+            List<MDMRegRequestCustomer__c> mdms = Database.query(mdmQuery);
 
-            if(mdms[i].PV_KUNNR__c == accList[i].CustomerId__c) {
-                mdmRequest.PV_INDEX                 =      i + 1;
-                mdmRequest.PV_OLDCD                 =      String.isBlank(accList[i].CustomerIDASIS__c) ? null : accList[i].CustomerIDASIS__c;
-                mdmRequest.PV_OLDCD_MOD             =      String.isBlank(mdms[i].PV_OLDCD__c) ? null : mdms[i].PV_OLDCD__c;
-                mdmRequest.PV_NAME1                 =      String.isBlank(accList[i].Name) ? null : accList[i].Name;
-                mdmRequest.PV_NAME1_MOD             =      String.isBlank(mdms[i].PV_NAME1__c) ? null : mdms[i].PV_NAME1__c;
-                mdmRequest.PV_NAME_G                =      String.isBlank(accList[i].NameKor__c) ? null : accList[i].NameKor__c;
-                mdmRequest.PV_NAME_G_MOD            =      String.isBlank(mdms[i].PV_NAME_G__c) ? null : mdms[i].PV_NAME_G__c;
-                mdmRequest.PV_NAME2                 =      String.isBlank(accList[i].NameAlias__c) ? null : accList[i].NameAlias__c;
-                mdmRequest.PV_NAME2_MOD             =      String.isBlank(mdms[i].PV_NAME2__c) ? null : mdms[i].PV_NAME2__c;
-                mdmRequest.PV_KTOKD                 =      String.isBlank(accList[i].AccountGroup__c) ? null : accList[i].AccountGroup__c;
-                mdmRequest.PV_KTOKD_MOD             =      String.isBlank(mdms[i].PV_KTOKD__c) ? null : mdms[i].PV_KTOKD__c;
-                mdmRequest.PV_CUSTTYPE              =      String.isBlank(accList[i].CustomerType__c) ? null : accList[i].CustomerType__c;
-                mdmRequest.PV_CUSTTYPE_MOD          =      String.isBlank(mdms[i].PV_CUSTTYPE__c) ? null : mdms[i].PV_CUSTTYPE__c;
-                mdmRequest.PV_STCD2                 =      String.isBlank(accList[i].CompanyRegisterNumber__c) ? null : accList[i].CompanyRegisterNumber__c;
-                mdmRequest.PV_STCD2_MOD             =      String.isBlank(mdms[i].PV_STCD2__c) ? null : mdms[i].PV_STCD2__c;
-                mdmRequest.PV_STCD3                 =      String.isBlank(accList[i].CorporateCode__c) ? null : accList[i].CorporateCode__c;
-                mdmRequest.PV_STCD3_MOD             =      String.isBlank(mdms[i].PV_STCD3__c) ? null : mdms[i].PV_STCD3__c;
-                mdmRequest.PV_J_1KFREPRE            =      String.isBlank(accList[i].RepresentativeName__c) ? null : accList[i].RepresentativeName__c;
-                mdmRequest.PV_J_1KFREPRE_MOD        =      String.isBlank(mdms[i].PV_J_1KFREPRE__c) ? null : mdms[i].PV_J_1KFREPRE__c;
-                mdmRequest.PV_BLCKYN                =      accList[i].PV_BLCKYN__c ? null : accList[i].PV_BLCKYN__c;
-                mdmRequest.PV_BLCKYN_MOD            =      mdms[i].PV_BLCKYN__c ? null : mdms[i].PV_BLCKYN__c;
-                mdmRequest.PV_STCD1                 =      String.isBlank(accList[i].RepresentativeBirthDate__c) ? null : accList[i].RepresentativeBirthDate__c;
-                mdmRequest.PV_STCD1_MOD             =      String.isBlank(mdms[i].PV_STCD1__c) ? null : mdms[i].PV_STCD1__c;
-                mdmRequest.PV_J_1KFTBUS             =      String.isBlank(accList[i].BusinessConditions__c) ? null : accList[i].BusinessConditions__c;
-                mdmRequest.PV_J_1KFTBUS_MOD         =      String.isBlank(mdms[i].PV_J_1KFTBUS__c) ? null : mdms[i].PV_J_1KFTBUS__c;
-                mdmRequest.PV_J_1KFTIND             =      String.isBlank(accList[i].BusinessCategory__c) ? null : accList[i].BusinessCategory__c;
-                mdmRequest.PV_J_1KFTIND_MOD         =      String.isBlank(mdms[i].PV_J_1KFTIND__c) ? null : mdms[i].PV_J_1KFTIND__c;
-                mdmRequest.PV_TELF1                 =      String.isBlank(accList[i].Phone) ? null : accList[i].Phone;
-                mdmRequest.PV_TELF1_MOD             =      String.isBlank(mdms[i].PV_TELF1__c) ? null : mdms[i].PV_TELF1__c;
-                mdmRequest.PV_TELFX                 =      String.isBlank(accList[i].Fax) ? null : accList[i].Fax;
-                mdmRequest.PV_TELFX_MOD             =      String.isBlank(mdms[i].PV_TELFX__c) ? null : mdms[i].PV_TELFX__c;
-                mdmRequest.PV_PAYCUST               =      String.isBlank(accList[i].PaymentAccountCode__c) ? null : accList[i].PaymentAccountCode__c;
-                mdmRequest.PV_PAYCUST_MOD           =      String.isBlank(mdms[i].PV_PAYCUST__c) ? null : mdms[i].PV_PAYCUST__c;
-                mdmRequest.PV_CHARGECUST            =      String.isBlank(accList[i].ShippingAccountCode__c) ? null : accList[i].ShippingAccountCode__c;
-                mdmRequest.PV_CHARGECUST_MOD        =      String.isBlank(mdms[i].PV_CHARGECUST__c) ? null : mdms[i].PV_CHARGECUST__c;
-                mdmRequest.PV_VKGRP                 =      String.isBlank(accList[i].PV_VKGRP__c) ? null : accList[i].PV_VKGRP__c;
-                mdmRequest.PV_VKGRP_MOD             =      String.isBlank(mdms[i].PV_VKGRP__c) ? null : mdms[i].PV_VKGRP__c;
-                mdmRequest.PVVF_VKGRP               =      accList[i].PVVF_VKGRP__c;
-                mdmRequest.PVVF_VKGRP_MOD           =      mdms[i].PVVF_VKGRP__c;
-                mdmRequest.PVRA_VKGRP               =      accList[i].SalesGroupFromDate__c;
-                mdmRequest.PVRA_VKGRP_MOD           =      mdms[i].PVRA_VKGRP__c;
-                mdmRequest.PV_PERNR                 =      String.isBlank(accList[i].fm_empId__c) ? null : accList[i].fm_empId__c;
-                mdmRequest.PV_PERNR_MOD             =      String.isBlank(mdms[i].PV_PERNR__c) ? null : mdms[i].PV_PERNR__c;
-                mdmRequest.PV_ADMINMA               =      String.isBlank(accList[i].ResponsibilityAMA__c) ? null : accList[i].ResponsibilityAMA__c;
-                mdmRequest.PV_ADMINMA_MOD           =      String.isBlank(mdms[i].PV_ADMINMA__c) ? null : mdms[i].PV_ADMINMA__c;
-                mdmRequest.PV_STCDT                 =      String.isBlank(accList[i].TaxInvoiceType__c) ? null : accList[i].TaxInvoiceType__c;
-                mdmRequest.PV_STCDT_MOD             =      String.isBlank(mdms[i].PV_STCDT__c) ? null : mdms[i].PV_STCDT__c;
-                mdmRequest.PV_FITYP                 =      String.isBlank(accList[i].TaxationType__c) ? null : accList[i].TaxationType__c;
-                mdmRequest.PV_FITYP_MOD             =      String.isBlank(mdms[i].PV_FITYP__c) ? null : mdms[i].PV_FITYP__c;
-                mdmRequest.PV_HDOFFICEYN            =      accList[i].IsHeadShopUseYN__c ? accList[i].IsHeadShopUseYN__c : accList[i].IsHeadShopUseYN__c;
-                mdmRequest.PV_HDOFFICEYN_MOD        =      mdms[i].PV_HDOFFICEYN__c ? mdms[i].PV_HDOFFICEYN__c : mdms[i].PV_HDOFFICEYN__c;
-                mdmRequest.PV_SUBSIDIARYYN          =      accList[i].IsAffiliatedcompanyYN__c ? null : accList[i].IsAffiliatedcompanyYN__c;
-                mdmRequest.PV_SUBSIDIARYYN_MOD      =      mdms[i].PV_SUBSIDIARYYN__c ? null : mdms[i].PV_SUBSIDIARYYN__c;
-                mdmRequest.PV_VBUND                 =      String.isBlank(accList[i].AffiliatedCompany__c) ? null : accList[i].AffiliatedCompany__c;
-                mdmRequest.PV_VBUND_MOD             =      String.isBlank(mdms[i].PV_VBUND__c) ? null : mdms[i].PV_VBUND__c;
-                mdmRequest.PV_LAND1                 =      String.isBlank(accList[i].CountryKeyCode__c) ? null : accList[i].CountryKeyCode__c;
-                mdmRequest.PV_LAND1_MOD             =      String.isBlank(mdms[i].PV_LAND1__c) ? null : mdms[i].PV_LAND1__c;
-                mdmRequest.PV_KNVKTYPE              =      String.isBlank(accList[i].PV_KNVKTYPE__c) ? null : accList[i].PV_KNVKTYPE__c;
-                mdmRequest.PV_KNVKTYPE_MOD          =      String.isBlank(mdms[i].PV_KNVKTYPE__c) ? null : mdms[i].PV_KNVKTYPE__c;
-                mdmRequest.PV_CLOSEDT               =      accList[i].ShutDownDate__c;
-                mdmRequest.PV_CLOSEDT_MOD           =      mdms[i].PV_CLOSEDT__c;
-                mdmRequest.PV_REGIO                 =      String.isBlank(accList[i].LocationState__c) ? null : accList[i].LocationState__c;
-                mdmRequest.PV_REGIO_MOD             =      String.isBlank(mdms[i].PV_REGIO__c) ? null : mdms[i].PV_REGIO__c;
-                mdmRequest.PV_ADRES_ROADADDR1       =      String.isBlank(accList[i].Address__c) ? null : accList[i].Address__c;
-                mdmRequest.PV_ADRES_ROADADDR1_MOD   =      String.isBlank(mdms[i].PV_ADRES_ROADADDR1__c) ? null : mdms[i].PV_ADRES_ROADADDR1__c;
-                mdmRequest.PV_ADRES_ROADADDR2       =      String.isBlank(accList[i].AddressDetails__c) ? null : accList[i].AddressDetails__c;
-                mdmRequest.PV_ADRES_ROADADDR2_MOD   =      String.isBlank(mdms[i].PV_ADRES_ROADADDR2__c) ? null : mdms[i].PV_ADRES_ROADADDR2__c;
-                mdmRequest.PV_ADRES_ADDR1           =      String.isBlank(accList[i].Address2__c) ? null : accList[i].Address2__c;
-                mdmRequest.PV_ADRES_ADDR1_MOD       =      String.isBlank(mdms[i].PV_ADRES_ADDR1__c) ? null : mdms[i].PV_ADRES_ADDR1__c;
-                mdmRequest.PV_ADRES_ADDR2           =      String.isBlank(accList[i].AddressDetails2__c) ? null : accList[i].AddressDetails2__c;
-                mdmRequest.PV_ADRES_ADDR2_MOD       =      String.isBlank(mdms[i].PV_ADRES_ADDR2__c) ? null : mdms[i].PV_ADRES_ADDR2__c;
-                mdmRequest.PV_BUSAB                 =      String.isBlank(accList[i].SalesForm__c) ? null : accList[i].SalesForm__c;
-                mdmRequest.PV_BUSAB_MOD             =      String.isBlank(mdms[i].PV_BUSAB__c) ? null : mdms[i].PV_BUSAB__c;
-                mdmRequest.PV_CESSION_KZ            =      String.isBlank(accList[i].CustomerStatus__c) ? null : accList[i].CustomerStatus__c;
-                mdmRequest.PV_CESSION_KZ_MOD        =      String.isBlank(mdms[i].PV_CESSION_KZ__c) ? null : mdms[i].PV_CESSION_KZ__c;
-                mdmRequest.PV_ZUAWA                 =      String.isBlank(accList[i].SortKey__c) ? null : accList[i].SortKey__c;
-                mdmRequest.PV_ZUAWA_MOD             =      String.isBlank(mdms[i].PV_ZUAWA__c) ? null : mdms[i].PV_ZUAWA__c;
-                mdmRequest.PV_AKONT                 =      String.isBlank(accList[i].MediateAccount__c) ? null : accList[i].MediateAccount__c;
-                mdmRequest.PV_AKONT_MOD             =      String.isBlank(mdms[i].PV_AKONT__c) ? null : mdms[i].PV_AKONT__c;
-                mdmRequest.PV_FDGRV                 =      String.isBlank(accList[i].CashManagementGroup__c) ? null : accList[i].CashManagementGroup__c;
-                mdmRequest.PV_FDGRV_MOD             =      String.isBlank(mdms[i].PV_FDGRV__c) ? null : mdms[i].PV_FDGRV__c;
-                mdmRequest.PV_VRSDG                 =      String.isBlank(accList[i].IsDeposit__c) ? null : accList[i].IsDeposit__c;
-                mdmRequest.PV_VRSDG_MOD             =      String.isBlank(mdms[i].PV_VRSDG__c) ? null : mdms[i].PV_VRSDG__c;
-                mdmRequest.PV_TAXKDD                =      String.isBlank(accList[i].TaxClassification__c) ? null : accList[i].TaxClassification__c;
-                mdmRequest.PV_TAXKDD_MOD            =      String.isBlank(mdms[i].PV_TAXKDD__c) ? null : mdms[i].PV_TAXKDD__c;
-                mdmRequest.PV_KATR5                 =      String.isBlank(accList[i].TaxPaymentMethod__c) ? null : accList[i].TaxPaymentMethod__c;
-                mdmRequest.PV_KATR5_MOD             =      String.isBlank(mdms[i].PV_KATR5__c) ? null : mdms[i].PV_KATR5__c;
-                mdmRequest.PV_CUHR1                 =      String.isBlank(accList[i].CustomerRoute__c) ? null : accList[i].CustomerRoute__c;
-                mdmRequest.PV_CUHR1_MOD             =      String.isBlank(mdms[i].PV_CUHR1__c) ? null : mdms[i].PV_CUHR1__c;
-                mdmRequest.PVVF_CUHR1               =      accList[i].PV_CUHR1__c;
-                mdmRequest.PVVF_CUHR1_MOD           =      mdms[i].PVVF_CUHR1__c;
-                mdmRequest.PVRA_CUHR1               =      accList[i].CustomerRouteFromDate__c;
-                mdmRequest.PVRA_CUHR1_MOD           =      mdms[i].PVRA_CUHR1__c;
-                mdmRequest.PV_KONDA                 =      String.isBlank(accList[i].PriceGroup__c) ? null : accList[i].PriceGroup__c;
-                mdmRequest.PV_KONDA_MOD             =      String.isBlank(mdms[i].PV_KONDA__c) ? null : mdms[i].PV_KONDA__c;
-                mdmRequest.PVVF_KONDA               =      accList[i].PVVF_KONDA__c;
-                mdmRequest.PVVF_KONDA_MOD           =      mdms[i].PVVF_KONDA__c;
-                mdmRequest.PVRA_KONDA               =      accList[i].PriceGroupFromDate__c;
-                mdmRequest.PVRA_KONDA_MOD           =      mdms[i].PVRA_KONDA__c;
-                mdmRequest.PV_KVGR1                 =      String.isBlank(accList[i].UnitPriceGroup__c) ? null : accList[i].UnitPriceGroup__c;
-                mdmRequest.PV_KVGR1_MOD             =      String.isBlank(mdms[i].PV_KVGR1__c) ? null : mdms[i].PV_KVGR1__c;
-                mdmRequest.PV_WAERS                 =      String.isBlank(accList[i].CurrencyIsoCode) ? null : accList[i].CurrencyIsoCode;
-                mdmRequest.PV_WAERS_MOD             =      String.isBlank(mdms[i].PV_WAERS__c) ? null : mdms[i].PV_WAERS__c;
-                mdmRequest.PV_KDGRP                 =      String.isBlank(accList[i].CreditManagement__c) ? null : accList[i].CreditManagement__c;
-                mdmRequest.PV_KDGRP_MOD             =      String.isBlank(mdms[i].PV_KDGRP__c) ? null : mdms[i].PV_KDGRP__c;
-                mdmRequest.PV_KVGR2                 =      String.isBlank(accList[i].SubsidyType__c) ? null : accList[i].SubsidyType__c;
-                mdmRequest.PV_KVGR2_MOD             =      String.isBlank(mdms[i].PV_KVGR2__c) ? null : mdms[i].PV_KVGR2__c;
-                mdmRequest.PV_VACCPRTEXCYN          =      accList[i].IsPrintVirtualAccount__c ? null : accList[i].IsPrintVirtualAccount__c;
-                mdmRequest.PV_VACCPRTEXCYN_MOD      =      mdms[i].PV_VACCPRTEXCYN__c ? null : mdms[i].PV_VACCPRTEXCYN__c;
-                mdmRequest.PV_ZTERM_VV              =      String.isBlank(accList[i].TermsOfPayment__c) ? null : accList[i].TermsOfPayment__c;
-                mdmRequest.PV_ZTERM_VV_MOD          =      String.isBlank(mdms[i].PV_ZTERM_VV__c) ? null : mdms[i].PV_ZTERM_VV__c;
-                mdmRequest.PV_DSTRHISTREGYN         =      String.isBlank(accList[i].DisHisRegType__c) ? null : accList[i].DisHisRegType__c;
-                mdmRequest.PV_DSTRHISTREGYN_MOD     =      String.isBlank(mdms[i].PV_DSTRHISTREGYN__c) ? null : mdms[i].PV_DSTRHISTREGYN__c;
-                mdmRequest.PV_KULTG                 =      String.isBlank(accList[i].ContractRocationDate__c) ? null : accList[i].ContractRocationDate__c;
-                mdmRequest.PV_KULTG_MOD             =      String.isBlank(mdms[i].PV_KULTG__c) ? null : mdms[i].PV_KULTG__c;
-                mdmRequest.PV_OLD_BIZPLACE_NEW      =      String.isBlank(accList[i].CustomerPath__c) ? null : accList[i].CustomerPath__c;
-                mdmRequest.PV_OLD_BIZPLACE_NEW_MOD  =      String.isBlank(mdms[i].PV_OLD_BIZPLACE_NEW__c) ? null : mdms[i].PV_OLD_BIZPLACE_NEW__c;
-                mdmRequest.PVVF_OLD_BIZPLACE_NEW      =    accList[i].PVVF_OLD_BIZPLACE_NEW__c;
-                mdmRequest.PVVF_OLD_BIZPLACE_NEW_MOD  =    mdms[i].PVVF_OLD_BIZPLACE_NEW__c;
-                mdmRequest.PVRA_OLD_BIZPLACE_NEW      =    accList[i].CustomerPathFromDate__c;
-                mdmRequest.PVRA_OLD_BIZPLACE_NEW_MOD  =    mdms[i].PVRA_OLD_BIZPLACE_NEW__c;
-                mdmRequest.PV_SHAPE                 =      String.isBlank(accList[i].Shape__c) ? null : accList[i].Shape__c;
-                mdmRequest.PV_SHAPE_MOD             =      String.isBlank(mdms[i].PV_SHAPE__c) ? null : mdms[i].PV_SHAPE__c;
-                mdmRequest.PV_DELIGROUP             =      String.isBlank(accList[i].DeliveryGroup__c) ? null : accList[i].DeliveryGroup__c;
-                mdmRequest.PV_DELIGROUP_MOD         =      String.isBlank(mdms[i].PV_DELIGROUP__c) ? null : mdms[i].PV_DELIGROUP__c;
-                System.debug('mdmRequest => ' + mdmRequest);
-                mdmList.add(mdmRequest);
+            List<String> ids = new List<String>();
+    
+            for(MDMRegRequestCustomer__c mdm : mdms) {
+                ids.add('\'' + mdm.PV_KUNNR__c + '\'');
             }
-        }
+    
+            System.debug('mdms => ' + json.serialize(mdms));
+            System.debug('ids => ' + json.serialize(ids));
+    
+            String strQuery = 'SELECT Id, CustomerID__c, Name, fm_empId__c, CustomerIDASIS__c, NameKor__c, NameAlias__c, AccountGroup__c, toLabel(AccountGroup__c) AccountGroupLabel, ';
+            strQuery += ' CustomerType__c, toLabel(CustomerType__c) CustomerTypeLabel, CompanyRegisterNumber__c, CorporateCode__c, 	SubCompanyRegisterNumber__c, ';
+            strQuery += ' LegalStatus__c, toLabel(LegalStatus__c) LegalStatusLabel, RepresentativeName__c, PV_BLCKYN__c,	RepresentativeBirthDate__c, BusinessConditions__c, BusinessCategory__c, ';
+            strQuery += ' Phone, Fax, PaymentAccountCode__c, PaymentAccountName__c, ShippingAccountCode__c, ShippingAccountName__c, PV_VKGRP__c, toLabel(PV_VKGRP__c) PV_VKGRP__LABEL, ';
+            strQuery += ' PVVF_VKGRP__c, SalesGroupFromDate__c, OwnerId, PVVF_PERNR__c, ResponsibilityMAFromDate__c, ResponsibilityAMA__c, TaxInvoiceType__c, toLabel(TaxInvoiceType__c) TaxInvoiceLabel, ';
+            strQuery += ' IsHeadShopUseYN__c, IsAffiliatedcompanyYN__c, AffiliatedCompany__c, toLabel(AffiliatedCompany__c) AffiliatedCompanyLabel, CountryKeyCode__c, toLabel(CountryKeyCode__c) CountryKeyCodeLabel, ';
+            strQuery += ' PV_KNVKTYPE__c, toLabel(PV_KNVKTYPE__c) PV_KNVKTYPE__LABEL, ShutDownDate__c, LocationState__c, toLabel(LocationState__c) LocationStateLabel, Address__c, AddressDetails__c, ';
+            strQuery += ' Address2__c, AddressDetails2__c, SalesForm__c, toLabel(SalesForm__c) SalesFormLabel, CustomerStatus__c, toLabel(CustomerStatus__c) CustomerStatusLabel, SortKey__c, toLabel(SortKey__c) SortKeyLabel, ';
+            strQuery += ' MediateAccount__c, toLabel(MediateAccount__c) MediateAccountLabel, CashManagementGroup__c, toLabel(CashManagementGroup__c) CashManagementGroupLabel, IsDeposit__c, toLabel(IsDeposit__c) IsDepositLabel, ';
+            strQuery += ' TaxClassification__c, toLabel(TaxClassification__c) TaxClassificationLabel, TaxPaymentMethod__c, toLabel(TaxPaymentMethod__c) TaxPaymentMethodLabel, CustomerRoute__c, toLabel(CustomerRoute__c) CustomerRouteLabel, ';
+            strQuery += ' PV_CUHR1__c, CustomerRouteFromDate__c, PriceGroup__c, toLabel(PriceGroup__c) PriceGroupLabel, UnitPriceGroup__c, toLabel(UnitPriceGroup__c) UnitPriceGroupLabel, CurrencyIsoCode, ';
+            strQuery += ' toLabel(CurrencyIsoCode) CurrencyIsoLabel, CreditManagement__c, toLabel(CreditManagement__c) CreditManagementLabel, SubsidyType__c, toLabel(SubsidyType__c) SubsidyTypeLabel, ';
+            strQuery += ' IsPrintVirtualAccount__c, TermsOfPayment__c, toLabel(TermsOfPayment__c) TermsOfPaymentLabel, DisHisRegType__c, toLabel(DisHisRegType__c) DisHisRegTypeLabel, ContractRocationDate__c, TaxationType__c, ';
+            strQuery += ' CustomerPath__c, toLabel(CustomerPath__c) CustomerPathLabel, Shape__c, DeliveryGroup__c, toLabel(DeliveryGroup__c) DeliveryGroupLabel, ';
+            strQuery += ' PVVF_KONDA__c, PriceGroupFromDate__c, PVVF_OLD_BIZPLACE_NEW__c, CustomerPathFromDate__c, FWReleaseCenterFromDate__c, PVVF_LOGISCENTER__c, FWReleaseCenter__c, ';
+            strQuery += ' DeliveryCustomerCode__c, SalesCustomerCode__c, BizPLCode__c ';
+            strQuery += ' FROM    Account ';
+            strQuery += ' WHERE CustomerId__c IN (' + String.join(ids, ',') + ') ORDER BY CustomerId__c';
 
-        Integer resultSize = mdmList.size();
-
-        Integer startIndex = (pageNumber - 1) * pageSize;
-        Integer endIndex = Math.min(startIndex + pageSize, resultSize);
-        Integer lastPageNumber = resultSize / pageSize;
-
-        // 실수면 올림
-        if (Math.mod(resultSize, pageSize) != 0) {
-            lastPageNumber += 1;
-        }
-        if(lastPageNumber == 0) {
-            lastPageNumber = 1;
-        }
-
-        if(endIndex > startIndex){
-            for (Integer i = startIndex; i < endIndex; i++) {
-                result.add(mdmList[i]);
+            // List<Account> accList = [SELECT Id
+            //                                 , CustomerID__c
+            //                                 , Name
+            //                                 , fm_empId__c
+            //                                 , CustomerIDASIS__c
+            //                                 , NameKor__c
+            //                                 , NameAlias__c
+            //                                 , AccountGroup__c
+            //                                 , toLabel(AccountGroup__c) AccountGroupLabel
+            //                                 , CustomerType__c
+            //                                 , toLabel(CustomerType__c) CustomerTypeLabel
+            //                                 , CompanyRegisterNumber__c
+            //                                 , CorporateCode__c
+            //                                 , SubCompanyRegisterNumber__c
+            //                                 , LegalStatus__c
+            //                                 , toLabel(LegalStatus__c) LegalStatusLabel
+            //                                 , RepresentativeName__c
+            //                                 , PV_BLCKYN__c
+            //                                 , RepresentativeBirthDate__c
+            //                                 , BusinessConditions__c
+            //                                 , BusinessCategory__c
+            //                                 , Phone
+            //                                 , Fax
+            //                                 , PaymentAccountCode__c
+            //                                 , PaymentAccountName__c
+            //                                 , ShippingAccountCode__c
+            //                                 , ShippingAccountName__c
+            //                                 , PV_VKGRP__c
+            //                                 , toLabel(PV_VKGRP__c) PV_VKGRP__LABEL
+            //                                 , PVVF_VKGRP__c
+            //                                 , SalesGroupFromDate__c
+            //                                 , OwnerId
+            //                                 , PVVF_PERNR__c
+            //                                 , ResponsibilityMAFromDate__c
+            //                                 , ResponsibilityAMA__c
+            //                                 , TaxInvoiceType__c
+            //                                 , toLabel(TaxInvoiceType__c) TaxInvoiceLabel
+            //                                 , IsHeadShopUseYN__c
+            //                                 , IsAffiliatedcompanyYN__c
+            //                                 , AffiliatedCompany__c
+            //                                 , toLabel(AffiliatedCompany__c) AffiliatedCompanyLabel
+            //                                 , CountryKeyCode__c
+            //                                 , toLabel(CountryKeyCode__c) CountryKeyCodeLabel
+            //                                 , PV_KNVKTYPE__c
+            //                                 , toLabel(PV_KNVKTYPE__c) PV_KNVKTYPE__LABEL
+            //                                 , ShutDownDate__c
+            //                                 , LocationState__c
+            //                                 , toLabel(LocationState__c) LocationStateLabel
+            //                                 , Address__c
+            //                                 , AddressDetails__c
+            //                                 , Address2__c
+            //                                 , AddressDetails2__c
+            //                                 , SalesForm__c
+            //                                 , toLabel(SalesForm__c) SalesFormLabel
+            //                                 , CustomerStatus__c
+            //                                 , toLabel(CustomerStatus__c) CustomerStatusLabel
+            //                                 , SortKey__c
+            //                                 , toLabel(SortKey__c) SortKeyLabel
+            //                                 , MediateAccount__c
+            //                                 , toLabel(MediateAccount__c) MediateAccountLabel
+            //                                 , CashManagementGroup__c
+            //                                 , toLabel(CashManagementGroup__c) CashManagementGroupLabel
+            //                                 , IsDeposit__c
+            //                                 , toLabel(IsDeposit__c) IsDepositLabel
+            //                                 , TaxClassification__c
+            //                                 , toLabel(TaxClassification__c) TaxClassificationLabel
+            //                                 , TaxPaymentMethod__c
+            //                                 , toLabel(TaxPaymentMethod__c) TaxPaymentMethodLabel
+            //                                 , CustomerRoute__c
+            //                                 , toLabel(CustomerRoute__c) CustomerRouteLabel
+            //                                 , PV_CUHR1__c
+            //                                 , CustomerRouteFromDate__c
+            //                                 , PriceGroup__c
+            //                                 , toLabel(PriceGroup__c) PriceGroupLabel
+            //                                 , UnitPriceGroup__c
+            //                                 , toLabel(UnitPriceGroup__c) UnitPriceGroupLabel
+            //                                 , CurrencyIsoCode
+            //                                 , toLabel(CurrencyIsoCode) CurrencyIsoLabel
+            //                                 , CreditManagement__c
+            //                                 , toLabel(CreditManagement__c) CreditManagementLabel
+            //                                 , SubsidyType__c
+            //                                 , toLabel(SubsidyType__c) SubsidyTypeLabel
+            //                                 , IsPrintVirtualAccount__c
+            //                                 , TermsOfPayment__c
+            //                                 , toLabel(TermsOfPayment__c) TermsOfPaymentLabel
+            //                                 , DisHisRegType__c
+            //                                 , toLabel(DisHisRegType__c) DisHisRegTypeLabel
+            //                                 , ContractRocationDate__c
+            //                                 , TaxationType__c
+            //                                 , CustomerPath__c
+            //                                 , toLabel(CustomerPath__c) CustomerPathLabel
+            //                                 , Shape__c
+            //                                 , DeliveryGroup__c
+            //                                 , toLabel(DeliveryGroup__c) DeliveryGroupLabel
+            //                                 , PVVF_KONDA__c
+            //                                 , PriceGroupFromDate__c
+            //                                 , PVVF_OLD_BIZPLACE_NEW__c
+            //                                 , CustomerPathFromDate__c 
+            //                         FROM Account
+            //                         WHERE CustomerID__c IN :ids
+            //                         ORDER BY CustomerID__c
+            //                         LIMIT 20
+            //                         OFFSET :offsetNum
+            // ];
+    
+            List<Account> accList = Database.query(strQuery);
+            
+            System.debug('accList => ' + accList);
+    
+            List<MDMRequest> result = new List<MDMRequest>(); // 해당 페이지에 담은
+            List<MDMRequest> mdmList = new List<MDMRequest>(); // 모든 페이지에 담은
+    
+            for (Integer i = 0; i < mdms.size(); i++) {
+                MDMRequest mdmRequest = new MDMRequest();
+                mdmRequest.PV_KUNNR           =      String.isBlank(mdms[i].PV_KUNNR__c) ? null : mdms[i].PV_KUNNR__c;
+    
+                if(mdms[i].PV_KUNNR__c == accList[i].CustomerId__c) {
+                    mdmRequest.PV_INDEX                 =      offsetNum + i + 1;
+                    mdmRequest.PV_OLDCD                 =      String.isBlank(accList[i].CustomerIDASIS__c) ? null : accList[i].CustomerIDASIS__c;
+                    mdmRequest.PV_OLDCD_MOD             =      String.isBlank(mdms[i].PV_OLDCD__c) ? null : mdms[i].PV_OLDCD__c;
+                    mdmRequest.PV_NAME1                 =      String.isBlank(accList[i].Name) ? null : accList[i].Name;
+                    mdmRequest.PV_NAME1_MOD             =      String.isBlank(mdms[i].PV_NAME1__c) ? null : mdms[i].PV_NAME1__c;
+                    mdmRequest.PV_NAME_G                =      String.isBlank(accList[i].NameKor__c) ? null : accList[i].NameKor__c;
+                    mdmRequest.PV_NAME_G_MOD            =      String.isBlank(mdms[i].PV_NAME_G__c) ? null : mdms[i].PV_NAME_G__c;
+                    mdmRequest.PV_NAME2                 =      String.isBlank(accList[i].NameAlias__c) ? null : accList[i].NameAlias__c;
+                    mdmRequest.PV_NAME2_MOD             =      String.isBlank(mdms[i].PV_NAME2__c) ? null : mdms[i].PV_NAME2__c;
+                    mdmRequest.PV_KTOKD                 =      String.isBlank(accList[i].AccountGroup__c) ? null : accList[i].AccountGroup__c;
+                    mdmRequest.PV_KTOKD_MOD             =      String.isBlank(mdms[i].PV_KTOKD__c) ? null : mdms[i].PV_KTOKD__c;
+                    mdmRequest.PV_CUSTTYPE              =      String.isBlank(accList[i].CustomerType__c) ? null : accList[i].CustomerType__c;
+                    mdmRequest.PV_CUSTTYPE_MOD          =      String.isBlank(mdms[i].PV_CUSTTYPE__c) ? null : mdms[i].PV_CUSTTYPE__c;
+                    mdmRequest.PV_STCD2                 =      String.isBlank(accList[i].CompanyRegisterNumber__c) ? null : accList[i].CompanyRegisterNumber__c;
+                    mdmRequest.PV_STCD2_MOD             =      String.isBlank(mdms[i].PV_STCD2__c) ? null : mdms[i].PV_STCD2__c;
+                    mdmRequest.PV_STCD3                 =      String.isBlank(accList[i].CorporateCode__c) ? null : accList[i].CorporateCode__c;
+                    mdmRequest.PV_STCD3_MOD             =      String.isBlank(mdms[i].PV_STCD3__c) ? null : mdms[i].PV_STCD3__c;
+                    mdmRequest.PV_J_1KFREPRE            =      String.isBlank(accList[i].RepresentativeName__c) ? null : accList[i].RepresentativeName__c;
+                    mdmRequest.PV_J_1KFREPRE_MOD        =      String.isBlank(mdms[i].PV_J_1KFREPRE__c) ? null : mdms[i].PV_J_1KFREPRE__c;
+                    mdmRequest.PV_BLCKYN                =      accList[i].PV_BLCKYN__c ? null : accList[i].PV_BLCKYN__c;
+                    mdmRequest.PV_BLCKYN_MOD            =      mdms[i].PV_BLCKYN__c ? null : mdms[i].PV_BLCKYN__c;
+                    mdmRequest.PV_STCD1                 =      String.isBlank(accList[i].RepresentativeBirthDate__c) ? null : accList[i].RepresentativeBirthDate__c;
+                    mdmRequest.PV_STCD1_MOD             =      String.isBlank(mdms[i].PV_STCD1__c) ? null : mdms[i].PV_STCD1__c;
+                    mdmRequest.PV_J_1KFTBUS             =      String.isBlank(accList[i].BusinessConditions__c) ? null : accList[i].BusinessConditions__c;
+                    mdmRequest.PV_J_1KFTBUS_MOD         =      String.isBlank(mdms[i].PV_J_1KFTBUS__c) ? null : mdms[i].PV_J_1KFTBUS__c;
+                    mdmRequest.PV_J_1KFTIND             =      String.isBlank(accList[i].BusinessCategory__c) ? null : accList[i].BusinessCategory__c;
+                    mdmRequest.PV_J_1KFTIND_MOD         =      String.isBlank(mdms[i].PV_J_1KFTIND__c) ? null : mdms[i].PV_J_1KFTIND__c;
+                    mdmRequest.PV_TELF1                 =      String.isBlank(accList[i].Phone) ? null : accList[i].Phone;
+                    mdmRequest.PV_TELF1_MOD             =      String.isBlank(mdms[i].PV_TELF1__c) ? null : mdms[i].PV_TELF1__c;
+                    mdmRequest.PV_TELFX                 =      String.isBlank(accList[i].Fax) ? null : accList[i].Fax;
+                    mdmRequest.PV_TELFX_MOD             =      String.isBlank(mdms[i].PV_TELFX__c) ? null : mdms[i].PV_TELFX__c;
+                    mdmRequest.PV_PAYCUST               =      String.isBlank(accList[i].PaymentAccountCode__c) ? null : accList[i].PaymentAccountCode__c;
+                    mdmRequest.PV_PAYCUST_MOD           =      String.isBlank(mdms[i].PV_PAYCUST__c) ? null : mdms[i].PV_PAYCUST__c;
+                    mdmRequest.PV_CHARGECUST            =      String.isBlank(accList[i].ShippingAccountCode__c) ? null : accList[i].ShippingAccountCode__c;
+                    mdmRequest.PV_CHARGECUST_MOD        =      String.isBlank(mdms[i].PV_CHARGECUST__c) ? null : mdms[i].PV_CHARGECUST__c;
+                    mdmRequest.PV_VKGRP                 =      String.isBlank(accList[i].PV_VKGRP__c) ? null : accList[i].PV_VKGRP__c;
+                    mdmRequest.PV_VKGRP_MOD             =      String.isBlank(mdms[i].PV_VKGRP__c) ? null : mdms[i].PV_VKGRP__c;
+                    mdmRequest.PVVF_VKGRP               =      accList[i].PVVF_VKGRP__c;
+                    mdmRequest.PVVF_VKGRP_MOD           =      mdms[i].PVVF_VKGRP__c;
+                    mdmRequest.PVRA_VKGRP               =      accList[i].SalesGroupFromDate__c;
+                    mdmRequest.PVRA_VKGRP_MOD           =      mdms[i].PVRA_VKGRP__c;
+                    mdmRequest.PV_PERNR                 =      String.isBlank(accList[i].fm_empId__c) ? null : accList[i].fm_empId__c;
+                    mdmRequest.PV_PERNR_MOD             =      String.isBlank(mdms[i].PV_PERNR__c) ? null : mdms[i].PV_PERNR__c;
+                    mdmRequest.PVVF_PERNR               =      accList[i].PVVF_PERNR__c;
+                    mdmRequest.PVVF_PERNR_MOD           =      mdms[i].PVVF_PERNR__c;
+                    mdmRequest.PVRA_PERNR               =      accList[i].ResponsibilityMAFromDate__c;
+                    mdmRequest.PVRA_PERNR_MOD           =      mdms[i].PVRA_PERNR__c;
+                    mdmRequest.PV_ADMINMA               =      String.isBlank(accList[i].ResponsibilityAMA__c) ? null : accList[i].ResponsibilityAMA__c;
+                    mdmRequest.PV_ADMINMA_MOD           =      String.isBlank(mdms[i].PV_ADMINMA__c) ? null : mdms[i].PV_ADMINMA__c;
+                    mdmRequest.PV_LOGISCENTER           =      String.isBlank(accList[i].FWReleaseCenter__c) ? null : accList[i].FWReleaseCenter__c;
+                    mdmRequest.PV_LOGISCENTER_MOD       =      String.isBlank(mdms[i].PV_LOGISCENTER__c) ? null : mdms[i].PV_LOGISCENTER__c;  
+                    mdmRequest.PVVF_LOGISCENTER         =      accList[i].PVVF_LOGISCENTER__c;
+                    mdmRequest.PVVF_LOGISCENTER_MOD     =      mdms[i].PVVF_LOGISCENTER__c;
+                    mdmRequest.PVRA_LOGISCENTER         =      accList[i].FWReleaseCenterFromDate__c;
+                    mdmRequest.PVRA_LOGISCENTER_MOD     =      mdms[i].PVRA_LOGISCENTER__c;
+                    mdmRequest.PV_STCDT                 =      String.isBlank(accList[i].TaxInvoiceType__c) ? null : accList[i].TaxInvoiceType__c;
+                    mdmRequest.PV_STCDT_MOD             =      String.isBlank(mdms[i].PV_STCDT__c) ? null : mdms[i].PV_STCDT__c;
+                    mdmRequest.PV_FITYP                 =      String.isBlank(accList[i].TaxationType__c) ? null : accList[i].TaxationType__c;
+                    mdmRequest.PV_FITYP_MOD             =      String.isBlank(mdms[i].PV_FITYP__c) ? null : mdms[i].PV_FITYP__c;
+                    mdmRequest.PV_HDOFFICEYN            =      accList[i].IsHeadShopUseYN__c ? accList[i].IsHeadShopUseYN__c : accList[i].IsHeadShopUseYN__c;
+                    mdmRequest.PV_HDOFFICEYN_MOD        =      mdms[i].PV_HDOFFICEYN__c ? mdms[i].PV_HDOFFICEYN__c : mdms[i].PV_HDOFFICEYN__c;
+                    mdmRequest.PV_SUBSIDIARYYN          =      accList[i].IsAffiliatedcompanyYN__c ? null : accList[i].IsAffiliatedcompanyYN__c;
+                    mdmRequest.PV_SUBSIDIARYYN_MOD      =      mdms[i].PV_SUBSIDIARYYN__c ? null : mdms[i].PV_SUBSIDIARYYN__c;
+                    mdmRequest.PV_VBUND                 =      String.isBlank(accList[i].AffiliatedCompany__c) ? null : accList[i].AffiliatedCompany__c;
+                    mdmRequest.PV_VBUND_MOD             =      String.isBlank(mdms[i].PV_VBUND__c) ? null : mdms[i].PV_VBUND__c;
+                    mdmRequest.PV_LAND1                 =      String.isBlank(accList[i].CountryKeyCode__c) ? null : accList[i].CountryKeyCode__c;
+                    mdmRequest.PV_LAND1_MOD             =      String.isBlank(mdms[i].PV_LAND1__c) ? null : mdms[i].PV_LAND1__c;
+                    mdmRequest.PV_KNVKTYPE              =      String.isBlank(accList[i].PV_KNVKTYPE__c) ? null : accList[i].PV_KNVKTYPE__c;
+                    mdmRequest.PV_KNVKTYPE_MOD          =      String.isBlank(mdms[i].PV_KNVKTYPE__c) ? null : mdms[i].PV_KNVKTYPE__c;
+                    mdmRequest.PV_CLOSEDT               =      accList[i].ShutDownDate__c;
+                    mdmRequest.PV_CLOSEDT_MOD           =      mdms[i].PV_CLOSEDT__c;
+                    mdmRequest.PV_REGIO                 =      String.isBlank(accList[i].LocationState__c) ? null : accList[i].LocationState__c;
+                    mdmRequest.PV_REGIO_MOD             =      String.isBlank(mdms[i].PV_REGIO__c) ? null : mdms[i].PV_REGIO__c;
+                    mdmRequest.PV_ADRES_ROADADDR1       =      String.isBlank(accList[i].Address__c) ? null : accList[i].Address__c;
+                    mdmRequest.PV_ADRES_ROADADDR1_MOD   =      String.isBlank(mdms[i].PV_ADRES_ROADADDR1__c) ? null : mdms[i].PV_ADRES_ROADADDR1__c;
+                    mdmRequest.PV_ADRES_ROADADDR2       =      String.isBlank(accList[i].AddressDetails__c) ? null : accList[i].AddressDetails__c;
+                    mdmRequest.PV_ADRES_ROADADDR2_MOD   =      String.isBlank(mdms[i].PV_ADRES_ROADADDR2__c) ? null : mdms[i].PV_ADRES_ROADADDR2__c;
+                    mdmRequest.PV_ADRES_ADDR1           =      String.isBlank(accList[i].Address2__c) ? null : accList[i].Address2__c;
+                    mdmRequest.PV_ADRES_ADDR1_MOD       =      String.isBlank(mdms[i].PV_ADRES_ADDR1__c) ? null : mdms[i].PV_ADRES_ADDR1__c;
+                    mdmRequest.PV_ADRES_ADDR2           =      String.isBlank(accList[i].AddressDetails2__c) ? null : accList[i].AddressDetails2__c;
+                    mdmRequest.PV_ADRES_ADDR2_MOD       =      String.isBlank(mdms[i].PV_ADRES_ADDR2__c) ? null : mdms[i].PV_ADRES_ADDR2__c;
+                    mdmRequest.PV_DELICUST              =      String.isBlank(accList[i].DeliveryCustomerCode__c) ? null : accList[i].DeliveryCustomerCode__c;
+                    mdmRequest.PV_DELICUST_MOD          =      String.isBlank(mdms[i].PV_DELICUST__c) ? null : mdms[i].PV_DELICUST__c;
+                    mdmRequest.PV_SALESCUST             =      String.isBlank(accList[i].SalesCustomerCode__c) ? null : accList[i].SalesCustomerCode__c;
+                    mdmRequest.PV_SALESCUST_MOD         =      String.isBlank(mdms[i].PV_SALESCUST__c) ? null : mdms[i].PV_SALESCUST__c;
+                    mdmRequest.PV_BIZPLCODE             =      String.isBlank(accList[i].BizPLCode__c) ? null : accList[i].BizPLCode__c;
+                    mdmRequest.PV_BIZPLCODE_MOD         =      String.isBlank(mdms[i].PV_BIZPLCODE__c) ? null : mdms[i].PV_BIZPLCODE__c;
+                    mdmRequest.PV_BUSAB                 =      String.isBlank(accList[i].SalesForm__c) ? null : accList[i].SalesForm__c;
+                    mdmRequest.PV_BUSAB_MOD             =      String.isBlank(mdms[i].PV_BUSAB__c) ? null : mdms[i].PV_BUSAB__c;
+                    mdmRequest.PV_CESSION_KZ            =      String.isBlank(accList[i].CustomerStatus__c) ? null : accList[i].CustomerStatus__c;
+                    mdmRequest.PV_CESSION_KZ_MOD        =      String.isBlank(mdms[i].PV_CESSION_KZ__c) ? null : mdms[i].PV_CESSION_KZ__c;
+                    mdmRequest.PV_ZUAWA                 =      String.isBlank(accList[i].SortKey__c) ? null : accList[i].SortKey__c;
+                    mdmRequest.PV_ZUAWA_MOD             =      String.isBlank(mdms[i].PV_ZUAWA__c) ? null : mdms[i].PV_ZUAWA__c;
+                    mdmRequest.PV_AKONT                 =      String.isBlank(accList[i].MediateAccount__c) ? null : accList[i].MediateAccount__c;
+                    mdmRequest.PV_AKONT_MOD             =      String.isBlank(mdms[i].PV_AKONT__c) ? null : mdms[i].PV_AKONT__c;
+                    mdmRequest.PV_FDGRV                 =      String.isBlank(accList[i].CashManagementGroup__c) ? null : accList[i].CashManagementGroup__c;
+                    mdmRequest.PV_FDGRV_MOD             =      String.isBlank(mdms[i].PV_FDGRV__c) ? null : mdms[i].PV_FDGRV__c;
+                    mdmRequest.PV_VRSDG                 =      String.isBlank(accList[i].IsDeposit__c) ? null : accList[i].IsDeposit__c;
+                    mdmRequest.PV_VRSDG_MOD             =      String.isBlank(mdms[i].PV_VRSDG__c) ? null : mdms[i].PV_VRSDG__c;
+                    mdmRequest.PV_TAXKDD                =      String.isBlank(accList[i].TaxClassification__c) ? null : accList[i].TaxClassification__c;
+                    mdmRequest.PV_TAXKDD_MOD            =      String.isBlank(mdms[i].PV_TAXKDD__c) ? null : mdms[i].PV_TAXKDD__c;
+                    mdmRequest.PV_KATR5                 =      String.isBlank(accList[i].TaxPaymentMethod__c) ? null : accList[i].TaxPaymentMethod__c;
+                    mdmRequest.PV_KATR5_MOD             =      String.isBlank(mdms[i].PV_KATR5__c) ? null : mdms[i].PV_KATR5__c;
+                    mdmRequest.PV_CUHR1                 =      String.isBlank(accList[i].CustomerRoute__c) ? null : accList[i].CustomerRoute__c;
+                    mdmRequest.PV_CUHR1_MOD             =      String.isBlank(mdms[i].PV_CUHR1__c) ? null : mdms[i].PV_CUHR1__c;
+                    mdmRequest.PVVF_CUHR1               =      accList[i].PV_CUHR1__c;
+                    mdmRequest.PVVF_CUHR1_MOD           =      mdms[i].PVVF_CUHR1__c;
+                    mdmRequest.PVRA_CUHR1               =      accList[i].CustomerRouteFromDate__c;
+                    mdmRequest.PVRA_CUHR1_MOD           =      mdms[i].PVRA_CUHR1__c;
+                    mdmRequest.PV_KONDA                 =      String.isBlank(accList[i].PriceGroup__c) ? null : accList[i].PriceGroup__c;
+                    mdmRequest.PV_KONDA_MOD             =      String.isBlank(mdms[i].PV_KONDA__c) ? null : mdms[i].PV_KONDA__c;
+                    mdmRequest.PVVF_KONDA               =      accList[i].PVVF_KONDA__c;
+                    mdmRequest.PVVF_KONDA_MOD           =      mdms[i].PVVF_KONDA__c;
+                    mdmRequest.PVRA_KONDA               =      accList[i].PriceGroupFromDate__c;
+                    mdmRequest.PVRA_KONDA_MOD           =      mdms[i].PVRA_KONDA__c;
+                    mdmRequest.PV_KVGR1                 =      String.isBlank(accList[i].UnitPriceGroup__c) ? null : accList[i].UnitPriceGroup__c;
+                    mdmRequest.PV_KVGR1_MOD             =      String.isBlank(mdms[i].PV_KVGR1__c) ? null : mdms[i].PV_KVGR1__c;
+                    mdmRequest.PV_WAERS                 =      String.isBlank(accList[i].CurrencyIsoCode) ? null : accList[i].CurrencyIsoCode;
+                    mdmRequest.PV_WAERS_MOD             =      String.isBlank(mdms[i].PV_WAERS__c) ? null : mdms[i].PV_WAERS__c;
+                    mdmRequest.PV_KDGRP                 =      String.isBlank(accList[i].CreditManagement__c) ? null : accList[i].CreditManagement__c;
+                    mdmRequest.PV_KDGRP_MOD             =      String.isBlank(mdms[i].PV_KDGRP__c) ? null : mdms[i].PV_KDGRP__c;
+                    mdmRequest.PV_KVGR2                 =      String.isBlank(accList[i].SubsidyType__c) ? null : accList[i].SubsidyType__c;
+                    mdmRequest.PV_KVGR2_MOD             =      String.isBlank(mdms[i].PV_KVGR2__c) ? null : mdms[i].PV_KVGR2__c;
+                    mdmRequest.PV_VACCPRTEXCYN          =      accList[i].IsPrintVirtualAccount__c ? null : accList[i].IsPrintVirtualAccount__c;
+                    mdmRequest.PV_VACCPRTEXCYN_MOD      =      mdms[i].PV_VACCPRTEXCYN__c ? null : mdms[i].PV_VACCPRTEXCYN__c;
+                    mdmRequest.PV_ZTERM_VV              =      String.isBlank(accList[i].TermsOfPayment__c) ? null : accList[i].TermsOfPayment__c;
+                    mdmRequest.PV_ZTERM_VV_MOD          =      String.isBlank(mdms[i].PV_ZTERM_VV__c) ? null : mdms[i].PV_ZTERM_VV__c;
+                    mdmRequest.PV_DSTRHISTREGYN         =      String.isBlank(accList[i].DisHisRegType__c) ? null : accList[i].DisHisRegType__c;
+                    mdmRequest.PV_DSTRHISTREGYN_MOD     =      String.isBlank(mdms[i].PV_DSTRHISTREGYN__c) ? null : mdms[i].PV_DSTRHISTREGYN__c;
+                    mdmRequest.PV_KULTG                 =      String.isBlank(accList[i].ContractRocationDate__c) ? null : accList[i].ContractRocationDate__c;
+                    mdmRequest.PV_KULTG_MOD             =      String.isBlank(mdms[i].PV_KULTG__c) ? null : mdms[i].PV_KULTG__c;
+                    mdmRequest.PV_OLD_BIZPLACE_NEW      =      String.isBlank(accList[i].CustomerPath__c) ? null : accList[i].CustomerPath__c;
+                    mdmRequest.PV_OLD_BIZPLACE_NEW_MOD  =      String.isBlank(mdms[i].PV_OLD_BIZPLACE_NEW__c) ? null : mdms[i].PV_OLD_BIZPLACE_NEW__c;
+                    mdmRequest.PVVF_OLD_BIZPLACE_NEW      =    accList[i].PVVF_OLD_BIZPLACE_NEW__c;
+                    mdmRequest.PVVF_OLD_BIZPLACE_NEW_MOD  =    mdms[i].PVVF_OLD_BIZPLACE_NEW__c;
+                    mdmRequest.PVRA_OLD_BIZPLACE_NEW      =    accList[i].CustomerPathFromDate__c;
+                    mdmRequest.PVRA_OLD_BIZPLACE_NEW_MOD  =    mdms[i].PVRA_OLD_BIZPLACE_NEW__c;
+                    mdmRequest.PV_SHAPE                 =      String.isBlank(accList[i].Shape__c) ? null : accList[i].Shape__c;
+                    mdmRequest.PV_SHAPE_MOD             =      String.isBlank(mdms[i].PV_SHAPE__c) ? null : mdms[i].PV_SHAPE__c;
+                    mdmRequest.PV_DELIGROUP             =      String.isBlank(accList[i].DeliveryGroup__c) ? null : accList[i].DeliveryGroup__c;
+                    mdmRequest.PV_DELIGROUP_MOD         =      String.isBlank(mdms[i].PV_DELIGROUP__c) ? null : mdms[i].PV_DELIGROUP__c;
+                    System.debug('mdmRequest => ' + mdmRequest);
+                    mdmList.add(mdmRequest);
+                }
             }
+    
+            Integer resultSize = mdmSize.size();
+    
+            Integer startIndex = (pageNumber - 1) * pageSize;
+            Integer endIndex = Math.min(startIndex + pageSize, resultSize);
+            Integer lastPageNumber = resultSize / pageSize;
+    
+            // 실수면 올림
+            if (Math.mod(resultSize, pageSize) != 0) {
+                lastPageNumber += 1;
+            }
+            if(lastPageNumber == 0) {
+                lastPageNumber = 1;
+            }
+    
+            // if(endIndex > startIndex){
+            //     for (Integer i = startIndex; i < endIndex; i++) {
+            //         result.add(mdmList[i]);
+            //     }
+            // }
+    
+            List<String> headerList = getHeadList(mdmList);
+    
+            System.debug('result => ' + result);
+            System.debug('mdmList => ' + mdmList);
+            System.debug('headerList => ' + headerList);
+    
+            objWrapper.mdmList = mdmList;
+            objWrapper.headerList = headerList;
+            objWrapper.lastPageNumber = lastPageNumber;
+            
+        } catch(Exception e) {
+            System.debug(e.getMessage() + e.getLineNumber());
         }
-
-        List<String> headerList = getHeadList(mdmList);
-
-        System.debug('result => ' + result);
-        System.debug('mdmList => ' + mdmList);
-        System.debug('headerList => ' + headerList);
-
-        objWrapper.mdmList = result;
-        objWrapper.headerList = headerList;
-        objWrapper.lastPageNumber = lastPageNumber;
-
+        
         return objWrapper;
 
     }
@@ -432,12 +464,12 @@ public with sharing class CJFW_MDMBulkUpdateInfoListController {
             }
 
             // 영업그룹 유효일자
-            if(mdmList[i].PV_VKGRP != mdmList[i].PV_VKGRP_MOD && mdmList[i].PV_VKGRP_MOD != null) {
+            if(mdmList[i].PVVF_VKGRP != mdmList[i].PVVF_VKGRP_MOD && mdmList[i].PVVF_VKGRP_MOD != null) {
                 headerList.add('PVVF_VKGRP__c');
             }
 
             // 영업그룹 적용일자
-            if(mdmList[i].PV_VKGRP != mdmList[i].PV_VKGRP_MOD && mdmList[i].PV_VKGRP_MOD != null) {
+            if(mdmList[i].PVRA_VKGRP != mdmList[i].PVRA_VKGRP_MOD && mdmList[i].PVRA_VKGRP_MOD != null) {
                 headerList.add('PVRA_VKGRP__c');
             }
 
@@ -447,12 +479,12 @@ public with sharing class CJFW_MDMBulkUpdateInfoListController {
             }
             
             // 담당MA 유효일자
-            if(mdmList[i].PV_PERNR != mdmList[i].PV_PERNR_MOD && mdmList[i].PV_PERNR_MOD != null) {
+            if(mdmList[i].PVVF_PERNR != mdmList[i].PVVF_PERNR_MOD && mdmList[i].PVVF_PERNR_MOD != null) {
                 headerList.add('PVVF_PERNR__c');
             }
             
             // 담당MA 적용일자
-            if(mdmList[i].PV_PERNR != mdmList[i].PV_PERNR_MOD && mdmList[i].PV_PERNR_MOD != null) {
+            if(mdmList[i].PVRA_PERNR != mdmList[i].PVRA_PERNR_MOD && mdmList[i].PVRA_PERNR_MOD != null) {
                 headerList.add('PVRA_PERNR__c');
             }
 

@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 11-09-2023
+ * @last modified on  : 11-14-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkAccountSearchController {
@@ -76,7 +76,7 @@ public with sharing class CJFW_MDMBulkAccountSearchController {
             List<Account> searchResult = new List<Account>(); // 분할해서 담은
             List<Account> listSearchResult = new List<Account>(); // 모두 담은
 
-            String strQuery = 'SELECT Id, CustomerID__c, Name, Owner.Name, CustomerIDASIS__c, NameKor__c, NameAlias__c, AccountGroup__c, toLabel(AccountGroup__c) AccountGroupLabel, ';
+            String strQuery = 'SELECT Id, CustomerID__c, Name, Owner.Name, Owner.EmployeeNumber, CustomerIDASIS__c, NameKor__c, NameAlias__c, AccountGroup__c, toLabel(AccountGroup__c) AccountGroupLabel, ';
             strQuery += ' CustomerType__c, toLabel(CustomerType__c) CustomerTypeLabel, CompanyRegisterNumber__c, 	CorporateCode__c, 	SubCompanyRegisterNumber__c, TaxationType__c, toLabel(TaxationType__c) TaxationTypeLabel, ';
             strQuery += ' LegalStatus__c, toLabel(LegalStatus__c) LegalStatusLabel, RepresentativeName__c, PV_BLCKYN__c,	RepresentativeBirthDate__c, BusinessConditions__c, BusinessCategory__c, ';
             strQuery += ' Phone, Fax, PaymentAccountCode__c, PaymentAccountName__c, ShippingAccountCode__c, ShippingAccountName__c, PV_VKGRP__c, toLabel(PV_VKGRP__c) PV_VKGRP__LABEL, ';

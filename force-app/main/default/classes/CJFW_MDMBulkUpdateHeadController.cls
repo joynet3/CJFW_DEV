@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 11-10-2023
+ * @last modified on  : 11-15-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkUpdateHeadController {
@@ -64,6 +64,7 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
             codeSet.add(mdm.PV_DELIGROUP);
             codeSet.add(mdm.PV_KATR10);
             codeSet.remove(null);
+            codeSet.remove('');
         }
         
         List<MDMReferenceCode__c> referenceCodeList = [SELECT Id, Name, Code__c FROM MDMReferenceCode__c WHERE code__c = :codeSet];
@@ -83,8 +84,12 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
         for(MDMRequest mdm : mdmCustomer){
             accSet.add(mdm.PV_PAYCUST);
             accSet.add(mdm.PV_CHARGECUST);
+            accSet.add(mdm.PV_SALESCUST);
+            accSet.add(mdm.PV_DELICUST);
+            accSet.add(mdm.PV_BIZPLCODE);
             accSet.add(mdm.PV_HKUNNR);
             accSet.remove(null);
+            accSet.remove('');
         }
 
         List<Account> accList = [SELECT Id, Name, CustomerId__c FROM Account WHERE CustomerId__c = :accSet];
@@ -105,6 +110,7 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
             accUserSet.add(mdm.PV_PERNR);
             accUserSet.add(mdm.PV_ADMINMA);
             accUserSet.remove(null);
+            accUserSet.remove('');
         }
         List<User> userList = [SELECT Id, EmployeeNumber FROM User WHERE EmployeeNumber = :accUserSet];
 
@@ -121,6 +127,7 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
         for(MDMRequest mdm : mdmCustomer){
             custIds.add(mdm.PV_KUNNR);
             custIds.remove(null);
+            custIds.remove('');
         }
 
         List<Account> booleanList = [SELECT Id, CustomerId__c, PV_BLCKYN__c, IsHeadShopUseYN__c, IsAffiliatedcompanyYN__c, IsPrintVirtualAccount__c, IsFaceToFaceInspectionStatus__c, IsInitialDeliveryFTFInspection__c, IsBusinessPlaceKey__c, InitialDeliveryShare__c, KXOTD__c FROM Account WHERE CustomerID__c = :custIds];
@@ -225,18 +232,18 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
                     mdmRequest.PV_CHARGECUST_lu__c             =      codeToAccIdMap.get(mdm?.PV_CHARGECUST);
                     mdmRequest.PV_VKGRP__c                     =      String.isBlank(mdm.PV_VKGRP) ? null : mdm.PV_VKGRP;
                     mdmRequest.PV_VKGRP_lu__c                  =      codeToIdMap.get(mdm?.PV_VKGRP);
-                    // mdmRequest.PVVF_VKGRP__c                   =      String.isBlank(mdm.PVVF_VKGRP) ? null : mdm.PVVF_VKGRP;
-                    // mdmRequest.PVRA_VKGRP__c                   =      String.isBlank(mdm.PVRA_VKGRP) ? null : mdm.PVRA_VKGRP;
+                    mdmRequest.PVVF_VKGRP__c                   =      (mdm.PVVF_VKGRP == null || mdm.PVVF_VKGRP == '') ? null : Date.valueOf(mdm.PVVF_VKGRP);
+                    mdmRequest.PVRA_VKGRP__c                   =      (mdm.PVRA_VKGRP == null || mdm.PVRA_VKGRP == '') ? null : Date.valueOf(mdm.PVRA_VKGRP);
                     mdmRequest.PV_PERNR__c                     =      String.isBlank(mdm.PV_PERNR) ? null : mdm.PV_PERNR;
                     mdmRequest.PV_PERNR_lu__c                  =      codeToUserIdMap.get(mdm?.PV_PERNR);
-                    // mdmRequest.PVVF_PERNR__c                   =      String.isBlank(mdm.PVVF_PERNR) ? null : mdm.PVVF_PERNR;
-                    // mdmRequest.PVRA_PERNR__c                   =      String.isBlank(mdm.PVRA_PERNR) ? null : mdm.PVRA_PERNR;
+                    mdmRequest.PVVF_PERNR__c                   =      (mdm.PVVF_PERNR == null || mdm.PVVF_PERNR == '') ? null : Date.valueOf(mdm.PVVF_PERNR);
+                    mdmRequest.PVRA_PERNR__c                   =      (mdm.PVRA_PERNR == null || mdm.PVRA_PERNR == '') ? null : Date.valueOf(mdm.PVRA_PERNR);
                     mdmRequest.PV_ADMINMA__c                   =      String.isBlank(mdm.PV_ADMINMA) ? null : mdm.PV_ADMINMA;
                     mdmRequest.PV_ADMINMA_lu__c                =      codeToUserIdMap.get(mdm?.PV_ADMINMA);
                     mdmRequest.PV_LOGISCENTER__c               =      String.isBlank(mdm.PV_LOGISCENTER) ? null : mdm.PV_LOGISCENTER;
                     mdmRequest.PV_LOGISCENTER_lu__c            =      codeToIdMap.get(mdm?.PV_LOGISCENTER);
-                    // mdmRequest.PVVF_LOGISCENTER             =      String.isBlank(mdm.PVVF_LOGISCENTER) ? null : mdm.PVVF_LOGISCENTER;
-                    // mdmRequest.PVRA_LOGISCENTER             =      String.isBlank(mdm.PVRA_LOGISCENTER) ? null : mdm.PVRA_LOGISCENTER;
+                    mdmRequest.PVVF_LOGISCENTER__c             =      (mdm.PVVF_LOGISCENTER == null || mdm.PVVF_LOGISCENTER == '') ? null : Date.valueOf(mdm.PVVF_LOGISCENTER);
+                    mdmRequest.PVRA_LOGISCENTER__c             =      (mdm.PVRA_LOGISCENTER == null || mdm.PVRA_LOGISCENTER == '') ? null : Date.valueOf(mdm.PVRA_LOGISCENTER);
                     mdmRequest.PV_STCDT__c                     =      String.isBlank(mdm.PV_STCDT) ? null : mdm.PV_STCDT;
                     mdmRequest.PV_STCDT_lu__c                  =      codeToIdMap.get(mdm?.PV_STCDT);
                     mdmRequest.PV_FITYP__c                     =      String.isBlank(mdm.PV_FITYP) ? null : mdm.PV_FITYP;
@@ -256,9 +263,12 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
                     mdmRequest.PV_ADRES_ROADADDR2__c           =      String.isBlank(mdm.PV_ADRES_ROADADDR2) ? null : mdm.PV_ADRES_ROADADDR2;
                     mdmRequest.PV_ADRES_ADDR1__c               =      String.isBlank(mdm.PV_ADRES_ADDR1) ? null : mdm.PV_ADRES_ADDR1;
                     mdmRequest.PV_ADRES_ADDR2__c               =      String.isBlank(mdm.PV_ADRES_ADDR2) ? null : mdm.PV_ADRES_ADDR2;
-                    // mdmRequest.PV_DELICUST__c                  =      String.isBlank(mdm.PV_DELICUST) ? null : mdm.PV_DELICUST;
-                    // mdmRequest.PV_SALESCUST__c                 =      String.isBlank(mdm.PV_SALESCUST) ? null : mdm.PV_SALESCUST;
-                    // mdmRequest.PV_BIZPLCODE__c                 =      String.isBlank(mdm.PV_BIZPLCODE) ? null : mdm.PV_BIZPLCODE;
+                    mdmRequest.PV_DELICUST__c                  =      String.isBlank(mdm.PV_DELICUST) ? null : mdm.PV_DELICUST;
+                    mdmRequest.PV_DELICUST_lu__c               =      codeToAccIdMap.get(mdm?.PV_DELICUST);
+                    mdmRequest.PV_SALESCUST__c                 =      String.isBlank(mdm.PV_SALESCUST) ? null : mdm.PV_SALESCUST;
+                    mdmRequest.PV_SALESCUST_lu__c              =      codeToAccIdMap.get(mdm?.PV_SALESCUST);
+                    mdmRequest.PV_BIZPLCODE__c                 =      String.isBlank(mdm.PV_BIZPLCODE) ? null : mdm.PV_BIZPLCODE;
+                    mdmRequest.PV_BIZPLCODE_lu__c              =      codeToAccIdMap.get(mdm?.PV_BIZPLCODE);
                     mdmRequest.PV_BUSAB__c                     =      String.isBlank(mdm.PV_BUSAB) ? null : mdm.PV_BUSAB;
                     mdmRequest.PV_CESSION_KZ__c                =      String.isBlank(mdm.PV_CESSION_KZ) ? null : mdm.PV_CESSION_KZ;
                     mdmRequest.PV_ZUAWA__c                     =      String.isBlank(mdm.PV_ZUAWA) ? null : mdm.PV_ZUAWA;
@@ -271,16 +281,16 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
                     mdmRequest.PV_KATR5__c                     =      String.isBlank(mdm.PV_KATR5) ? null : mdm.PV_KATR5;
                     mdmRequest.PV_CUHR1__c                     =      String.isBlank(mdm.PV_CUHR1) ? null : mdm.PV_CUHR1;
                     mdmRequest.PV_CUHR1_lu__c                  =      codeToIdMap.get(mdm?.PV_CUHR1);
-                    // mdmRequest.PVVF_CUHR1__c                   =      String.isBlank(mdm.PVVF_CUHR1) ? null : mdm.PVVF_CUHR1;
-                    // mdmRequest.PVRA_CUHR1__c                   =      String.isBlank(mdm.PVRA_CUHR1) ? null : mdm.PVRA_CUHR1;
+                    mdmRequest.PVVF_CUHR1__c                   =      (mdm.PVVF_CUHR1 == null || mdm.PVVF_CUHR1 == '') ? null : Date.valueOf(mdm.PVVF_CUHR1);
+                    mdmRequest.PVRA_CUHR1__c                   =      (mdm.PVRA_CUHR1 == null || mdm.PVRA_CUHR1 == '') ? null : Date.valueOf(mdm.PVRA_CUHR1);
                     mdmRequest.PV_KONDA__c                     =      String.isBlank(mdm.PV_KONDA) ? null : mdm.PV_KONDA;
                     mdmRequest.PV_KONDA_lu__c                  =      codeToIdMap.get(mdm?.PV_KONDA);
-                    // mdmRequest.PVVF_KONDA__c                   =      String.isBlank(mdm.PVVF_KONDA) ? null : mdm.PVVF_KONDA;
-                    // mdmRequest.PVRA_KONDA__c                   =      String.isBlank(mdm.PVRA_KONDA) ? null : mdm.PVRA_KONDA;
+                    mdmRequest.PVVF_KONDA__c                   =      (mdm.PVVF_KONDA == null || mdm.PVVF_KONDA == '') ? null : Date.valueOf(mdm.PVVF_KONDA);
+                    mdmRequest.PVRA_KONDA__c                   =      (mdm.PVRA_KONDA == null || mdm.PVRA_KONDA == '') ? null : Date.valueOf(mdm.PVRA_KONDA);
                     mdmRequest.PV_KVGR1__c                     =      String.isBlank(mdm.PV_KVGR1) ? null : mdm.PV_KVGR1;
                     mdmRequest.PV_KVGR1_lu__c                  =      codeToIdMap.get(mdm?.PV_KVGR1);
-                    // mdmRequest.PVVF_KVGR1__c                   =      String.isBlank(mdm.PVVF_KVGR1) ? null : mdm.PVVF_KVGR1;
-                    // mdmRequest.PVRA_KVGR1__c                   =      String.isBlank(mdm.PVRA_KVGR1) ? null : mdm.PVRA_KVGR1;
+                    mdmRequest.PVVF_KVGR1__c                   =      (mdm.PVVF_KVGR1 == null || mdm.PVVF_KVGR1 == '') ? null : Date.valueOf(mdm.PVVF_KVGR1);
+                    mdmRequest.PVRA_KVGR1__c                   =      (mdm.PVRA_KVGR1 == null || mdm.PVRA_KVGR1 == '') ? null : Date.valueOf(mdm.PVRA_KVGR1);
                     mdmRequest.PV_WAERS__c                     =      String.isBlank(mdm.PV_WAERS) ? null : mdm.PV_WAERS;
                     mdmRequest.PV_WAERS_lu__c                  =      codeToIdMap.get(mdm?.PV_WAERS);
                     mdmRequest.PV_KDGRP__c                     =      String.isBlank(mdm.PV_KDGRP) ? null : mdm.PV_KDGRP;
@@ -297,8 +307,8 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
                     mdmRequest.PV_KULTG__c                     =      String.isBlank(mdm.PV_KULTG) ? null : mdm.PV_KULTG;
                     mdmRequest.PV_OLD_BIZPLACE_NEW__c          =      String.isBlank(mdm.PV_OLD_BIZPLACE_NEW) ? null : mdm.PV_OLD_BIZPLACE_NEW;
                     mdmRequest.PV_OLD_BIZPLACE_NEW_lu__c       =      codeToIdMap.get(mdm?.PV_OLD_BIZPLACE_NEW);
-                    // mdmRequest.PVVF_OLD_BIZPLACE_NEW        =      String.isBlank(mdm.PVVF_OLD_BIZPLACE_NEW) ? null : mdm.PVVF_OLD_BIZPLACE_NEW;
-                    // mdmRequest.PVRA_OLD_BIZPLACE_NEW        =      String.isBlank(mdm.PVRA_OLD_BIZPLACE_NEW) ? null : mdm.PVRA_OLD_BIZPLACE_NEW;
+                    mdmRequest.PVVF_OLD_BIZPLACE_NEW__c        =      (mdm.PVVF_OLD_BIZPLACE_NEW == null || mdm.PVVF_OLD_BIZPLACE_NEW == '') ? null : Date.valueOf(mdm.PVVF_OLD_BIZPLACE_NEW);
+                    mdmRequest.PVRA_OLD_BIZPLACE_NEW__c        =      (mdm.PVRA_OLD_BIZPLACE_NEW == null || mdm.PVRA_OLD_BIZPLACE_NEW == '') ? null : Date.valueOf(mdm.PVRA_OLD_BIZPLACE_NEW);
                     mdmRequest.PV_SHAPE__c                     =      String.isBlank(mdm.PV_SHAPE) ? null : mdm.PV_SHAPE;
                     mdmRequest.PV_EXAMYN__c                    =      (mdm.PV_EXAMYN == '' || mdm.PV_EXAMYN == null) ? faceYnMap.get(mdm.PV_KUNNR) : Boolean.valueOf(mdm.PV_EXAMYN);
                     mdmRequest.PV_SHIPREQTIME__c               =      String.isBlank(mdm.PV_SHIPREQTIME) ? null : mdm.PV_SHIPREQTIME;
@@ -422,7 +432,7 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
                         System.debug('matcher.matches()' + matcher.matches());
 
                         if(mdm.PV_OLDCD != '' && mdm.PV_OLDCD != null && !matcher.matches()) {
-                            ErrorData obj = new ErrorData(i + 1, '구코드(As-Is)', '구코드(As-Is): 구코드는 10자리 이하의 숫자만 가능합니다.');
+                            ErrorData obj = new ErrorData(mdm.PV_INDEX, '구코드(As-Is)', '구코드(As-Is): 구코드는 10자리 이하의 숫자만 가능합니다.');
                             System.debug('## obj => ' + obj);
                             errorDataidList.add(obj);
                         }
@@ -439,7 +449,7 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
                         System.debug('matcher.matches()' + matcher.matches());
 
                         if(mdm.PV_STCD2 != '' && mdm.PV_STCD2 != null && !matcher.matches()) {
-                            ErrorData obj = new ErrorData(i + 1, '사업자등록번호', '올바른 형식의 사업자등록번호가 아닙니다. 10자리 숫자만 입력이 가능합니다.');
+                            ErrorData obj = new ErrorData(mdm.PV_INDEX, '사업자등록번호', '올바른 형식의 사업자등록번호가 아닙니다. 10자리 숫자만 입력이 가능합니다.');
                             System.debug('## obj => ' + obj);
                             errorDataidList.add(obj);
                         }
@@ -456,7 +466,7 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
                         System.debug('matcher.matches()' + matcher.matches());
 
                         if(mdm.PV_STCD3 != '' && mdm.PV_STCD3 != null && !matcher.matches()) {
-                            ErrorData obj = new ErrorData(i + 1, '법인코드', '올바른 형식의 법인코드가 아닙니다. 13자리 숫자만 입력이 가능합니다.');
+                            ErrorData obj = new ErrorData(mdm.PV_INDEX, '법인코드', '올바른 형식의 법인코드가 아닙니다. 13자리 숫자만 입력이 가능합니다.');
                             System.debug('## obj => ' + obj);
                             errorDataidList.add(obj);
                         }
@@ -473,7 +483,7 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
                         System.debug('matcher.matches()' + matcher.matches());
 
                         if(mdm.PV_STCD1 != '' && mdm.PV_STCD1 != null && !matcher.matches()) {
-                            ErrorData obj = new ErrorData(i + 1, '대표자 생년월일', '올바른 형식의 대표자 생년월일이 아닙니다. 6자리만 입력이 가능합니다. 예시) 750101');
+                            ErrorData obj = new ErrorData(mdm.PV_INDEX, '대표자 생년월일', '올바른 형식의 대표자 생년월일이 아닙니다. 6자리만 입력이 가능합니다. 예시) 750101');
                             System.debug('## obj => ' + obj);
                             errorDataidList.add(obj);
                         }
@@ -490,7 +500,58 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
                         System.debug('matcher.matches()' + matcher.matches());
 
                         if(mdm.PV_TELF1 != '' && mdm.PV_TELF1 != null && !matcher.matches()) {
-                            ErrorData obj = new ErrorData(i + 1, '전화번호', '올바른 형식의 전화번호가 아닙니다. "-" 값을 포함하여 입력');
+                            ErrorData obj = new ErrorData(mdm.PV_INDEX, '전화번호', '올바른 형식의 전화번호가 아닙니다. "-" 값을 포함하여 입력');
+                            System.debug('## obj => ' + obj);
+                            errorDataidList.add(obj);
+                        }
+                    }
+                }
+
+                if(headerList.contains('팩스번호')) {
+                    if(mdm.PV_TELFX != null) {
+
+                        System.debug('## mdm.PV_TELFX => ' + mdm.PV_TELFX);
+
+                        Matcher matcher = pattern6.matcher(mdm.PV_TELFX);
+
+                        System.debug('matcher.matches()' + matcher.matches());
+
+                        if(mdm.PV_TELFX != '' && mdm.PV_TELFX != null && !matcher.matches()) {
+                            ErrorData obj = new ErrorData(mdm.PV_INDEX, '팩스번호', '올바른 형식의 팩스번호가 아닙니다. "-" 값을 포함하여 입력');
+                            System.debug('## obj => ' + obj);
+                            errorDataidList.add(obj);
+                        }
+                    }
+                }
+
+                if(headerList.contains('약정회전일')) {
+                    if(mdm.PV_KULTG != null) {
+
+                        System.debug('## mdm.PV_KULTG => ' + mdm.PV_KULTG);
+
+                        Matcher matcher = pattern7.matcher(mdm.PV_KULTG);
+
+                        System.debug('matcher.matches()' + matcher.matches());
+
+                        if(mdm.PV_KULTG != '' && mdm.PV_KULTG != null && !matcher.matches()) {
+                            ErrorData obj = new ErrorData(mdm.PV_INDEX, '약정회전일', '올바른 형식의 약정회전일이 아닙니다.');
+                            System.debug('## obj => ' + obj);
+                            errorDataidList.add(obj);
+                        }
+                    }
+                }
+
+                if(headerList.contains('외형(정원)')) {
+                    if(mdm.PV_SHAPE != null) {
+
+                        System.debug('## mdm.PV_SHAPE => ' + mdm.PV_SHAPE);
+
+                        Matcher matcher = pattern8.matcher(mdm.PV_SHAPE);
+
+                        System.debug('matcher.matches()' + matcher.matches());
+
+                        if(mdm.PV_SHAPE != '' && mdm.PV_SHAPE != null && !matcher.matches()) {
+                            ErrorData obj = new ErrorData(mdm.PV_INDEX, '외형(정원)', '올바른 형식의 외형이 아닙니다.');
                             System.debug('## obj => ' + obj);
                             errorDataidList.add(obj);
                         }
@@ -594,6 +655,7 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
     /* Wrapper */
     public class MDMRequest {
         @AuraEnabled public String RecordTypeId {get;set;}
+        @AuraEnabled public Integer PV_INDEX {get;set;}
         @AuraEnabled public String PV_KUNNR {get;set;}
         @AuraEnabled public String PV_OLDCD {get;set;}
         @AuraEnabled public String PV_NAME1 {get;set;}

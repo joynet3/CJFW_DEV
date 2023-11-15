@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : yeonji.lim@dkbmc.com
  * @group             : 
- * @last modified on  : 11-13-2023
+ * @last modified on  : 11-14-2023
  * @last modified by  : jieun.lee3@dkbmc.com
 **/
 public with sharing class CJFW_ExpectedIncoExpenRelatedController {
@@ -14,60 +14,55 @@ public with sharing class CJFW_ExpectedIncoExpenRelatedController {
      */
     @AuraEnabled
     public static List<CJFW_ExpectedIncomeExpenses__c> getList(String Id){
-        try {
-             System.debug('옵티 Id'+ Id);
+        
+        System.debug('옵티 Id'+ Id);
+        
+        Opportunity objOppty = [
+            SELECT Id, Type, OwnerId, Owner.HeadOffice__c
+                FROM Opportunity
+                WHERE Id =: Id
+        ];
             
-            Opportunity objOppty = [
-                SELECT Id, Type, OwnerId, Owner.HeadOffice__c
-                 FROM Opportunity
-                 WHERE Id =: Id
-            ];
-                
-            System.debug('objoppty '+ objOppty);
-            System.debug('objoppty headoffice '+ objOppty.Owner.HeadOffice__c);
-            String headLabel = objOppty.Owner.HeadOffice__c;
-            String type = objOppty.Type;
-            System.debug('headlabel'+ headLabel);
-            if(!String.isEmpty(headLabel) && headLabel =='3001'){ //Owner의 본부가 급식
+        System.debug('objoppty '+ objOppty);
+        System.debug('objoppty headoffice '+ objOppty.Owner.HeadOffice__c);
+        String headLabel = objOppty.Owner.HeadOffice__c;
+        String type = objOppty.Type;
+        System.debug('headlabel'+ headLabel);
+        if(!String.isEmpty(headLabel) && headLabel =='3001'){ //Owner의 본부가 급식
 
-                return [
-                    SELECT Id, OwnerId, IsDeleted, Name, CurrencyIsoCode, CreatedDate, CreatedById, LastModifiedDate, LastModifiedById, SystemModstamp, LastViewedDate, LastReferencedDate, ExpectSales__c, Opportunity__c, ResultExpectSales__c, ResultExpectRate__c, ExpectContributionProfit__c, ExpectContributionProfitRate__c, SupportFeeRate__c, ExpectSalesProfit__c, ExpectSalesProfitRate__c, ContractDepreciationRate__c, CollateralAmount__c, CollateralType__c, ExpectProfit__c, CollateralPeriod__c, CreditLoanAmount__c, ContractDepreciationSupport__c, SalesFeeSupport__c, DonationSupport__c, OtherSupport__c
-                    , PaymentMethod__c
-                    , ChefSupportCnt__c, FarmSupportExpect__c, MarineSupportExpect__c, LivestockSupportExpect__c, ManufactureSupportExpect__c, NonFoodSupportExpect__c, SalesSupportExpect__c, IsReportCheck__c, IncentiveSupport__c, ContractPaymentDate__c, Version__c, MoveUrl__c,ReportType__c 
-                     FROM CJFW_ExpectedIncomeExpenses__c
-                     WHERE Opportunity__c = :Id AND (ReportType__c = 'CRM008' OR ReportType__c = 'CRM011' OR ReportType__c = 'CRM012')
-                    ];
-            }else if(!String.isEmpty(headLabel)  && headLabel =='6000' && type == 'New Business'){ //Owner의 본부가 외식이고 유형이 신규 
-                return [
-                    SELECT Id, OwnerId, IsDeleted, Name, CurrencyIsoCode, CreatedDate, CreatedById, LastModifiedDate, LastModifiedById, SystemModstamp, LastViewedDate, LastReferencedDate, ExpectSales__c, Opportunity__c, ResultExpectSales__c, ResultExpectRate__c, ExpectContributionProfit__c, ExpectContributionProfitRate__c, SupportFeeRate__c, ExpectSalesProfit__c, ExpectSalesProfitRate__c, ContractDepreciationRate__c, CollateralAmount__c, CollateralType__c, ExpectProfit__c, CollateralPeriod__c, CreditLoanAmount__c, ContractDepreciationSupport__c, SalesFeeSupport__c, DonationSupport__c, OtherSupport__c
-                    , PaymentMethod__c
-                    , ChefSupportCnt__c, FarmSupportExpect__c, MarineSupportExpect__c, LivestockSupportExpect__c, ManufactureSupportExpect__c, NonFoodSupportExpect__c, SalesSupportExpect__c, IsReportCheck__c, IncentiveSupport__c, ContractPaymentDate__c, Version__c, MoveUrl__c,ReportType__c
-                     FROM CJFW_ExpectedIncomeExpenses__c
-                     WHERE Opportunity__c = :Id AND ReportType__c = 'CRM009'
-                    ];
-            }else if(!String.isEmpty(headLabel)  && headLabel =='6000' && type == 'Existing Business'){ //Owner의 본부가 외식이고 유형이 기존
-                return [
-                    SELECT Id, OwnerId, IsDeleted, Name, CurrencyIsoCode, CreatedDate, CreatedById, LastModifiedDate, LastModifiedById, SystemModstamp, LastViewedDate, LastReferencedDate, ExpectSales__c, Opportunity__c, ResultExpectSales__c, ResultExpectRate__c, ExpectContributionProfit__c, ExpectContributionProfitRate__c, SupportFeeRate__c, ExpectSalesProfit__c, ExpectSalesProfitRate__c, ContractDepreciationRate__c, CollateralAmount__c, CollateralType__c, ExpectProfit__c, CollateralPeriod__c, CreditLoanAmount__c, ContractDepreciationSupport__c, SalesFeeSupport__c, DonationSupport__c, OtherSupport__c
-                    , PaymentMethod__c
-                    , ChefSupportCnt__c, FarmSupportExpect__c, MarineSupportExpect__c, LivestockSupportExpect__c, ManufactureSupportExpect__c, NonFoodSupportExpect__c, SalesSupportExpect__c, IsReportCheck__c, IncentiveSupport__c, ContractPaymentDate__c, Version__c, MoveUrl__c,ReportType__c
-                     FROM CJFW_ExpectedIncomeExpenses__c
-                     WHERE Opportunity__c = :Id AND ReportType__c = 'CRM010'
-                    ];
-            }else{
-                return [
-                    SELECT Id, OwnerId, IsDeleted, Name, CurrencyIsoCode, CreatedDate, CreatedById, LastModifiedDate, LastModifiedById, SystemModstamp, LastViewedDate, LastReferencedDate, ExpectSales__c, Opportunity__c, ResultExpectSales__c, ResultExpectRate__c, ExpectContributionProfit__c, ExpectContributionProfitRate__c, SupportFeeRate__c, ExpectSalesProfit__c, ExpectSalesProfitRate__c, ContractDepreciationRate__c, CollateralAmount__c, CollateralType__c, ExpectProfit__c, CollateralPeriod__c, CreditLoanAmount__c, ContractDepreciationSupport__c, SalesFeeSupport__c, DonationSupport__c, OtherSupport__c
-                    , PaymentMethod__c
-                    , ChefSupportCnt__c, FarmSupportExpect__c, MarineSupportExpect__c, LivestockSupportExpect__c, ManufactureSupportExpect__c, NonFoodSupportExpect__c, SalesSupportExpect__c, IsReportCheck__c, IncentiveSupport__c, ContractPaymentDate__c, Version__c, MoveUrl__c,ReportType__c
-                     FROM CJFW_ExpectedIncomeExpenses__c
-                     WHERE Opportunity__c = :Id 
-                    ];
-            }
-        } catch (Exception e) {
-            System.debug('message =>' + e.getMessage());
-            System.debug('trace =>' + e.getStackTraceString());
-
-            throw new AuraHandledException(e.getMessage());
+            return [
+                SELECT Id, OwnerId, IsDeleted, Name, CurrencyIsoCode, CreatedDate, CreatedById, LastModifiedDate, LastModifiedById, SystemModstamp, LastViewedDate, LastReferencedDate, ExpectSales__c, Opportunity__c, ResultExpectSales__c, ResultExpectRate__c, ExpectContributionProfit__c, ExpectContributionProfitRate__c, SupportFeeRate__c, ExpectSalesProfit__c, ExpectSalesProfitRate__c, ContractDepreciationRate__c, CollateralAmount__c, CollateralType__c, ExpectProfit__c, CollateralPeriod__c, CreditLoanAmount__c, ContractDepreciationSupport__c, SalesFeeSupport__c, DonationSupport__c, OtherSupport__c
+                , PaymentMethod__c
+                , ChefSupportCnt__c, FarmSupportExpect__c, MarineSupportExpect__c, LivestockSupportExpect__c, ManufactureSupportExpect__c, NonFoodSupportExpect__c, SalesSupportExpect__c, IsReportCheck__c, IncentiveSupport__c, ContractPaymentDate__c, Version__c, MoveUrl__c,ReportType__c 
+                    FROM CJFW_ExpectedIncomeExpenses__c
+                    WHERE Opportunity__c = :Id AND (ReportType__c = 'CRM008' OR ReportType__c = 'CRM011' OR ReportType__c = 'CRM012')
+                ];
+        }else if(!String.isEmpty(headLabel)  && headLabel =='6000' && type == 'New Business'){ //Owner의 본부가 외식이고 유형이 신규 
+            return [
+                SELECT Id, OwnerId, IsDeleted, Name, CurrencyIsoCode, CreatedDate, CreatedById, LastModifiedDate, LastModifiedById, SystemModstamp, LastViewedDate, LastReferencedDate, ExpectSales__c, Opportunity__c, ResultExpectSales__c, ResultExpectRate__c, ExpectContributionProfit__c, ExpectContributionProfitRate__c, SupportFeeRate__c, ExpectSalesProfit__c, ExpectSalesProfitRate__c, ContractDepreciationRate__c, CollateralAmount__c, CollateralType__c, ExpectProfit__c, CollateralPeriod__c, CreditLoanAmount__c, ContractDepreciationSupport__c, SalesFeeSupport__c, DonationSupport__c, OtherSupport__c
+                , PaymentMethod__c
+                , ChefSupportCnt__c, FarmSupportExpect__c, MarineSupportExpect__c, LivestockSupportExpect__c, ManufactureSupportExpect__c, NonFoodSupportExpect__c, SalesSupportExpect__c, IsReportCheck__c, IncentiveSupport__c, ContractPaymentDate__c, Version__c, MoveUrl__c,ReportType__c
+                    FROM CJFW_ExpectedIncomeExpenses__c
+                    WHERE Opportunity__c = :Id AND ReportType__c = 'CRM009'
+                ];
+        }else if(!String.isEmpty(headLabel)  && headLabel =='6000' && type == 'Existing Business'){ //Owner의 본부가 외식이고 유형이 기존
+            return [
+                SELECT Id, OwnerId, IsDeleted, Name, CurrencyIsoCode, CreatedDate, CreatedById, LastModifiedDate, LastModifiedById, SystemModstamp, LastViewedDate, LastReferencedDate, ExpectSales__c, Opportunity__c, ResultExpectSales__c, ResultExpectRate__c, ExpectContributionProfit__c, ExpectContributionProfitRate__c, SupportFeeRate__c, ExpectSalesProfit__c, ExpectSalesProfitRate__c, ContractDepreciationRate__c, CollateralAmount__c, CollateralType__c, ExpectProfit__c, CollateralPeriod__c, CreditLoanAmount__c, ContractDepreciationSupport__c, SalesFeeSupport__c, DonationSupport__c, OtherSupport__c
+                , PaymentMethod__c
+                , ChefSupportCnt__c, FarmSupportExpect__c, MarineSupportExpect__c, LivestockSupportExpect__c, ManufactureSupportExpect__c, NonFoodSupportExpect__c, SalesSupportExpect__c, IsReportCheck__c, IncentiveSupport__c, ContractPaymentDate__c, Version__c, MoveUrl__c,ReportType__c
+                    FROM CJFW_ExpectedIncomeExpenses__c
+                    WHERE Opportunity__c = :Id AND ReportType__c = 'CRM010'
+                ];
+        }else{
+            return [
+                SELECT Id, OwnerId, IsDeleted, Name, CurrencyIsoCode, CreatedDate, CreatedById, LastModifiedDate, LastModifiedById, SystemModstamp, LastViewedDate, LastReferencedDate, ExpectSales__c, Opportunity__c, ResultExpectSales__c, ResultExpectRate__c, ExpectContributionProfit__c, ExpectContributionProfitRate__c, SupportFeeRate__c, ExpectSalesProfit__c, ExpectSalesProfitRate__c, ContractDepreciationRate__c, CollateralAmount__c, CollateralType__c, ExpectProfit__c, CollateralPeriod__c, CreditLoanAmount__c, ContractDepreciationSupport__c, SalesFeeSupport__c, DonationSupport__c, OtherSupport__c
+                , PaymentMethod__c
+                , ChefSupportCnt__c, FarmSupportExpect__c, MarineSupportExpect__c, LivestockSupportExpect__c, ManufactureSupportExpect__c, NonFoodSupportExpect__c, SalesSupportExpect__c, IsReportCheck__c, IncentiveSupport__c, ContractPaymentDate__c, Version__c, MoveUrl__c,ReportType__c
+                    FROM CJFW_ExpectedIncomeExpenses__c
+                    WHERE Opportunity__c = :Id 
+                ];
         }
+        
     }
 
 

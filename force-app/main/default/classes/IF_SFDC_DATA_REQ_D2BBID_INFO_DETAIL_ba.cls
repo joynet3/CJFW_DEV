@@ -131,40 +131,40 @@ global with sharing class IF_SFDC_DATA_REQ_D2BBID_INFO_DETAIL_ba implements Data
                         uptLead.BidNoticeNumber__c = scope[0].demandYear+input.response.body.item.g2bPblancNo+'-'+input.response.body.item.g2bPblancOdr;
                     }
                     Datetime dt = Datetime.newInstance(
-                        Integer.valueOf(input.response.body.item.bidPartcptRegistClosDt.substring(0,4))
-                        ,Integer.valueOf(input.response.body.item.bidPartcptRegistClosDt.substring(3,5))
+                         Integer.valueOf(input.response.body.item.bidPartcptRegistClosDt.substring(0,4))
                         ,Integer.valueOf(input.response.body.item.bidPartcptRegistClosDt.substring(4,6))
-                        ,Integer.valueOf(input.response.body.item.bidPartcptRegistClosDt.substring(5,7))
                         ,Integer.valueOf(input.response.body.item.bidPartcptRegistClosDt.substring(6,8))
+                        ,Integer.valueOf(input.response.body.item.bidPartcptRegistClosDt.substring(8,10))
+                        ,Integer.valueOf(input.response.body.item.bidPartcptRegistClosDt.substring(10,12))
                         , 0
                     );
                     uptLead.BidRegistCloseDateTime__c       = dt;       //입찰참가등록 마감일시
 
                     dt = Datetime.newInstance(
-                        Integer.valueOf(input.response.body.item.biddocPresentnClosDt.substring(0,4))
-                        ,Integer.valueOf(input.response.body.item.biddocPresentnClosDt.substring(3,5))
+                         Integer.valueOf(input.response.body.item.biddocPresentnClosDt.substring(0,4))
                         ,Integer.valueOf(input.response.body.item.biddocPresentnClosDt.substring(4,6))
-                        ,Integer.valueOf(input.response.body.item.biddocPresentnClosDt.substring(5,7))
                         ,Integer.valueOf(input.response.body.item.biddocPresentnClosDt.substring(6,8))
+                        ,Integer.valueOf(input.response.body.item.biddocPresentnClosDt.substring(8,10))
+                        ,Integer.valueOf(input.response.body.item.biddocPresentnClosDt.substring(10,12))
                         , 0
                     );
                     uptLead.BidLetterSubmitCloseDateTime__c = dt;       //입찰서 제출 마감일시
                     
                     dt = Datetime.newInstance(
-                        Integer.valueOf(input.response.body.item.opengDt.substring(0,4))
-                        ,Integer.valueOf(input.response.body.item.opengDt.substring(3,5))
+                         Integer.valueOf(input.response.body.item.opengDt.substring(0,4))
                         ,Integer.valueOf(input.response.body.item.opengDt.substring(4,6))
-                        ,Integer.valueOf(input.response.body.item.opengDt.substring(5,7))
                         ,Integer.valueOf(input.response.body.item.opengDt.substring(6,8))
+                        ,Integer.valueOf(input.response.body.item.opengDt.substring(8,10))
+                        ,Integer.valueOf(input.response.body.item.opengDt.substring(10,12))
                         , 0
                     );
                     uptLead.BidOpenDateTime__c = dt;                    //개찰일시
                     
                     if (input.response.body.item.pblancDate <> null && input.response.body.item.pblancDate <> '') {
                         Date d = Date.newInstance(
-                            Integer.valueOf(input.response.body.item.pblancDate.substring(0,4))
-                            , Integer.valueOf(input.response.body.item.pblancDate.substring(3,5))
+                              Integer.valueOf(input.response.body.item.pblancDate.substring(0,4))
                             , Integer.valueOf(input.response.body.item.pblancDate.substring(4,6))
+                            , Integer.valueOf(input.response.body.item.pblancDate.substring(6,8))
                             );
 
                         uptLead.pblancDate__c = d;                      //공고 일자
@@ -214,40 +214,40 @@ global with sharing class IF_SFDC_DATA_REQ_D2BBID_INFO_DETAIL_ba implements Data
                         objLead.BidNoticeNumber__c = scope[0].demandYear+input.response.body.item.g2bPblancNo+'-'+input.response.body.item.g2bPblancOdr;
                     }
                     Datetime dt = Datetime.newInstance(
-                        Integer.valueOf(input.response.body.item.bidPartcptRegistClosDt.substring(0,4))
-                        ,Integer.valueOf(input.response.body.item.bidPartcptRegistClosDt.substring(3,5))
+                         Integer.valueOf(input.response.body.item.bidPartcptRegistClosDt.substring(0,4))
                         ,Integer.valueOf(input.response.body.item.bidPartcptRegistClosDt.substring(4,6))
-                        ,Integer.valueOf(input.response.body.item.bidPartcptRegistClosDt.substring(5,7))
                         ,Integer.valueOf(input.response.body.item.bidPartcptRegistClosDt.substring(6,8))
+                        ,Integer.valueOf(input.response.body.item.bidPartcptRegistClosDt.substring(8,10))
+                        ,Integer.valueOf(input.response.body.item.bidPartcptRegistClosDt.substring(10,12))
                         , 0
                     );
                     objLead.BidRegistCloseDateTime__c       = dt;       //입찰참가등록 마감일시
 
                     dt = Datetime.newInstance(
-                        Integer.valueOf(input.response.body.item.biddocPresentnClosDt.substring(0,4))
-                        ,Integer.valueOf(input.response.body.item.biddocPresentnClosDt.substring(3,5))
+                         Integer.valueOf(input.response.body.item.biddocPresentnClosDt.substring(0,4))
                         ,Integer.valueOf(input.response.body.item.biddocPresentnClosDt.substring(4,6))
-                        ,Integer.valueOf(input.response.body.item.biddocPresentnClosDt.substring(5,7))
                         ,Integer.valueOf(input.response.body.item.biddocPresentnClosDt.substring(6,8))
+                        ,Integer.valueOf(input.response.body.item.biddocPresentnClosDt.substring(8,10))
+                        ,Integer.valueOf(input.response.body.item.biddocPresentnClosDt.substring(10,12))
                         , 0
                     );
                     objLead.BidLetterSubmitCloseDateTime__c = dt;       //입찰서 제출 마감일시
 
                     dt = Datetime.newInstance(
-                        Integer.valueOf(input.response.body.item.opengDt.substring(0,4))
-                        ,Integer.valueOf(input.response.body.item.opengDt.substring(3,5))
+                         Integer.valueOf(input.response.body.item.opengDt.substring(0,4))
                         ,Integer.valueOf(input.response.body.item.opengDt.substring(4,6))
-                        ,Integer.valueOf(input.response.body.item.opengDt.substring(5,7))
                         ,Integer.valueOf(input.response.body.item.opengDt.substring(6,8))
+                        ,Integer.valueOf(input.response.body.item.opengDt.substring(8,10))
+                        ,Integer.valueOf(input.response.body.item.opengDt.substring(10,12))
                         , 0
                     );
                     objLead.BidOpenDateTime__c = dt;                    //개찰일시
 
                     if (input.response.body.item.pblancDate <> null && input.response.body.item.pblancDate <> '') {
                         Date d = Date.newInstance(
-                            Integer.valueOf(input.response.body.item.pblancDate.substring(0,4))
-                            , Integer.valueOf(input.response.body.item.pblancDate.substring(3,5))
+                              Integer.valueOf(input.response.body.item.pblancDate.substring(0,4))
                             , Integer.valueOf(input.response.body.item.pblancDate.substring(4,6))
+                            , Integer.valueOf(input.response.body.item.pblancDate.substring(6,8))
                         );
                         objLead.pblancDate__c = d;
                     }

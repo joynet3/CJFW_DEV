@@ -35,14 +35,12 @@ public without sharing class DecisionProcessNewController {
      */
     @AuraEnabled
     public static List<Opportunity> getOwner(Id recordId, Opportunity objOpportunity){
-        try {List<Opportunity> listOwner = [SELECT Id, RecordType.name , Owner.HeadOffice__c, Type
+        List<Opportunity> listOwner = [SELECT Id, RecordType.name , Owner.HeadOffice__c, Type
                                             FROM Opportunity
                                             WHERE Id=:recordId];
             
-            return listOwner;
-        } catch (Exception e) {
-            throw new AuraHandledException(e.getMessage());
-        }
+        return listOwner;
+        
     }
 
     /**
@@ -55,18 +53,11 @@ public without sharing class DecisionProcessNewController {
     @AuraEnabled
     public static String recordSave(DecisionProcess__c objDecisionProcess) {
 
-        try {
-            System.debug('objDecisionProcess : ' + objDecisionProcess);
-            insert objDecisionProcess;
+        System.debug('objDecisionProcess : ' + objDecisionProcess);
+        insert objDecisionProcess;
 
-            return objDecisionProcess.Id!=null ? objDecisionProcess.Id : '';
+        return objDecisionProcess.Id!=null ? objDecisionProcess.Id : '';
 
-        } catch (Exception e) {
-            System.debug('error 메세지 => ' + e.getMessage());
-            System.debug('error 라인 => ' + e.getStackTraceString());
-
-            return '에러 발생: ' + e.getMessage();
-        }
     }
 
     /**
@@ -240,48 +231,43 @@ public without sharing class DecisionProcessNewController {
         List<DecisionProcess__c > listDecisionProcess;
         Boolean isAvailable = true;
         String strMessage = '';
-        try {
-            // 제안 품의서 CRM004
-            if (DocType == 'CRM004') {
-                listBalance = [
-                        SELECT Id, Name
-                        FROM Balance__c
-                        WHERE Opportunity__r.Id = :recordId
-                        AND Classification__c = '제안시산'
-                        LIMIT 1
-                ];
+        // 제안 품의서 CRM004
+        if (DocType == 'CRM004') {
+            listBalance = [
+                    SELECT Id, Name
+                    FROM Balance__c
+                    WHERE Opportunity__r.Id = :recordId
+                    AND Classification__c = '제안시산'
+                    LIMIT 1
+            ];
 
-                if (listBalance.isEmpty()) {
-                    isAvailable = false;
-                    strMessage = '제안 시산을 먼저 등록 후 제안 품의서를 생성해주세요.';
-                }
-            // 오픈품의서 CRM005
-            } else if (DocType == 'CRM005') {
-                listBalance = [
-                        SELECT Id, Name
-                        FROM Balance__c
-                        WHERE Opportunity__r.Id = :recordId
-                        AND Classification__c = '오픈시산'
-                        LIMIT 1
-                ];
-
-                listDecisionProcess = [
-                        SELECT Id, Type__c
-                        FROM DecisionProcess__c
-                        WHERE Opportunity__r.Id = :recordId
-                        AND Type__c = 'CRM004'
-                        LIMIT 1
-                ];
-                if (listBalance.isEmpty() || listDecisionProcess.isEmpty()) {
-                    isAvailable = false;
-                    strMessage = '오픈 시산과 제안 품의서를 먼저 등록 후 오픈 품의서를 생성해주세요.';
-                }
+            if (listBalance.isEmpty()) {
+                isAvailable = false;
+                strMessage = '제안 시산을 먼저 등록 후 제안 품의서를 생성해주세요.';
             }
-        } catch(Exception e) {
-            System.debug('error getMessage : ' + e.getMessage());
-            System.debug('error getLineNumber : ' + e.getLineNumber());
-            System.debug('error getCause : ' + e.getCause());
+        // 오픈품의서 CRM005
+        } else if (DocType == 'CRM005') {
+            listBalance = [
+                    SELECT Id, Name
+                    FROM Balance__c
+                    WHERE Opportunity__r.Id = :recordId
+                    AND Classification__c = '오픈시산'
+                    LIMIT 1
+            ];
+
+            listDecisionProcess = [
+                    SELECT Id, Type__c
+                    FROM DecisionProcess__c
+                    WHERE Opportunity__r.Id = :recordId
+                    AND Type__c = 'CRM004'
+                    LIMIT 1
+            ];
+            if (listBalance.isEmpty() || listDecisionProcess.isEmpty()) {
+                isAvailable = false;
+                strMessage = '오픈 시산과 제안 품의서를 먼저 등록 후 오픈 품의서를 생성해주세요.';
+            }
         }
+        
 
         Map<String, Object> mapInitData = new Map<String, Object>{
             'isAvailable' => isAvailable,

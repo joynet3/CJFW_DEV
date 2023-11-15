@@ -5,7 +5,7 @@
 
  * @author            : seol.kim@dkbmc.com
  * @group             : 
- * @last modified on  : 11-13-2023
+ * @last modified on  : 11-14-2023
  * @last modified by  : seol.kim@dkbmc.com
 **/
 public with sharing class OrderConsiderFormController {
@@ -18,6 +18,8 @@ public with sharing class OrderConsiderFormController {
     public String showtable { get; set; }
     public String reportType { get; set; } // 품의서 유형
     public String headOfficeLabel { get; set; } // Label
+    public Decimal defaultZero { get; set; } // 0.00 기본세팅
+
     
     public String fieldValue { get; private set; }
 
@@ -60,18 +62,17 @@ public with sharing class OrderConsiderFormController {
     public String contractPaymentDate { get; set; } // 약정결제일
 
     // 물류비 - 외식(SU)
-    public Decimal distributeDirCap {get;set;}  // 수도권-직접
-    public Decimal distributeDirEast {get;set;} // 동부권-직접
-    public Decimal distributeDirWest {get;set;} // 서부권-직접
-    public Decimal distributeDirJeju {get;set;} // 제주권-직접
+    public Decimal DistributeDirCap {get;set;}  // 수도권-직접
+    public Decimal DistributeDirEast {get;set;} // 동부권-직접
+    public Decimal DistributeDirWest {get;set;} // 서부권-직접
+    public Decimal DistributeDirJeju {get;set;} // 제주권-직접
 
-    public Decimal distributeInDirCap {get;set;} // 수도권-간접
-    public Decimal distributeInDirEast {get;set;} // 동부권-간접
-    public Decimal distributeInDirWest {get;set;} // 서부권-간접
-    public Decimal distributeInDirJeju {get;set;} // 제주권-간접
+    public Decimal DistributeInDirCap {get;set;} // 수도권-간접
+    public Decimal DistributeInDirEast {get;set;} // 동부권-간접
+    public Decimal DistributeInDirWest {get;set;} // 서부권-간접
+    public Decimal DistributeInDirJeju {get;set;} // 제주권-간접
 
-
-    public Decimal distributeSchool {get;set;} // 급식용 
+    public Decimal DistributeSchool {get;set;} // 급식용 
 
 
 
@@ -85,6 +86,7 @@ public with sharing class OrderConsiderFormController {
         this.incomeExpensesId = ApexPages.currentPage().getParameters().get('incomeExpensesId');
         this.showtable = ApexPages.currentPage().getParameters().get('showtable');
         this.reportType = ApexPages.currentPage().getParameters().get('type');
+        this.defaultZero = 0.00;
 
         // 리포트 타입에 따라서 물류비 picklist 선정해주기 
         if( reportType == 'CRM009' || reportType == 'CRM010' ){ // 외식 품의서 
@@ -114,6 +116,8 @@ public with sharing class OrderConsiderFormController {
             getAccountInfo();       // 고객사 정보 가져오기
             getIncomeExpenses();    // 신규개설품의 obj 값 가져오기
             getExpectManager();  // 품의서 관리자 작성 obj 값 가져오기
+            getDistributeCost();    // 물류비관리 값 가져오기
+
             getPromoteIssue(incomeExpensesId); // 추진사항정보 가져오기     
         }
     }
@@ -392,7 +396,6 @@ public with sharing class OrderConsiderFormController {
             'SalesProfitFoGen__c, ' +   
             'SalesProfitSoluEx__c, ' +   
 
-            // 김설 추가 끝
             'Sales__c, ' +                           //매출
             'ExclusiveSaveSkuSales__c, ' +           //전용저장 sku매출
             'DropSize__c, ' +                        //회당 Drop Size
@@ -409,20 +412,20 @@ public with sharing class OrderConsiderFormController {
             'SalesCapitalGeneral__c, ' +             // 매출 수도권 일반
             'SalesEastExclusive__c, ' +              // 매출 동부권 전용
             'SalesEastGeneral__c, ' +                // 매출 동부권 일반
-            'SalesWestExclusive__c, ' + // 매출 서부권 전용
-            'SalesWestGeneral__c, ' + // 매출 서부권 일반 
-            'SalesJejuExclusive__c, ' + // 매출 제주권 전용 
-            'SalesJejuGeneral__c, ' + // 매출 제주권 일반 
-            'SalesSolutionExclusive__c, ' + // 매출 솔루션 전용 
-            'SalesSolutionGeneral__c, ' + // 매출 솔루션 전용 
-            'SalesImproveResultExclusive__c, ' + // 매출 개선실적 전용
-            'SalesImproveResultGeneral__c, ' + // 매출 개선실적 전용
+            'SalesWestExclusive__c, ' +              // 매출 서부권 전용
+            'SalesWestGeneral__c, ' +                // 매출 서부권 일반 
+            'SalesJejuExclusive__c, ' +              // 매출 제주권 전용 
+            'SalesJejuGeneral__c, ' +                // 매출 제주권 일반 
+            'SalesSolutionExclusive__c, ' +             // 매출 솔루션 전용 
+            'SalesSolutionGeneral__c, ' +           // 매출 솔루션 전용 
+        'SalesImproveResultExclusive__c, ' +        // 매출 개선실적 전용
+            'SalesImproveResultGeneral__c, ' +      // 매출 개선실적 전용
 
-            'SalesProfitCaptialExclusive__c, ' + // 매출이익 수도권 전용
-            'SalesProfitCapitalGeneral__c, ' + // 매출이익 수도권 일반
-            'SalesProfitEastExclusive__c, ' + // 매출이익 동부권 전용
-            'SalesProfitEastGeneral__c, ' + // 매출이익 동부권 일반
-            'SalesProfitWestExclusive__c, ' + // 매출이익 서부권 전용
+            'SalesProfitCaptialExclusive__c, ' +    // 매출이익 수도권 전용
+            'SalesProfitCapitalGeneral__c, ' +      // 매출이익 수도권 일반
+            'SalesProfitEastExclusive__c, ' +       // 매출이익 동부권 전용
+            'SalesProfitEastGeneral__c, ' +         // 매출이익 동부권 일반
+            'SalesProfitWestExclusive__c, ' +       // 매출이익 서부권 전용
             'SalesProfitWestGeneral__c, ' + // 매출이익 서부권 일반
             'SalesProfitJejuExclusive__c, ' + // 매출이익 제주권 전용
             'SalesProfitJejuGeneral__c, ' + // 매출이익 제주권 일반
@@ -580,7 +583,7 @@ public with sharing class OrderConsiderFormController {
             'MultiplePltRefrigeration__c, ' +            //매출
             'MultiplePltFreezer__c, ' +            //매출
 
-            'StorageSkuRoomTemperature__c, ' +            //매출
+            'StorageSkuRoomTemperature__c, ' +     //매출
             'StorageSkuRefrigeration__c, ' +            //매출
             'StorageSkuFreezer__c, ' +            //매출
             'StoragePltRoomTemperature__c, ' +            //매출
@@ -704,7 +707,6 @@ public with sharing class OrderConsiderFormController {
             'SalesProfitWestGeneral__c',
             'SalesProfitJejuGeneral__c',
 
-            //김설 추가 
             'SalesCapOne__c',
             'SalesCapTwo__c',
             'SalesCapThree__c',
@@ -953,6 +955,11 @@ public with sharing class OrderConsiderFormController {
         System.debug('# 품의서정보  ->' + IncomeExpensesInfo ); 
     }
 
+
+
+
+
+    
     /* 
     CJFW_OrderConsiderNewForm (VF Page) 에서 입력받은 값 update   
     */
@@ -1507,7 +1514,7 @@ public with sharing class OrderConsiderFormController {
             /* ===== 8. 재고 운영 개선사항(체인 전용) ===== */
 
             if (dataMap.containsKey('productNameOne')) { // 테스트
-                expectIncome.ProductNameOne__c = (String) dataMap.get('ProductNameOne');
+                expectIncome.ProductNameOne__c = (String) dataMap.get('productNameOne');
             }            
             if (dataMap.containsKey('storageConditionOne')) { // 테스트
                 expectIncome.StorageConditionOne__c = (String) dataMap.get('storageConditionOne');
@@ -1515,8 +1522,8 @@ public with sharing class OrderConsiderFormController {
             if (dataMap.containsKey('releaseUnitOne')) { // 테스트
                 expectIncome.ReleaseUnitOne__c = (String) dataMap.get('releaseUnitOne');
             }            
-            if (dataMap.containsKey('EnforcementMonthOne')) { // 테스트
-                expectIncome.EnforcementMonthOne__c = (String) dataMap.get('EnforcementMonthOne');
+            if (dataMap.containsKey('enforcementMonthOne')) { // 테스트
+                expectIncome.EnforcementMonthOne__c = (String) dataMap.get('enforcementMonthOne');
             }            
             if (dataMap.containsKey('pltOriginalOne')) { // 테스트
                 expectIncome.PltOriginalOne__c = convertToDecimal(dataMap.get('pltOriginalOne'));
@@ -1534,12 +1541,12 @@ public with sharing class OrderConsiderFormController {
                 expectIncome.MonthSaleOne__c = convertToDecimal(dataMap.get('monthSaleOne'));
             }
             if (dataMap.containsKey('monthSalesProfitOne')) { // 테스트
-                expectIncome.MonthSalesProfitOne__c = convertToDecimal(dataMap.get('MonthSalesProfitOne'));
+                expectIncome.MonthSalesProfitOne__c = convertToDecimal(dataMap.get('monthSalesProfitOne'));
             }
 
             
             if (dataMap.containsKey('productNameTwo')) { // 테스트
-                expectIncome.ProductNameTwo__c = (String) dataMap.get('ProductNameTwo');
+                expectIncome.ProductNameTwo__c = (String) dataMap.get('productNameTwo');
             }            
             if (dataMap.containsKey('storageConditionTwo')) { // 테스트
                 expectIncome.StorageConditionTwo__c = (String) dataMap.get('storageConditionTwo');
@@ -1547,8 +1554,8 @@ public with sharing class OrderConsiderFormController {
             if (dataMap.containsKey('releaseUnitTwo')) { // 테스트
                 expectIncome.ReleaseUnitTwo__c = (String) dataMap.get('releaseUnitTwo');
             }            
-            if (dataMap.containsKey('EnforcementMonthTwo')) { // 테스트
-                expectIncome.EnforcementMonthTwo__c = (String) dataMap.get('EnforcementMonthTwo');
+            if (dataMap.containsKey('enforcementMonthTwo')) { // 테스트
+                expectIncome.EnforcementMonthTwo__c = (String) dataMap.get('enforcementMonthTwo');
             }            
             if (dataMap.containsKey('pltOriginalTwo')) { // 테스트
                 expectIncome.PltOriginalTwo__c = convertToDecimal(dataMap.get('pltOriginalTwo'));
@@ -1570,7 +1577,7 @@ public with sharing class OrderConsiderFormController {
             }
 
             if (dataMap.containsKey('productNameThree')) { // 테스트
-                expectIncome.ProductNameThree__c = (String) dataMap.get('ProductNameThree');
+                expectIncome.ProductNameThree__c = (String) dataMap.get('productNameThree');
             }            
             if (dataMap.containsKey('storageConditionThree')) { // 테스트
                 expectIncome.StorageConditionThree__c = (String) dataMap.get('storageConditionThree');
@@ -1578,8 +1585,8 @@ public with sharing class OrderConsiderFormController {
             if (dataMap.containsKey('releaseUnitThree')) { // 테스트
                 expectIncome.ReleaseUnitThree__c = (String) dataMap.get('releaseUnitThree');
             }            
-            if (dataMap.containsKey('EnforcementMonthThree')) { // 테스트
-                expectIncome.EnforcementMonthThree__c = (String) dataMap.get('EnforcementMonthThree');
+            if (dataMap.containsKey('enforcementMonthThree')) { // 테스트
+                expectIncome.EnforcementMonthThree__c = (String) dataMap.get('enforcementMonthThree');
             }            
             if (dataMap.containsKey('pltOriginalThree')) { // 테스트
                 expectIncome.PltOriginalThree__c = convertToDecimal(dataMap.get('pltOriginalThree'));
@@ -1601,7 +1608,7 @@ public with sharing class OrderConsiderFormController {
             }
 
             if (dataMap.containsKey('productNameFour')) { // 테스트
-                expectIncome.ProductNameFour__c = (String) dataMap.get('ProductNameFour');
+                expectIncome.ProductNameFour__c = (String) dataMap.get('productNameFour');
             }            
             if (dataMap.containsKey('storageConditionFour')) { // 테스트
                 expectIncome.StorageConditionFour__c = (String) dataMap.get('storageConditionFour');
@@ -1609,8 +1616,8 @@ public with sharing class OrderConsiderFormController {
             if (dataMap.containsKey('releaseUnitFour')) { // 테스트
                 expectIncome.ReleaseUnitFour__c = (String) dataMap.get('releaseUnitFour');
             }            
-            if (dataMap.containsKey('EnforcementMonthFour')) { // 테스트
-                expectIncome.EnforcementMonthFour__c = (String) dataMap.get('EnforcementMonthFour');
+            if (dataMap.containsKey('enforcementMonthFour')) { // 테스트
+                expectIncome.EnforcementMonthFour__c = (String) dataMap.get('enforcementMonthFour');
             }            
             if (dataMap.containsKey('pltOriginalFour')) { // 테스트
                 expectIncome.PltOriginalFour__c = convertToDecimal(dataMap.get('pltOriginalFour'));
@@ -1632,7 +1639,7 @@ public with sharing class OrderConsiderFormController {
             }
 
             if (dataMap.containsKey('productNameFive')) { // 테스트
-                expectIncome.ProductNameFive__c = (String) dataMap.get('ProductNameFive');
+                expectIncome.ProductNameFive__c = (String) dataMap.get('productNameFive');
             }            
             if (dataMap.containsKey('storageConditionFive')) { // 테스트
                 expectIncome.StorageConditionFive__c = (String) dataMap.get('storageConditionFive');
@@ -1640,8 +1647,8 @@ public with sharing class OrderConsiderFormController {
             if (dataMap.containsKey('releaseUnitFive')) { // 테스트
                 expectIncome.ReleaseUnitFive__c = (String) dataMap.get('releaseUnitFive');
             }            
-            if (dataMap.containsKey('EnforcementMonthFive')) { // 테스트
-                expectIncome.EnforcementMonthFive__c = (String) dataMap.get('EnforcementMonthFive');
+            if (dataMap.containsKey('enforcementMonthFive')) { // 테스트
+                expectIncome.EnforcementMonthFive__c = (String) dataMap.get('enforcementMonthFive');
             }            
             if (dataMap.containsKey('pltOriginalFive')) { // 테스트
                 expectIncome.PltOriginalFive__c = convertToDecimal(dataMap.get('pltOriginalFive'));
@@ -1663,7 +1670,7 @@ public with sharing class OrderConsiderFormController {
             }
 
             if (dataMap.containsKey('productNameSix')) { // 테스트
-                expectIncome.ProductNameSix__c = (String) dataMap.get('ProductNameSix');
+                expectIncome.ProductNameSix__c = (String) dataMap.get('productNameSix');
             }            
             if (dataMap.containsKey('storageConditionSix')) { // 테스트
                 expectIncome.StorageConditionSix__c = (String) dataMap.get('storageConditionSix');
@@ -1671,8 +1678,8 @@ public with sharing class OrderConsiderFormController {
             if (dataMap.containsKey('releaseUnitSix')) { // 테스트
                 expectIncome.ReleaseUnitSix__c = (String) dataMap.get('releaseUnitSix');
             }            
-            if (dataMap.containsKey('EnforcementMonthSix')) { // 테스트
-                expectIncome.EnforcementMonthSix__c = (String) dataMap.get('EnforcementMonthSix');
+            if (dataMap.containsKey('enforcementMonthSix')) { // 테스트
+                expectIncome.EnforcementMonthSix__c = (String) dataMap.get('enforcementMonthSix');
             }            
             if (dataMap.containsKey('pltOriginalSix')) { // 테스트
                 expectIncome.PltOriginalSix__c = convertToDecimal(dataMap.get('pltOriginalSix'));
@@ -1690,11 +1697,11 @@ public with sharing class OrderConsiderFormController {
                 expectIncome.MonthSaleSix__c = convertToDecimal(dataMap.get('monthSaleSix'));
             }
             if (dataMap.containsKey('monthSalesProfitSix')) { // 테스트
-                expectIncome.MonthSalesProfitSix__c = convertToDecimal(dataMap.get('MonthSalesProfitSix'));
+                expectIncome.MonthSalesProfitSix__c = convertToDecimal(dataMap.get('monthSalesProfitSix'));
             }
 
             if (dataMap.containsKey('productNameSeven')) { // 테스트
-                expectIncome.ProductNameSeven__c = (String) dataMap.get('ProductNameSeven');
+                expectIncome.ProductNameSeven__c = (String) dataMap.get('productNameSeven');
             }            
             if (dataMap.containsKey('storageConditionSeven')) { // 테스트
                 expectIncome.StorageConditionSeven__c = (String) dataMap.get('storageConditionSeven');
@@ -1702,8 +1709,8 @@ public with sharing class OrderConsiderFormController {
             if (dataMap.containsKey('releaseUnitSeven')) { // 테스트
                 expectIncome.ReleaseUnitSeven__c = (String) dataMap.get('releaseUnitSeven');
             }            
-            if (dataMap.containsKey('EnforcementMonthSeven')) { // 테스트
-                expectIncome.EnforcementMonthSeven__c = (String) dataMap.get('EnforcementMonthSeven');
+            if (dataMap.containsKey('enforcementMonthSeven')) { // 테스트
+                expectIncome.EnforcementMonthSeven__c = (String) dataMap.get('enforcementMonthSeven');
             }            
             if (dataMap.containsKey('pltOriginalSeven')) { // 테스트
                 expectIncome.PltOriginalSeven__c = convertToDecimal(dataMap.get('pltOriginalSeven'));
@@ -1720,12 +1727,12 @@ public with sharing class OrderConsiderFormController {
             if (dataMap.containsKey('monthSaleSeven')) { // 테스트
                 expectIncome.MonthSaleSeven__c = convertToDecimal(dataMap.get('monthSaleSeven'));
             }
-            if (dataMap.containsKey('MonthSalesProfitSeven')) { // 테스트
+            if (dataMap.containsKey('monthSalesProfitSeven')) { // 테스트
                 expectIncome.MonthSalesProfitSeven__c = convertToDecimal(dataMap.get('monthSalesProfitSeven'));
             }
 
             if (dataMap.containsKey('productNameEight')) { // 테스트
-                expectIncome.ProductNameEight__c = (String) dataMap.get('ProductNameEight');
+                expectIncome.ProductNameEight__c = (String) dataMap.get('productNameEight');
             }            
             if (dataMap.containsKey('storageConditionEight')) { // 테스트
                 expectIncome.StorageConditionEight__c = (String) dataMap.get('storageConditionEight');
@@ -1756,7 +1763,7 @@ public with sharing class OrderConsiderFormController {
             }
 
             if (dataMap.containsKey('productNameNine')) { // 테스트
-                expectIncome.ProductNameNine__c = (String) dataMap.get('ProductNameNine');
+                expectIncome.ProductNameNine__c = (String) dataMap.get('productNameNine');
             }            
             if (dataMap.containsKey('storageConditionNine')) { // 테스트
                 expectIncome.StorageConditionNine__c = (String) dataMap.get('storageConditionNine');
@@ -1787,7 +1794,7 @@ public with sharing class OrderConsiderFormController {
             }
 
             if (dataMap.containsKey('productNameTen')) { // 테스트
-                expectIncome.ProductNameTen__c = (String) dataMap.get('ProductNameTen');
+                expectIncome.ProductNameTen__c = (String) dataMap.get('productNameTen');
             }            
             if (dataMap.containsKey('storageConditionTen')) { // 테스트
                 expectIncome.StorageConditionTen__c = (String) dataMap.get('storageConditionTen');
@@ -1802,7 +1809,7 @@ public with sharing class OrderConsiderFormController {
                 expectIncome.PltOriginalTen__c = convertToDecimal(dataMap.get('pltOriginalTen'));
             }
             if (dataMap.containsKey('pltPlanTen')) { // 테스트
-                expectIncome.PltPlanTen__c = convertToDecimal(dataMap.get('PltPlanTen'));
+                expectIncome.PltPlanTen__c = convertToDecimal(dataMap.get('pltPlanTen'));
             }
             if (dataMap.containsKey('stockMoneyOriginalTen')) { // 테스트
                 expectIncome.StockMoneyOriginalTen__c = convertToDecimal(dataMap.get('stockMoneyOriginalTen'));
@@ -1876,6 +1883,8 @@ public with sharing class OrderConsiderFormController {
 
             upsert expectIncome;
 
+            System.debug(' 실적현황 insert 전 체크 ~~~~~~~>> ' + expectIncome.Id );
+            
             // 실적현황 insert 
             if(expectIncome.Id !=null){
                 upsertPromoteIssues(expectIncome.Id , dataMap);
@@ -1933,8 +1942,13 @@ public with sharing class OrderConsiderFormController {
     Decimal 값으로 변환하기위해 사용되는 메소드
     */
     public static Decimal convertToDecimal(Object objValue) {  
-        Decimal decimalValue = 0.0; // 기본값 설정
-    
+        Decimal decimalValue = 0.00; // 기본값 설정
+        
+        // 입력값이 3자리이상일 경우 1,234 숫자사이에 있는 반점 제거 
+        String changeStr = (String)objValue;
+        objValue = changeStr.replace(',', '');
+        
+
         if (objValue != null || objValue != '') {
             if (objValue instanceof Decimal) {
                 decimalValue = (Decimal)objValue;
@@ -1948,58 +1962,69 @@ public with sharing class OrderConsiderFormController {
     }
 
     /* 
-    물류비 가져오기
+    물류비 관리 (CJFW_DistributionCost__c)에서 값 가져오기 
      */
     public void getDistributeCost() {
         System.debug('# ReportFormController # getDistributeCost ');
-        // 파람값 들어오면 변경예정 231024
-        //String ReportType1 ='외식SU';
-        //String ReportType2 ='급식SU';
         
         try{
 
             List<CJFW_DistributionCost__c> DistributeCostList  = [
                 SELECT Id, 
-                    Name,
-                    StartDate__c,  
-                    Region__c, 
-                    Type__c, 
-                    Cost__c, 
-                    HeadOffice__c, 
-                    SU__c 
+                       Name,
+                       StartDate__c,  
+                       Region__c, 
+                       Type__c, 
+                       Cost__c, 
+                       HeadOffice__c, 
+                       SU__c 
                 FROM CJFW_DistributionCost__c WHERE StartDate__c <= TODAY AND HeadOffice__c =: headOfficeLabel ];
 
-            system.debug('DistributeCost 외식용 -> ' +  DistributeCostList );
+            if ( !DistributeCostList.isEmpty() ) {
+                System.debug(' 물류비관리 정상적으로 가져올경우 ');
+                // 본부별 최대 8개까지 존재가능한 물류비값을 각각 담아주기 
+                for(CJFW_DistributionCost__c record : DistributeCostList){
 
-            // 본부별 최대 8개까지 존재가능한 물류비값을 각각 담아주기 
-            for(CJFW_DistributionCost__c record : DistributeCostList){
-
-                if(headOfficeLabel == '6000'){ // 외식일때 
-                    if(record.Region__c =='수도권' && record.Type__c  =='직접'){ // Distribute list 안에 CapDirect로 담아주고 싶어 
-                        DistributeDirCap = record.Cost__c;
-                    }else if(record.Region__c =='수도권' && record.Type__c  =='간접'){
-                        DistributeInDirCap = record.Cost__c;
-                    }else if(record.Region__c =='동부권' && record.Type__c  =='직접'){
-                        DistributeDirEast = record.Cost__c;
-                    }else if(record.Region__c =='동부권' && record.Type__c  =='간접'){
-                        DistributeInDirEast = record.Cost__c;
-                    }else if(record.Region__c =='서부권' && record.Type__c  =='직접'){
-                        DistributeDirWest = record.Cost__c;
-                    }else if(record.Region__c =='서부권' && record.Type__c  =='간접'){
-                        DistributeInDirWest = record.Cost__c;
-                    }else if(record.Region__c =='제주권' && record.Type__c  =='직접'){
-                        DistributeDirJeju = record.Cost__c;
-                    }else if(record.Region__c =='제주권' && record.Type__c  =='간접'){
-                        DistributeInDirJeju = record.Cost__c;
+                    if(headOfficeLabel == '6000'){ // 외식일때 
+                        if(record.Region__c =='수도권' && record.Type__c  =='직접'){ // Distribute list 안에 CapDirect로 담아주고 싶어 
+                            DistributeDirCap = record.Cost__c;
+                        }else if(record.Region__c =='수도권' && record.Type__c  =='간접'){
+                            DistributeInDirCap = record.Cost__c;
+                        }else if(record.Region__c =='동부권' && record.Type__c  =='직접'){
+                            DistributeDirEast = record.Cost__c;
+                        }else if(record.Region__c =='동부권' && record.Type__c  =='간접'){
+                            DistributeInDirEast = record.Cost__c;
+                        }else if(record.Region__c =='서부권' && record.Type__c  =='직접'){
+                            DistributeDirWest = record.Cost__c;
+                        }else if(record.Region__c =='서부권' && record.Type__c  =='간접'){
+                            DistributeInDirWest = record.Cost__c;
+                        }else if(record.Region__c =='제주권' && record.Type__c  =='직접'){
+                            DistributeDirJeju = record.Cost__c;
+                        }else if(record.Region__c =='제주권' && record.Type__c  =='간접'){
+                            DistributeInDirJeju = record.Cost__c;
+                        }
+                    }else if(headOfficeLabel == '3001'){ // 급식일때 
+                        DistributeSchool =record.Cost__c;
                     }
-                }else if(headOfficeLabel == '3001'){ // 급식일때 
-                    DistributeSchool =record.Cost__c;
+
                 }
+
+            } else {
+                System.debug(' 적용날짜가 안맞아서 물류비관리 못가져올경우 ' + defaultZero );
+                
+                DistributeDirCap = defaultZero;
+                DistributeInDirCap = defaultZero;
+                DistributeDirEast = defaultZero;
+                DistributeInDirEast = defaultZero;
+                DistributeDirWest = defaultZero;
+                DistributeInDirWest = defaultZero;
+                DistributeDirJeju = defaultZero;
+                DistributeInDirJeju = defaultZero;
+                
             }
-            // IncomeExpensesInfo 에 담아주기 
-            // IncomeExpensesInfo 필드에 값이 있는지 먼저 체크 > 값이 없으면 물류비값 넣어주기 */
 
             if (IncomeExpensesInfo.DistributeDirCap__c == 0 || IncomeExpensesInfo.DistributeDirCap__c == null){
+                System.debug(' 뭐임 ' + DistributeDirCap );
                 IncomeExpensesInfo.put('DistributeDirCap__c', DistributeDirCap );
             }
             if (IncomeExpensesInfo.DistributeDirEast__c == 0 || IncomeExpensesInfo.DistributeDirEast__c == null){
@@ -2011,7 +2036,6 @@ public with sharing class OrderConsiderFormController {
             if (IncomeExpensesInfo.DistributeDirJeju__c == 0 || IncomeExpensesInfo.DistributeDirJeju__c == null){
                 IncomeExpensesInfo.put('DistributeDirJeju__c', DistributeDirJeju );
             }
-
             if (IncomeExpensesInfo.DistributeInDirCap__c == 0 || IncomeExpensesInfo.DistributeInDirCap__c == null){
                 IncomeExpensesInfo.put('DistributeInDirCap__c', DistributeInDirCap );
             }
@@ -2024,8 +2048,6 @@ public with sharing class OrderConsiderFormController {
             if (IncomeExpensesInfo.DistributeInDirJeju__c == 0 || IncomeExpensesInfo.DistributeInDirJeju__c == null){
                 IncomeExpensesInfo.put('DistributeInDirJeju__c', DistributeInDirJeju );
             }
-            System.debug('# IncomeExpensesInfo 값 넣어줘  ->' + IncomeExpensesInfo ); 
-
 
         }catch(Exception e){
             String errorMessage = e.getMessage();
@@ -2042,27 +2064,38 @@ public with sharing class OrderConsiderFormController {
     public void getExpectManager() {
         System.debug('# ReportFormController # getExpectManager');
         System.debug('# headOfficeLabel ~~ ' + headOfficeLabel );
-        List<CJFW_ExpectedIncomeManager__c> IncomeManagerList  = [
-            SELECT Id, 
-                Name,
-                CurrencyIsoCode,  
-                DistributionCost__c, 
-                LaborCost__c, 
-                GroupCommonCost__c, 
-                GroupCommonCostExclusive__c, 
-                GroupCommonCostGeneral__c, 
-                PromotionFee__c, 
-                CardFee__c, 
-                CollateralFee__c, 
-                ChefFee__c, 
-                OtherFee__c, 
-                SupportFee__c, 
-                StartDate__c, 
-                HeadOffice__c, 
-                SU__c, 
-                Source__c 
-            FROM CJFW_ExpectedIncomeManager__c WHERE StartDate__c <= TODAY AND HeadOffice__c =: headOfficeLabel LIMIT 1];
 
+        try{
+
+            List<CJFW_ExpectedIncomeManager__c> IncomeManagerList  = [
+                SELECT Id, 
+                    Name,
+                    CurrencyIsoCode,  
+                    DistributionCost__c, 
+                    LaborCost__c, 
+                    GroupCommonCost__c, 
+                    GroupCommonCostExclusive__c, 
+                    GroupCommonCostGeneral__c, 
+                    PromotionFee__c, 
+                    CardFee__c, 
+                    CollateralFee__c, 
+                    ChefFee__c, 
+                    OtherFee__c, 
+                    SupportFee__c, 
+                    StartDate__c, 
+                    HeadOffice__c, 
+                    SU__c, 
+                    Source__c 
+                FROM CJFW_ExpectedIncomeManager__c WHERE StartDate__c <= TODAY AND HeadOffice__c =: headOfficeLabel LIMIT 1];
+
+            if(IncomeManagerList.size()>0 ){
+                System.debug(' 관리값 정상적으로 가져올경우');
+            }else{
+                IncomeManager = new CJFW_ExpectedIncomeManager__c();
+                System.debug(' 적용날짜가 안맞아서 관리값 못가져올경우  ');
+            }
+                
+                // 조회된내용이 없을때 계산식에 오류가 발생하기때문에 아래와같이 default로 0.00 으로 세팅한다 
             String[] defaultValSet = new String[] {
                 'DistributionCost__c',
                 'LaborCost__c',
@@ -2078,26 +2111,22 @@ public with sharing class OrderConsiderFormController {
             };
 
             if (IncomeManagerList.size() > 0) {
-                //CJFW_ExpectedIncomeManager__c IncomeManager = IncomeManagerList[0];
                 IncomeManager = IncomeManagerList[0];
-                
-                for (String defaultSet : defaultValSet) {
-                    Object fieldValue = IncomeManager.get(defaultSet);
-                    // 필드 값이 null이면 기본값을 0.00으로 설정
-                    if (fieldValue == null) fieldValue = 0.00; 
-                    IncomeManager.put(defaultSet, fieldValue);
-                }
-
-                System.debug('IncomeManager !! check > '+  IncomeManager );
-                System.debug('IncomeManager 라바코스트 > '+  IncomeManager.LaborCost__c );
-
-                //for (String defaultSet : defaultValSet) {
-                //    Object fieldValue = IncomeManager.get(defaultSet);
-                //    // 필드 값이 null이면 기본값을 0.00 으로 설정
-                //    if (fieldValue == null)  fieldValue = 0.00; 
-                //    IncomeManager.put(defaultSet, fieldValue);
-                //}
             }
+            
+            for (String defaultSet : defaultValSet) {
+                Object fieldValue = IncomeManager.get(defaultSet);
+                // 필드 값이 null이면 기본값을 0.00으로 설정
+                if (fieldValue == null) fieldValue = 0.00; 
+                IncomeManager.put(defaultSet, fieldValue);
+            }
+
+        }catch(Exception e){
+            String errorMessage = e.getMessage();
+            String errorStackTrace = e.getStackTraceString(); 
+            System.debug(' 예상손익관리자 에러 메시지: ' + errorMessage);
+            System.debug(' 예상손익관리자 에러 라인: ' + errorStackTrace);
+        }
 
     }
 
@@ -2317,13 +2346,14 @@ public with sharing class OrderConsiderFormController {
         System.debug(' dataMap !' + dataMap );
         CJFW_PromoteIssues__c salesPromoteIssue;
 
-        if (expectIncomeId != null && expectIncomeId != '') {
+        List<CJFW_PromoteIssues__c> salesPromoteIssueList = [SELECT Id FROM CJFW_PromoteIssues__c WHERE ExpectedIncomeExpensesId__c  = :expectIncomeId LIMIT 1];
+        if(!salesPromoteIssueList.isEmpty()){
             System.debug('추진사항 update ★-> ' + expectIncomeId);
-            salesPromoteIssue = [SELECT Id FROM CJFW_PromoteIssues__c WHERE ExpectedIncomeExpensesId__c  = :expectIncomeId LIMIT 1];
+            salesPromoteIssue = salesPromoteIssueList[0];
         }else{
             System.debug('추진사항 insert ★-> ' );
             salesPromoteIssue = new CJFW_PromoteIssues__c();
-            salesPromoteIssue.ExpectedIncomeExpensesId__c = expectIncomeId; // 필수값 
+            salesPromoteIssue.ExpectedIncomeExpensesId__c = expectIncomeId;
         }
 
         // 솔루션 ㅣㅣ구분

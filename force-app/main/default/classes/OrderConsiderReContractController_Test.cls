@@ -25,10 +25,21 @@ public with sharing class OrderConsiderReContractController_Test {
         objOppty = COMM_ReportTestDataFactory.createOpportunity('General', '테스트', objAcc.Id, date.valueOf('2022-01-01'));
         insert objOppty;
         
-        // 신규개설품의
+        // 신규개설품의 (master)
         CJFW_ExpectedIncomeExpenses__c objExIncome = new CJFW_ExpectedIncomeExpenses__c();
         objExIncome = COMM_ReportTestDataFactory.createExpectedIncome(objOppty.Id);
         insert objExIncome;
+        
+        // 실적현황 (detail)  objExIncome.id
+        CJFW_SalesPerformance__c objSales = new CJFW_SalesPerformance__c();
+        objSales.ExpectedIncomeExpensesId__c =  objExIncome.id;
+        insert objSales;
+
+        //추진사항 (detail)  objExIncome.id
+        CJFW_PromoteIssues__c objPromote = new CJFW_PromoteIssues__c();
+        objPromote.ExpectedIncomeExpensesId__c = objExIncome.id;
+        insert objPromote;
+
     }
     
     @isTest
@@ -176,11 +187,173 @@ public with sharing class OrderConsiderReContractController_Test {
            + ' "salesProfitJejuOne": "50.00", '
            + ' "salesProfitFoOne": "40.00", '
            + ' "salesProfitImpMonthOne": "30.00", '
+           + ' "salesProfitNameTwo": "치킨", '
+           + ' "salesProfitThreeTwo": "30.00", '
+           + ' "salesProfitCapTwo": "20.00", '
+           + ' "salesProfitEastTwo": "30.00", '
+           + ' "salesProfitWestTwo": "60.00", '
+           + ' "salesProfitJejuTwo": "50.00", '
+           + ' "salesProfitFoTwo": "40.00", '
+           + ' "salesProfitImpMonthTwo": "20.00", '
+           + ' "salesProfitNameThree": "피자", '
+           + ' "salesProfitThreeThree": "30.00", '
+           + ' "salesProfitCapThree": "10.00", '
+           + ' "salesProfitEastThree": "20.00", '
+           + ' "salesProfitWestThree": "30.00", '
+           + ' "salesProfitJejuThree": "60.00", '
+           + ' "salesProfitFoThree": "50.00", '
+           + ' "salesProfitImpMonthThree": "40.00", '
+           + ' "salesProfitNameFour": "파스타", '
+           + ' "salesProfitThreeFour": "30.00", '
+           + ' "salesProfitCapFour": "10.00", '
+           + ' "salesProfitEastFour": "20.00", '
+           + ' "salesProfitWestFour": "30.00", '
+           + ' "salesProfitJejuFour": "60.00", '
+           + ' "salesProfitFoFour": "50.00", '
+           + ' "salesProfitImpMonthFour": "40.00", '
+           + ' "salesProfitThreeEx": "20.00", '
+           + ' "salesProfitCapEx": "30.00", '
+           + ' "salesProfitEastEx": "60.00", '
+           + ' "salesProfitWestEx": "50.00", '
+           + ' "salesProfitJejuEx": "40.00", '
+           + ' "salesProfitFoEx": "40.00", '
+           + ' "salesProfitImpMonthEx": "40.00", '
+           + ' "salesProfitThreeGen": "50.00", '
+           + ' "salesProfitCapGen": "60.00", '
+           + ' "salesProfitEastGen": "50.00", '
+           + ' "salesProfitWestGen": "30.00", '
+           + ' "salesProfitJejuGen": "20.00", '
+           + ' "salesProfitFoGen": "50.00", '
+           + ' "salesProfitImpMonthGen": "30.00", '
+           + ' "profitRateEx": "20.00", '
+           + ' "profitRateNameOne": "귤", '
+           + ' "profitRateNameTwo": "오렌지", '
+           + ' "profitRateNameThree": "주스", '
+           + ' "profitRateNameFour": "콜라", '
+           + ' "distributeDirThree": "30.00", '
+           + ' "distributeDirCap": "10.00", '
+           + ' "distributeDirEast": "20.00", '
+           + ' "distributeDirWest": "30.00", '
+           + ' "distributeDirJeju": "60.00", '
+           + ' "distributeDirFo": "50.00", '
+           + ' "distributeDirImpMonth": "80.00", '
+           + ' "distributeInDirThree": "30.00", '
+           + ' "distributeInDirCap": "10.00", '
+           + ' "distributeInDirEast": "20.00", '
+           + ' "distributeInDirWest": "30.00", '
+           + ' "distributeInDirJeju": "60.00", '
+           + ' "distributeInDirFo": "50.00", '
+           + ' "distributeInDirImpMonth": "80.00", '
+           + ' "beforeSales": "80.00", '
+           + ' "salesElevenAgo": "70.00", '
+           + ' "salesTenAgo": "60.00", '
+           + ' "salesNineAgo": "50.00", '
+           + ' "salesEightAgo": "40.00", '
+           + ' "salesSevenAgo": "30.00", '
+           + ' "salesSixAgo": "20.00", '
+           + ' "salesFiveAgo": "10.00", '
+           + ' "salesFourAgo": "20.00", '
+           + ' "salesThreeAgo": "60.00", '
+           + ' "salesTwoAgo": "70.00", '
+           + ' "salesOneAgo": "50.00", '
+           + ' "beforesalesProfit": "50.00", '
+           + ' "salesProfitElevenAgo": "100.00", '
+           + ' "salesProfitTenAgo": "60.00", '
+           + ' "salesProfitNineAgo": "50.00", '
+           + ' "salesProfitEightAgo": "20.00", '
+           + ' "salesProfitSevenAgo": "30.00", '
+           + ' "salesProfitSixAgo": "70.00", '
+           + ' "salesProfitFiveAgo": "50.00", '
+           + ' "salesProfitFourAgo": "50.00", '
+           + ' "salesProfitThreeAgo": "100.00", '
+           + ' "salesProfitTwoAgo": "60.00", '
+           + ' "salesProfitOneAgo": "50.00", '
+           + ' "beforeSalesStore": "20.00", '
+           + ' "salesStoreElevenAgo": "30.00", '
+           + ' "salesStoreTenAgo": "30.00", '
+           + ' "salesStoreNineAgo": "70.00", '
+           + ' "salesStoreEightAgo": "50.00", '
+           + ' "salesStoreSevenAgo": "50.00", '
+           + ' "salesStoreSixAgo": "100.00", '
+           + ' "salesStoreFiveAgo": "60.00", '
+           + ' "salesStoreFourAgo": "50.00", '
+           + ' "salesStoreThreeAgo": "20.00", '
+           + ' "salesStoreTwoAgo": "30.00", '
+           + ' "salesStoreOneAgo": "10.00", '
+           + ' "beforeDistribute": "30.00", '
+           + ' "distributeElevenAgo": "70.00", '
+           + ' "distributeTenAgo": "50.00", '
+           + ' "distributeNineAgo": "50.00", '
+           + ' "distributeEightAgo": "100.00", '
+           + ' "distributeSevenAgo": "60.00", '
+           + ' "distributeSixAgo": "50.00", '
+           + ' "distributeFiveAgo": "20.00", '
+           + ' "distributeFourAgo": "30.00", '
+           + ' "distributeThreeAgo": "80.00", '
+           + ' "distributeTwoAgo": "80.00", '
+           + ' "distributeOneAgo": "60.00", '
+           + ' "beforedistributeDir": "70.00", '
+           + ' "distributeDirElevenAgo": "50.00", '
+           + ' "distributeDirTenAgo": "50.00", '
+           + ' "distributeDirNineAgo": "100.00", '
+           + ' "distributeDirEightAgo": "60.00", '
+           + ' "distributeDirSevenAgo": "50.00", '
+           + ' "distributeDirSixAgo": "20.00", '
+           + ' "distributeDirFiveAgo": "30.00", '
+           + ' "distributeDirFourAgo": "80.00", '
+           + ' "distributeDirThreeAgo": "80.00", '
+           + ' "distributeDirTwoAgo": "60.00", '
+           + ' "distributeDirOneAgo": "60.00", '
+           + ' "beforedistributeInDir": "70.00", '
+           + ' "distributeInDirElevenAgo": "50.00", '
+           + ' "distributeInDirTenAgo": "50.00", '
+           + ' "distributeInDirNineAgo": "100.00", '
+           + ' "distributeInDirEightAgo": "60.00", '
+           + ' "distributeInDirSevenAgo": "50.00", '
+           + ' "distributeInDirSixAgo": "20.00", '
+           + ' "distributeInDirFiveAgo": "30.00", '
+           + ' "distributeInDirFourAgo": "80.00", '
+           + ' "distributeInDirThreeAgo": "80.00", '
+           + ' "distributeInDirTwoAgo": "60.00", '
+           + ' "distributeInDirOneAgo": "60.00", '
+           + ' "beforeContribute": "50.00", '
+           + ' "contributeElevenAgo": "50.00", '
+           + ' "contributeTenAgo": "100.00", '
+           + ' "contributeNineAgo": "60.00", '
+           + ' "contributeEightAgo": "50.00", '
+           + ' "contributeSevenAgo": "20.00", '
+           + ' "contributeSixAgo": "30.00", '
+           + ' "contributeFiveAgo": "80.00", '
+           + ' "contributeFourAgo": "80.00", '
+           + ' "contributeThreeAgo": "60.00", '
+           + ' "contributeTwoAgo": "60.00", '
+           + ' "contributeOneAgo": "60.00", '
+           + ' "synergyDivisionOne": "비타민", '
+           + ' "synergyTypeOne": "립밤", '
+           + ' "synergySaleOne": "60.00", '
+           + ' "synergySaleRateOne": "50.00", '
+           + ' "synergyRemarkOne": "가방", '
+           + ' "synergyDivisionTwo": "의자", '
+           + ' "synergyTypeTwo": "책상", '
+           + ' "synergySaleTwo": "80.00", '
+           + ' "synergySaleRateTwo": "60.00", '
+           + ' "synergyRemarkTwo": "비타민", '
+           + ' "synergyDivisionThree": "비타민", '
+           + ' "synergyTypeThree": "비타민", '
+           + ' "synergySaleThree": "80.00", '
+           + ' "synergySaleRateThree": "60.00", '
+           + ' "synergyRemarkTwo": "비타민", '
            
+
            // ▲ 추가 231113
 
            + ' "stockSum": "51" } ';
-          
+        
+        
+
+
+
+
 
         // 객체생성
         OrderConsiderReContractFormController controller = new OrderConsiderReContractFormController();
@@ -190,15 +363,17 @@ public with sharing class OrderConsiderReContractController_Test {
         
         // Picklist 값을 가져오는 메소드
         controller.getPicklistValues();
+        // OpportunityContactRole에 있는 key-man 정보 가져오는 메소드
+        controller.getKeymanInfo();
         // Oppty 에 있는 Owner 정보 가져오는 메소드
         controller.getOpptyInfo();
         // Oppty 에 있는 Account 값을 가져오는 메소드
         controller.getAccountInfo();
         // 신규개설품의(CJFW_ExpectedIncomeExpenses__c) 에서 값 가져오기
         controller.getIncomeExpenses();
-        // 에서 값 가져오기
+        // 품의서 관리자 작성 obj 에서 값 가져오기
         controller.getExpectManager();
-        // 에서 값 가져오기
+        // 물류비 관리 (CJFW_DistributionCost__c)에서 값 가져오기
         controller.getDistributeCost();
         // 에서 값 가져오기
         controller.getSalesPerform(exIncomeId);

@@ -3,7 +3,7 @@
  */
 
 @IsTest
-private class DecisionProcessNewController_test {
+private class DecisionProcessNewController_Test {
     @TestSetup
     static void DecisionProcessNewController_testSetUp() {
 

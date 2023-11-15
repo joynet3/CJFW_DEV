@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : jieun.lee3@dkbmc.com
  * @group             : 
- * @last modified on  : 11-08-2023
+ * @last modified on  : 11-14-2023
  * @last modified by  : jieun.lee3@dkbmc.com
 **/
 public with sharing class CJFW_SelectReportTypeController {
@@ -13,21 +13,15 @@ public with sharing class CJFW_SelectReportTypeController {
      */
     @AuraEnabled
     public static List<Opportunity> getOpptyType(String Id) {
-        try {
-            System.debug('Id = ' + Id);
-            List<Opportunity> typeData = [
-                SELECT Id, Type, Owner.HeadOffice__c
-                 FROM Opportunity
-                 WHERE Id =: Id 
-            ];
+        System.debug('Id = ' + Id);
+        List<Opportunity> typeData = [
+            SELECT Id, Type, Owner.HeadOffice__c
+                FROM Opportunity
+                WHERE Id =: Id 
+        ];
 
-            return typeData.size()>0 ? typeData : new List<Opportunity>();
-        } catch (Exception e) {
-            System.debug('message => ' + e.getMessage());
-            throw new AuraHandledException(e.getMessage());
-        }
+        return typeData.size()>0 ? typeData : new List<Opportunity>();
 
     }
-
 
 }

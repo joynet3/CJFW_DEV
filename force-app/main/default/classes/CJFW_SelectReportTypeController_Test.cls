@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : jieun.lee3@dkbmc.com
  * @group             : 
- * @last modified on  : 11-08-2023
+ * @last modified on  : 11-14-2023
  * @last modified by  : jieun.lee3@dkbmc.com
 **/
 @isTest
@@ -17,7 +17,7 @@ public with sharing class CJFW_SelectReportTypeController_Test {
 
         // 기회
         Opportunity objOppty = new Opportunity();
-        objOppty = COMM_ReportTestDataFactory.createOpportunity('0120w0000022cWgAAI', '테스트', objAcc.Id, date.valueOf('2022-01-01'));
+        objOppty = COMM_ReportTestDataFactory.createOpportunity('General', '테스트', objAcc.Id, date.valueOf('2022-01-01'));
         insert objOppty;
 
     }

@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 11-07-2023
+ * @last modified on  : 11-14-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -69,29 +69,98 @@ public with sharing class CJFW_MDMBulkCreateSellModalController {
         }
         return saveResult;
     } 
-    // // 사용 예:
-    // List<String> accountFields = getAllFieldNames('Account');
-    // System.debug(accountFields);
+     /**
+    * =======================================================================================================================
+    * @description : 대량생성의 참조코드 매뉴얼 다운로드 URL 
+    * @params      : X
+    * @return      : `String`
+    *   let hiddenElement = document.createElement('a');
+    *       hiddenElement.href = result;
+    *       hiddenElement.target = '_blank';
+    *       hiddenElement.download = 'download';
+    *       hiddenElement.click();
+    * =======================================================================================================================
+    */
+   @AuraEnabled  
+   public static String downloadMenualExcel(){
+       ContentVersion cv = [SELECT   Title, id, VersionNumber 
+                            FROM     ContentVersion 
+                            WHERE    Title = 'MDM 참조코드 매뉴얼' 
+                            ORDER BY VersionNumber DESC LIMIT 1];
 
+       String contentId = cv.Id;
+
+       return URL.getSalesforceBaseUrl().toExternalForm() + '/sfc/servlet.shepherd/version/download/' + contentId;
+   }
+   
+   /**
+   * =======================================================================================================================
+   * @description : 대량생성 유효성 검사 (대량의 경우 JS에서 하면 시간이 너무 올래 걸려서 Controller로 이동)
+   * @params      : X
+   * @return      : `List<ErrorData>`
+   * =======================================================================================================================
+   */
+  @AuraEnabled
+  public static List<ErrorData> validationCheckBeforeSave(List<MDMRegRequestCustomer__c> mdmList, List<String> headerList) {
+      try {
+          System.debug('mdmList ' + mdmList);
+          System.debug('headerList ' + headerList);
+  
+          List<ErrorData> errorDataidList = new List<ErrorData>();
+  
+          // 구코드 validation
+          String regex1 = '^(\\d{0,10}|)$';
+          Pattern pattern1 = Pattern.compile(regex1);
+          // 사업자등록번호 제어 validation
+          String regex2 = '^(\\d{10}|)$';
+          Pattern pattern2 = Pattern.compile(regex2);
+          // 법인코드 제어 validation
+          String regex3 = '^(\\d{13}|)$';
+          Pattern pattern3 = Pattern.compile(regex3);
+          // 대표자 생년월일 validation
+          String regex4 = '^(?:[0-9]{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[1,2][0-9]|3[0,1]))$|^$';
+          Pattern pattern4 = Pattern.compile(regex4);
+          // 전화번호 validation
+          String regex5 = '^\\d{2,3}-\\d{3,4}-\\d{4}$';
+          Pattern pattern5 = Pattern.compile(regex5);
+          // 팩스번호 validation
+          String regex6 = '^\\d{2,3}-\\d{3,4}-\\d{4}$';
+          Pattern pattern6 = Pattern.compile(regex6);
+          // 약정회전일 validation
+          String regex7 = '^\\d{1,3}$|^$';
+          Pattern pattern7 = Pattern.compile(regex7);
+          // 외형(정원) validation
+          String regex8 = '^\\d{0,11}$';
+          Pattern pattern8 = Pattern.compile(regex8);
+          // 종사업자번호 제어 validation
+          String regex9 = '^(\\d{4}|)$';
+          Pattern pattern9 = Pattern.compile(regex9);
+  
+          for (Integer i = 0; i < mdmList.size(); i++) {
+              MDMRegRequestCustomer__c mdm = mdmList[i];
+              checkRequiredField(mdm.PV_NAME1__c, i, '고객명(영문명 포함)', errorDataidList);
+              checkRequiredField(mdm.PV_NAME_G__c, i, '고객명(G) / 자국명', errorDataidList);
+          }
+  
+          System.debug('errorDataidList => ' + errorDataidList);
+          return errorDataidList;
+  
+      } catch (Exception e) {
+          throw new AuraHandledException(e.getMessage());
+      }
+  }
+  
+  public static void checkRequiredField(String fieldValue, Integer index, String fieldName, List<ErrorData> errorDataidList) {
+      if (String.isBlank(fieldValue)) {
+          ErrorData obj = new ErrorData(index + 1, fieldName, '필수 값 입니다.');
+          System.debug('## obj => ' + obj);
+          errorDataidList.add(obj);
+      }
+  }
+  
     /**
-     *                  let hiddenElement = document.createElement('a');
-                        hiddenElement.href = result;
-                        hiddenElement.target = '_blank';
-                        hiddenElement.download = 'download';
-                        hiddenElement.click();
-     */
-    @AuraEnabled  
-    public static String downloadMenualExcel(){
-        ContentVersion cv = [SELECT   Title, id, VersionNumber 
-                             FROM     ContentVersion 
-                             WHERE    Title = 'MDM 참조코드 매뉴얼' 
-                             ORDER BY VersionNumber DESC LIMIT 1];
-
-        String contentId = cv.Id;
-
-        return URL.getSalesforceBaseUrl().toExternalForm() + '/sfc/servlet.shepherd/version/download/' + contentId;
-    }
-
+    * SaveResult Wrapper
+    */
     public class SaveResult{
         @AuraEnabled public String status{get;set;}
         @AuraEnabled public String massage{get;set;}
@@ -103,12 +172,27 @@ public with sharing class CJFW_MDMBulkCreateSellModalController {
     }
    
     /**
-     * MDMRequest 공통
-     */
+    * MDMRequest Wrapper
+    */
     public class MDMRequest{
         @AuraEnabled public String Name {get;set;}
         @AuraEnabled public String BusinessNumber {get;set;}
         @AuraEnabled public String CEOName {get;set;}
         
+    }
+
+    /**
+    * ErrorData Wrapper
+    */
+    public class ErrorData {
+        @AuraEnabled public Integer no;
+        @AuraEnabled public String field;
+        @AuraEnabled public String errorMsg;
+        
+        public ErrorData(Integer no, String field, String errorMsg) {
+            this.no = no;
+            this.field = field;
+            this.errorMsg = errorMsg;
+        }
     }
 }

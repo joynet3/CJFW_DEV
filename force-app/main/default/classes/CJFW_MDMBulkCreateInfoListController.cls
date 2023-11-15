@@ -2,14 +2,14 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 11-02-2023
+ * @last modified on  : 11-14-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkCreateInfoListController {
 
     /* 대량 생성 요청 Id를 통해 받아 온 리스트를 기존의 것과 조사 */
     @AuraEnabled(cacheable=true)
-    public static DataWrapper getAccountInfo (String recordId, Integer pageNumber, Integer pageSize) {
+    public static DataWrapper getMDMInfo (String recordId, Integer pageNumber, Integer pageSize) {
 
         List<MDMRegRequestCustomer__c> mdms = [SELECT PV_NAME1__c, PV_NAME_G__c, PV_KUNNR__c, PV_OLDCD__c, PV_NAME2__c, PV_KTOKD__c, toLabel(PV_KTOKD__c) PV_KTOKDLabel, PV_CUSTTYPE__c, toLabel(PV_CUSTTYPE__c) PV_CUSTTYPELabel, PV_STCD2__c  FROM MDMRegRequestCustomer__c WHERE MDMRegRequestBulkCustomer__c = :recordId ORDER BY Name];
 

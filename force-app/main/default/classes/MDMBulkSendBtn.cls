@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 10-11-2023
+ * @last modified on  : 11-14-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 public without sharing class MDMBulkSendBtn {
@@ -94,15 +94,24 @@ public without sharing class MDMBulkSendBtn {
             // 담당자들 정보 <"아이디": "List"> 형식 Map
             Map<String, List<MDMRegRequestContact__c>> listMap = new Map<String, List<MDMRegRequestContact__c>>();
             
-            for(MDMRegRequestCustomer__c mdm : listMDMCustomer) {
-                List<MDMRegRequestContact__c> listMDMContact = [
-                    SELECT  Id, Contact__c,
-                            INSTANCEID__c, PV_NO__c, PV_NAME1_VK__c, PV_KNVKGB__c, PV_TELF1_VK__c,
-                            PV_ABTNR_VK__c, PV_PAFKT_VK__c, PV_TALKT_VK__c, PV_EMAIL_VK__c
-                    FROM    MDMRegRequestContact__c
-                    WHERE   MDMRegRequestCustomer__c = :mdm.Id
-                ];
-                listMap.put(mdm.Id, listMDMContact);
+            List<MDMRegRequestContact__c> contactList = [
+                SELECT  Id, Contact__c, MDMRegRequestCustomer__c,
+                        INSTANCEID__c, PV_NO__c, PV_NAME1_VK__c, PV_KNVKGB__c, PV_TELF1_VK__c,
+                        PV_ABTNR_VK__c, PV_PAFKT_VK__c, PV_TALKT_VK__c, PV_EMAIL_VK__c
+                FROM    MDMRegRequestContact__c
+                WHERE   MDMRegRequestCustomer__c IN :idList
+            ];
+
+            for (MDMRegRequestContact__c con : contactList) {
+                String customerValue = con.MDMRegRequestCustomer__c;
+
+                // 맵에 해당 키가 없으면 새로운 목록을 생성하고 맵에 추가
+                if (!listMap.containsKey(customerValue)) {
+                    listMap.put(customerValue, new List<MDMRegRequestContact__c>());
+                }
+
+                // 맵에서 해당 키의 목록을 가져와서 연락처를 추가
+                listMap.get(customerValue).add(con);
             }
 
             // Update할 Account에 필드 기입하기

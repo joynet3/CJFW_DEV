@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : seol.kim@dkbmc.com
  * @group             : 
- * @last modified on  : 11-08-2023
+ * @last modified on  : 11-14-2023
  * @last modified by  : seol.kim@dkbmc.com
 **/
 public with sharing class CJFW_CategoryFileController {
@@ -54,7 +54,7 @@ public with sharing class CJFW_CategoryFileController {
                     contentVersionQuery += ' WHERE Category__c = :category ' +
                                             ' AND ContentDocumentId IN :ContentDocumentIds ' +
                                             ' AND Title LIKE :searchTerm ' +
-                                            ' ORDER BY LastModifiedDate ASC';
+                                            ' ORDER BY Title  ASC';
     
                     List<ContentVersion> ContentVersionList = Database.query(contentVersionQuery);   
                     System.debug('쿼리실행 2 ==> ' + ContentVersionList);                 
@@ -71,7 +71,7 @@ public with sharing class CJFW_CategoryFileController {
                     contentVersionQuery += ' WHERE Category__c = :category ' +
                                             ' AND ContentDocumentId IN :ContentDocumentIds ' +
                                             ' AND Title LIKE :searchTerm ' + 
-                                            ' ORDER BY LastModifiedDate ASC';
+                                            ' ORDER BY Title  ASC';
                     List<ContentVersion> ContentVersionList = Database.query(contentVersionQuery);
                     System.debug('ContentVersionList ==> ' + ContentVersionList);       
                     System.debug('ContentVersionList size ==> ' + ContentVersionList.size());       
@@ -94,7 +94,7 @@ public with sharing class CJFW_CategoryFileController {
     
                     contentVersionQuery += ' WHERE Category__c = :category ' +
                                             ' AND ContentDocumentId IN :ContentDocumentIds ' +
-                                            ' ORDER BY LastModifiedDate ASC';
+                                            ' ORDER BY Title  ASC';
     
                     List<ContentVersion> ContentVersionList = Database.query(contentVersionQuery);   
                     System.debug('쿼리실행 2 ==> ' + ContentVersionList);                 
@@ -110,7 +110,7 @@ public with sharing class CJFW_CategoryFileController {
                     }
                     contentVersionQuery += ' WHERE Category__c = :category ' +
                                             ' AND ContentDocumentId IN :ContentDocumentIds ' +
-                                            ' ORDER BY LastModifiedDate ASC';
+                                            ' ORDER BY Title  ASC';
                     List<ContentVersion> ContentVersionList = Database.query(contentVersionQuery);
                     System.debug('기본 ==> ' + ContentVersionList);       
                     return ContentVersionList;
@@ -176,16 +176,39 @@ public with sharing class CJFW_CategoryFileController {
 
       
   
-        if (category == categoryName) {
+        if (category == categoryName && objectName == 'CollaborationGroup') {
             CollaborationGroupMember[] members = [SELECT Id FROM CollaborationGroupMember
                                                     WHERE CollaborationGroupId = :groupId
                                                     AND MemberId  =: userId
                                                     AND (CollaborationRole = 'Admin'
                                                     OR CollaborationRole = 'Standard')];
             return !members.isEmpty();
+        } else if (category != categoryName) {
+            return true; // category와 categoryName이 같지 않을 때 true 반환
         } else {
-
-            return true;
+            return false; // 기본 조건에 맞지 않으면 false 반환
         }
     }
+
+    @AuraEnabled(cacheable=true)
+    public static String getObjectLabel(String objectApiName) {
+        Schema.DescribeSObjectResult describeResult = Schema.getGlobalDescribe().get(objectApiName).getDescribe();
+        return describeResult.getLabel();
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static String getRecordName(String recordId, String objectApiName) {
+        String recordName;
+        try {
+            SObject obj = Database.query('SELECT Name FROM ' + objectApiName + ' WHERE Id = :recordId LIMIT 1');
+            if (obj != null) {
+                recordName = (String)obj.get('Name');
+            }
+        } catch (Exception e) {
+            // Handle exception if necessary
+        }
+        return recordName;
+    }
+
+
 }
