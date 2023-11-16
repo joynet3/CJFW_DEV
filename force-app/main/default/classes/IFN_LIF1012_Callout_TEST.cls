@@ -39,7 +39,7 @@ public with sharing class IFN_LIF1012_Callout_TEST {
 
 
     @isTest
-    static void test02_1()
+    static void test01_1()
     {
 
         Test.startTest();
@@ -94,7 +94,7 @@ public with sharing class IFN_LIF1012_Callout_TEST {
 
     
     @isTest
-    static void test02_2()
+    static void test01_2()
     {
 
         Test.startTest();
@@ -126,7 +126,7 @@ public with sharing class IFN_LIF1012_Callout_TEST {
 
 
     @isTest
-    static void test03_1()
+    static void test02_1()
     {
 
         Test.startTest();
@@ -189,7 +189,7 @@ public with sharing class IFN_LIF1012_Callout_TEST {
 
 
     @isTest
-    static void test03_2()
+    static void test02_2()
     {
 
         Test.startTest();

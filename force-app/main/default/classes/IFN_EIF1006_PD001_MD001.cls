@@ -28,23 +28,24 @@ global with sharing class IFN_EIF1006_PD001_MD001 implements Database.Batchable<
     global String                   inqryEndDt;
     global String                   bidNtceNo;
 
+    //logwrap 반복 쓰일것으로 예상, 여기 모아둬 본다.
+    global void commonLocalSetting(Database.BatchableContext bc){
+        this.commlog = new IFN_CommonLog();
+        this.logwrap = new IFN_CommonLog.logWrap(this.interfaceId, 'Batch');
+        
+        this.logwrap.BatchCronId         = bc.getJobId();
+        this.logwrap.BatchStartTime      = System.now();
+        this.logwrap.ClassName           = String.valueOf(this).substring(0, String.valueOf(this).indexOf(':'));
+    }
+
     //Constructor here
-    
-    /*
-        한 페이지 결과 수	numOfRows	4	    필수	10	한 페이지 결과 수
-        페이지 번호	        pageNo	    4	    필수	1	페이지 번호
-        서비스키	        ServiceKey	400	    필수	공공데이터포털에서 받은 인증키	공공데이터포털에서 받은 인증키
-        조회구분	        inqryDiv	1	    필수	1	검색하고자하는 조회구분 1.둥록일시, 2.공고일시, 3.개찰일시, 4.입찰공고번호
-        조회시작일시	    inqryBgnDt	12	    옵션	201605010000	검색하고자하는 시작일시 ‘YYYYMMDDHHMM', 조회구분 1,2,3일 경우 필수
-        조회종료일시	    inqryEndDt	12	    옵션	201605052359	검색하고자하는 종료일시 'YYYYMMDDHHMM', 조회구분 1,2,3일 경우 필수
-        입찰공고번호	    bidNtceNo	40	    옵션	20160439522	검색하고자하는 입찰공고번호. 조회구분 4인 경우 필수
-        타입	            type	    4	    옵션	json	오픈API 리턴 타입을 JSON으로 받고 싶을 경우 'json' 으로 지정
-    */
+
     
     //기본 수행 시 생성자
     global IFN_EIF1006_PD001_MD001(String workDivision) {
         this.workDivision   = workDivision;
     }
+    
     //쓸일은 없겠으나, 혹시나 만들어 두는 생성자
     global IFN_EIF1006_PD001_MD001(String workDivision, String inqryDiv, String inqryBgnDt, String inqryEndDt, String bidNtceNo ) {
         this.workDivision   = workDivision  ;
@@ -54,20 +55,17 @@ global with sharing class IFN_EIF1006_PD001_MD001 implements Database.Batchable<
         this.bidNtceNo      = bidNtceNo     ;
     }
 
+
     List<String> globalCount = new List<String>();
     /***********************************************************************************************************
     *  Bacth   : start
     *  내용    : 나라장터 3종 물품, 용역, 외자 처리
     ************************************************************************************************************/
     global Iterable<String> start(Database.BatchableContext bc) {
-        this.commlog = new IFN_CommonLog();
-        this.logwrap = new IFN_CommonLog.logWrap(this.interfaceId, 'Batch');
+
+        commonLocalSetting(bc);
         
-        this.logwrap.BatchCronId         = bc.getJobId();
-        this.logwrap.BatchStartTime      = System.now();
-        this.logwrap.ClassName           = String.valueOf(this).substring(0, String.valueOf(this).indexOf(':'));
-        
-        this.logwrap.LogText.add('### [Batch Start] ###' + this.workDivision);
+        this.logwrap.LogText.add('### [Batch Start] ### ->' + this.workDivision);
         
         globalCount.add(String.valueOf(1));     // 1회 수행 한다.
         return globalCount;
@@ -84,8 +82,8 @@ global with sharing class IFN_EIF1006_PD001_MD001 implements Database.Batchable<
         String                          yeday       = String.valueOf(Datetime.now().addDays(-1).format('yyyyMMdd')) + '0000';   //global String yeday = String.valueOf(Date.today().addDays(-1).format('yyyyMMdd')) + '0000';
 
         inqryDiv        = '3';      //1.둥록일시, 2.공고일시, 3.개찰일시, 4.입찰공고번호
-        inqryBgnDt      = yeday;
-        inqryEndDt      = today;
+        inqryBgnDt      = inqryBgnDt != null ? inqryBgnDt : yeday;
+        inqryEndDt      = inqryEndDt != null ? inqryEndDt : today;
 
         String errResultCode;
         String errResultMsg;
@@ -101,7 +99,7 @@ global with sharing class IFN_EIF1006_PD001_MD001 implements Database.Batchable<
             //Output param = new Output();
             String getRquest = '';
             
-            getRquest += workDivision;
+            getRquest += workDivision;  //error test + '000';
 
             getRquest += '?' + 'type=json';
             getRquest += '&' + 'ServiceKey='    + authKey.KeyValue__c;
@@ -124,11 +122,21 @@ global with sharing class IFN_EIF1006_PD001_MD001 implements Database.Batchable<
                     Output  outObj          = (Output)ifRes.response;
                     List<items> resItems    = outObj.response.body.items;
 
+                    this.logwrap.LogText.add('resItems.size():' + resItems.size());
+                    
+                    for(items nowitem : resItems){
+                        this.logwrap.LogText.add('nowitem:' + nowitem.bidNtceNm + '/' + nowitem.bidNtceNo + '/' + nowitem.bidNtceOrd);
+                    }
+
                     // - 
                     // CJFW_BiddingInformation__c 용, 신규(Military,Local,NaraMarket)
                     Id naraRecordId = Schema.SObjectType.CJFW_BiddingInformation__c.getRecordTypeInfosByDeveloperName().get('NaraMarket').getRecordTypeId();
                     
-                    //workDivision 에 따라 [bsnsDivNm__c] 더 세분화 할 수 있으나, 현재는 NaraMarket 전체로 한다.
+                    //workDivision 에 따라 [bsnsDivNm__c] 더 세분화
+                    //getScsbidListSttusThng    //물품
+                    //getScsbidListSttusServc   //용역
+                    //getScsbidListSttusFrgcpt  //외자
+                    String divNm = workDivision.equals('getScsbidListSttusThng') ? '물품' : workDivision.equals('getScsbidListSttusServc') ? '용역' : '외자';
                     List<CJFW_BiddingInformation__c>     updList = [
                         SELECT Id, BidNoticeNumber__c, Name 
                             , BidMethod__c, ContractSignMethod__c, SubNumber__c, IsReBid__c
@@ -139,19 +147,19 @@ global with sharing class IFN_EIF1006_PD001_MD001 implements Database.Batchable<
                             ,SelectResult__c
                         FROM CJFW_BiddingInformation__c
                         WHERE RecordtypeId = :naraRecordId
+                        AND bsnsDivNm__c = :divNm
                     ];
                     
                     for(CJFW_BiddingInformation__c nowBid : updList){
                         System.debug('nowBid:' + nowBid.Name + '/' + nowBid.BidNoticeNumber__c + '/' + nowBid.SubNumber__c);
                         this.logwrap.LogText.add('nowBid:' + nowBid.Name + '/' + nowBid.BidNoticeNumber__c + '/' + nowBid.SubNumber__c);
+                        
                         for(items nowitem : resItems){
                             if(nowBid.BidNoticeNumber__c == nowitem.bidNtceNo + '-' + nowitem.bidNtceOrd) {
                                 System.debug('sancho same:' + nowitem.bidNtceNm + '/' + nowitem.bidNtceNo + '/' + nowitem.bidNtceOrd);
                                 this.logwrap.LogText.add('sancho same:' + nowitem.bidNtceNm + '/' + nowitem.bidNtceNo + '/' + nowitem.bidNtceOrd);
                             }
-                            
                         }
-
                     }
 
                     // if(insList != null && insList.size() >= 1){
@@ -259,6 +267,16 @@ global with sharing class IFN_EIF1006_PD001_MD001 implements Database.Batchable<
 
     }
     
+    /**  Request 설명 
+        한 페이지 결과 수	numOfRows	4	    필수	10	한 페이지 결과 수
+        페이지 번호	        pageNo	    4	    필수	1	페이지 번호
+        서비스키	        ServiceKey	400	    필수	공공데이터포털에서 받은 인증키	공공데이터포털에서 받은 인증키
+        조회구분	        inqryDiv	1	    필수	1	검색하고자하는 조회구분 1.둥록일시, 2.공고일시, 3.개찰일시, 4.입찰공고번호
+        조회시작일시	    inqryBgnDt	12	    옵션	201605010000	검색하고자하는 시작일시 ‘YYYYMMDDHHMM', 조회구분 1,2,3일 경우 필수
+        조회종료일시	    inqryEndDt	12	    옵션	201605052359	검색하고자하는 종료일시 'YYYYMMDDHHMM', 조회구분 1,2,3일 경우 필수
+        입찰공고번호	    bidNtceNo	40	    옵션	20160439522	검색하고자하는 입찰공고번호. 조회구분 4인 경우 필수
+        타입	            type	    4	    옵션	json	오픈API 리턴 타입을 JSON으로 받고 싶을 경우 'json' 으로 지정
+     */
     
 
 

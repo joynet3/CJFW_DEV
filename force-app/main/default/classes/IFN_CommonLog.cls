@@ -144,8 +144,8 @@ global class IFN_CommonLog {
             //if(this.LogText      != null)  result.LogText__c            = getText(JSON.serialize(this.LogText));  //orin
             if(this.LogText      != null)  result.LogText__c            = sanchoGetText(this.LogText);              //2023.11.16 sancho : 가독성 바꿔봄
 
-            if(String.isNotBlank(this.resultCode))      result.resultCode__c         = this.resultCode;
-            if(String.isNotBlank(this.ResponseBody))   result.resultMessage__c   = getText(this.ResponseBody);
+            if(String.isNotBlank(this.resultCode))      result.resultCode__c    = this.resultCode;
+            if(String.isNotBlank(this.resultMessage))   result.resultMessage__c = getText(this.resultMessage);
 
             if(this.IFRequestSize  != null && this.IFRequestSize > 0)   result.IF_RequestSize__c  = this.IFRequestSize;
             if(this.IFResponseSize != null && this.IFResponseSize > 0)  result.IF_ResponseSize__c = this.IFResponseSize;

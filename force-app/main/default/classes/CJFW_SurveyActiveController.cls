@@ -2,7 +2,7 @@
  * @description       :
  * @author            : sunkyung.choi@dkbmc.com
  * @group             :
- * @last modified on  : 11-06-2023
+ * @last modified on  : 11-16-2023
  * @last modified by  : sunkyung.choi@dkbmc.com
 **/
 public with sharing class CJFW_SurveyActiveController {
@@ -19,7 +19,7 @@ public with sharing class CJFW_SurveyActiveController {
             ParentSurvey__c,
             Version__c,
             HeadOffice__c,
-            CheckActive__c FROM CJFW_Survey__c WHERE Id = : recordId
+            CheckActiveDate__c FROM CJFW_Survey__c WHERE Id = : recordId
         ];
 
         Map<Id, CJFW_Survey__c> surMap = new Map<Id, CJFW_Survey__c>();
@@ -31,7 +31,9 @@ public with sharing class CJFW_SurveyActiveController {
     @AuraEnabled public static void updateSurveyInfo(CJFW_Survey__c surveyData) {
         System.debug('시작>>>>> ');
         System.debug('surveyData' + surveyData);
-        surveyData.CheckActive__c = System.now();
+        System.debug('CheckActiveDate__c' + surveyData.CheckActiveDate__c);
+
+        // surveyData.CheckActiveDate__c = System.now();
 
         Set<Id> parId = new Set<Id>();
         Set<Id> surId = new Set<Id>();
@@ -43,7 +45,7 @@ public with sharing class CJFW_SurveyActiveController {
             SELECT Id,
             Name,
             Active__c,
-            CheckActive__c,
+            CheckActiveDate__c,
             ParentSurvey__c,
             Version__c FROM CJFW_Survey__c WHERE Id IN: surId
         ];
@@ -62,7 +64,7 @@ public with sharing class CJFW_SurveyActiveController {
             SELECT Id,
             Name,
             Active__c,
-            CheckActive__c,
+            CheckActiveDate__c,
             ParentSurvey__c,
             Version__c FROM CJFW_Survey__c WHERE Id IN: parId or ParentSurvey__c IN: parId
         ];

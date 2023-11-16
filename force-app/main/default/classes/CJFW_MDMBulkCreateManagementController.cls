@@ -158,7 +158,7 @@ public with sharing class CJFW_MDMBulkCreateManagementController {
                 checkRequiredField(mdm.PV_ADRES_ADDR2__c, i, '주소[ADDR2]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_ADRES_ROADADDR1__c, i, '주소[ROAD ADDR1]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_ADRES_ROADADDR2__c, i, '주소[ROAD ADDR2]', '필수값', errorDataidList);
-                //checkRequiredField(mdm.PV_SALESCUST__c, i, '판매처[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_SALESCUST__c, i, '판매처[ID]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_BUSAB__c, i, '매출형태[ID]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_CESSION_KZ__c, i, '고객상태[ID]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_ZUAWA__c, i, '정렬키[ID]', '필수값', errorDataidList);
@@ -169,20 +169,20 @@ public with sharing class CJFW_MDMBulkCreateManagementController {
                 checkRequiredField(mdm.PVRA_CUHR1__c, i, '고객분류[NEW VALUE]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PVRA_KONDA__c, i, '가격그룹[NEW VALUE]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PVRA_KVGR1__c, i, '단가그룹[NEW VALUE]', '필수값', errorDataidList);
-                //checkRequiredField(mdm.PV_WAERS_lu__c, i, '통화[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_WAERS__c, i, '통화[ID]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_KVGR3__c, i, '납품서유형[ID]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_KVGR3_BOT__c, i, '납품서 하단유형[ID]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_ODCLOSEGB__c, i, '고객 주문마감 유형코드[ID]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_VACCPRTEXCYN__c, i, '가상계좌 출력 제외', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_ZTERM_VV__c, i, '지급조건[ID]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_DSTRHISTREGYN__c, i, '유통이력 신고대상 유형[ID]', '필수값', errorDataidList);
-                //checkRequiredField(mdm.PVVF_OLD_BIZPLACE_NEW__c, i, '경로(사업부)[NEW VALUE]', '필수값', errorDataidList);
-                //checkRequiredField(mdm.PV_EXAMYN__c, i, '대면검수여부', '필수값', errorDataidList);
-                //checkRequiredField(mdm.PV_DELIGROUP__c, i, '배송그룹[ID]', '필수값', errorDataidList);
-                //checkRequiredField(mdm.PV_KEYYN__c, i, '업장key 여부', '필수값', errorDataidList);
-                //checkRequiredField(mdm.PV_KEYINFO__c, i, '업장key 정보', '필수값', errorDataidList);
-                //checkRequiredField(mdm.PV_ISFDFTF__c, i, '초도배송 대면검수', '필수값', errorDataidList);
-                //checkRequiredField(mdm.PV_TEMPTARGET__c, i, '온도기록지 제출 대상 여부[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PVRA_OLD_BIZPLACE_NEW__c, i, '경로(사업부)[NEW VALUE]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_EXAMYN__c, i, '대면검수여부', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_DELIGROUP__c, i, '배송그룹[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_KEYYN__c, i, '업장key 여부', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_KEYINFO__c, i, '업장key 정보', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_ISFDFTF__c, i, '초도배송 대면검수', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_TEMPTARGET__c, i, '온도기록지 제출 대상 여부[ID]', '필수값', errorDataidList);
                 
                 // 구코드(As-Is)
                 if(mdm.PV_OLDCD__c != null){

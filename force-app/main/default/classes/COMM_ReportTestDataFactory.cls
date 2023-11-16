@@ -2,7 +2,7 @@
  * @description       : 품의서전용 데이터 팩토리 
  * @author            : eunyoung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 11-13-2023
+ * @last modified on  : 11-16-2023
  * @last modified by  : jieun.lee3@dkbmc.com
 **/
 
@@ -148,7 +148,8 @@ global with sharing class COMM_ReportTestDataFactory {
      */
     global static CJFW_DistributionCost__c createDistributeCost(String rcdTypeDevName){
         CJFW_DistributionCost__c distCost = new CJFW_DistributionCost__c(
-            HeadOffice__c = '외식SU'
+            // HeadOffice__c = '외식SU'
+            HeadOffice__c = '6000'
             , Region__c = '수도권'
             , Type__c = '간접' 
             // 아래 추가로 쭉쭉 데이터 만들어주면됨 ( 필수값들은 반드시 데이터 만들어 줘야함 )
@@ -162,7 +163,8 @@ global with sharing class COMM_ReportTestDataFactory {
      */
     global static CJFW_ExpectedIncomeManager__c createExpectedIncomeManager(){
         CJFW_ExpectedIncomeManager__c ExIncomeManager = new CJFW_ExpectedIncomeManager__c(
-            HeadOffice__c = '급식SU'
+            // HeadOffice__c = '급식SU'
+            HeadOffice__c = '3001'
             , CardFee__c = 300
            // 아래 추가로 쭉쭉 데이터 만들어주면됨 ( 필수값들은 반드시 데이터 만들어 줘야함 )
         );

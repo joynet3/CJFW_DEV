@@ -125,6 +125,7 @@ public without sharing class CJFW_QuoteFileCreateNewController {
                                                   UnitPrice__c, ToLabel(LogisticsCenter__c), ToLabel(Month__c), BasePurchasePrice__c, OldBasePurchasePrice__c, StorageConditionName__c,
                                                   ProductWeight__c, BoxQuantity__c, UnitConversion__c, Barcode__c, 
                                                   ProductCategoryLName__c, ProductCategoryMName__c
+                                                  ,BiddingProductName__c ,BiddingProductWeight__c, BiddingSpec__c, BiddingUnit__c
                                          FROM     CJFW_QuoteLineItem__c
                                          WHERE    QuoteId__c = :recordId
                                          ORDER BY SortOrder__c ASC
@@ -148,6 +149,7 @@ public without sharing class CJFW_QuoteFileCreateNewController {
                                                            UnitPrice__c, ToLabel(LogisticsCenter__c), ToLabel(Month__c), BasePurchasePrice__c, OldBasePurchasePrice__c, StorageConditionName__c,
                                                            ProductWeight__c, BoxQuantity__c, UnitConversion__c, Barcode__c, 
                                                            ProductCategoryLName__c, ProductCategoryMName__c
+                                                           ,BiddingProductName__c ,BiddingProductWeight__c, BiddingSpec__c, BiddingUnit__c
                                                   FROM     CJFW_QuoteLineItem__c
                                                   WHERE    QuoteId__c = :recordId
                                                   AND      SortOrder__c > 10000

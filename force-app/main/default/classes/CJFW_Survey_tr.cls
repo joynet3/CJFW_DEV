@@ -2,7 +2,7 @@
  * @description       :
  * @author            : sunkyung.choi@dkbmc.com
  * @group             :
- * @last modified on  : 11-09-2023
+ * @last modified on  : 11-16-2023
  * @last modified by  : sunkyung.choi@dkbmc.com
 **/
 public with sharing class CJFW_Survey_tr extends TriggerHandler {
@@ -29,6 +29,12 @@ public with sharing class CJFW_Survey_tr extends TriggerHandler {
     public override void beforeUpdate() {
         checkSuFieldChanges();
     }
+    public override void beforeDelete() {
+        doDeleteCheck();
+    }
+
+
+
     @testVisible private void doClone() {
         system.debug('doClone  START');
         List<CJFW_Survey__c> newSurveyLists = listNew;
@@ -47,9 +53,9 @@ public with sharing class CJFW_Survey_tr extends TriggerHandler {
             }
         }
 
-        List<CJFW_Survey__c> sourceSurveys = [SELECT Id, Active__c, Su__c, Version__c, ParentSurvey__c FROM CJFW_Survey__c WHERE Id IN: surveyIdSet]; //원본
+        List<CJFW_Survey__c> sourceSurveys = [SELECT Id, Active__c, Su__c, Version__c, ParentSurvey__c,CheckActiveDate__c FROM CJFW_Survey__c WHERE Id IN: surveyIdSet]; //원본
 
-        List<CJFW_Survey__c> suChecksList = [SELECT Id,  Name,  Su__c, Active__c, ParentSurvey__c, Version__c, HeadOffice__c FROM CJFW_Survey__c WHERE Su__c !=null and Active__c =true]; //su__c 필드값 있는 데이터 쿼리 
+        List<CJFW_Survey__c> suChecksList = [SELECT Id,  Name,  Su__c, Active__c, ParentSurvey__c, Version__c, HeadOffice__c,CheckActiveDate__c FROM CJFW_Survey__c WHERE Su__c !=null and Active__c =true]; //su__c 필드값 있는 데이터 쿼리 
 
         System.debug('sourceSurveys ???>>>>' + sourceSurveys);
         for (CJFW_Survey__c sourceSurvey : sourceSurveys) {
@@ -181,7 +187,7 @@ public with sharing class CJFW_Survey_tr extends TriggerHandler {
         List<CJFW_Survey__c> oldSurveysList = listOld;
         Map<String, CJFW_Survey__c> suCheckMap = new Map<String, CJFW_Survey__c>();
     
-        List<CJFW_Survey__c> suChecksList = [SELECT Id, Name, Su__c, Active__c, ParentSurvey__c, Version__c, HeadOffice__c FROM CJFW_Survey__c WHERE Su__c != null and Active__c = true];
+        List<CJFW_Survey__c> suChecksList = [SELECT Id, Name, Su__c, Active__c, ParentSurvey__c, Version__c, HeadOffice__c,CheckActiveDate__c FROM CJFW_Survey__c WHERE Su__c != null and Active__c = true];
         for (CJFW_Survey__c suCheck : suChecksList) {
             suCheckMap.put(suCheck.Su__c, suCheck);
             System.debug('suCheckMap>>>>>>>> ' + suCheckMap);
@@ -200,6 +206,24 @@ public with sharing class CJFW_Survey_tr extends TriggerHandler {
             }
         }
     }
+    @testVisible private void doDeleteCheck() {
+        List<CJFW_Survey__c> oldSurveysList = listOld;
+        Map<String, CJFW_Survey__c> daCheckMap = new Map<String, CJFW_Survey__c>();
+    
+        List<CJFW_Survey__c> dateChecksLists = [SELECT Id, Name, Su__c, Active__c, ParentSurvey__c, Version__c, HeadOffice__c,CheckActiveDate__c FROM CJFW_Survey__c WHERE CheckActiveDate__c !=null ];
+       
+        for (CJFW_Survey__c dateChecksList : dateChecksLists) {
+            daCheckMap.put(dateChecksList.Id, dateChecksList);
+            System.debug('suCheckMap>>>>>>>> ' + daCheckMap);
+        }
+        for (CJFW_Survey__c oldDateCheck : oldSurveysList) {
+            if (daCheckMap.get(oldDateCheck.Id).CheckActiveDate__c != null) {
+                oldDateCheck.addError('활성화 되었던 설문지입니다. 설문지를 삭제할 수 없습니다.');
+            }
+        }
+    
+    }
+    
     
     
 }

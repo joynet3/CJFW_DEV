@@ -2,8 +2,8 @@
  * @description       : 
  * @author            : yeonji.lim@dkbmc.com
  * @group             : 
- * @last modified on  : 11-15-2023
- * @last modified by  : eunyoung.choi@dkbmc.com
+ * @last modified on  : 11-16-2023
+ * @last modified by  : seol.kim@dkbmc.com
 **/
 public with sharing class OrderConsiderReContractFormController {
     public static String SaveDataList;
@@ -61,6 +61,8 @@ public with sharing class OrderConsiderReContractFormController {
 
 
     /* 날짜형식변환 */
+    public String firstContact { get; set; } // 최초접촉시기
+
     public String initialDate { get; set; } // 초도일자
     public String contractStartDate { get; set; } // 계약시작
     public String contractEndDate { get; set; } // 계약종료
@@ -278,7 +280,11 @@ public with sharing class OrderConsiderReContractFormController {
             String query = 'SELECT Id, ' +
             'Version__c, ' +                        
             'IsReportCheck__c, ' +                        
-            'KeyMan__c, ' +                         //키맨    
+            'KeyMan__c, ' +                         //키맨  
+
+            'ContactMethod__c, ' +                  //접촉방법
+            'FirstContact__c, ' +                   //최초접촉시기           
+            
             'Competitor__c, ' +                     //경쟁업체
             'CompetitorSuggestions__c, ' +          //경제업제 제안 
             'ObtainOrder__c, ' +                    //수주팀
@@ -609,6 +615,11 @@ public with sharing class OrderConsiderReContractFormController {
             'MonthSaleTen__c, ' +   
             'MonthSalesProfitTen__c, ' +      
 
+            'SalesProfitSoluOne__c, ' +
+            'SalesProfitSoluTwo__c, ' +
+            'SalesProfitSoluThree__c, ' +
+            'SalesProfitSoluFour__c, ' +
+            'SalesProfitSoluEx__c, ' +   
 
             'CreatedDate ' + 
 
@@ -791,8 +802,11 @@ public with sharing class OrderConsiderReContractFormController {
             'SalesProfitFoGen__c' , 
             'SalesProfitImpMonthEx__c' , 
             'SalesProfitImpMonthGen__c' , 
-            'salesProfitImpMonthEx__c' , 
-            'salesProfitImpMonthGen__c' , 
+            'SalesProfitSoluOne__c' , 
+            'SalesProfitSoluTwo__c' , 
+            'SalesProfitSoluThree__c' , 
+            'SalesProfitSoluFour__c' , 
+            'SalesProfitSoluEx__c' , 
             'DistributeDirImpMonth__c' , 
             'DistributeInDirImpMonth__c' , 
             'DistributeDirCap__c' ,
@@ -935,6 +949,8 @@ public with sharing class OrderConsiderReContractFormController {
 
 
         /* Date 필드를 yyyy-MM-dd 형식의 문자열로 변환 */
+        String firstContactString = String.valueOf(IncomeExpensesInfo.FirstContact__c);                 // 최초접촉시기
+
         String initialDateString = String.valueOf(IncomeExpensesInfo.InitialDate__c);                   // 초도일자 
         String contractStartString = String.valueOf(IncomeExpensesInfo.ContractStartDate__c);           // 계약시작일자
         String contractEndString = String.valueOf(IncomeExpensesInfo.ContractEndDate__c);               // 계약종료일자 
@@ -942,6 +958,8 @@ public with sharing class OrderConsiderReContractFormController {
         String contractPaymentDateString = String.valueOf(IncomeExpensesInfo.ContractPaymentDate__c);   // 약정결제일
         String salesPerformDateString = String.valueOf(IncomeExpensesInfo.SalesPerformDate__c);         // 실적현황 지정일자 
         
+        firstContact = firstContactString != null ? firstContactString.substring(0, 10) : null;
+
         initialDate = initialDateString != null ? initialDateString.substring(0, 10) : null;
         contractStartDate = contractStartString != null ? contractStartString.substring(0, 10) : null;
         contractEndDate = contractEndString != null ? contractEndString.substring(0, 10) : null;
@@ -1624,6 +1642,13 @@ public with sharing class OrderConsiderReContractFormController {
                 expectIncome.MainMA__c = (String)dataMap.get('mainMA');
             }
 
+            if (dataMap.containsKey('contactMethod')) { // 접촉방법
+                expectIncome.ContactMethod__c = (String)dataMap.get('contactMethod');
+            }
+            if (dataMap.containsKey('firstContact') && dataMap.get('firstContact') !='') { // 최초접촉시기
+                expectIncome.FirstContact__c = Date.valueOf(((String) dataMap.get('firstContact')));
+            }           
+
             /* ===== 2. 거래처 현황 ===== */
             if (dataMap.containsKey('accountName')) { // 거래처명 (text)
                 expectIncome.ClientCompanyName__c = (String) dataMap.get('accountName');
@@ -1804,6 +1829,9 @@ public with sharing class OrderConsiderReContractFormController {
             if (dataMap.containsKey('salesImpMonthOne')) { 
                 expectIncome.SalesImpMonthOne__c = convertToDecimal(dataMap.get('salesImpMonthOne'));
             }
+            if (dataMap.containsKey('salesSoluOne')) { 
+                expectIncome.SalesSoluOne__c = convertToDecimal(dataMap.get('salesSoluOne'));
+            }    
             // ( 매출 전용 2)
             if (dataMap.containsKey('salesNameTwo')) { 
                 expectIncome.SalesNameTwo__c = (String)dataMap.get('salesNameTwo');
@@ -1829,6 +1857,9 @@ public with sharing class OrderConsiderReContractFormController {
             if (dataMap.containsKey('salesImpMonthTwo')) { 
                 expectIncome.SalesImpMonthTwo__c = convertToDecimal(dataMap.get('salesImpMonthTwo'));
             }
+            if (dataMap.containsKey('salesSoluTwo')) { // 매출-전용 : 수도권 
+                expectIncome.SalesSoluTwo__c = convertToDecimal(dataMap.get('salesSoluTwo'));
+            }           
             // ( 매출 전용 3)
             if (dataMap.containsKey('salesNameThree')) { 
                 expectIncome.SalesNameThree__c = (String)dataMap.get('salesNameThree');
@@ -1854,6 +1885,9 @@ public with sharing class OrderConsiderReContractFormController {
             if (dataMap.containsKey('salesImpMonthThree')) { 
                 expectIncome.SalesImpMonthThree__c = convertToDecimal(dataMap.get('salesImpMonthThree'));
             }
+            if (dataMap.containsKey('salesSoluThree')) { // 매출-전용 : 수도권 
+                expectIncome.SalesSoluThree__c = convertToDecimal(dataMap.get('salesSoluThree'));
+            }           
             // ( 매출 전용 4)
             if (dataMap.containsKey('salesNameFour')) { 
                 expectIncome.SalesNameFour__c = (String)dataMap.get('salesNameFour');
@@ -1879,8 +1913,10 @@ public with sharing class OrderConsiderReContractFormController {
             if (dataMap.containsKey('salesImpMonthFour')) { 
                 expectIncome.SalesImpMonthFour__c = convertToDecimal(dataMap.get('salesImpMonthFour'));
             }
-
-             // ( 매출 직송)
+            if (dataMap.containsKey('salesSoluFour')) { // 매출-전용 : 수도권 
+                expectIncome.SalesSoluFour__c = convertToDecimal(dataMap.get('salesSoluFour'));
+            }
+            // ( 매출 직송)
             if (dataMap.containsKey('salesThreeEx')) { // 매출 전용 - 3개월 평균실적 
                 expectIncome.SalesReAverageResultExclusive__c = convertToDecimal(dataMap.get('salesThreeEx'));
             }
@@ -1902,6 +1938,9 @@ public with sharing class OrderConsiderReContractFormController {
             if (dataMap.containsKey('salesImpMonthEx')) { // 매출-직송 - 월 개선실적 
                 expectIncome.SalesImproveResultExclusive__c = convertToDecimal(dataMap.get('salesImpMonthEx'));
             }
+            if (dataMap.containsKey('salesSoluEx')) { // 매출-직송 - 솔루션 개선실적
+                expectIncome.SalesSolutionExclusive__c = convertToDecimal(dataMap.get('salesSoluEx'));
+            }            
 
             // ( 매출 일반 )
             if (dataMap.containsKey('salesThreeGen')) { // 매출 일반- 3개월 평균실적 
@@ -1919,15 +1958,16 @@ public with sharing class OrderConsiderReContractFormController {
             if (dataMap.containsKey('salesJejuGen')) { // 매출-일반 : 제주권 
                 expectIncome.SalesJejuGeneral__c = convertToDecimal(dataMap.get('salesJejuGen'));
             }
-            if (dataMap.containsKey('salesFoGen')) { // 매출-직송 : FO
+            if (dataMap.containsKey('salesFoGen')) { // 매출-일반 : FO
                 expectIncome.SalesFoGen__c = convertToDecimal(dataMap.get('salesFoGen'));
             }
-            if (dataMap.containsKey('salesImpMonthGen')) { //  매출-직송 : 월 예상실적 
+            if (dataMap.containsKey('salesImpMonthGen')) { //  매출-일반 : 월 예상실적 
                 expectIncome.SalesImproveResultGeneral__c = convertToDecimal(dataMap.get('salesImpMonthGen'));
             }
-
+            if (dataMap.containsKey('salesSoluGen')) { // 매출-일반 - 솔루션 개선실적
+                expectIncome.SalesSolutionGeneral__c = convertToDecimal(dataMap.get('salesSoluGen'));
+            }
             // 매출이익 전용1 
-
             if (dataMap.containsKey('salesProfitNameOne')) { 
                 expectIncome.SalesProfitNameOne__c = (String)dataMap.get('salesProfitNameOne');
             }
@@ -1952,9 +1992,10 @@ public with sharing class OrderConsiderReContractFormController {
             if (dataMap.containsKey('salesProfitImpMonthOne')) { 
                 expectIncome.SalesProfitImpMonthOne__c = convertToDecimal(dataMap.get('salesProfitImpMonthOne'));
             }
-
+            if (dataMap.containsKey('salesProfitSoluOne')) { 
+                expectIncome.SalesProfitSoluOne__c = convertToDecimal(dataMap.get('salesProfitSoluOne'));
+            }
             // 매출이익 전용2  
-
             if (dataMap.containsKey('salesProfitNameTwo')) { 
                 expectIncome.SalesProfitNameTwo__c = (String)dataMap.get('salesProfitNameTwo');
             }
@@ -1979,8 +2020,10 @@ public with sharing class OrderConsiderReContractFormController {
             if (dataMap.containsKey('salesProfitImpMonthTwo')) { 
                 expectIncome.SalesProfitImpMonthTwo__c = convertToDecimal(dataMap.get('salesProfitImpMonthTwo'));
             }
+            if (dataMap.containsKey('salesProfitSoluTwo')) { 
+                expectIncome.SalesProfitSoluTwo__c = convertToDecimal(dataMap.get('salesProfitSoluTwo'));
+            }           
             // 매출이익 전용3  
-
             if (dataMap.containsKey('salesProfitNameThree')) { 
                 expectIncome.SalesProfitNameThree__c = (String)dataMap.get('salesProfitNameThree');
             }
@@ -2005,8 +2048,10 @@ public with sharing class OrderConsiderReContractFormController {
             if (dataMap.containsKey('salesProfitImpMonthThree')) { 
                 expectIncome.SalesProfitImpMonthThree__c = convertToDecimal(dataMap.get('salesProfitImpMonthThree'));
             }
+            if (dataMap.containsKey('salesProfitSoluThree')) { // 매출-전용 : 수도권 
+                expectIncome.SalesProfitSoluThree__c = convertToDecimal(dataMap.get('salesProfitSoluThree'));
+            }           
             // 매출이익 전용4  
-
             if (dataMap.containsKey('salesProfitNameFour')) { 
                 expectIncome.SalesProfitNameFour__c = (String)dataMap.get('salesProfitNameFour');
             }
@@ -2031,7 +2076,9 @@ public with sharing class OrderConsiderReContractFormController {
             if (dataMap.containsKey('salesProfitImpMonthFour')) { 
                 expectIncome.SalesProfitImpMonthFour__c = convertToDecimal(dataMap.get('salesProfitImpMonthFour'));
             }
-
+            if (dataMap.containsKey('salesProfitSoluFour')) { 
+                expectIncome.SalesProfitSoluFour__c = convertToDecimal(dataMap.get('salesProfitSoluFour'));
+            }
             // 매출이익 직송 
             if (dataMap.containsKey('salesProfitThreeEx')) { 
                 expectIncome.SalesProfitReAverageResultExclusive__c = convertToDecimal(dataMap.get('salesProfitThreeEx'));
@@ -2054,7 +2101,9 @@ public with sharing class OrderConsiderReContractFormController {
             if (dataMap.containsKey('salesProfitImpMonthEx')) { 
                 expectIncome.salesProfitImpMonthEx__c = convertToDecimal(dataMap.get('salesProfitImpMonthEx'));
             }
-
+            if (dataMap.containsKey('salesProfitSoluEx')) {
+                expectIncome.SalesProfitSoluEx__c = convertToDecimal(dataMap.get('salesProfitSoluEx'));
+            }
             // 매출이익 일반
             if (dataMap.containsKey('salesProfitThreeGen')) { 
                 expectIncome.SalesProfitReAverageResultGeneral__c = convertToDecimal(dataMap.get('salesProfitThreeGen'));

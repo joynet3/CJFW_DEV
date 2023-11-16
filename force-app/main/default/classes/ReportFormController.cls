@@ -9,7 +9,7 @@
  * @author            : eunyoung.choi@dkbmc.com
  * @group             : 
  * @last modified on  : 11-16-2023
- * @last modified by  : yeonji.lim@dkbmc.com
+ * @last modified by  : eunyoung.choi@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
  * 1.0   08-24-2023   eunyoung.choi@dkbmc.com   Initial Version 작성
@@ -1019,35 +1019,58 @@ public with sharing class ReportFormController {
     }
 
     /* 
-    품의지정 버튼 클릭시 , 품의지정 check 
-    : 기존 품의지정된 내역은 삭제 후 신규 품의지정된 1개만 품의체크
+     품의지정 버튼 클릭시 , 품의지정 check 
+     : 기존 품의지정된 내역은 삭제 후 신규 품의지정된 1개만 품의체크
     */
     @RemoteAction
-    public static String ReportCheck(String incomeExpensesId, String opportunityId) {
-        try {
-            List<CJFW_ExpectedIncomeExpenses__c> expenseList = [SELECT Id, IsReportCheck__c FROM CJFW_ExpectedIncomeExpenses__c WHERE Opportunity__c = :opportunityId AND Id != :incomeExpensesId];
-   
-            for (CJFW_ExpectedIncomeExpenses__c expense : expenseList) {
-                expense.IsReportCheck__c = false;
+    public static String ReportCheck(String incomeExpensesId , String opportunityId , String reportType ){
+
+        System.debug(' 품의서 ID : ' + incomeExpensesId );
+        System.debug(' 옵티 ID : ' + opportunityId );
+        System.debug(' 리포트타입 ID : ' + reportType );
+
+        try{
+            //CJFW_ExpectedIncomeExpenses__c RemoveList = [SELECT Id, IsReportCheck__c FROM CJFW_ExpectedIncomeExpenses__c WHERE Opportunity__c =: opportunityId AND Id != :incomeExpensesId];
+            List<CJFW_ExpectedIncomeExpenses__c> RemoveList = [
+                SELECT 
+                    Id, 
+                    IsReportCheck__c 
+                FROM CJFW_ExpectedIncomeExpenses__c 
+                WHERE Opportunity__c = :opportunityId 
+                AND Id != :incomeExpensesId 
+                AND ReportType__c =:reportType
+                ];
+
+            CJFW_ExpectedIncomeExpenses__c checkList = [SELECT Id, IsReportCheck__c FROM CJFW_ExpectedIncomeExpenses__c WHERE  Id = :incomeExpensesId];
+
+            if(RemoveList <> null ){
+                for(CJFW_ExpectedIncomeExpenses__c data : RemoveList) {
+                    data.IsReportCheck__c = false;
+                }
+                update RemoveList;
             }
-            update expenseList;
-   
-            CJFW_ExpectedIncomeExpenses__c currentExpense = [SELECT Id, IsReportCheck__c FROM CJFW_ExpectedIncomeExpenses__c WHERE Id = :incomeExpensesId];
-            if (currentExpense != null) {
-                currentExpense.IsReportCheck__c = !currentExpense.IsReportCheck__c;
-                update currentExpense;
- 
-                return String.valueOf(currentExpense.IsReportCheck__c);
+
+            if(checkList <> null){
+                checkList.IsReportCheck__c =true;
+                System.debug(' checkList ' + checkList );
+                update checkList;
+
+                return String.valueOf(checkList.IsReportCheck__c);
             }
-   
+
             return 'false';
-   
-        } catch (Exception e) {
-            System.debug('에러 메시지: ' + e.getMessage());
-            System.debug('에러 라인: ' + e.getStackTraceString());
+
+        }catch (Exception e) {
+
+            String errorMessage = e.getMessage(); // 에러 메시지
+            String errorStackTrace = e.getStackTraceString(); // 에러 스택 트레이스
+
+            System.debug('에러 메시지: ' + errorMessage);
+            System.debug('에러 라인: ' + errorStackTrace);
             return 'error';
         }
     }
+
 
 
     /* 

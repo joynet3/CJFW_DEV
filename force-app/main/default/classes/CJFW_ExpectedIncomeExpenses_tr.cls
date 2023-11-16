@@ -2,8 +2,8 @@
  * @description       : 
  * @author            : jieun.lee3@dkbmc.com
  * @group             : 
- * @last modified on  : 11-14-2023
- * @last modified by  : jieun.lee3@dkbmc.com
+ * @last modified on  : 11-16-2023
+ * @last modified by  : eunyoung.choi@dkbmc.com
 **/
 
 public without sharing class CJFW_ExpectedIncomeExpenses_tr extends TriggerHandler {
@@ -21,11 +21,11 @@ public without sharing class CJFW_ExpectedIncomeExpenses_tr extends TriggerHandl
     private Map<Id, CJFW_ExpectedIncomeExpenses__c> mapOld { get; set; }
 
     public override void beforeInsert() {
-        doCheckOne();
+        //doCheckOne();
     }
 
     public override void beforeUpdate() {
-        doCheckOne();
+        //doCheckOne();
     }
 
     public override void beforeDelete() {

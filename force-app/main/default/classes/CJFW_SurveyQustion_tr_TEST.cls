@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : sunkyung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 11-15-2023
+ * @last modified on  : 11-16-2023
  * @last modified by  : sunkyung.choi@dkbmc.com
 **/
 @isTest
@@ -46,7 +46,7 @@ public with sharing class CJFW_SurveyQustion_tr_TEST {
     Map<Id, CJFW_SurveyQuestion__c> surveyQueMap = new Map<Id, CJFW_SurveyQuestion__c>();
 
     
-    List<CJFW_Survey__c> testLists = [SELECT Id,Name,Su__c,HeadOffice__c,Active__c,CheckActive__c,Version__c,ParentSurvey__c
+    List<CJFW_Survey__c> testLists = [SELECT Id,Name,Su__c,HeadOffice__c,Active__c,CheckActiveDate__c,Version__c,ParentSurvey__c
     FROM CJFW_Survey__c WHERE Name = :'테스트 설문'];
     testLists[0].Active__c = true; 
     update testLists;
@@ -66,7 +66,7 @@ public with sharing class CJFW_SurveyQustion_tr_TEST {
     Order__c, 
     DateType__c, 
     TextType__c, 
-    Survey__r.CheckActive__c,
+    Survey__r.CheckActiveDate__c,
     ActiveCheck__c
     FROM CJFW_SurveyQuestion__c WHERE Survey__c = :surveyIdSet];
     
@@ -104,7 +104,7 @@ public with sharing class CJFW_SurveyQustion_tr_TEST {
         Order__c, 
         DateType__c, 
         TextType__c, 
-        Survey__r.CheckActive__c,
+        Survey__r.CheckActiveDate__c,
         ActiveCheck__c
         FROM CJFW_SurveyQuestion__c WHERE Survey__c = :surveyIdSet and Name__c =: '1번 질문'];
         
@@ -124,7 +124,7 @@ public with sharing class CJFW_SurveyQustion_tr_TEST {
     Order__c, 
     DateType__c, 
     TextType__c, 
-    Survey__r.CheckActive__c,
+    Survey__r.CheckActiveDate__c,
     ActiveCheck__c
     FROM CJFW_SurveyQuestion__c WHERE Survey__c = :surveyIdSet and Name__c =: '1번 질문'];
     delete updateQueLists;

@@ -2323,31 +2323,31 @@ public with sharing class OrderConsiderFormController {
 
             // 매출 , 매익률 값이 없을경우 default 0.00 으로 세팅 
             String[] defaultValSet = new String[] {
-            'ManageStockMoneyOne__c', 
-            'ManageStockMoneyTwo__c', 
-            'ManageStockMoneyThree__c', 
-            'ManageStockMoneyFour__c', 
-            'ManageStockMoneyFive__c', 
+                'ManageStockMoneyOne__c', 
+                'ManageStockMoneyTwo__c', 
+                'ManageStockMoneyThree__c', 
+                'ManageStockMoneyFour__c', 
+                'ManageStockMoneyFive__c', 
 
-            'ResultSaleOne__c', 
-            'ResultSaleTwo__c', 
-            'ResultSaleThree__c', 
-            'ResultSaleFour__c', 
-            'ResultSaleFive__c', 
+                'ResultSaleOne__c', 
+                'ResultSaleTwo__c', 
+                'ResultSaleThree__c', 
+                'ResultSaleFour__c', 
+                'ResultSaleFive__c', 
 
-            'ResultSalesProfitOne__c', 
-            'ResultSalesProfitTwo__c', 
-            'ResultSalesProfitThree__c', 
-            'ResultSalesProfitFour__c', 
-            'ResultSalesProfitFive__c',
+                'ResultSalesProfitOne__c', 
+                'ResultSalesProfitTwo__c', 
+                'ResultSalesProfitThree__c', 
+                'ResultSalesProfitFour__c', 
+                'ResultSalesProfitFive__c',
 
-            'SynergySaleOne__c', 
-            'SynergySaleRateOne__c',
-            'SynergySaleTwo__c',
-            'SynergySaleRateTwo__c',
-            'SynergySaleThree__c',
-            'SynergySaleRateThree__c'
-            };    
+                'SynergySaleOne__c', 
+                'SynergySaleRateOne__c',
+                'SynergySaleTwo__c',
+                'SynergySaleRateTwo__c',
+                'SynergySaleThree__c',
+                'SynergySaleRateThree__c'
+                };    
 
             String[] defaultZeroSet = new String[] {
                 'ManagePltOne__c', 
@@ -2377,7 +2377,7 @@ public with sharing class OrderConsiderFormController {
                 if (fieldValue == null) fieldValue = 0; 
                 promoteIssues.put(defaultSet, fieldValue);
             }
-
+            
         }catch(Exception e){
             String errorMessage = e.getMessage();
             String errorStackTrace = e.getStackTraceString(); 
@@ -2390,8 +2390,7 @@ public with sharing class OrderConsiderFormController {
     @param : 신규개설품의Id , VF page 에서 수정데이터가 내용이담긴 dataMap
     */
     public static void upsertPromoteIssues(String expectIncomeId , Map<String, Object> dataMap) {
-        System.debug(' 추진사항 upsert ~ ' + expectIncomeId );
-        System.debug(' dataMap !' + dataMap );
+
         CJFW_PromoteIssues__c salesPromoteIssue;
 
         List<CJFW_PromoteIssues__c> salesPromoteIssueList = [SELECT Id FROM CJFW_PromoteIssues__c WHERE ExpectedIncomeExpensesId__c  = :expectIncomeId LIMIT 1];

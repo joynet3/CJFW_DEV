@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : sunkyung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 11-07-2023
+ * @last modified on  : 11-16-2023
  * @last modified by  : sunkyung.choi@dkbmc.com
 **/
 public with sharing class CJFW_SurveyQustion_tr extends TriggerHandler {
@@ -43,7 +43,7 @@ public with sharing class CJFW_SurveyQustion_tr extends TriggerHandler {
             surveyQueIdSet.add(newSurQue.Survey__c); 
             
         }
-        List<CJFW_Survey__c> newQueLists = [SELECT Id, OwnerId,  Name,  Description__c, Su__c, Active__c, ParentSurvey__c, Version__c, HeadOffice__c, CheckActive__c FROM CJFW_Survey__c WHERE Id IN: surveyQueIdSet];
+        List<CJFW_Survey__c> newQueLists = [SELECT Id, OwnerId,  Name,  Description__c, Su__c, Active__c, ParentSurvey__c, Version__c, HeadOffice__c, CheckActiveDate__c FROM CJFW_Survey__c WHERE Id IN: surveyQueIdSet];
 
         for (CJFW_Survey__c newQueList : newQueLists) {
             surveyMap.put(newQueList.Id,newQueList);
@@ -53,7 +53,7 @@ public with sharing class CJFW_SurveyQustion_tr extends TriggerHandler {
             CJFW_Survey__c surList = surveyMap.get(newSurQue.Survey__c);
             if  (surList.Active__c  ) {
                 newSurQue.addError('설문지가 활성화 되어 질문을 추가할 수 없습니다.');
-            }else if (surList.CheckActive__c != null) {
+            }else if (surList.CheckActiveDate__c != null) {
                 newSurQue.addError(' 활성화 되었던 설문지입니다. 질문을 추가할 수 없습니다.');
             }
         }
@@ -81,7 +81,7 @@ public with sharing class CJFW_SurveyQustion_tr extends TriggerHandler {
         Order__c, 
         DateType__c, 
         TextType__c, 
-        Survey__r.CheckActive__c,
+        Survey__r.CheckActiveDate__c,
         ActiveCheck__c  FROM CJFW_SurveyQuestion__c WHERE Id IN: surveyQueIdSet];
         System.debug('activeCheckList?????????'+activeCheckList);
 
@@ -93,11 +93,11 @@ public with sharing class CJFW_SurveyQustion_tr extends TriggerHandler {
         
         for (CJFW_SurveyQuestion__c newSurQue : newSurQuesList) {
             System.debug('????? start');
-            System.debug('222222?????????????'+ surveyQueMap.get(newSurQue.Id).Survey__r.CheckActive__c);
+            System.debug('222222?????????????'+ surveyQueMap.get(newSurQue.Id).Survey__r.CheckActiveDate__c);
             if (surveyQueMap.get(newSurQue.Id).ActiveCheck__c ) {
                 System.debug('!!!!! end');
                 newSurQue.addError('설문지가 활성화 되어 질문을 수정할 수 없습니다.');
-            }else if ( surveyQueMap.get(newSurQue.Id).Survey__r.CheckActive__c != null) {
+            }else if ( surveyQueMap.get(newSurQue.Id).Survey__r.CheckActiveDate__c != null) {
                 newSurQue.addError('활성화 되었던 설문지입니다. 질문을 수정할 수 없습니다.');
             }
         }
@@ -123,7 +123,7 @@ public with sharing class CJFW_SurveyQustion_tr extends TriggerHandler {
         Order__c, 
         DateType__c, 
         TextType__c, 
-        Survey__r.CheckActive__c,
+        Survey__r.CheckActiveDate__c,
         ActiveCheck__c  FROM CJFW_SurveyQuestion__c WHERE Id IN: queIdSet];
 
         for (CJFW_SurveyQuestion__c oldQueCheck : oldQueChecksList) {
@@ -133,7 +133,7 @@ public with sharing class CJFW_SurveyQustion_tr extends TriggerHandler {
         for (CJFW_SurveyQuestion__c oldSurQue : oldSurQuesList) {
             if (surveyQueMap.get(oldSurQue.Id).ActiveCheck__c ) {
                 oldSurQue.addError('설문지가 활성화 되어 질문을 삭제할 수 없습니다.');
-            }else if ( surveyQueMap.get(oldSurQue.Id).Survey__r.CheckActive__c != null) {
+            }else if ( surveyQueMap.get(oldSurQue.Id).Survey__r.CheckActiveDate__c != null) {
                 oldSurQue.addError('활성화 되었던 설문지입니다. 질문을 삭제할 수 없습니다.');
             }
         }

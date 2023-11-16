@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : sunkyung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 11-07-2023
+ * @last modified on  : 11-16-2023
  * @last modified by  : sunkyung.choi@dkbmc.com
 **/
 public with sharing class CJFW_SurveyOption_tr extends TriggerHandler {
@@ -39,7 +39,7 @@ public with sharing class CJFW_SurveyOption_tr extends TriggerHandler {
              queIdSet.add(newSurOpt.SurveyQuestion__c);
        }
 
-       List<CJFW_SurveyQuestion__c> surQueLists =[SELECT Id,  Name,  Name__c, Survey__c, Type__c, MultipleChoice__c, Order__c, DateType__c, TextType__c, ActiveCheck__c,Survey__r.CheckActive__c FROM CJFW_SurveyQuestion__c  WHERE Id IN: queIdSet];
+       List<CJFW_SurveyQuestion__c> surQueLists =[SELECT Id,  Name,  Name__c, Survey__c, Type__c, MultipleChoice__c, Order__c, DateType__c, TextType__c, ActiveCheck__c,Survey__r.CheckActiveDate__c FROM CJFW_SurveyQuestion__c  WHERE Id IN: queIdSet];
 
        for (CJFW_SurveyQuestion__c surQueList : surQueLists) {
         queMap.put(surQueList.Id,surQueList);
@@ -49,7 +49,7 @@ public with sharing class CJFW_SurveyOption_tr extends TriggerHandler {
         CJFW_SurveyQuestion__c queList = queMap.get(newSurOpt.SurveyQuestion__c);
         if (queList.ActiveCheck__c   ) {
             newSurOpt.addError('설문지가 활성화 되어 질문을 추가할 수 없습니다.');
-        }else if (queList.Survey__r.CheckActive__c != null) {
+        }else if (queList.Survey__r.CheckActiveDate__c != null) {
             newSurOpt.addError('활성화 되었던 설문지입니다. 질문을 추가할 수 없습니다.');
         }
        }
@@ -68,7 +68,7 @@ public with sharing class CJFW_SurveyOption_tr extends TriggerHandler {
             System.debug('surveyOptIdSet?????????'+surveyOptIdSet);
         }
 
-        List<CJFW_SurveyOption__c> OpActiveChecksList = [ SELECT Id,  Name,  Order__c, SurveyQuestion__c, OpActiveCheck__c,SurveyQuestion__r.Survey__r.CheckActive__c  FROM CJFW_SurveyOption__c WHERE Id IN: surveyOptIdSet];
+        List<CJFW_SurveyOption__c> OpActiveChecksList = [ SELECT Id,  Name,  Order__c, SurveyQuestion__c, OpActiveCheck__c,SurveyQuestion__r.Survey__r.CheckActiveDate__c  FROM CJFW_SurveyOption__c WHERE Id IN: surveyOptIdSet];
         System.debug('activeCheckList?????????'+OpActiveChecksList);
 
         for (CJFW_SurveyOption__c OpActiveCheck : OpActiveChecksList) {
@@ -79,11 +79,11 @@ public with sharing class CJFW_SurveyOption_tr extends TriggerHandler {
         
         for (CJFW_SurveyOption__c newSurOpt : newSurOptsList) {
             System.debug('????? start');
-            System.debug('!!!!! ' +surveyOptMap.get(newSurOpt.Id).SurveyQuestion__r.Survey__r.CheckActive__c );
+            System.debug('!!!!! ' +surveyOptMap.get(newSurOpt.Id).SurveyQuestion__r.Survey__r.CheckActiveDate__c );
             if (surveyOptMap.get(newSurOpt.Id).OpActiveCheck__c ) {
                 System.debug('!!!!! end');
                 newSurOpt.addError('설문지가 활성화 되어 선택지를 수정할 수 없습니다.');
-            }else if (surveyOptMap.get(newSurOpt.Id).SurveyQuestion__r.Survey__r.CheckActive__c !=null) {
+            }else if (surveyOptMap.get(newSurOpt.Id).SurveyQuestion__r.Survey__r.CheckActiveDate__c !=null) {
                 newSurOpt.addError('활성화 되었던 설문지입니다. 선택지를 수정할 수 없습니다.');
             }
         }
@@ -100,7 +100,7 @@ public with sharing class CJFW_SurveyOption_tr extends TriggerHandler {
             optIdSet.add(oldSurOpt.Id);
         }
 
-        List<CJFW_SurveyOption__c> oldOptChecks = [SELECT Id,  Name,  Order__c, SurveyQuestion__c, OpActiveCheck__c,SurveyQuestion__r.Survey__r.CheckActive__c  FROM CJFW_SurveyOption__c WHERE Id IN: optIdSet];
+        List<CJFW_SurveyOption__c> oldOptChecks = [SELECT Id,  Name,  Order__c, SurveyQuestion__c, OpActiveCheck__c,SurveyQuestion__r.Survey__r.CheckActiveDate__c  FROM CJFW_SurveyOption__c WHERE Id IN: optIdSet];
 
         for (CJFW_SurveyOption__c oldOptCheck : oldOptChecks) {
             surveyOptMap.put(oldOptCheck.Id,oldOptCheck);
@@ -109,7 +109,7 @@ public with sharing class CJFW_SurveyOption_tr extends TriggerHandler {
         for (CJFW_SurveyOption__c oldSurOpt : oldSurOptsList) {
             if (surveyOptMap.get(oldSurOpt.Id).OpActiveCheck__c ) {
                 oldSurOpt.addError('설문지가 활성화 되어 선택지를 삭제할 수 없습니다.');
-            }else if( surveyOptMap.get(oldSurOpt.Id).SurveyQuestion__r.Survey__r.CheckActive__c !=null){
+            }else if( surveyOptMap.get(oldSurOpt.Id).SurveyQuestion__r.Survey__r.CheckActiveDate__c !=null){
                 oldSurOpt.addError('활성화 되었던 설문지입니다. 선택지를 삭제할 수 없습니다.');
             }
         }
