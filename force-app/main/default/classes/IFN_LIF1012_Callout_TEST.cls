@@ -39,12 +39,12 @@ public with sharing class IFN_LIF1012_Callout_TEST {
 
 
     @isTest
-    static void test01_1()
+    static void test02_1()
     {
 
         Test.startTest();
-        IFN_LIF1012_PO001_MD001.PO001_MD001ResWrapper resData = new IFN_LIF1012_PO001_MD001.PO001_MD001ResWrapper();
-        IFN_LIF1012_PO001_MD001.T_OUTPUT_ITM resItm = new IFN_LIF1012_PO001_MD001.T_OUTPUT_ITM();
+        IFN_LIF1012_PO001_MD002.PO001_MD002ResWrapper resData = new IFN_LIF1012_PO001_MD002.PO001_MD002ResWrapper();
+        IFN_LIF1012_PO001_MD002.T_OUTPUT_ITM resItm = new IFN_LIF1012_PO001_MD002.T_OUTPUT_ITM();
         resItm.VKORG = '1';         // 판매 조직
         resItm.VKBUR = '1';         // 사업장 
         resItm.VKGRP = '1';         // 영업 그룹
@@ -69,11 +69,11 @@ public with sharing class IFN_LIF1012_Callout_TEST {
         resData.XSTAT= 'S';
 
         Test.setMock(HttpCalloutMock.class, new IFN_LIF1012_Callout_TESTMock(JSON.serialize(resData),200)); 
-        IFN_LIF1012_PO001_MD001.PO001_MD001ReqWrapper params = new IFN_LIF1012_PO001_MD001.PO001_MD001ReqWrapper();
-        IFN_LIF1012_PO001_MD001.ITEM_ITM paramitm = new IFN_LIF1012_PO001_MD001.ITEM_ITM();
+        IFN_LIF1012_PO001_MD002.PO001_MD002ReqWrapper params = new IFN_LIF1012_PO001_MD002.PO001_MD002ReqWrapper();
+        IFN_LIF1012_PO001_MD002.ITEM_ITM paramitm = new IFN_LIF1012_PO001_MD002.ITEM_ITM();
 
-        IFN_LIF1012_PO001_MD001 cont = new IFN_LIF1012_PO001_MD001();
-        String interfaceId = 'IFN_LIF1012_PO001_MD001';
+        IFN_LIF1012_PO001_MD002 cont = new IFN_LIF1012_PO001_MD002();
+        String interfaceId = 'IFN_LIF1012_PO001_MD002';
         IFN_LIF1012_Callout callout = new IFN_LIF1012_Callout(interfaceId,'Realtime');        
 
         paramitm.VKORG = '1';   // 판매 조직
@@ -94,17 +94,17 @@ public with sharing class IFN_LIF1012_Callout_TEST {
 
     
     @isTest
-    static void test01_2()
+    static void test02_2()
     {
 
         Test.startTest();
        
         Test.setMock(HttpCalloutMock.class, new IFN_LIF1012_Callout_TESTMock('',500)); 
-        IFN_LIF1012_PO001_MD001.PO001_MD001ReqWrapper params = new IFN_LIF1012_PO001_MD001.PO001_MD001ReqWrapper();
-        IFN_LIF1012_PO001_MD001.ITEM_ITM paramitm = new IFN_LIF1012_PO001_MD001.ITEM_ITM();
+        IFN_LIF1012_PO001_MD002.PO001_MD002ReqWrapper params = new IFN_LIF1012_PO001_MD002.PO001_MD002ReqWrapper();
+        IFN_LIF1012_PO001_MD002.ITEM_ITM paramitm = new IFN_LIF1012_PO001_MD002.ITEM_ITM();
 
-        IFN_LIF1012_PO001_MD001 cont = new IFN_LIF1012_PO001_MD001();
-        String interfaceId = 'IFN_LIF1012_PO001_MD001';
+        IFN_LIF1012_PO001_MD002 cont = new IFN_LIF1012_PO001_MD002();
+        String interfaceId = 'IFN_LIF1012_PO001_MD002';
         IFN_LIF1012_Callout callout = new IFN_LIF1012_Callout(interfaceId,'Realtime');        
 
         paramitm.VKORG = '1';   // 판매 조직
@@ -126,12 +126,12 @@ public with sharing class IFN_LIF1012_Callout_TEST {
 
 
     @isTest
-    static void test02_1()
+    static void test03_1()
     {
 
         Test.startTest();
-        IFN_LIF1012_PO001_MD002.PO001_MD002ResWrapper resData = new IFN_LIF1012_PO001_MD002.PO001_MD002ResWrapper();
-        IFN_LIF1012_PO001_MD002.T_RETURN_ITM resItm = new IFN_LIF1012_PO001_MD002.T_RETURN_ITM();
+        IFN_LIF1012_PO001_MD003.PO001_MD003ResWrapper resData = new IFN_LIF1012_PO001_MD003.PO001_MD003ResWrapper();
+        IFN_LIF1012_PO001_MD003.T_RETURN_ITM resItm = new IFN_LIF1012_PO001_MD003.T_RETURN_ITM();
         resItm.KUNNR= '';
         resItm.WERKS= '';
         resItm.LGORT= '';
@@ -166,9 +166,9 @@ public with sharing class IFN_LIF1012_Callout_TEST {
         resData.T_RETURN = resItm;
 
         Test.setMock(HttpCalloutMock.class, new IFN_LIF1012_Callout_TESTMock(JSON.serialize(resData),200)); 
-        IFN_LIF1012_PO001_MD002.PO001_MD002ReqWrapper params = new IFN_LIF1012_PO001_MD002.PO001_MD002ReqWrapper();
-        IFN_LIF1012_PO001_MD002.ZMMT1380_ITM paramitm = new IFN_LIF1012_PO001_MD002.ZMMT1380_ITM();
-        String interfaceId = 'IFN_LIF1012_PO001_MD002';
+        IFN_LIF1012_PO001_MD003.PO001_MD003ReqWrapper params = new IFN_LIF1012_PO001_MD003.PO001_MD003ReqWrapper();
+        IFN_LIF1012_PO001_MD003.ZMMT1380_ITM paramitm = new IFN_LIF1012_PO001_MD003.ZMMT1380_ITM();
+        String interfaceId = 'IFN_LIF1012_PO001_MD003';
 
         IFN_LIF1012_Callout callout = new IFN_LIF1012_Callout(interfaceId,'Realtime');
 
@@ -189,15 +189,15 @@ public with sharing class IFN_LIF1012_Callout_TEST {
 
 
     @isTest
-    static void test02_2()
+    static void test03_2()
     {
 
         Test.startTest();
        
         Test.setMock(HttpCalloutMock.class, new IFN_LIF1012_Callout_TESTMock('',500)); 
-        IFN_LIF1012_PO001_MD002.PO001_MD002ReqWrapper params = new IFN_LIF1012_PO001_MD002.PO001_MD002ReqWrapper();
-        IFN_LIF1012_PO001_MD002.ZMMT1380_ITM paramitm = new IFN_LIF1012_PO001_MD002.ZMMT1380_ITM();
-        String interfaceId = 'IFN_LIF1012_PO001_MD002';
+        IFN_LIF1012_PO001_MD003.PO001_MD003ReqWrapper params = new IFN_LIF1012_PO001_MD003.PO001_MD003ReqWrapper();
+        IFN_LIF1012_PO001_MD003.ZMMT1380_ITM paramitm = new IFN_LIF1012_PO001_MD003.ZMMT1380_ITM();
+        String interfaceId = 'IFN_LIF1012_PO001_MD003';
 
         IFN_LIF1012_Callout callout = new IFN_LIF1012_Callout(interfaceId,'Realtime');
 
@@ -222,8 +222,8 @@ public with sharing class IFN_LIF1012_Callout_TEST {
     {
 
         Test.startTest();
-        IFN_LIF1012_PO001_MD003.PO001_MD003ResWrapper resData = new IFN_LIF1012_PO001_MD003.PO001_MD003ResWrapper();
-        IFN_LIF1012_PO001_MD003.T_OUTPUT_ITM resItm = new IFN_LIF1012_PO001_MD003.T_OUTPUT_ITM();
+        IFN_LIF1012_PO001_MD001.PO001_MD001ResWrapper resData = new IFN_LIF1012_PO001_MD001.PO001_MD001ResWrapper();
+        IFN_LIF1012_PO001_MD001.T_OUTPUT_ITM resItm = new IFN_LIF1012_PO001_MD001.T_OUTPUT_ITM();
         resItm.KUNNR       = '1';
         resItm.KKBER       = '1';
         resItm.VKORG       = '1';
@@ -242,9 +242,9 @@ public with sharing class IFN_LIF1012_Callout_TEST {
         resData.XSTAT= 'S';
 
         Test.setMock(HttpCalloutMock.class, new IFN_LIF1012_Callout_TESTMock(JSON.serialize(resData),200)); 
-        IFN_LIF1012_PO001_MD003.PO001_MD003ReqWrapper params = new IFN_LIF1012_PO001_MD003.PO001_MD003ReqWrapper();
-        IFN_LIF1012_PO001_MD003.T_INPUT_ITM paramitm = new IFN_LIF1012_PO001_MD003.T_INPUT_ITM();
-        String interfaceId = 'IFN_LIF1012_PO001_MD003';
+        IFN_LIF1012_PO001_MD001.PO001_MD001ReqWrapper params = new IFN_LIF1012_PO001_MD001.PO001_MD001ReqWrapper();
+        IFN_LIF1012_PO001_MD001.T_INPUT_ITM paramitm = new IFN_LIF1012_PO001_MD001.T_INPUT_ITM();
+        String interfaceId = 'IFN_LIF1012_PO001_MD001';
 
         IFN_LIF1012_Callout callout = new IFN_LIF1012_Callout(interfaceId,'Realtime');
 
@@ -270,9 +270,9 @@ public with sharing class IFN_LIF1012_Callout_TEST {
         Test.startTest();
        
         Test.setMock(HttpCalloutMock.class, new IFN_LIF1012_Callout_TESTMock('',500)); 
-        IFN_LIF1012_PO001_MD003.PO001_MD003ReqWrapper params = new IFN_LIF1012_PO001_MD003.PO001_MD003ReqWrapper();
-        IFN_LIF1012_PO001_MD003.T_INPUT_ITM paramitm = new IFN_LIF1012_PO001_MD003.T_INPUT_ITM();
-        String interfaceId = 'IFN_LIF1012_PO001_MD003';
+        IFN_LIF1012_PO001_MD001.PO001_MD001ReqWrapper params = new IFN_LIF1012_PO001_MD001.PO001_MD001ReqWrapper();
+        IFN_LIF1012_PO001_MD001.T_INPUT_ITM paramitm = new IFN_LIF1012_PO001_MD001.T_INPUT_ITM();
+        String interfaceId = 'IFN_LIF1012_PO001_MD001';
 
         IFN_LIF1012_Callout callout = new IFN_LIF1012_Callout(interfaceId,'Realtime');
 

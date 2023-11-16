@@ -29,13 +29,13 @@ public class IFN_LIF1012_Callout {
         
         try {
             switch on interfaceId {
-                when 'IFN_LIF1012_PO001_MD001'{ 
+                when 'IFN_LIF1012_PO001_MD001'{ // 여신 사용현황 조회
                     result = IFN_LIF1012_PO001_MD001(interfaceId, params);
                 }                
-                when 'IFN_LIF1012_PO001_MD002'{ 
+                when 'IFN_LIF1012_PO001_MD002'{ // 매출현황 조회
                     result = IFN_LIF1012_PO001_MD002(interfaceId, params);
                 }
-                when 'IFN_LIF1012_PO001_MD003'{ 
+                when 'IFN_LIF1012_PO001_MD003'{ // 미계약 제품 조회
                     result = IFN_LIF1012_PO001_MD003(interfaceId, params);
                 }
 
@@ -48,7 +48,7 @@ public class IFN_LIF1012_Callout {
 
 
     /**
-     * 매출채권현황리포트 조회
+     * 여신 사용현황 조회
      * 
      * @param  변수명 파라미터 설명 (있는경우)
      * @return  리턴값 설명 (있는경우)
@@ -86,11 +86,13 @@ public class IFN_LIF1012_Callout {
             reqparam.XSYS = 'SD';
             reqparam.XDATS = yyyymmdd;
             reqparam.XTIMS = hhmmss;
-            
+
 
             IFN_ApiGateWay gateway = new IFN_ApiGateWay(interfaceId);
             String requestBody = JSON.serialize(reqparam);
             this.logWrap.RequestBody = requestBody;
+
+            Map<String,String> dynamicHd = new Map<String,String>();
 
             HttpResponse response = gateway.webCallout(requestBody,null, false);
 
@@ -141,7 +143,7 @@ public class IFN_LIF1012_Callout {
         return result;
     }
  /**
-     * 미계약 상품 상품 조회
+     * 매출채권현황 조회
      * @param interfaceId IFN_LIF1012_PO001_MD002
      * @param params 
      * @return  
@@ -180,6 +182,14 @@ public class IFN_LIF1012_Callout {
             IFN_LIF1012_PO001_MD002.PO001_MD002ReqWrapper reqparam = new IFN_LIF1012_PO001_MD002.PO001_MD002ReqWrapper();
             reqparam = (IFN_LIF1012_PO001_MD002.PO001_MD002ReqWrapper)JSON.deserializeStrict((String) params, IFN_LIF1012_PO001_MD002.PO001_MD002ReqWrapper.class);
 
+            String ymdhms = Datetime.now().format('yyyyMMddHHmmss');
+            String yyyymmdd = ymdhms.substring(0, 8);
+            String hhmmss = ymdhms.substring(8);
+            reqparam.XROWS = '1';
+            reqparam.XSYS = 'SD';
+            reqparam.XDATS = yyyymmdd;
+            reqparam.XTIMS = hhmmss;
+            
 
             IFN_ApiGateWay gateway = new IFN_ApiGateWay(interfaceId);
             String requestBody = JSON.serialize(reqparam);
@@ -191,7 +201,7 @@ public class IFN_LIF1012_Callout {
 
                 responsedata = response.getBody();
                 infResponse =  (IFN_LIF1012_PO001_MD002.PO001_MD002ResWrapper)JSON.deserializeStrict((String)responsedata, IFN_LIF1012_PO001_MD002.PO001_MD002ResWrapper.class);
-                this.logWrap.LogText.add('infResponse.search >>>>>>>>>> ' + JSON.serialize(infResponse.T_RETURN));
+                this.logWrap.LogText.add('infResponse.search >>>>>>>>>> ' + JSON.serialize(infResponse.T_OUTPUT));
                 this.logWrap.ResponseBody = (String)responsedata;
                 this.logWrap.ResponseTime = Datetime.now();
             } else {
@@ -237,7 +247,7 @@ public class IFN_LIF1012_Callout {
 
 
     /**
-     * 여신 사용 현황  조회
+     * 미계약 상품 상품 조회
      * 
      * @param  
      * 	{"T_INPUT" :
@@ -295,20 +305,10 @@ public class IFN_LIF1012_Callout {
             IFN_LIF1012_PO001_MD003.PO001_MD003ReqWrapper reqparam = new IFN_LIF1012_PO001_MD003.PO001_MD003ReqWrapper();
             reqparam = (IFN_LIF1012_PO001_MD003.PO001_MD003ReqWrapper)JSON.deserializeStrict((String) params, IFN_LIF1012_PO001_MD003.PO001_MD003ReqWrapper.class);
 
-            String ymdhms = Datetime.now().format('yyyyMMddHHmmss');
-            String yyyymmdd = ymdhms.substring(0, 8);
-            String hhmmss = ymdhms.substring(8);
-            reqparam.XROWS = '1';
-            reqparam.XSYS = 'SD';
-            reqparam.XDATS = yyyymmdd;
-            reqparam.XTIMS = hhmmss;
-
 
             IFN_ApiGateWay gateway = new IFN_ApiGateWay(interfaceId);
             String requestBody = JSON.serialize(reqparam);
             this.logWrap.RequestBody = requestBody;
-
-            Map<String,String> dynamicHd = new Map<String,String>();
 
             HttpResponse response = gateway.webCallout(requestBody,null, false);
 
@@ -316,7 +316,7 @@ public class IFN_LIF1012_Callout {
 
                 responsedata = response.getBody();
                 infResponse =  (IFN_LIF1012_PO001_MD003.PO001_MD003ResWrapper)JSON.deserializeStrict((String)responsedata, IFN_LIF1012_PO001_MD003.PO001_MD003ResWrapper.class);
-                this.logWrap.LogText.add('infResponse.search >>>>>>>>>> ' + JSON.serialize(infResponse.T_OUTPUT));
+                this.logWrap.LogText.add('infResponse.search >>>>>>>>>> ' + JSON.serialize(infResponse.T_RETURN));
                 this.logWrap.ResponseBody = (String)responsedata;
                 this.logWrap.ResponseTime = Datetime.now();
             } else {

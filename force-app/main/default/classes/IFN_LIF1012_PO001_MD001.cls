@@ -4,12 +4,12 @@
  * @Author :  조일근 
  * @Date : 2023.11.08
  * @Version : 1.0
- * @Description : 매출 채권현황 리포트 조회 인터페이스
+ * @Description : 여신 사용 현황  조회 인터페이스
  * @Modified :
  * ----------------------------------------------
  *  NO | Date       | Modifier       | Description
  * ----------------------------------------------
- *  1. | 2023.11.08 | 조일근  | 최초작성
+ *  1. | 2023.11.14 | 조일근  | 최초작성
  * */
 public class IFN_LIF1012_PO001_MD001 {
 
@@ -50,7 +50,7 @@ public class IFN_LIF1012_PO001_MD001 {
 
      /**
      * ==================================== 
-     * 미계약 상품 인터페이스 Wrapper
+     * 여신 사용 현황 인터페이스 Wrapper
      * =================================
      */
     /**
@@ -61,15 +61,12 @@ public class IFN_LIF1012_PO001_MD001 {
         public String XSYS {get;set;} // SD 고정
         public String XDATS {get;set;} // 요청일자
         public String XTIMS {get;set;} // 요청시간
-        public ITEM_ITM ITEM {get;set;}
+        public T_INPUT_ITM T_INPUT {get;set;}
     }
-    public class ITEM_ITM {
-        public String VKORG {get;set;} // 판매 조직
-        public String VKBUR {get;set;} // 사업장 
-        public String VKGRP {get;set;} // 영업 그룹
-        public String PERNR {get;set;} // 사원 번호
-        public String KUNNR {get;set;} // 고객 번호
-        public String STIDA {get;set;} // [FI] 미결항목일자
+    public class T_INPUT_ITM {
+        public String KUNNR {get;set;} // 자재번호
+        public String KKBER {get;set;} // B/L번호
+        
     }
 
 
@@ -83,24 +80,18 @@ public class IFN_LIF1012_PO001_MD001 {
     }
 
     public class T_OUTPUT_ITM{
-        public String VKORG {get;set;}       // 판매 조직
-        public String VKBUR {get;set;}       // 사업장 
-        public String VKGRP {get;set;}       // 영업 그룹
-        public String PERNR {get;set;}       // 사원 번호
         public String KUNNR {get;set;}       // 고객 번호
-        public String STIDA {get;set;}       // [FI] 미결항목일자
-        public String NAME1 {get;set;}       // 이름 1
-        public String LB004 {get;set;}       // 20자 
-        public String MS004 {get;set;}       // 20자 
-        public String MR006 {get;set;}       // 20자 
-        public String MB004 {get;set;}       // 20자 
-        public String ALLOWANCE {get;set;}   // 20자 
-        public String MB02 {get;set;}        // 20자 
-        public String DMBTRT {get;set;}      // 20자 
+        public String KKBER {get;set;}       // 여신 관리 영역
+        public String VKORG {get;set;}       // 판매 조직
+        public String KLIMK {get;set;}       // 고객의 여신한도
+        public String SAUFT {get;set;}       // 매출환산가치 합계
+        public String SBGRP {get;set;}       // 여신관리사원그룹 
+        public String KATR2 {get;set;}       // 고객등급
+        public String ZINCOME {get;set;}     // 당월 입금액
         public String VTEXT {get;set;}       // 영업 조직내역
-        public String BEZEI_VKBUR {get;set;} // 사업장 내역
-        public String BEZEI_VKGRP {get;set;} // 영업그룹 내역
-        public String PV_HNAME {get;set;}    // 사원번호 내역
+        public String VTEXT_KART2 {get;set;} // 고객등급 내역
+        public String STEXT {get;set;}       // 여신관리사원그룹 내역 
+        public String KKBTX {get;set;}       // 여신 관리 영역 내역
     }
 
 
