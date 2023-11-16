@@ -137,10 +137,12 @@ global class IFN_CommonLog {
 
             if(this.BatchStartTime != null)  result.BatchStartTime__c   = this.BatchStartTime;
             if(this.BatchEndTime   != null)  result.BatchEndTime__c     = this.BatchEndTime;
-            if(this.RequestTime    != null)  result.RequestTime__c   = this.RequestTime;
-            if(this.ResponseTime   != null)  result.ResponseTime__c  = this.ResponseTime;
-            if(this.ErrorText      != null)  result.ErrorText__c        = getText(JSON.serialize(this.ErrorText));
-            if(this.LogText      != null)  result.LogText__c        = getText(JSON.serialize(this.LogText));
+            if(this.RequestTime    != null)  result.RequestTime__c      = this.RequestTime;
+            if(this.ResponseTime   != null)  result.ResponseTime__c     = this.ResponseTime;
+            //if(this.ErrorText      != null)  result.ErrorText__c        = getText(JSON.serialize(this.ErrorText));//orin
+            if(this.ErrorText      != null)  result.ErrorText__c        = sanchoGetText(this.ErrorText);            //2023.11.16 sancho : 가독성 바꿔봄
+            //if(this.LogText      != null)  result.LogText__c            = getText(JSON.serialize(this.LogText));  //orin
+            if(this.LogText      != null)  result.LogText__c            = sanchoGetText(this.LogText);              //2023.11.16 sancho : 가독성 바꿔봄
 
             if(String.isNotBlank(this.resultCode))      result.resultCode__c         = this.resultCode;
             if(String.isNotBlank(this.ResponseBody))   result.resultMessage__c   = getText(this.ResponseBody);
@@ -157,6 +159,15 @@ global class IFN_CommonLog {
 
         private String getText(String str)
         {
+            return str.length() > 120000 ?  str.subString(0,120000) : str;
+        }
+        
+        private String sanchoGetText(List<String> sLogText)
+        {
+            String str = '';
+            for(String nowstr : sLogText){
+                str += nowstr + '\n';
+            }
             return str.length() > 120000 ?  str.subString(0,120000) : str;
         }
     }

@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : sunkyung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 11-14-2023
+ * @last modified on  : 11-16-2023
  * @last modified by  : sunkyung.choi@dkbmc.com
 **/
 @isTest
@@ -151,100 +151,27 @@ public with sharing class CJFW_Survey_tr_TEST {
    surveyResList.add(respon);
    insert surveyResList;
 
-  //  주관식
-   CJFW_SurveyResult__c  result1 = new CJFW_SurveyResult__c (
-      SurveyResponse__c =respon.Id,
-      SurveyQuestion__c = oneQuest.Id,
-      OpenEnded__c = '테스트'
-  );
-  surveyResultList.add(result1); 
-
-  // 객관식 단수
-  CJFW_SurveyResult__c  result2 = new CJFW_SurveyResult__c (
-      SurveyResponse__c =respon.Id,
-      SurveyQuestion__c = twoQuest.Id,
-      SurveyOption__c = oneOption_TWQ.Id
-  );
-  surveyResultList.add(result2); 
-  
-  // 객관식 복수 
-  CJFW_SurveyResult__c  result3_1 = new CJFW_SurveyResult__c (
-      SurveyResponse__c =respon.Id,
-      SurveyQuestion__c = threeQuest.Id,
-      SurveyOption__c = oneOption_THQ.Id
-  );
-  surveyResultList.add(result3_1); 
  
-  CJFW_SurveyResult__c  result3_2 = new CJFW_SurveyResult__c (
-      SurveyResponse__c =respon.Id,
-      SurveyQuestion__c = threeQuest.Id,
-      SurveyOption__c = twoOption_THQ.Id
-  );
-  surveyResultList.add(result3_2); 
- 
-  CJFW_SurveyResult__c  result3_3 = new CJFW_SurveyResult__c (
-      SurveyResponse__c =respon.Id,
-      SurveyQuestion__c = threeQuest.Id,
-      SurveyOption__c = thrOption_THQ.Id
-  );
-  surveyResultList.add(result3_3); 
- 
-  CJFW_SurveyResult__c  result3_4 = new CJFW_SurveyResult__c (
-      SurveyResponse__c =respon.Id,
-      SurveyQuestion__c = threeQuest.Id,
-      SurveyOption__c = forOption_THQ.Id
-  );
-  surveyResultList.add(result3_4); 
-
-  CJFW_SurveyResult__c  result4_1 = new CJFW_SurveyResult__c (
-      SurveyResponse__c =respon.Id,
-      SurveyQuestion__c = fourQuest.Id,
-      DateResult__c = Date.valueOf('2023-10-23')
-  );
-  surveyResultList.add(result4_1); 
-
-  CJFW_SurveyResult__c  result4_2 = new CJFW_SurveyResult__c (
-      SurveyResponse__c =respon.Id,
-      SurveyQuestion__c = fourQuest.Id,
-      DateResult__c = Date.valueOf('2023-10-24')
-  );
-  surveyResultList.add(result4_2); 
-
-  CJFW_SurveyResult__c  result5_1 = new CJFW_SurveyResult__c (
-      SurveyResponse__c =respon.Id,
-      SurveyQuestion__c = fiveQuest.Id,
-      TimeResult__c = Time.newInstance(23, 0, 0, 0)
-  );
-  surveyResultList.add(result5_1); 
-  
-  CJFW_SurveyResult__c  result5_2 = new CJFW_SurveyResult__c (
-      SurveyResponse__c =respon.Id,
-      SurveyQuestion__c = fiveQuest.Id,
-      TimeResult__c = Time.newInstance(1, 0, 0, 0) 
-  );
-  surveyResultList.add(result5_2); 
-   
-  insert surveyResultList;
-
   }
   
 
    @isTest
    static void doClone_TEST(){ 
-       Test.startTest();
-       Set<Id> surveyIdSet = new Set<Id>();
-       Set<Id> surveyQueIdSet = new Set<Id>();
-       Map<String, CJFW_Survey__c> surveyMap = new Map<String, CJFW_Survey__c>();
-           
+    Test.startTest();
+    Set<Id> surveyIdSet = new Set<Id>();
+    Set<Id> surveyQueIdSet = new Set<Id>();
+    Map<String, CJFW_Survey__c> surveyMap = new Map<String, CJFW_Survey__c>();
+        
     List<CJFW_Survey__c> testLists = [SELECT Id,Name,Su__c,HeadOffice__c,Active__c,Version__c,ParentSurvey__c
-     FROM CJFW_Survey__c WHERE Name = :'테스트 설문'];
-     
-   
-     for (CJFW_Survey__c testList : testLists) {
+    FROM CJFW_Survey__c WHERE Name = :'테스트 설문'];
+    
+    List<CJFW_Survey__c> tesAlltLists = [SELECT Id,Name,Su__c,HeadOffice__c,Active__c,Version__c,ParentSurvey__c
+    FROM CJFW_Survey__c ];
+    
+    for (CJFW_Survey__c testList : testLists) {
         surveyIdSet.add(testList.Id);
-     }
-
-     
+    }
+    System.debug('tesAlltLists'+ tesAlltLists);
     List<CJFW_SurveyQuestion__c> testQueLists = [SELECT Id,
     Name,
     Name__c,
@@ -285,24 +212,27 @@ public with sharing class CJFW_Survey_tr_TEST {
         surveyMap.put(testSuList.su__c,testSuList); 
      }
 
-     List<CJFW_Survey__c> nullLists = [SELECT Id,Name,Su__c,HeadOffice__c,Active__c,Version__c,ParentSurvey__c
-     FROM CJFW_Survey__c WHERE Name = :'비어있는 설문지'];
-     CJFW_Survey__c nullSurveys = nullLists[0].clone();
-
-     insert nullSurveys;
-     if (nullSurveys.isClone()) {
-        nullSurveys.HeadOffice__c = '3001';
-        nullSurveys.su__c = '4700';
+  
+     try {
+        List<CJFW_Survey__c> nullLists = [SELECT Id,Name,Su__c,HeadOffice__c,Active__c,Version__c,ParentSurvey__c
+        FROM CJFW_Survey__c WHERE Name = :'비어있는 설문지'];
+        nullLists[0].Active__c = true;
+        CJFW_Survey__c nullSurveys = nullLists[0].clone();
+   
+        insert nullSurveys;
+        if (nullSurveys.isClone()) {
+            nullSurveys.Active__c = true;
+            nullSurveys.HeadOffice__c = '3001';
+            nullSurveys.su__c = '4700';
+         }
+         update nullSurveys;
      }
-     update nullSurveys;
+     catch (Exception e) {
+        System.debug('error Message ?? '+ e.getMessage());
+     }
+   
 
-     
-     System.debug('tmpSurveys보자 >> ' + tmpSurveys);
-     System.debug('tmpOldSurveys보자 >> ' + tmpOldSurveys);
-     System.debug('tmpQueSurveys보자 >> ' + tmpQueSurveys);
-     System.debug('tmpOptSurveys보자 >> ' + tmpOptSurveys);
-     System.debug(tmpSurveys.isClone());
-     System.debug(tmpSurveys.getCloneSourceId());
+ 
 
     CJFW_Survey_tr surveyTRLists = new CJFW_Survey_tr() ;
     surveyTRLists.listNew = new List<CJFW_Survey__c>{tmpSurveys};

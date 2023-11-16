@@ -16,7 +16,7 @@ public with sharing class OrderConsiderReContractFormController {
     public String reportType { get; set; } // 품의서 유형
     public String headOfficeLabel { get; set; } // 본부구분 
     public Decimal defaultZero { get; set; } // 0.00 기본세팅
-    public String refExInfoId { get; set; } // 예상손익 새버전 insert 시 전버전 참고값 
+    public String refExInfoId { get; set; } // 예상손익 version 2 이상 신규 insert 시 전버전 참고값 
 
     // 물류비 - 외식(SU)
     public Decimal DistributeDirCap {get;set;}  // 수도권-직접
@@ -699,13 +699,13 @@ public with sharing class OrderConsiderReContractFormController {
             'SalesProfitEastExclusive__c',
             'SalesProfitWestExclusive__c',
             'SalesProfitJejuExclusive__c',
-            'SalesLocationCntCapital__c',
-            'SalesLocationCntEast__c',
-            'SalesLocationCntWest__c',
-            'SalesLocationCntJeju__c',
-            'SalesLocationCntFo__c' ,
-            'SalesLocationCntThree__c' , 
-            'SalesLocationCntImpMonth__c' , 
+            // 'SalesLocationCntCapital__c',
+            // 'SalesLocationCntEast__c',
+            // 'SalesLocationCntWest__c',
+            // 'SalesLocationCntJeju__c',
+            // 'SalesLocationCntFo__c' ,
+            // 'SalesLocationCntThree__c' , 
+            // 'SalesLocationCntImpMonth__c' , 
             'SalesPerStoreCapital__c',
             'SalesPerStoreEast__c',
             'SalesPerStoreWest__c',
@@ -916,7 +916,15 @@ public with sharing class OrderConsiderReContractFormController {
             'KgGeneralProduct__c',               //일반상품
             'KgTotalAmount__c',                  //계
             'SkuReleaseBox__c',                  //출고단위 BOX
-            'SkuReleaseEa__c'                    //출고단위 EA
+            'SkuReleaseEa__c',                   //출고단위 EA
+
+            'SalesLocationCntCapital__c',        //판매처수
+            'SalesLocationCntEast__c',
+            'SalesLocationCntWest__c',
+            'SalesLocationCntJeju__c',
+            'SalesLocationCntFo__c' ,
+            'SalesLocationCntThree__c' , 
+            'SalesLocationCntImpMonth__c' 
         };
         for (String defaultSet : defaultValPerSet) {
             Object fieldPerValue = IncomeExpensesInfo.get(defaultSet);

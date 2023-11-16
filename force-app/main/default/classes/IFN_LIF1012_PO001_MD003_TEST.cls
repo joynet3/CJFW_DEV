@@ -68,7 +68,7 @@ public with sharing class IFN_LIF1012_PO001_MD003_TEST {
         IFN_LIF1012_PO001_MD003 cont = new IFN_LIF1012_PO001_MD003();
         String interfaceId = 'IFN_LIF1012_PO001_MD003';
 
-        paramitm.KUNNR = '50000             ';
+        paramitm.KUNNR = '50000';
         paramitm.KKBER = 'FW00';
         params.T_INPUT = paramitm;
 

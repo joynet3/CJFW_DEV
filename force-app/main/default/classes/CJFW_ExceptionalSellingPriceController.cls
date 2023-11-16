@@ -19,7 +19,7 @@ public with sharing class CJFW_ExceptionalSellingPriceController {
         System.debug('objQuote : ' + objQuote);
         mapInitData.put('quote', objQuote);
 
-        List<CJFW_QuoteLineItem__c> objItemList = [SELECT   Id, QuoteId__c, ProductName__c, ProductCode__c, LogisticsCenter__c, Batch__c, ProfitMargin__c 
+        List<CJFW_QuoteLineItem__c> objItemList = [SELECT   Id, QuoteId__c, ProductName__c, ProductCode__c, LogisticsCenter__c, Batch__c, ProfitMargin__c , UnitPrice__c
                                                     FROM     CJFW_QuoteLineItem__c
                                                     WHERE    QuoteId__c = :recordId
                                                     ORDER BY SortOrder__c ASC

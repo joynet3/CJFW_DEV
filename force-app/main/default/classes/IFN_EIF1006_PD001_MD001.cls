@@ -66,7 +66,8 @@ global with sharing class IFN_EIF1006_PD001_MD001 implements Database.Batchable<
         this.logwrap.BatchCronId         = bc.getJobId();
         this.logwrap.BatchStartTime      = System.now();
         this.logwrap.ClassName           = String.valueOf(this).substring(0, String.valueOf(this).indexOf(':'));
-        this.logwrap.LogText.add('### [Batch Start] ### \n');
+        
+        this.logwrap.LogText.add('### [Batch Start] ###' + this.workDivision);
         
         globalCount.add(String.valueOf(1));     // 1회 수행 한다.
         return globalCount;
@@ -74,7 +75,7 @@ global with sharing class IFN_EIF1006_PD001_MD001 implements Database.Batchable<
     
     global void execute(Database.BatchableContext BC, List<String> scope) {
 
-        this.logwrap.LogText.add('### [Batch excute] ### \n');
+        this.logwrap.LogText.add('### [Batch excute] ###');
         
         IFMaster__c                     ifMasterObj = [SELECT Id, Name, ContentType__c, Endpoint__c, Method__c FROM IFMaster__c WHERE Name =: interfaceId];
         API_Authenticationkey__mdt      authKey     = [SELECT KeyValue__c, DateRange__c, MasterLabel FROM API_Authenticationkey__mdt WHERE MasterLabel = '공공데이터_Key'];
@@ -111,6 +112,8 @@ global with sharing class IFN_EIF1006_PD001_MD001 implements Database.Batchable<
             getRquest += '&' + 'inqryEndDt='    + inqryEndDt;
             if(bidNtceNo != null && !bidNtceNo.equals('')) getRquest += '&' + 'bidNtceNo=' + bidNtceNo;
             
+            this.logwrap.LogText.add(ifMasterObj.Endpoint__c + getRquest);
+
             try {
                 IFN_EIF1006_Callout callout = new IFN_EIF1006_Callout(this.interfaceId, 'Real');
                 
@@ -140,9 +143,11 @@ global with sharing class IFN_EIF1006_PD001_MD001 implements Database.Batchable<
                     
                     for(CJFW_BiddingInformation__c nowBid : updList){
                         System.debug('nowBid:' + nowBid.Name + '/' + nowBid.BidNoticeNumber__c + '/' + nowBid.SubNumber__c);
+                        this.logwrap.LogText.add('nowBid:' + nowBid.Name + '/' + nowBid.BidNoticeNumber__c + '/' + nowBid.SubNumber__c);
                         for(items nowitem : resItems){
                             if(nowBid.BidNoticeNumber__c == nowitem.bidNtceNo + '-' + nowitem.bidNtceOrd) {
                                 System.debug('sancho same:' + nowitem.bidNtceNm + '/' + nowitem.bidNtceNo + '/' + nowitem.bidNtceOrd);
+                                this.logwrap.LogText.add('sancho same:' + nowitem.bidNtceNm + '/' + nowitem.bidNtceNo + '/' + nowitem.bidNtceOrd);
                             }
                             
                         }
@@ -165,8 +170,6 @@ global with sharing class IFN_EIF1006_PD001_MD001 implements Database.Batchable<
                     //errResultMsg    = ifRes.message + '\n' + ifRes.response;
                     this.logWrap.ErrorCode = ifRes.result;
                     this.logWrap.ErrorText.add(ifRes.message + '\n');
-                    this.logWrap.ErrorText.add(ifRes.response + '\n');
-   
                 }
 
 
@@ -199,6 +202,7 @@ global with sharing class IFN_EIF1006_PD001_MD001 implements Database.Batchable<
     ************************************************************************************************************/
     global void finish(Database.BatchableContext BC) {
         System.debug('IFN_EIF1006_PD001_MD001 finish !!');
+        this.logwrap.LogText.add('### [Batch finish] ###');
     }
 
 

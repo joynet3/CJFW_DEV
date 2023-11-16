@@ -5,7 +5,7 @@
 
  * @author            : seol.kim@dkbmc.com
  * @group             : 
- * @last modified on  : 11-15-2023
+ * @last modified on  : 11-16-2023
  * @last modified by  : seol.kim@dkbmc.com
 **/
 public with sharing class OrderConsiderFormController {
@@ -19,6 +19,7 @@ public with sharing class OrderConsiderFormController {
     public String reportType { get; set; } // 품의서 유형
     public String headOfficeLabel { get; set; } // Label
     public Decimal defaultZero { get; set; } // 0.00 기본세팅
+    public String refExInfoId { get; set; } // 예상손익 version 2 이상 신규 insert 시 전버전 참고값 
 
     
     public String fieldValue { get; private set; }
@@ -820,28 +821,9 @@ public with sharing class OrderConsiderFormController {
             'StockMoneyOriginalTen__c',
             'StockMoneyPlanTen__c',
             'MonthSaleTen__c',
-            'MonthSalesProfitTen__c',
+            'MonthSalesProfitTen__c'
 
-            'MultipleSkuRoomTemperature__c',
-            'MultipleSkuRefrigeration__c',
-            'MultipleSkuFreezer__c',
-            'MultiplePltRoomTemperature__c',
-            'MultiplePltRefrigeration__c',
-            'MultiplePltFreezer__c',
 
-            'StorageSkuRoomTemperature__c',
-            'StorageSkuRefrigeration__c',
-            'StorageSkuFreezer__c',
-            'StoragePltRoomTemperature__c',
-            'StoragePltRefrigeration__c',
-            'StoragePltFreezer__c',
-
-            'ReductionSkuRoomTemperature__c',
-            'ReductionSkuRefrigeration__c',
-            'ReductionSkuFreezer__c',
-            'ReductionPltRoomTemperature__c',
-            'ReductionPltRefrigeration__c',
-            'ReductionPltFreezer__c'
             
         };
 
@@ -869,6 +851,30 @@ public with sharing class OrderConsiderFormController {
             'SkuReleaseBox__c',                  //출고단위 BOX
             'SkuReleaseEa__c',                    //출고단위 EA  
             
+
+            'MultipleSkuRoomTemperature__c',
+            'MultipleSkuRefrigeration__c',
+            'MultipleSkuFreezer__c',
+            'MultiplePltRoomTemperature__c',
+            'MultiplePltRefrigeration__c',
+            'MultiplePltFreezer__c',
+
+            'StorageSkuRoomTemperature__c',
+            'StorageSkuRefrigeration__c',
+            'StorageSkuFreezer__c',
+            'StoragePltRoomTemperature__c',
+            'StoragePltRefrigeration__c',
+            'StoragePltFreezer__c',
+
+            'ReductionSkuRoomTemperature__c',
+            'ReductionSkuRefrigeration__c',
+            'ReductionSkuFreezer__c',
+            'ReductionPltRoomTemperature__c',
+            'ReductionPltRefrigeration__c',
+            'ReductionPltFreezer__c',
+
+
+
             'PltOriginalOne__c',
             'PltPlanOne__c',
             'PltOriginalTwo__c',
@@ -944,7 +950,8 @@ public with sharing class OrderConsiderFormController {
             IncomeExpensesInfo.put('SalesMonthly__c', accountInfo.get('SalesMonthly__c') );
         }
 
-        System.debug('# 품의서정보  ->' + IncomeExpensesInfo ); 
+        //System.debug('# 품의서정보  ->' + IncomeExpensesInfo.id ); 
+        refExInfoId = IncomeExpensesInfo.id;        
     }
 
 
@@ -2179,10 +2186,14 @@ public with sharing class OrderConsiderFormController {
     @param : 신규개설품의Id
     */
     public void getPromoteIssue(String expectIncomeId) {
-        System.debug(' 추진사항정보 가져오기 ~ ' + expectIncomeId );
+        System.debug(' 추진사항 정보가져가기 ');
+        System.debug(' 추진사항 expectIncomeId => ' + expectIncomeId );
+        System.debug(' 추진사항 refExInfoId => ' + refExInfoId );        
+        List<CJFW_PromoteIssues__c> promoteIssuesList = new List<CJFW_PromoteIssues__c>();
+
         try{   
-            if(expectIncomeId !=null){  
-                promoteIssues = [
+            if(refExInfoId !=null){  
+                promoteIssuesList = [
                  SELECT  Id,
                         SolutionDivisionOne__c,     // 솔루션 구분
                         SolutionDivisionTwo__c,
@@ -2261,10 +2272,22 @@ public with sharing class OrderConsiderFormController {
                         SynergySaleRateThree__c,
                         SynergyRemarkThree__c,
                         CreatedDate 
-                 FROM CJFW_PromoteIssues__c WHERE ExpectedIncomeExpensesId__c =: expectIncomeId LIMIT 1  ];
-            }else {
-                PromoteIssues = new CJFW_PromoteIssues__c();
-            }
+                        FROM CJFW_PromoteIssues__c WHERE ExpectedIncomeExpensesId__c =: refExInfoId LIMIT 1  
+                    ];
+                }
+
+                if(expectIncomeId ==null && refExInfoId ==null ){ 
+                        System.debug( ' version 1 , 초기 신규 생성 '  );
+                    promoteIssues = new CJFW_PromoteIssues__c();
+                }else if(expectIncomeId ==null && !promoteIssuesList.isEmpty() ){
+                        System.debug( ' version 2 이상  , 신규 생성 '  );
+                    promoteIssues = new CJFW_PromoteIssues__c();
+                    promoteIssues = promoteIssuesList[0];
+                }else{ 
+                        System.debug( ' update '  );
+                    promoteIssues = promoteIssuesList[0];
+                }
+
             // 매출 , 매익률 값이 없을경우 default 0.00 으로 세팅 
             String[] defaultValSet = new String[] {
             'ManageStockMoneyOne__c', 

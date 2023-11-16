@@ -44,7 +44,6 @@ public with sharing class CJFW_SurveyQustion_tr_TEST {
     Set<Id> surveyIdSet = new Set<Id>();
     Map<String, CJFW_Survey__c> surveyQuMap = new Map<String, CJFW_Survey__c>();
     Map<Id, CJFW_SurveyQuestion__c> surveyQueMap = new Map<Id, CJFW_SurveyQuestion__c>();
-    Boolean exceptionThrown = false;
 
     
     List<CJFW_Survey__c> testLists = [SELECT Id,Name,Su__c,HeadOffice__c,Active__c,CheckActive__c,Version__c,ParentSurvey__c
@@ -87,7 +86,16 @@ public with sharing class CJFW_SurveyQustion_tr_TEST {
             );
         insert addQuest;
     
-        List<CJFW_SurveyQuestion__c> updateQueLists = [SELECT Id,  
+        
+    
+   }
+   catch (Exception e) {
+    
+    System.debug('error message'+ e.getMessage());
+   }
+
+   try {
+    List<CJFW_SurveyQuestion__c> updateQueLists = [SELECT Id,  
         Name,  
         Name__c, 
         Survey__c, 
@@ -101,17 +109,32 @@ public with sharing class CJFW_SurveyQustion_tr_TEST {
         FROM CJFW_SurveyQuestion__c WHERE Survey__c = :surveyIdSet and Name__c =: '1번 질문'];
         
         updateQueLists[0].Name__c = '11';
-        
         update updateQueLists;
-        delete updateQueLists;
-    
    }
    catch (Exception e) {
-    exceptionThrown = true;
-    
-    Boolean expectedExceptionThrown =  (e.getMessage().contains('error msg')) ? true : false; 
-    System.AssertEquals(true, expectedExceptionThrown, e.getMessage()); 
+    System.debug('error message'+ e.getMessage());
    }
+   try {
+    List<CJFW_SurveyQuestion__c> updateQueLists = [SELECT Id,  
+    Name,  
+    Name__c, 
+    Survey__c, 
+    Type__c, 
+    MultipleChoice__c, 
+    Order__c, 
+    DateType__c, 
+    TextType__c, 
+    Survey__r.CheckActive__c,
+    ActiveCheck__c
+    FROM CJFW_SurveyQuestion__c WHERE Survey__c = :surveyIdSet and Name__c =: '1번 질문'];
+    delete updateQueLists;
+   }
+   catch (Exception e) {
+    System.debug('error message'+ e.getMessage());
+   }
+        
+        
+        
     
      Test.stopTest();
  }

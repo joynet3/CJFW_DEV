@@ -157,7 +157,8 @@ public without sharing class CJFW_LineItemExcelPasteNewController {
             String strProfitMargin = String.valueOf(objData.get('ProfitMargin__c'));
             String strExtId = String.valueOf(objData.get('LogisticsCenter__c'))+'_'+String.valueOf(objData.get('ProductCode__c'));
             
-                
+            if (strProductCode == '') {//사용자 입력상품 구분 조건
+                System.debug('==== Dummy ProductCode Check ====' + strProductCode);
                 if ( mapCenterValue.get(strCenter) == null){
                     objData.put('result','['+orderCount+'] [물류센터] 값에 오류가 있습니다.');
                     listInvalidData.add(objData);
@@ -166,46 +167,50 @@ public without sharing class CJFW_LineItemExcelPasteNewController {
                     objData.put('result','['+orderCount+'] [월] 값에 오류가 있습니다.');
                     listInvalidData.add(objData);
                     isValid = false;
-                } else {
-
-                    if (strProductCode == '') {
-                        System.debug('==== Dummy ProductCode Check ====' + strProductCode);
-                    }else {
-                        if( strProductCode.length() != 6){
-                            objData.put('result','['+orderCount+'] [제품코드] 값에 오류가 있습니다.');
-                            listInvalidData.add(objData);
-                            isValid = false;
-                        } else if( setDupInputProductCode.contains(strProductCode)){
-                            objData.put('result','['+orderCount+'] 중복입력된 [제품코드] 입니다 .');
-                            listInvalidData.add(objData);
-                            isValid = false;
-                        } else if( listExistProductCode.contains(strProductCode)){
-                            objData.put('result','['+orderCount+'] 이미 추가된 [제품코드] 입니다 .');
-                            listInvalidData.add(objData);
-                            isValid = false;
-                        } else if ( !mapPriceBookEntry.keySet().contains(strExtId)){
-                            System.debug('setProductCode ' + setProductCode);                
-                            objData.put('result','['+orderCount+'] 해당 센터에 존재하지 않는 [제품코드] 입니다.');
-                            listInvalidData.add(objData);
-                            isValid = false;
-                        } else if (mapPriceBookEntry.get(strExtId).get(mapMonthValue.get(strMonth)+'__c') == null ){   
-                            objData.put('result','['+orderCount+'] 해당[월]에 [기준매입가]가 지정되어 있지 않습니다.');
-                            listInvalidData.add(objData);
-                            isValid = false;
-                        } else if (mapPriceBookEntry.get(strExtId).get(mapMonthValue.get(strMonth)+'__c') == 0 ){
-                            objData.put('result','['+orderCount+'] 해당[월]에 [기준매입가]가 지정되어 있지 않습니다.');
-                            listInvalidData.add(objData);
-                            isValid = false;
-                        } else if ( strUnitPrice != null && !strUnitPrice.isNumeric()){
-                            objData.put('result','['+orderCount+'] [가격] 값에 오류가 있습니다.');
-                            listInvalidData.add(objData);
-                            isValid = false;
-                        } else if ( strProfitMargin != null && !strProfitMargin.isNumeric()){
-                            objData.put('result','['+orderCount+'] [매익률] 값에 오류가 있습니다.');
-                            listInvalidData.add(objData);
-                            isValid = false;
-                        } 
                 }
+            }else {
+                if ( mapCenterValue.get(strCenter) == null){
+                    objData.put('result','['+orderCount+'] [물류센터] 값에 오류가 있습니다.');
+                    listInvalidData.add(objData);
+                    isValid = false;
+                } else if ( mapMonthValue.get(strMonth) == null){
+                    objData.put('result','['+orderCount+'] [월] 값에 오류가 있습니다.');
+                    listInvalidData.add(objData);
+                    isValid = false;
+                } else if( strProductCode.length() != 6){
+                    objData.put('result','['+orderCount+'] [제품코드] 값에 오류가 있습니다.');
+                    listInvalidData.add(objData);
+                    isValid = false;
+                } else if( setDupInputProductCode.contains(strProductCode)){
+                    objData.put('result','['+orderCount+'] 중복입력된 [제품코드] 입니다 .');
+                    listInvalidData.add(objData);
+                    isValid = false;
+                } else if( listExistProductCode.contains(strProductCode)){
+                    objData.put('result','['+orderCount+'] 이미 추가된 [제품코드] 입니다 .');
+                    listInvalidData.add(objData);
+                    isValid = false;
+                } else if ( !mapPriceBookEntry.keySet().contains(strExtId)){
+                    System.debug('setProductCode ' + setProductCode);                
+                    objData.put('result','['+orderCount+'] 해당 센터에 존재하지 않는 [제품코드] 입니다.');
+                    listInvalidData.add(objData);
+                    isValid = false;
+                } else if (mapPriceBookEntry.get(strExtId).get(mapMonthValue.get(strMonth)+'__c') == null ){   
+                    objData.put('result','['+orderCount+'] 해당[월]에 [영업매입가]가 지정되어 있지 않습니다.');
+                    listInvalidData.add(objData);
+                    isValid = false;
+                } else if (mapPriceBookEntry.get(strExtId).get(mapMonthValue.get(strMonth)+'__c') == 0 ){
+                    objData.put('result','['+orderCount+'] 해당[월]에 [기준매입가]가 지정되어 있지 않습니다.');
+                    listInvalidData.add(objData);
+                    isValid = false;
+                } else if ( strUnitPrice != null && !strUnitPrice.isNumeric()){
+                    objData.put('result','['+orderCount+'] [가격] 값에 오류가 있습니다.');
+                    listInvalidData.add(objData);
+                    isValid = false;
+                } else if ( strProfitMargin != null && !strProfitMargin.isNumeric()){
+                    objData.put('result','['+orderCount+'] [매익률] 값에 오류가 있습니다.');
+                    listInvalidData.add(objData);
+                    isValid = false;
+                } 
                 orderCount++;
             }
         }
@@ -220,76 +225,143 @@ public without sharing class CJFW_LineItemExcelPasteNewController {
             
             for ( Map<String, Object> objData : listValidTargetData ){
                 Map<String, Object> objLineItem = new Map<String, Object> ();
-
+                
                 String strProductCode = String.valueOf(objData.get('ProductCode__c'));
                 String strMonth = String.valueOf(objData.get('Month__c'));
                 String strCenter = String.valueOf(objData.get('LogisticsCenter__c'));
-                String strExtId = String.valueOf(objData.get('LogisticsCenter__c'))+'_'+String.valueOf(objData.get('ProductCode__c'));
                 Decimal strUnitPrice = (objData.get('UnitPrice__c') != null ? Decimal.valueOf(String.valueOf(objData.get('UnitPrice__c'))) : 10);
                 Decimal strProfitMargin = (objData.get('ProfitMargin__c') != null ? Decimal.valueOf(String.valueOf(objData.get('ProfitMargin__c'))) : 0);
-                Decimal strBasePurchasePrice = (Decimal) mapPriceBookEntry.get(strExtId).get(mapMonthValue.get(strMonth)+'__c');
-                //Decimal strOldBasePurchasePrice = (Decimal) mapPriceBookEntry.get(strExtId).get('Old'+mapMonthValue.get(strMonth)+'__c');
-
-                String strTaxTypeName = mapPriceBookEntry.get(strExtId).Product2.fm_TaxType__c;
-
-                Decimal strVAT = 0;
-                Decimal strUnitPriceWithVAT = strUnitPrice;
                 
-                objLineItem.put('SortOrder__c', orderCount++);
-                objLineItem.put(sObjectName+'Id__c', recordId);
-                objLineItem.put('ProductCode__c', strProductCode);
-                objLineItem.put('BasePurchasePrice__c', strBasePurchasePrice);
-                //objLineItem.put('OldBasePurchasePrice__c', strOldBasePurchasePrice);
+                if (strProductCode == '') {//사용자 입력 상품 구분
 
-                if ( strBasePurchasePrice == 1){
-                    strUnitPrice = 1;
-                    strProfitMargin = 100;
-                    strVAT = 0;
-                    strUnitPriceWithVAT = 1;
-                }
-                else if( isPriceExist){
-                    if( strUnitPrice < 10) strUnitPrice = 10;
-                    else if ( strUnitPrice > 1000000000) strUnitPrice = 1000000000;
-                    strUnitPrice = strUnitPrice.setScale(-1,System.RoundingMode.UP);  
-                    strProfitMargin = ((strUnitPrice - strBasePurchasePrice) / strUnitPrice  * 100).setScale(2);
+                    String strTaxTypeName = String.valueOf(objData.get('TaxTypeName__c'));
+                    Decimal strBasePurchasePrice = (Decimal)objData.get('BasePurchasePrice__c');
+                    Decimal strVAT = 0;
+                    Decimal strUnitPriceWithVAT = strUnitPrice;
+                    
+                    objLineItem.put('SortOrder__c', orderCount++);
+                    objLineItem.put(sObjectName+'Id__c', recordId);
+                    objLineItem.put('ProductCode__c', strProductCode);
+                    objLineItem.put('BasePurchasePrice__c', strBasePurchasePrice);
 
-                    if ( strProfitMargin > 99 ) {
-                        strProfitMargin = 99;
-                        strUnitPrice = strBasePurchasePrice / (1 - strProfitMargin/100);
+                    if ( strBasePurchasePrice == 1){
+                        strUnitPrice = 1;
+                        strProfitMargin = 100;
+                        strVAT = 0;
+                        strUnitPriceWithVAT = 1;
                     }
-                    strVAT = (strTaxTypeName == '과세' ? 1 : 0) * strUnitPrice * 0.1;
-                    strUnitPriceWithVAT = strUnitPrice + strVAT;
-                }
-                else if(isMarginExist){
-                    if ( strProfitMargin > 99 ) strProfitMargin = 99;
-                    else if ( strProfitMargin < -100000000) strProfitMargin = -100000000;
+                    else if( isPriceExist){
+                        if( strUnitPrice < 10) strUnitPrice = 10;
+                        else if ( strUnitPrice > 1000000000) strUnitPrice = 1000000000;
+                        strUnitPrice = strUnitPrice.setScale(-1,System.RoundingMode.UP);  
+                        strProfitMargin = ((strUnitPrice - strBasePurchasePrice) / strUnitPrice  * 100).setScale(2);
+                        
+                        if ( strProfitMargin > 99 ) {
+                            strProfitMargin = 99;
+                            strUnitPrice = strBasePurchasePrice / (1 - strProfitMargin/100);
+                        }
+                        strVAT = (strTaxTypeName == '과세' ? 1 : 0) * strUnitPrice * 0.1;
+                        strUnitPriceWithVAT = strUnitPrice + strVAT;
+                    }
+                    else if(isMarginExist){
+                        if ( strProfitMargin > 99 ) strProfitMargin = 99;
+                        else if ( strProfitMargin < -100000000) strProfitMargin = -100000000;
+    
+                        strProfitMargin = strProfitMargin.setScale(2);
+                        strUnitPrice = strBasePurchasePrice / (1 - strProfitMargin/100);
+                        strUnitPrice = strUnitPrice.setScale(-1,System.RoundingMode.UP);
+    
+                        strProfitMargin = ((strUnitPrice - strBasePurchasePrice)/strUnitPrice * 100).setScale(2);
+                        strVAT = (strTaxTypeName == '과세' ? 1 : 0) * strUnitPrice * 0.1;
+                        strUnitPriceWithVAT = strUnitPrice + strVAT;
+                    }
 
-                    strProfitMargin = strProfitMargin.setScale(2);
-                    strUnitPrice = strBasePurchasePrice / (1 - strProfitMargin/100);
-                    strUnitPrice = strUnitPrice.setScale(-1,System.RoundingMode.UP);
-
-                    strProfitMargin = ((strUnitPrice - strBasePurchasePrice)/strUnitPrice * 100).setScale(2);
-                    strVAT = (strTaxTypeName == '과세' ? 1 : 0) * strUnitPrice * 0.1;
-                    strUnitPriceWithVAT = strUnitPrice + strVAT;
+                    objLineItem.put('TaxTypeName__c', strTaxTypeName);
+                    objLineItem.put('UnitPrice__c', strUnitPrice);
+                    objLineItem.put('ProfitMargin__c', strProfitMargin);
+                    objLineItem.put('UnitPriceWithVAT__c', strUnitPriceWithVAT);
+                    objLineItem.put('VAT__c', strVAT);
+                    objLineItem.put('Quantity__c', 1);
+                    //objLineItem.put('PricebookEntryId', mapPriceBookEntry.get(strExtId).Id);
+                    objLineItem.put('ProductName__c', String.valueOf(objData.get('ProductCode__c')));
+                    objLineItem.put('QuantityUnitOfMeasure__c', String.valueOf(objData.get('QuantityUnitOfMeasure__c')));
+                    objLineItem.put('CountryOfOriginName__c', String.valueOf(objData.get('CountryOfOriginName__c')));
+                    objLineItem.put('Month__c', mapMonthValue.get(strMonth));
+                    objLineItem.put('MonthToLabel', strMonth);
+                    objLineItem.put('LogisticsCenter__c', strCenter);
+                    objLineItem.put('StorageConditionName__c', String.valueOf(objData.get('StorageConditionName__c')));                
+                    objLineItem.put('ProductCategoryLName__c', String.valueOf(objData.get('ProductCategoryLName__c')));
+                    objLineItem.put('ProductCategoryMName__c', String.valueOf(objData.get('ProductCategoryMName__c')));
+                    objLineItem.put('ProductCategoryCode__c', String.valueOf(objData.get('ProductCategoryCode__c')));
+                    objLineItem.put('CenterToLabel', mapCenterValue.get(strCenter));
+                    
+                }else {//맵핑 상품
+                    
+                    String strExtId = String.valueOf(objData.get('LogisticsCenter__c'))+'_'+String.valueOf(objData.get('ProductCode__c'));
+                    Decimal strBasePurchasePrice = (Decimal) mapPriceBookEntry.get(strExtId).get(mapMonthValue.get(strMonth)+'__c');
+                    //Decimal strOldBasePurchasePrice = (Decimal) mapPriceBookEntry.get(strExtId).get('Old'+mapMonthValue.get(strMonth)+'__c');
+    
+                    String strTaxTypeName = mapPriceBookEntry.get(strExtId).Product2.fm_TaxType__c;
+    
+                    Decimal strVAT = 0;
+                    Decimal strUnitPriceWithVAT = strUnitPrice;
+                    
+                    objLineItem.put('SortOrder__c', orderCount++);
+                    objLineItem.put(sObjectName+'Id__c', recordId);
+                    objLineItem.put('ProductCode__c', strProductCode);
+                    objLineItem.put('BasePurchasePrice__c', strBasePurchasePrice);
+                    //objLineItem.put('OldBasePurchasePrice__c', strOldBasePurchasePrice);
+    
+                    if ( strBasePurchasePrice == 1){
+                        strUnitPrice = 1;
+                        strProfitMargin = 100;
+                        strVAT = 0;
+                        strUnitPriceWithVAT = 1;
+                    }
+                    else if( isPriceExist){
+                        if( strUnitPrice < 10) strUnitPrice = 10;
+                        else if ( strUnitPrice > 1000000000) strUnitPrice = 1000000000;
+                        strUnitPrice = strUnitPrice.setScale(-1,System.RoundingMode.UP);  
+                        strProfitMargin = ((strUnitPrice - strBasePurchasePrice) / strUnitPrice  * 100).setScale(2);
+    
+                        if ( strProfitMargin > 99 ) {
+                            strProfitMargin = 99;
+                            strUnitPrice = strBasePurchasePrice / (1 - strProfitMargin/100);
+                        }
+                        strVAT = (strTaxTypeName == '과세' ? 1 : 0) * strUnitPrice * 0.1;
+                        strUnitPriceWithVAT = strUnitPrice + strVAT;
+                    }
+                    else if(isMarginExist){
+                        if ( strProfitMargin > 99 ) strProfitMargin = 99;
+                        else if ( strProfitMargin < -100000000) strProfitMargin = -100000000;
+    
+                        strProfitMargin = strProfitMargin.setScale(2);
+                        strUnitPrice = strBasePurchasePrice / (1 - strProfitMargin/100);
+                        strUnitPrice = strUnitPrice.setScale(-1,System.RoundingMode.UP);
+    
+                        strProfitMargin = ((strUnitPrice - strBasePurchasePrice)/strUnitPrice * 100).setScale(2);
+                        strVAT = (strTaxTypeName == '과세' ? 1 : 0) * strUnitPrice * 0.1;
+                        strUnitPriceWithVAT = strUnitPrice + strVAT;
+                    }
+                    objLineItem.put('TaxTypeName__c', strTaxTypeName);
+                    objLineItem.put('UnitPrice__c', strUnitPrice);
+                    objLineItem.put('ProfitMargin__c', strProfitMargin);
+                    objLineItem.put('UnitPriceWithVAT__c', strUnitPriceWithVAT);
+                    objLineItem.put('VAT__c', strVAT);
+                    objLineItem.put('Quantity__c', 1);
+                    //objLineItem.put('PricebookEntryId', mapPriceBookEntry.get(strExtId).Id);
+                    objLineItem.put('ProductName__c', mapPriceBookEntry.get(strExtId).Name);
+                    objLineItem.put('QuantityUnitOfMeasure__c', mapPriceBookEntry.get(strExtId).Product2.bas_unit_cd__c);
+                    objLineItem.put('CountryOfOriginName__c', mapPriceBookEntry.get(strExtId).Product2.migr_orinat_cd__c);
+                    objLineItem.put('Month__c', mapMonthValue.get(strMonth));
+                    objLineItem.put('MonthToLabel', strMonth);
+                    objLineItem.put('LogisticsCenter__c', strCenter);
+                    objLineItem.put('StorageConditionName__c', mapPriceBookEntry.get(strExtId).Product2.strg_cond_cd__c);                
+                    objLineItem.put('ProductCategoryLName__c', mapPriceBookEntry.get(strExtId).Product2.fm_LAR_CLS_NM__c);
+                    objLineItem.put('ProductCategoryMName__c', mapPriceBookEntry.get(strExtId).Product2.fm_MID_CLS_NM__c);
+                    objLineItem.put('ProductCategoryCode__c', mapPriceBookEntry.get(strExtId).Product2.fm_XSM_CLS_CD__c);
+                    objLineItem.put('CenterToLabel', mapCenterValue.get(strCenter));
                 }
-                objLineItem.put('TaxTypeName__c', strTaxTypeName);
-                objLineItem.put('UnitPrice__c', strUnitPrice);
-                objLineItem.put('ProfitMargin__c', strProfitMargin);
-                objLineItem.put('UnitPriceWithVAT__c', strUnitPriceWithVAT);
-                objLineItem.put('VAT__c', strVAT);
-                objLineItem.put('Quantity__c', 1);
-                //objLineItem.put('PricebookEntryId', mapPriceBookEntry.get(strExtId).Id);
-                objLineItem.put('ProductName__c', mapPriceBookEntry.get(strExtId).Name);
-                objLineItem.put('QuantityUnitOfMeasure__c', mapPriceBookEntry.get(strExtId).Product2.bas_unit_cd__c);
-                objLineItem.put('CountryOfOriginName__c', mapPriceBookEntry.get(strExtId).Product2.migr_orinat_cd__c);
-                objLineItem.put('Month__c', mapMonthValue.get(strMonth));
-                objLineItem.put('MonthToLabel', strMonth);
-                objLineItem.put('LogisticsCenter__c', strCenter);
-                objLineItem.put('StorageConditionName__c', mapPriceBookEntry.get(strExtId).Product2.strg_cond_cd__c);                
-                objLineItem.put('ProductCategoryLName__c', mapPriceBookEntry.get(strExtId).Product2.fm_LAR_CLS_NM__c);
-                objLineItem.put('ProductCategoryMName__c', mapPriceBookEntry.get(strExtId).Product2.fm_MID_CLS_NM__c);
-                objLineItem.put('ProductCategoryCode__c', mapPriceBookEntry.get(strExtId).Product2.fm_XSM_CLS_CD__c);
-                objLineItem.put('CenterToLabel', mapCenterValue.get(strCenter));
                 listLineItem.add(objLineItem);
             }
         }

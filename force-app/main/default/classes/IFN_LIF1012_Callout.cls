@@ -59,6 +59,85 @@ public class IFN_LIF1012_Callout {
     public IFN_CalloutResult IFN_LIF1012_PO001_MD001(String interfaceId, Object params){
         IFN_CalloutResult result = new IFN_CalloutResult();
 
+        String responsedata = '';
+        String result_code = 'S';
+        String result_message = '';
+        
+        IFN_LIF1012_PO001_MD001.PO001_MD001ResWrapper infResponse = new IFN_LIF1012_PO001_MD001.PO001_MD001ResWrapper();  
+        
+
+        IFN_CMM_ERRUTIL.ErrorValueWrapper errWr = new IFN_CMM_ERRUTIL.ErrorValueWrapper();
+        try{
+
+
+            Date dateToday = Date.today();
+    
+            this.logWrap.RequestTime = Datetime.now();
+
+            this.logWrap.LogText.add(Json.serialize(params));
+
+            IFN_LIF1012_PO001_MD001.PO001_MD001ReqWrapper reqparam = new IFN_LIF1012_PO001_MD001.PO001_MD001ReqWrapper();
+            reqparam = (IFN_LIF1012_PO001_MD001.PO001_MD001ReqWrapper)JSON.deserializeStrict((String) params, IFN_LIF1012_PO001_MD001.PO001_MD001ReqWrapper.class);
+
+            String ymdhms = Datetime.now().format('yyyyMMddHHmmss');
+            String yyyymmdd = ymdhms.substring(0, 8);
+            String hhmmss = ymdhms.substring(8);
+            reqparam.XROWS = '1';
+            reqparam.XSYS = 'SD';
+            reqparam.XDATS = yyyymmdd;
+            reqparam.XTIMS = hhmmss;
+            
+
+            IFN_ApiGateWay gateway = new IFN_ApiGateWay(interfaceId);
+            String requestBody = JSON.serialize(reqparam);
+            this.logWrap.RequestBody = requestBody;
+
+            HttpResponse response = gateway.webCallout(requestBody,null, false);
+
+            if(response.getStatusCode() == 200) {
+
+                responsedata = response.getBody();
+                infResponse =  (IFN_LIF1012_PO001_MD001.PO001_MD001ResWrapper)JSON.deserializeStrict((String)responsedata, IFN_LIF1012_PO001_MD001.PO001_MD001ResWrapper.class);
+                this.logWrap.LogText.add('infResponse.search >>>>>>>>>> ' + JSON.serialize(infResponse.T_OUTPUT));
+                this.logWrap.ResponseBody = (String)responsedata;
+                this.logWrap.ResponseTime = Datetime.now();
+            } else {
+
+                List<String> errMsgLst = new List<String>{String.valueOf(response.getStatus())};
+                errWr = IFN_CMM_ERRUTIL.GET_ERRORINFO_BYERRORKEY_FORMAT('COMMON', IFN_CMM_ERRUTIL.ERRKEY_INTERFACE_STATUS_ERROR,errMsgLst);
+                result_code =  errWr.err_code;
+                result_message =  errWr.err_msg;
+                
+                responsedata = '';
+                this.logWrap.LogText.add(response.getStatus());
+                this.logWrap.ErrorText.add(response.getStatus());
+            }
+
+        } catch(Exception e) {
+            
+            this.logWrap.LogText.add(e.getMessage() + '/' + e.getLineNumber());
+            this.logWrap.ErrorText.add(e.getMessage() + '/' + e.getLineNumber());
+
+            List<String> errMsgLst = new List<String>{String.valueOf(e.getMessage())};
+            errWr = IFN_CMM_ERRUTIL.GET_ERRORINFO_BYERRORKEY_FORMAT('COMMON', IFN_CMM_ERRUTIL.ERRKEY_INTERFACE_STATUS_ERROR,errMsgLst);
+            result_code =  errWr.err_code;
+            result_message =  errWr.err_msg;
+
+        }  
+
+        this.logWrap.Status = result_code;
+        this.logWrap.ErrorCode = 'S'.equals(result_code) ? 'Success' : 'error';
+        if('F'.equals(result_code))  this.logWrap.ErrorText.add(result_message);
+
+        commlog.insertLog(this.logWrap);
+        
+        
+        result.setResult(
+            result_code
+            , result_message
+            , infResponse
+        );
+
         return result;
     }
  /**

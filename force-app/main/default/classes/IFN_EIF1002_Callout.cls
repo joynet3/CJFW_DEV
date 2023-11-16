@@ -109,7 +109,8 @@ public class IFN_EIF1002_Callout {
 
         } catch(Exception e) {
             result_code = 'E';
-            result_message = 'Interface Exception';
+            result_message = 'Interface Exception' + '/n';
+            result_message +=  '[' + e.getMessage()+' Line : '+e.getLineNumber() + ']' ;
         }  
 
         result.setResult(

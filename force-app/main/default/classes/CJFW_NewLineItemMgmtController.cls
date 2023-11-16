@@ -55,7 +55,9 @@ public with sharing class CJFW_NewLineItemMgmtController {
 
             listQuoteLineItem = [SELECT    
                                         QuoteId__c
+                                        , toLabel(Month__c) MonthToLabel
                                         , Month__c
+                                        , toLabel(LogisticsCenter__c) CenterToLabel
                                         , LogisticsCenter__c
                                         , ProductCode__c
                                         , ProductName__c
@@ -289,7 +291,7 @@ public with sharing class CJFW_NewLineItemMgmtController {
         else {
             query += ' ORDER BY ' + selectedMonth + '__c ' + 'ASC ';
         }
-            query += ' LIMIT    1000 ' ; 
+            query += ' LIMIT    50000 ' ; 
 
         System.debug('# doSearch 최종검색쿼리 -> ' + query);
 

@@ -66,6 +66,7 @@ public class IFN_LIF1012_PO001_MD003 {
     public class T_INPUT_ITM {
         public String KUNNR {get;set;} // 자재번호
         public String KKBER {get;set;} // B/L번호
+        
     }
 
 

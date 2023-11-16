@@ -407,7 +407,6 @@ public with sharing class ReportFormController {
                 'ManufactureSupportExpect__c',
                 'NonFoodSupportExpect__c',
                 'SalesSupportExpect__c',
-                'CollateralAmount__c',
                 'ChefFee__c',
                 'CreditLoanAmount__c',
                 // TO-BE
