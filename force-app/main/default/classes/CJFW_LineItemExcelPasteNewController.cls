@@ -104,6 +104,7 @@ public without sharing class CJFW_LineItemExcelPasteNewController {
         String strSetMonth = '';
         if ( !setMonth.isEmpty())
             strSetMonth = string.join(listMonth,',');
+            System.debug('strSetMonth : '+ strSetMonth);
 
         String Query = '';
         Query += ' SELECT  '
@@ -199,7 +200,7 @@ public without sharing class CJFW_LineItemExcelPasteNewController {
                     listInvalidData.add(objData);
                     isValid = false;
                 } else if (mapPriceBookEntry.get(strExtId).get(mapMonthValue.get(strMonth)+'__c') == 0 ){
-                    objData.put('result','['+orderCount+'] 해당[월]에 [기준매입가]가 지정되어 있지 않습니다.');
+                    objData.put('result','['+orderCount+'] 해당[월]에 [영업매입가]가 지정되어 있지 않습니다.');
                     listInvalidData.add(objData);
                     isValid = false;
                 } else if ( strUnitPrice != null && !strUnitPrice.isNumeric()){

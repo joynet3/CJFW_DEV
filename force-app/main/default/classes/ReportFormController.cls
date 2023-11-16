@@ -8,7 +8,7 @@
 
  * @author            : eunyoung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 11-15-2023
+ * @last modified on  : 11-16-2023
  * @last modified by  : yeonji.lim@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -349,7 +349,7 @@ public with sharing class ReportFormController {
             if (incomeExpensesId != null) {
                 query += ' WHERE id = :incomeExpensesId ';
             }else if (opportunityId != null) {
-                query += ' WHERE Opportunity__c = :opportunityId ';
+                query += ' WHERE Opportunity__c = :opportunityId  AND ReportType__c = :reportType';
             }
 
             if(showtable =='true'){

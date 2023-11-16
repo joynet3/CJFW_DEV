@@ -221,26 +221,38 @@ public with sharing class IFN_ApiGateWay {
             
 
             Boolean redirect;
+            //2023.11.16 sancho
+            // if(response.getStatusCode() == 200 || response.getStatusCode() == 201) {
+            //     responseBody = response.getBody();
 
-            if(response.getStatusCode() == 200 || response.getStatusCode() == 201) {
-                responseBody = response.getBody();
+            //     if(responseBody <> null && responseBody != '') {
+            //         resultCode   = String.valueOf(response.getStatusCode());
+            //         resultMessage = response.getStatus();
+            //     }else {
+            //         responseBody = 'Not ResponseBody';
+            //     }
 
-                if(responseBody <> null && responseBody != '') {
-                    resultCode   = String.valueOf(response.getStatusCode());
-                    resultMessage = response.getStatus();
-                }else {
-                    responseBody = 'Not ResponseBody';
-                }
+            //     this.logWrap.responseTime = Datetime.now();
+            //     this.logWrap.responseBody = responseBody;
+            // }          
+            // else {
 
-                this.logWrap.responseTime = Datetime.now();
-                this.logWrap.responseBody = responseBody;
-            }          
-            else {
+            //     status = 'ERROR';
+            //     resultCode = String.valueOf(response.getStatusCode());
+            //     resultMessage = response.getStatus();
+            // }
+            
+            //2023.11.16 : error body 등 확인을 위해 200 외의 것들도 포함.
+            status          = (response.getStatusCode() == 200 || response.getStatusCode() == 201) ? String.valueOf(response.getStatusCode()) : 'ERROR';
+            resultCode      = String.valueOf(response.getStatusCode());
+            resultMessage   = response.getStatus();
 
-                status = 'ERROR';
-                resultCode = String.valueOf(response.getStatusCode());
-                resultMessage = response.getStatus();
-            }
+            responseBody    = response.getBody();
+            responseBody    = (responseBody <> null && responseBody != '') ? responseBody : 'Not ResponseBody';
+            this.logWrap.responseTime = Datetime.now();
+            this.logWrap.responseBody = responseBody;
+
+
             
         }catch(Exception e) {
             status = 'ERROR';

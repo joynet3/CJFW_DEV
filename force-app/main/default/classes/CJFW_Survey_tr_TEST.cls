@@ -165,13 +165,13 @@ public with sharing class CJFW_Survey_tr_TEST {
     List<CJFW_Survey__c> testLists = [SELECT Id,Name,Su__c,HeadOffice__c,Active__c,Version__c,ParentSurvey__c
     FROM CJFW_Survey__c WHERE Name = :'테스트 설문'];
     
-    List<CJFW_Survey__c> tesAlltLists = [SELECT Id,Name,Su__c,HeadOffice__c,Active__c,Version__c,ParentSurvey__c
-    FROM CJFW_Survey__c ];
+    testLists[0].Active__c = true;
     
+    update testLists;
     for (CJFW_Survey__c testList : testLists) {
         surveyIdSet.add(testList.Id);
     }
-    System.debug('tesAlltLists'+ tesAlltLists);
+    
     List<CJFW_SurveyQuestion__c> testQueLists = [SELECT Id,
     Name,
     Name__c,
@@ -214,6 +214,14 @@ public with sharing class CJFW_Survey_tr_TEST {
 
   
      try {
+        CJFW_Survey__c newTestSurvey = new CJFW_Survey__c(
+            Name = '지금',
+            Su__c = '4100',
+            HeadOffice__c ='3001',
+            Version__c = 1
+            );
+            insert newTestSurvey;
+        
         List<CJFW_Survey__c> nullLists = [SELECT Id,Name,Su__c,HeadOffice__c,Active__c,Version__c,ParentSurvey__c
         FROM CJFW_Survey__c WHERE Name = :'비어있는 설문지'];
         nullLists[0].Active__c = true;
@@ -221,9 +229,8 @@ public with sharing class CJFW_Survey_tr_TEST {
    
         insert nullSurveys;
         if (nullSurveys.isClone()) {
-            nullSurveys.Active__c = true;
             nullSurveys.HeadOffice__c = '3001';
-            nullSurveys.su__c = '4700';
+            nullSurveys.su__c = '4100';
          }
          update nullSurveys;
      }

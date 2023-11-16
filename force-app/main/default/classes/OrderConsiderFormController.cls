@@ -26,6 +26,7 @@ public with sharing class OrderConsiderFormController {
 
 
     /* 가져온 데이터 담는 object */
+    public Contact keymanInfo {get;set;}
     public Opportunity opptyInfo {get;set;}
     public Account accountInfo {get;set;}
     public CJFW_ExpectedIncomeExpenses__c IncomeExpensesInfo {get;set;} 
@@ -113,6 +114,7 @@ public with sharing class OrderConsiderFormController {
         }else{
             System.debug('실제 환경에서 실행할 로직');
             getPicklistValues();    // picklist label/value 값 담기
+            getKeymanInfo();        // key-man 정보 가져오기 
             getOpptyInfo();         // 담당자 정보 가져오기
             getAccountInfo();       // 고객사 정보 가져오기
             getIncomeExpenses();    // 신규개설품의 obj 값 가져오기
@@ -182,7 +184,30 @@ public with sharing class OrderConsiderFormController {
     }
 
 
+    /* 
+    OpportunityContactRole에 있는 key-man 정보 가져오는 메소드
+    */
+    public void getKeymanInfo() {
+        try {
+            List<OpportunityContactRole> opptyConRoles = [SELECT Id, ContactId FROM OpportunityContactRole WHERE OpportunityId =:opportunityId AND IsPrimary = true LIMIT 1];
+            
+            if(opptyConRoles != null && !opptyConRoles.isEmpty()) {
+                OpportunityContactRole opptyConRole = opptyConRoles[0];
+                Id contactId = opptyConRole.ContactId;
+    
+                keymanInfo = [SELECT Id, Name
+                                FROM Contact
+                                WHERE Id =:contactId 
+                                LIMIT 1];
+        
+                }
+                System.debug('keymanInfo =>' + keymanInfo);
 
+        } catch (Exception e) {
+            System.debug('message => ' + e.getMessage());
+            System.debug('trace => ' + e.getStackTraceString());
+        }
+    }
 
 
     /* 
@@ -926,6 +951,14 @@ public with sharing class OrderConsiderFormController {
         selectedPayment = IncomeExpensesInfo.PaymentMethod__c;      // 결제수단 
         selectedContract = IncomeExpensesInfo.ContractType__c	;   // 계약서종류 
         selectedDelivery = IncomeExpensesInfo.DeliveryCnt__c	; // 배송횟수 
+
+
+        /* keyman info 값을 참고로 IncomeExpensesInfo 에 담아주기 
+            -> IncomeExpensesInfo 필드에 값이 있는지 먼저 체크 > 값이 없고 keymanInfo가 null이 아닐때 keymanInfo 에서 값 땡겨옴 
+        */
+        if( (IncomeExpensesInfo.KeyMan__c == '' || IncomeExpensesInfo.KeyMan__c == null) && keymanInfo != null){
+            IncomeExpensesInfo.put('KeyMan__c', keymanInfo.get('Name'));
+        }
 
         /* 2. 거래처 현황 account info 값을 참고로 IncomeExpensesInfo 에 담아주기 
             -> IncomeExpensesInfo 필드에 값이 있는지 먼저 체크 > 값이 없으면 accountInfo 에서 값 땡겨옴 */
