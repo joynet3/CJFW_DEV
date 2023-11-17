@@ -3,7 +3,7 @@
  * @author            : yeonji.lim@dkbmc.com
  * @group             : 
  * @last modified on  : 11-16-2023
- * @last modified by  : seol.kim@dkbmc.com
+ * @last modified by  : eunyoung.choi@dkbmc.com
 **/
 public with sharing class OrderConsiderReContractFormController {
     public static String SaveDataList;
@@ -820,83 +820,46 @@ public with sharing class OrderConsiderReContractFormController {
             'DistributeDirFo__c' , 
             'DistributeInDirFo__c' , 
 
-            'MultipleSkuRoomTemperature__c',
-            'MultipleSkuRefrigeration__c',
-            'MultipleSkuFreezer__c',
-            'MultiplePltRoomTemperature__c',
-            'MultiplePltRefrigeration__c',
-            'MultiplePltFreezer__c',
-
-            'StorageSkuRoomTemperature__c',
-            'StorageSkuRefrigeration__c',
-            'StorageSkuFreezer__c',
-            'StoragePltRoomTemperature__c',
-            'StoragePltRefrigeration__c',
-            'StoragePltFreezer__c',
-
-            'ReductionSkuRoomTemperature__c',
-            'ReductionSkuRefrigeration__c',
-            'ReductionSkuFreezer__c',
-            'ReductionPltRoomTemperature__c',
-            'ReductionPltRefrigeration__c',
-            'ReductionPltFreezer__c',
-
-            'PltOriginalOne__c', // 재고 운영 개선사항 (체인전용)
-            'PltPlanOne__c',
-            'StockMoneyOriginalOne__c',
+            'StockMoneyOriginalOne__c', // 재고 운영 개선사항 (체인전용)
             'StockMoneyPlanOne__c',
             'MonthSaleOne__c',
             'MonthSalesProfitOne__c',
-            'PltOriginalTwo__c',
-            'PltPlanTwo__c',
+
             'StockMoneyOriginalTwo__c',
             'StockMoneyPlanTwo__c',
             'MonthSaleTwo__c',
             'MonthSalesProfitTwo__c',
-            'PltOriginalThree__c',
-            'PltPlanThree__c',
+
             'StockMoneyOriginalThree__c',
             'StockMoneyPlanThree__c',
             'MonthSaleThree__c',
             'MonthSalesProfitThree__c',
-            'PltOriginalFour__c',
-            'PltPlanFour__c',
+
             'StockMoneyOriginalFour__c',
             'StockMoneyPlanFour__c',
             'MonthSaleFour__c',
             'MonthSalesProfitFour__c',
-            'PltOriginalFive__c',
-            'PltPlanFive__c',
+
             'StockMoneyOriginalFive__c',
             'StockMoneyPlanFive__c',
             'MonthSaleFive__c',
             'MonthSalesProfitFive__c',
-            'PltOriginalSix__c',
-            'PltPlanSix__c',
             'StockMoneyOriginalSix__c',
             'StockMoneyPlanSix__c',
             'MonthSaleSix__c',
             'MonthSalesProfitSix__c',
-            'PltOriginalSeven__c',
-            'PltPlanSeven__c',
             'StockMoneyOriginalSeven__c',
             'StockMoneyPlanSeven__c',
             'MonthSaleSeven__c',
             'MonthSalesProfitSeven__c',
-            'PltOriginalEight__c',
-            'PltPlanEight__c',
             'StockMoneyOriginalEight__c',
             'StockMoneyPlanEight__c',
             'MonthSaleEight__c',
             'MonthSalesProfitEight__c',
-            'PltOriginalNine__c',
-            'PltPlanNine__c',
             'StockMoneyOriginalNine__c',
             'StockMoneyPlanNine__c',
             'MonthSaleNine__c',
             'MonthSalesProfitNine__c',
-            'PltOriginalTen__c',
-            'PltPlanTen__c',
             'StockMoneyOriginalTen__c',
             'StockMoneyPlanTen__c',
             'MonthSaleTen__c',
@@ -938,7 +901,49 @@ public with sharing class OrderConsiderReContractFormController {
             'SalesLocationCntJeju__c',
             'SalesLocationCntFo__c' ,
             'SalesLocationCntThree__c' , 
-            'SalesLocationCntImpMonth__c' 
+            'SalesLocationCntImpMonth__c' ,
+
+            'MultipleSkuRoomTemperature__c',        // 231116 추가
+            'MultipleSkuRefrigeration__c',
+            'MultipleSkuFreezer__c',
+            'MultiplePltRoomTemperature__c',
+            'MultiplePltRefrigeration__c',
+            'MultiplePltFreezer__c',
+
+            'StorageSkuRoomTemperature__c',
+            'StorageSkuRefrigeration__c',
+            'StorageSkuFreezer__c',
+            'StoragePltRoomTemperature__c',
+            'StoragePltRefrigeration__c',
+            'StoragePltFreezer__c',
+
+            'ReductionSkuRoomTemperature__c',
+            'ReductionSkuRefrigeration__c',
+            'ReductionSkuFreezer__c',
+            'ReductionPltRoomTemperature__c',
+            'ReductionPltRefrigeration__c',
+            'ReductionPltFreezer__c',
+
+            'PltOriginalOne__c',
+            'PltPlanOne__c',
+            'PltOriginalTwo__c',
+            'PltPlanTwo__c',
+            'PltOriginalThree__c',
+            'PltPlanThree__c',
+            'PltOriginalFour__c',
+            'PltPlanFour__c',
+            'PltOriginalFive__c',
+            'PltPlanFive__c',
+            'PltOriginalSix__c',
+            'PltPlanSix__c',
+            'PltOriginalSeven__c',
+            'PltPlanSeven__c',
+            'PltOriginalEight__c',
+            'PltPlanEight__c',
+            'PltOriginalNine__c',
+            'PltPlanNine__c',
+            'PltOriginalTen__c',
+            'PltPlanTen__c'
         };
         for (String defaultSet : defaultValPerSet) {
             Object fieldPerValue = IncomeExpensesInfo.get(defaultSet);
@@ -2197,6 +2202,394 @@ public with sharing class OrderConsiderReContractFormController {
                 expectIncome.SalesPerformDate__c = Date.valueOf(((String) dataMap.get('salesPerformDate')));
             }
 
+            // 231116 컨트롤러 합 추가
+
+            // 판매처 수
+            if (dataMap.containsKey('locationCntCap')) { // 판매처수 : 수도권 
+                expectIncome.SalesLocationCntCapital__c = convertToDecimal(dataMap.get('locationCntCap'));
+            }
+            if (dataMap.containsKey('locationCntEast')) { // 판매처수 : 동부권
+                expectIncome.SalesLocationCntEast__c = convertToDecimal(dataMap.get('locationCntEast'));
+            }
+            if (dataMap.containsKey('locationCntWest')) { // 판매처수 : 서부권
+                expectIncome.SalesLocationCntWest__c = convertToDecimal(dataMap.get('locationCntWest'));
+            }
+            if (dataMap.containsKey('locationCntJeju')) { // 판매처수 : 제주권
+                expectIncome.SalesLocationCntJeju__c = convertToDecimal(dataMap.get('locationCntJeju'));
+            }
+            if (dataMap.containsKey('locationCntFo')) { // 판매처수 : FO센터
+                expectIncome.SalesLocationCntFo__c = convertToDecimal(dataMap.get('locationCntFo'));
+            }        
+
+            // 재고 운영 개선사항(체인전용)
+            if (dataMap.containsKey('productNameOne')) { 
+                expectIncome.ProductNameOne__c = (String) dataMap.get('productNameOne');
+            }            
+            if (dataMap.containsKey('storageConditionOne')) { 
+                expectIncome.StorageConditionOne__c = (String) dataMap.get('storageConditionOne');
+            }            
+            if (dataMap.containsKey('releaseUnitOne')) { 
+                expectIncome.ReleaseUnitOne__c = (String) dataMap.get('releaseUnitOne');
+            }            
+            if (dataMap.containsKey('enforcementMonthOne')) { 
+                expectIncome.EnforcementMonthOne__c = (String) dataMap.get('enforcementMonthOne');
+            }            
+            if (dataMap.containsKey('pltOriginalOne')) { 
+                expectIncome.PltOriginalOne__c = convertToDecimal(dataMap.get('pltOriginalOne'));
+            }
+            if (dataMap.containsKey('pltPlanOne')) { 
+                expectIncome.PltPlanOne__c = convertToDecimal(dataMap.get('pltPlanOne'));
+            }
+            if (dataMap.containsKey('stockMoneyOriginalOne')) { 
+                expectIncome.StockMoneyOriginalOne__c = convertToDecimal(dataMap.get('stockMoneyOriginalOne'));
+            }
+            if (dataMap.containsKey('stockMoneyPlanOne')) { 
+                expectIncome.StockMoneyPlanOne__c = convertToDecimal(dataMap.get('stockMoneyPlanOne'));
+            }
+            if (dataMap.containsKey('monthSaleOne')) { 
+                expectIncome.MonthSaleOne__c = convertToDecimal(dataMap.get('monthSaleOne'));
+            }
+            if (dataMap.containsKey('monthSalesProfitOne')) { 
+                expectIncome.MonthSalesProfitOne__c = convertToDecimal(dataMap.get('monthSalesProfitOne'));
+            }
+            if (dataMap.containsKey('productNameTwo')) { 
+                expectIncome.ProductNameTwo__c = (String) dataMap.get('productNameTwo');
+            }            
+            if (dataMap.containsKey('storageConditionTwo')) { 
+                expectIncome.StorageConditionTwo__c = (String) dataMap.get('storageConditionTwo');
+            }            
+            if (dataMap.containsKey('releaseUnitTwo')) { 
+                expectIncome.ReleaseUnitTwo__c = (String) dataMap.get('releaseUnitTwo');
+            }            
+            if (dataMap.containsKey('enforcementMonthTwo')) { 
+                expectIncome.EnforcementMonthTwo__c = (String) dataMap.get('enforcementMonthTwo');
+            }            
+            if (dataMap.containsKey('pltOriginalTwo')) { 
+                expectIncome.PltOriginalTwo__c = convertToDecimal(dataMap.get('pltOriginalTwo'));
+            }
+            if (dataMap.containsKey('pltPlanTwo')) { 
+                expectIncome.PltPlanTwo__c = convertToDecimal(dataMap.get('pltPlanTwo'));
+            }
+            if (dataMap.containsKey('stockMoneyOriginalTwo')) { 
+                expectIncome.StockMoneyOriginalTwo__c = convertToDecimal(dataMap.get('stockMoneyOriginalTwo'));
+            }
+            if (dataMap.containsKey('stockMoneyPlanTwo')) { 
+                expectIncome.StockMoneyPlanTwo__c = convertToDecimal(dataMap.get('stockMoneyPlanTwo'));
+            }
+            if (dataMap.containsKey('monthSaleTwo')) { 
+                expectIncome.MonthSaleTwo__c = convertToDecimal(dataMap.get('monthSaleTwo'));
+            }
+            if (dataMap.containsKey('monthSalesProfitTwo')) { 
+                expectIncome.MonthSalesProfitTwo__c = convertToDecimal(dataMap.get('monthSalesProfitTwo'));
+            }
+
+            if (dataMap.containsKey('productNameThree')) { 
+                expectIncome.ProductNameThree__c = (String) dataMap.get('productNameThree');
+            }            
+            if (dataMap.containsKey('storageConditionThree')) { 
+                expectIncome.StorageConditionThree__c = (String) dataMap.get('storageConditionThree');
+            }            
+            if (dataMap.containsKey('releaseUnitThree')) { 
+                expectIncome.ReleaseUnitThree__c = (String) dataMap.get('releaseUnitThree');
+            }            
+            if (dataMap.containsKey('enforcementMonthThree')) { 
+                expectIncome.EnforcementMonthThree__c = (String) dataMap.get('enforcementMonthThree');
+            }            
+            if (dataMap.containsKey('pltOriginalThree')) { 
+                expectIncome.PltOriginalThree__c = convertToDecimal(dataMap.get('pltOriginalThree'));
+            }
+            if (dataMap.containsKey('pltPlanThree')) { 
+                expectIncome.PltPlanThree__c = convertToDecimal(dataMap.get('pltPlanThree'));
+            }
+            if (dataMap.containsKey('stockMoneyOriginalThree')) { 
+                expectIncome.StockMoneyOriginalThree__c = convertToDecimal(dataMap.get('stockMoneyOriginalThree'));
+            }
+            if (dataMap.containsKey('stockMoneyPlanThree')) { 
+                expectIncome.StockMoneyPlanThree__c = convertToDecimal(dataMap.get('stockMoneyPlanThree'));
+            }
+            if (dataMap.containsKey('monthSaleThree')) { 
+                expectIncome.MonthSaleThree__c = convertToDecimal(dataMap.get('monthSaleThree'));
+            }
+            if (dataMap.containsKey('monthSalesProfitThree')) { 
+                expectIncome.MonthSalesProfitThree__c = convertToDecimal(dataMap.get('monthSalesProfitThree'));
+            }
+
+            if (dataMap.containsKey('productNameFour')) { 
+                expectIncome.ProductNameFour__c = (String) dataMap.get('productNameFour');
+            }            
+            if (dataMap.containsKey('storageConditionFour')) { 
+                expectIncome.StorageConditionFour__c = (String) dataMap.get('storageConditionFour');
+            }            
+            if (dataMap.containsKey('releaseUnitFour')) { 
+                expectIncome.ReleaseUnitFour__c = (String) dataMap.get('releaseUnitFour');
+            }            
+            if (dataMap.containsKey('enforcementMonthFour')) { 
+                expectIncome.EnforcementMonthFour__c = (String) dataMap.get('enforcementMonthFour');
+            }            
+            if (dataMap.containsKey('pltOriginalFour')) { 
+                expectIncome.PltOriginalFour__c = convertToDecimal(dataMap.get('pltOriginalFour'));
+            }
+            if (dataMap.containsKey('pltPlanFour')) { 
+                expectIncome.PltPlanFour__c = convertToDecimal(dataMap.get('pltPlanFour'));
+            }
+            if (dataMap.containsKey('stockMoneyOriginalFour')) { 
+                expectIncome.StockMoneyOriginalFour__c = convertToDecimal(dataMap.get('stockMoneyOriginalFour'));
+            }
+            if (dataMap.containsKey('stockMoneyPlanFour')) { 
+                expectIncome.StockMoneyPlanFour__c = convertToDecimal(dataMap.get('stockMoneyPlanFour'));
+            }
+            if (dataMap.containsKey('monthSaleFour')) { 
+                expectIncome.MonthSaleFour__c = convertToDecimal(dataMap.get('monthSaleFour'));
+            }
+            if (dataMap.containsKey('monthSalesProfitFour')) { 
+                expectIncome.MonthSalesProfitFour__c = convertToDecimal(dataMap.get('monthSalesProfitFour'));
+            }
+
+            if (dataMap.containsKey('productNameFive')) { 
+                expectIncome.ProductNameFive__c = (String) dataMap.get('productNameFive');
+            }            
+            if (dataMap.containsKey('storageConditionFive')) { 
+                expectIncome.StorageConditionFive__c = (String) dataMap.get('storageConditionFive');
+            }            
+            if (dataMap.containsKey('releaseUnitFive')) { 
+                expectIncome.ReleaseUnitFive__c = (String) dataMap.get('releaseUnitFive');
+            }            
+            if (dataMap.containsKey('enforcementMonthFive')) { 
+                expectIncome.EnforcementMonthFive__c = (String) dataMap.get('enforcementMonthFive');
+            }            
+            if (dataMap.containsKey('pltOriginalFive')) { 
+                expectIncome.PltOriginalFive__c = convertToDecimal(dataMap.get('pltOriginalFive'));
+            }
+            if (dataMap.containsKey('pltPlanFive')) { 
+                expectIncome.PltPlanFive__c = convertToDecimal(dataMap.get('pltPlanFive'));
+            }
+            if (dataMap.containsKey('stockMoneyOriginalFive')) { 
+                expectIncome.StockMoneyOriginalFive__c = convertToDecimal(dataMap.get('stockMoneyOriginalFive'));
+            }
+            if (dataMap.containsKey('stockMoneyPlanFive')) { 
+                expectIncome.StockMoneyPlanFive__c = convertToDecimal(dataMap.get('stockMoneyPlanFive'));
+            }
+            if (dataMap.containsKey('monthSaleFive')) { 
+                expectIncome.MonthSaleFive__c = convertToDecimal(dataMap.get('monthSaleFive'));
+            }
+            if (dataMap.containsKey('monthSalesProfitFive')) { 
+                expectIncome.MonthSalesProfitFive__c = convertToDecimal(dataMap.get('monthSalesProfitFive'));
+            }
+
+            if (dataMap.containsKey('productNameSix')) { 
+                expectIncome.ProductNameSix__c = (String) dataMap.get('productNameSix');
+            }            
+            if (dataMap.containsKey('storageConditionSix')) { 
+                expectIncome.StorageConditionSix__c = (String) dataMap.get('storageConditionSix');
+            }            
+            if (dataMap.containsKey('releaseUnitSix')) { 
+                expectIncome.ReleaseUnitSix__c = (String) dataMap.get('releaseUnitSix');
+            }            
+            if (dataMap.containsKey('enforcementMonthSix')) { 
+                expectIncome.EnforcementMonthSix__c = (String) dataMap.get('enforcementMonthSix');
+            }            
+            if (dataMap.containsKey('pltOriginalSix')) { 
+                expectIncome.PltOriginalSix__c = convertToDecimal(dataMap.get('pltOriginalSix'));
+            }
+            if (dataMap.containsKey('pltPlanSix')) { 
+                expectIncome.PltPlanSix__c = convertToDecimal(dataMap.get('pltPlanSix'));
+            }
+            if (dataMap.containsKey('stockMoneyOriginalSix')) { 
+                expectIncome.StockMoneyOriginalSix__c = convertToDecimal(dataMap.get('stockMoneyOriginalSix'));
+            }
+            if (dataMap.containsKey('stockMoneyPlanSix')) { 
+                expectIncome.StockMoneyPlanSix__c = convertToDecimal(dataMap.get('stockMoneyPlanSix'));
+            }
+            if (dataMap.containsKey('monthSaleSix')) { 
+                expectIncome.MonthSaleSix__c = convertToDecimal(dataMap.get('monthSaleSix'));
+            }
+            if (dataMap.containsKey('monthSalesProfitSix')) { 
+                expectIncome.MonthSalesProfitSix__c = convertToDecimal(dataMap.get('monthSalesProfitSix'));
+            }
+
+            if (dataMap.containsKey('productNameSeven')) { 
+                expectIncome.ProductNameSeven__c = (String) dataMap.get('productNameSeven');
+            }            
+            if (dataMap.containsKey('storageConditionSeven')) { 
+                expectIncome.StorageConditionSeven__c = (String) dataMap.get('storageConditionSeven');
+            }            
+            if (dataMap.containsKey('releaseUnitSeven')) { 
+                expectIncome.ReleaseUnitSeven__c = (String) dataMap.get('releaseUnitSeven');
+            }            
+            if (dataMap.containsKey('enforcementMonthSeven')) { 
+                expectIncome.EnforcementMonthSeven__c = (String) dataMap.get('enforcementMonthSeven');
+            }            
+            if (dataMap.containsKey('pltOriginalSeven')) { 
+                expectIncome.PltOriginalSeven__c = convertToDecimal(dataMap.get('pltOriginalSeven'));
+            }
+            if (dataMap.containsKey('pltPlanSeven')) { 
+                expectIncome.PltPlanSeven__c = convertToDecimal(dataMap.get('pltPlanSeven'));
+            }
+            if (dataMap.containsKey('stockMoneyOriginalSeven')) { 
+                expectIncome.StockMoneyOriginalSeven__c = convertToDecimal(dataMap.get('stockMoneyOriginalSeven'));
+            }
+            if (dataMap.containsKey('stockMoneyPlanSeven')) { 
+                expectIncome.StockMoneyPlanSeven__c = convertToDecimal(dataMap.get('stockMoneyPlanSeven'));
+            }
+            if (dataMap.containsKey('monthSaleSeven')) { 
+                expectIncome.MonthSaleSeven__c = convertToDecimal(dataMap.get('monthSaleSeven'));
+            }
+            if (dataMap.containsKey('monthSalesProfitSeven')) { 
+                expectIncome.MonthSalesProfitSeven__c = convertToDecimal(dataMap.get('monthSalesProfitSeven'));
+            }
+
+            if (dataMap.containsKey('productNameEight')) { 
+                expectIncome.ProductNameEight__c = (String) dataMap.get('productNameEight');
+            }            
+            if (dataMap.containsKey('storageConditionEight')) { 
+                expectIncome.StorageConditionEight__c = (String) dataMap.get('storageConditionEight');
+            }            
+            if (dataMap.containsKey('releaseUnitEight')) { 
+                expectIncome.ReleaseUnitEight__c = (String) dataMap.get('releaseUnitEight');
+            }            
+            if (dataMap.containsKey('enforcementMonthEight')) { 
+                expectIncome.EnforcementMonthEight__c = (String) dataMap.get('enforcementMonthEight');
+            }            
+            if (dataMap.containsKey('pltOriginalEight')) { 
+                expectIncome.PltOriginalEight__c = convertToDecimal(dataMap.get('pltOriginalEight'));
+            }
+            if (dataMap.containsKey('pltPlanEight')) { 
+                expectIncome.PltPlanEight__c = convertToDecimal(dataMap.get('pltPlanEight'));
+            }
+            if (dataMap.containsKey('stockMoneyOriginalEight')) { 
+                expectIncome.StockMoneyOriginalEight__c = convertToDecimal(dataMap.get('stockMoneyOriginalEight'));
+            }
+            if (dataMap.containsKey('stockMoneyPlanEight')) { 
+                expectIncome.StockMoneyPlanEight__c = convertToDecimal(dataMap.get('stockMoneyPlanEight'));
+            }
+            if (dataMap.containsKey('monthSaleEight')) { 
+                expectIncome.MonthSaleEight__c = convertToDecimal(dataMap.get('monthSaleEight'));
+            }
+            if (dataMap.containsKey('monthSalesProfitEight')) { 
+                expectIncome.MonthSalesProfitEight__c = convertToDecimal(dataMap.get('monthSalesProfitEight'));
+            }
+
+            if (dataMap.containsKey('productNameNine')) { 
+                expectIncome.ProductNameNine__c = (String) dataMap.get('productNameNine');
+            }            
+            if (dataMap.containsKey('storageConditionNine')) { 
+                expectIncome.StorageConditionNine__c = (String) dataMap.get('storageConditionNine');
+            }            
+            if (dataMap.containsKey('releaseUnitNine')) { 
+                expectIncome.ReleaseUnitNine__c = (String) dataMap.get('releaseUnitNine');
+            }            
+            if (dataMap.containsKey('enforcementMonthNine')) { 
+                expectIncome.EnforcementMonthNine__c = (String) dataMap.get('enforcementMonthNine');
+            }            
+            if (dataMap.containsKey('pltOriginalNine')) { 
+                expectIncome.PltOriginalNine__c = convertToDecimal(dataMap.get('pltOriginalNine'));
+            }
+            if (dataMap.containsKey('pltPlanNine')) { 
+                expectIncome.PltPlanNine__c = convertToDecimal(dataMap.get('pltPlanNine'));
+            }
+            if (dataMap.containsKey('stockMoneyOriginalNine')) { 
+                expectIncome.StockMoneyOriginalNine__c = convertToDecimal(dataMap.get('stockMoneyOriginalNine'));
+            }
+            if (dataMap.containsKey('stockMoneyPlanNine')) { 
+                expectIncome.StockMoneyPlanNine__c = convertToDecimal(dataMap.get('stockMoneyPlanNine'));
+            }
+            if (dataMap.containsKey('monthSaleNine')) { 
+                expectIncome.MonthSaleNine__c = convertToDecimal(dataMap.get('monthSaleNine'));
+            }
+            if (dataMap.containsKey('monthSalesProfitNine')) { 
+                expectIncome.MonthSalesProfitNine__c = convertToDecimal(dataMap.get('monthSalesProfitNine'));
+            }
+
+            if (dataMap.containsKey('productNameTen')) { 
+                expectIncome.ProductNameTen__c = (String) dataMap.get('productNameTen');
+            }            
+            if (dataMap.containsKey('storageConditionTen')) { 
+                expectIncome.StorageConditionTen__c = (String) dataMap.get('storageConditionTen');
+            }            
+            if (dataMap.containsKey('releaseUnitTen')) { 
+                expectIncome.ReleaseUnitTen__c = (String) dataMap.get('releaseUnitTen');
+            }            
+            if (dataMap.containsKey('enforcementMonthTen')) { 
+                expectIncome.EnforcementMonthTen__c = (String) dataMap.get('enforcementMonthTen');
+            }            
+            if (dataMap.containsKey('pltOriginalTen')) { 
+                expectIncome.PltOriginalTen__c = convertToDecimal(dataMap.get('pltOriginalTen'));
+            }
+            if (dataMap.containsKey('pltPlanTen')) { 
+                expectIncome.PltPlanTen__c = convertToDecimal(dataMap.get('pltPlanTen'));
+            }
+            if (dataMap.containsKey('stockMoneyOriginalTen')) { 
+                expectIncome.StockMoneyOriginalTen__c = convertToDecimal(dataMap.get('stockMoneyOriginalTen'));
+            }
+            if (dataMap.containsKey('stockMoneyPlanTen')) { 
+                expectIncome.StockMoneyPlanTen__c = convertToDecimal(dataMap.get('stockMoneyPlanTen'));
+            }
+            if (dataMap.containsKey('monthSaleTen')) { 
+                expectIncome.MonthSaleTen__c = convertToDecimal(dataMap.get('monthSaleTen'));
+            }
+            if (dataMap.containsKey('monthSalesProfitTen')) { 
+                expectIncome.MonthSalesProfitTen__c = convertToDecimal(dataMap.get('monthSalesProfitTen'));
+            }
+            // 전용 SKU 세부사항
+            if (dataMap.containsKey('multipleSkuRoomTemperature')) { 
+                expectIncome.MultipleSkuRoomTemperature__c = convertToDecimal(dataMap.get('multipleSkuRoomTemperature'));
+            }
+            if (dataMap.containsKey('multipleSkuRefrigeration')) { 
+                expectIncome.MultipleSkuRefrigeration__c = convertToDecimal(dataMap.get('multipleSkuRefrigeration'));
+            }
+            if (dataMap.containsKey('multipleSkuFreezer')) { 
+                expectIncome.MultipleSkuFreezer__c = convertToDecimal(dataMap.get('multipleSkuFreezer'));
+            }
+            if (dataMap.containsKey('multiplePltRoomTemperature')) { 
+                expectIncome.MultiplePltRoomTemperature__c = convertToDecimal(dataMap.get('multiplePltRoomTemperature'));
+            }
+            if (dataMap.containsKey('multiplePltRefrigeration')) { 
+                expectIncome.MultiplePltRefrigeration__c = convertToDecimal(dataMap.get('multiplePltRefrigeration'));
+            }
+            if (dataMap.containsKey('multiplePltFreezer')) { 
+                expectIncome.MultiplePltFreezer__c = convertToDecimal(dataMap.get('multiplePltFreezer'));
+            }
+
+            if (dataMap.containsKey('storageSkuRoomTemperature')) { 
+                expectIncome.StorageSkuRoomTemperature__c = convertToDecimal(dataMap.get('storageSkuRoomTemperature'));
+            }
+            if (dataMap.containsKey('storageSkuRefrigeration')) { 
+                expectIncome.StorageSkuRefrigeration__c = convertToDecimal(dataMap.get('storageSkuRefrigeration'));
+            }
+            if (dataMap.containsKey('storageSkuFreezer')) { 
+                expectIncome.StorageSkuFreezer__c = convertToDecimal(dataMap.get('storageSkuFreezer'));
+            }
+            if (dataMap.containsKey('storagePltRoomTemperature')) { 
+                expectIncome.StoragePltRoomTemperature__c = convertToDecimal(dataMap.get('storagePltRoomTemperature'));
+            }
+            if (dataMap.containsKey('storagePltRefrigeration')) { 
+                expectIncome.StoragePltRefrigeration__c = convertToDecimal(dataMap.get('storagePltRefrigeration'));
+            }
+            if (dataMap.containsKey('storagePltFreezer')) { 
+                expectIncome.StoragePltFreezer__c = convertToDecimal(dataMap.get('storagePltFreezer'));
+            }
+
+            if (dataMap.containsKey('reductionSkuRoomTemperature')) { 
+                expectIncome.ReductionSkuRoomTemperature__c = convertToDecimal(dataMap.get('reductionSkuRoomTemperature'));
+            }
+            if (dataMap.containsKey('reductionSkuRefrigeration')) { 
+                expectIncome.ReductionSkuRefrigeration__c = convertToDecimal(dataMap.get('reductionSkuRefrigeration'));
+            }
+            if (dataMap.containsKey('reductionSkuFreezer')) { 
+                expectIncome.ReductionSkuFreezer__c = convertToDecimal(dataMap.get('reductionSkuFreezer'));
+            }
+            if (dataMap.containsKey('reductionPltRoomTemperature')) { 
+                expectIncome.ReductionPltRoomTemperature__c = convertToDecimal(dataMap.get('reductionPltRoomTemperature'));
+            }
+            if (dataMap.containsKey('reductionPltRefrigeration')) { 
+                expectIncome.ReductionPltRefrigeration__c = convertToDecimal(dataMap.get('reductionPltRefrigeration'));
+            }
+            if (dataMap.containsKey('reductionPltFreezer')) { 
+                expectIncome.ReductionPltFreezer__c = convertToDecimal(dataMap.get('reductionPltFreezer'));
+            }
+
+
+
             upsert expectIncome;
 
             // 실적현황 insert 
@@ -2775,35 +3168,55 @@ public with sharing class OrderConsiderReContractFormController {
 
 
     /* 
-    품의지정 버튼 클릭시 , 품의지정 check 
-    : 기존 품의지정된 내역은 삭제 후 신규 품의지정된 1개만 품의체크
+     품의지정 버튼 클릭시 , 품의지정 check 
+     : 기존 품의지정된 내역은 삭제 후 신규 품의지정된 1개만 품의체크
     */
-
     @RemoteAction
-    public static String ReportCheck(String incomeExpensesId, String opportunityId) {
-        try {
-            List<CJFW_ExpectedIncomeExpenses__c> expenseList = [SELECT Id, IsReportCheck__c FROM CJFW_ExpectedIncomeExpenses__c WHERE Opportunity__c = :opportunityId AND Id != :incomeExpensesId];
-   
-            for (CJFW_ExpectedIncomeExpenses__c expense : expenseList) {
-                expense.IsReportCheck__c = false;
-            }
-            update expenseList;
-   
-            CJFW_ExpectedIncomeExpenses__c currentExpense = [SELECT Id, IsReportCheck__c FROM CJFW_ExpectedIncomeExpenses__c WHERE Id = :incomeExpensesId];
-            if (currentExpense != null) {
-                currentExpense.IsReportCheck__c = !currentExpense.IsReportCheck__c;
-                update currentExpense;
- 
-                return String.valueOf(currentExpense.IsReportCheck__c);
-            }
-   
-            return 'false';
-   
-        } catch (Exception e) {
-            System.debug('에러 메시지: ' + e.getMessage());
-            System.debug('에러 라인: ' + e.getStackTraceString());
-            return 'error';
-        }
+    public static String ReportCheck(String incomeExpensesId , String opportunityId , String reportType ){
+
+       System.debug(' 품의서 ID : ' + incomeExpensesId );
+       System.debug(' 옵티 ID : ' + opportunityId );
+       System.debug(' 리포트타입 ID : ' + reportType );
+
+       try{
+           //CJFW_ExpectedIncomeExpenses__c RemoveList = [SELECT Id, IsReportCheck__c FROM CJFW_ExpectedIncomeExpenses__c WHERE Opportunity__c =: opportunityId AND Id != :incomeExpensesId];
+           List<CJFW_ExpectedIncomeExpenses__c> RemoveList = [
+               SELECT 
+                   Id, 
+                   IsReportCheck__c 
+               FROM CJFW_ExpectedIncomeExpenses__c 
+               WHERE Opportunity__c = :opportunityId 
+               AND Id != :incomeExpensesId 
+               AND ReportType__c =:reportType ];
+
+           if(RemoveList <> null ){
+               for(CJFW_ExpectedIncomeExpenses__c data : RemoveList) {
+                   data.IsReportCheck__c = false;
+               }
+               update RemoveList;
+           }
+
+           CJFW_ExpectedIncomeExpenses__c checkList = [SELECT Id, IsReportCheck__c FROM CJFW_ExpectedIncomeExpenses__c WHERE  Id = :incomeExpensesId];
+
+           System.debug(' 품의체크 checkList ' + checkList.IsReportCheck__c );
+           if(checkList <> null){
+               checkList.IsReportCheck__c = !checkList.IsReportCheck__c;
+               update checkList;
+               return String.valueOf(checkList.IsReportCheck__c);
+           }
+
+           return 'false';
+
+       }catch (Exception e) {
+
+           String errorMessage = e.getMessage(); // 에러 메시지
+           String errorStackTrace = e.getStackTraceString(); // 에러 스택 트레이스
+
+           System.debug('에러 메시지: ' + errorMessage);
+           System.debug('에러 라인: ' + errorStackTrace);
+           return 'error';
+       }
+       
     }
 
     /* 

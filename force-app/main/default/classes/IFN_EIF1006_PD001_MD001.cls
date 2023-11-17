@@ -81,7 +81,7 @@ global with sharing class IFN_EIF1006_PD001_MD001 implements Database.Batchable<
         String                          today       = String.valueOf(Datetime.now().format('yyyyMMdd')) + '0000';               //  time.now().format('yyyyMMdd')) + '0000';
         String                          yeday       = String.valueOf(Datetime.now().addDays(-1).format('yyyyMMdd')) + '0000';   //global String yeday = String.valueOf(Date.today().addDays(-1).format('yyyyMMdd')) + '0000';
 
-        inqryDiv        = '3';      //1.둥록일시, 2.공고일시, 3.개찰일시, 4.입찰공고번호
+        inqryDiv        = inqryDiv != null  ? inqryDiv :'3';        //1.둥록일시, 2.공고일시, 3.개찰일시, 4.입찰공고번호
         inqryBgnDt      = inqryBgnDt != null ? inqryBgnDt : yeday;
         inqryEndDt      = inqryEndDt != null ? inqryEndDt : today;
 
@@ -136,7 +136,7 @@ global with sharing class IFN_EIF1006_PD001_MD001 implements Database.Batchable<
                     //getScsbidListSttusThng    //물품
                     //getScsbidListSttusServc   //용역
                     //getScsbidListSttusFrgcpt  //외자
-                    String divNm = workDivision.equals('getScsbidListSttusThng') ? '물품' : workDivision.equals('getScsbidListSttusServc') ? '용역' : '외자';
+                    String divNm = workDivision.equals('getScsbidListSttusThng') ? '물품' : workDivision.equals('getScsbidListSttusServc') ? '용역' : workDivision.equals('getScsbidListSttusFrgcpt') ? '외자' : '';
                     List<CJFW_BiddingInformation__c>     updList = [
                         SELECT Id, BidNoticeNumber__c, Name 
                             , BidMethod__c, ContractSignMethod__c, SubNumber__c, IsReBid__c
@@ -150,36 +150,27 @@ global with sharing class IFN_EIF1006_PD001_MD001 implements Database.Batchable<
                         AND bsnsDivNm__c = :divNm
                     ];
                     
+                    Boolean isUpdateTrue = false;
                     for(CJFW_BiddingInformation__c nowBid : updList){
-                        System.debug('nowBid:' + nowBid.Name + '/' + nowBid.BidNoticeNumber__c + '/' + nowBid.SubNumber__c);
-                        this.logwrap.LogText.add('nowBid:' + nowBid.Name + '/' + nowBid.BidNoticeNumber__c + '/' + nowBid.SubNumber__c);
-                        
+                        //this.logwrap.LogText.add('nowBid:' + nowBid.Name + '/' + nowBid.BidNoticeNumber__c + '/' + nowBid.SubNumber__c);
                         for(items nowitem : resItems){
                             if(nowBid.BidNoticeNumber__c == nowitem.bidNtceNo + '-' + nowitem.bidNtceOrd) {
-                                System.debug('sancho same:' + nowitem.bidNtceNm + '/' + nowitem.bidNtceNo + '/' + nowitem.bidNtceOrd);
-                                this.logwrap.LogText.add('sancho same:' + nowitem.bidNtceNm + '/' + nowitem.bidNtceNo + '/' + nowitem.bidNtceOrd);
+                                //OK 찾아낸다. 해당 row 수정한다. //최종낙찰업체명	bidwinnrNm	100	필수	광동에프.알.피산업
+                                this.logwrap.LogText.add('낙찰정보:' + nowitem.bidNtceNm + '/' + nowitem.bidNtceNo + '/' + nowitem.bidNtceOrd + '/' + nowitem.bidwinnrNm );
+                                //낙찰자가 [씨제이프레시웨이주식회사] 인 경우 O/X 처리
+                                nowBid.SelectCompany__c = nowitem.bidwinnrNm;
+                                nowBid.SelectResult__c  = nowitem.bidwinnrNm.equals('씨제이프레시웨이주식회사') ? 'O' : 'X';
+                                isUpdateTrue = true;
                             }
                         }
                     }
 
-                    // if(insList != null && insList.size() >= 1){
-                    //     List<CJFW_FoodAdditives__c> delList = [Select Id From CJFW_FoodAdditives__c];
-                    //     if(delList != null) delete delList;
-                    // }
-    
-                    // insert insList;
-    
-                    //logWrap.LogText.add(outObj.i1250.Result.CODE + '/' + outObj.i1250.Result.MSG);
+                    if(isUpdateTrue) update updList;
                     
                 }else{
-                    
-                    //errResultCode   = ifRes.result;
-                    //errResultMsg    = ifRes.message + '\n' + (String)ifRes.response;
-                    //errResultMsg    = ifRes.message + '\n' + ifRes.response;
-                    this.logWrap.ErrorCode = ifRes.result;
-                    this.logWrap.ErrorText.add(ifRes.message + '\n');
+                    this.logWrap.ErrorCode      = ifRes.result;
+                    this.logWrap.ErrorText.add(ifRes.message);
                 }
-
 
             } catch (Exception e) {
                 this.logWrap.ErrorCode = '-1';

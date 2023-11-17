@@ -73,7 +73,7 @@ public with sharing class CJFW_NewLineItemMgmtController {
                                         , CountryOfOrigin__c
                                         , StorageCondition__c
                                         , StorageConditionName__c
-                                        , UnitPrice__c
+                                        , UnitPrice__c                   //견적가
                                         , BasePurchasePrice__c
                                         , TaxTypeName__c
                                         , ProfitMargin__c
@@ -84,6 +84,7 @@ public with sharing class CJFW_NewLineItemMgmtController {
                                         , SortOrder__c
                                         , UnitConversion__c
                                         , ProductWeight__c              // 중량
+                                        , ProductWeightUnit__c          // 중량 단위
                                         , Barcode__c                    // 바코드 정보
                                         , BoxQuantity__c
                                         , Batch__c
@@ -478,12 +479,29 @@ public with sharing class CJFW_NewLineItemMgmtController {
         // PriceBookEntryList 조회
         String query = '';
         String queryCnt = ''; 
-        query += 'SELECT    Id, Name, ProductCode, Product2.gd_no__c, UnitPrice, toLabel(Product2.bas_unit_cd__c), toLabel(Product2.migr_orinat_cd__c), toLabel(Product2.strg_cond_cd__c), Product2.taxt_cl_cd__c, Product2.lgs_ctr_id__c, ';
-        query += '          Product2.fm_TaxType__c, Product2.fm_LAR_CLS_NM__c, Product2.fm_LAR_CLS_ID__c , Product2.fm_MID_CLS_ID__c , Product2.fm_MID_CLS_NM__c';
-        query += '          ,Product2.fm_SML_CLS_NM__c ,Product2.fm_SML_CLS_CD__c ,Product2.fm_XSM_CLS_NM__c , Product2.fm_XSM_CLS_CD__c';
-        query += '          ,Product2.box_ctcnt_qty__c';
-        
-        query += '          , ' + selectedMonth + '__c, Old' + selectedMonth + '__c ';
+        query += 'SELECT    Id '
+              +             ', Name ' 
+              +             ', ProductCode '
+              +             ', Product2.gd_no__c '
+              +             ', UnitPrice '
+              +             ', toLabel(Product2.bas_unit_cd__c) '
+              +             ', toLabel(Product2.migr_orinat_cd__c) '
+              +             ', toLabel(Product2.strg_cond_cd__c) '
+              +             ', Product2.wt_unit_cd__c'                       //중량단위
+              +             ', Product2.avg_wt__c'                           //평균중량
+              +             ', Product2.taxt_cl_cd__c '
+              +             ', Product2.lgs_ctr_id__c'
+              +             ', Product2.fm_TaxType__c '
+              +             ', Product2.fm_LAR_CLS_NM__c '
+              +             ', Product2.fm_LAR_CLS_ID__c '
+              +             ', Product2.fm_MID_CLS_ID__c '
+              +             ', Product2.fm_MID_CLS_NM__c'
+              +             ', Product2.fm_SML_CLS_NM__c '
+              +             ', Product2.fm_SML_CLS_CD__c '
+              +             ', Product2.fm_XSM_CLS_NM__c '
+              +             ', Product2.fm_XSM_CLS_CD__c'
+              +             ', Product2.box_ctcnt_qty__c'
+              +             ', ' + selectedMonth + '__c, Old' + selectedMonth + '__c ';
         query += '  FROM    PriceBookEntry ';
         query += ' WHERE    ProductCode IN : listTargetEntryCode';
         query += '   AND    ' + selectedMonth + '__c != null ' ;

@@ -17,6 +17,7 @@ public with sharing class COMM_ReportTestDataFactory_Test {
         //UserRole
         UserRole objRole = new UserRole();
         objRole = COMM_ReportTestDataFactory.getUserRole('SFDC_3001_4100_153_S_MA');
+        
         // 계정
         Account objAcc = new Account();
         objAcc = COMM_ReportTestDataFactory.createAccount('Test','ExistingCustomer');

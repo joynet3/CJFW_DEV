@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 11-07-2023
+ * @last modified on  : 11-17-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkCreateMAController {

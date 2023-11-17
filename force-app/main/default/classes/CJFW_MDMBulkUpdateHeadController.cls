@@ -45,24 +45,35 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
         // 각종 ID 필요한 MDMReferenceCode__c 조회해서 Id값 가지고 오기
         Set<String> codeSet = new Set<String>();
         for(MDMRequest mdm : mdmCustomer){
-            codeSet.add(mdm.PV_VKGRP);
-            codeSet.add(mdm.PV_LOGISCENTER);
-            codeSet.add(mdm.PV_STCDT);
-            codeSet.add(mdm.PV_VBUND);
-            codeSet.add(mdm.PV_LAND1);
-            codeSet.add(mdm.PV_REGIO);
-            codeSet.add(mdm.PV_ZUAWA);
-            codeSet.add(mdm.PV_AKONT);
-            codeSet.add(mdm.PV_CUHR1);
-            codeSet.add(mdm.PV_KONDA);
-            codeSet.add(mdm.PV_KVGR1);
-            codeSet.add(mdm.PV_WAERS);
-            codeSet.add(mdm.PV_KVGR3);
-            codeSet.add(mdm.PV_KVGR3_BOT);
-            codeSet.add(mdm.PV_ZTERM_VV);
-            codeSet.add(mdm.PV_OLD_BIZPLACE_NEW);
-            codeSet.add(mdm.PV_DELIGROUP);
-            codeSet.add(mdm.PV_KATR10);
+
+            // JS에서 넘겨준 mdmCustomer 래퍼클래스에
+            // 해당하는 필드가 null인데 toUpperCase 같은 String 제공 메소드를 사용한다면 에러가 발생함
+            // ex)
+            // String isNullStr = null;
+            // isNullStr.toUpperCase();
+            // Attempt to de-reference a null object 에러 발생
+
+            // 만약 삼항연산자를 사용한다면 codeSet에 String값을 공백이라도 넣어야함
+            codeSet.add(String.isNotBlank(mdm.PV_VKGRP)            ? mdm.PV_VKGRP.toUpperCase() : '');
+            codeSet.add(String.isNotBlank(mdm.PV_LOGISCENTER)      ? mdm.PV_LOGISCENTER.toUpperCase() : '');
+            codeSet.add(String.isNotBlank(mdm.PV_STCDT)            ? mdm.PV_STCDT.toUpperCase() : '');
+            codeSet.add(String.isNotBlank(mdm.PV_VBUND)            ? mdm.PV_VBUND.toUpperCase() : '');
+            codeSet.add(String.isNotBlank(mdm.PV_LAND1)            ? mdm.PV_LAND1.toUpperCase() : '');
+            codeSet.add(String.isNotBlank(mdm.PV_REGIO)            ? mdm.PV_REGIO.toUpperCase() : '');
+            codeSet.add(String.isNotBlank(mdm.PV_ZUAWA)            ? mdm.PV_ZUAWA.toUpperCase() : '');
+            codeSet.add(String.isNotBlank(mdm.PV_AKONT)            ? mdm.PV_AKONT.toUpperCase() : '');
+            codeSet.add(String.isNotBlank(mdm.PV_CUHR1)            ? mdm.PV_CUHR1.toUpperCase() : '');
+            codeSet.add(String.isNotBlank(mdm.PV_KONDA)            ? mdm.PV_KONDA.toUpperCase() : '');
+            codeSet.add(String.isNotBlank(mdm.PV_KVGR1)            ? mdm.PV_KVGR1.toUpperCase() : '');
+            codeSet.add(String.isNotBlank(mdm.PV_WAERS)            ? mdm.PV_WAERS.toUpperCase() : '');
+            codeSet.add(String.isNotBlank(mdm.PV_KVGR3)            ? mdm.PV_KVGR3.toUpperCase() : '');
+            codeSet.add(String.isNotBlank(mdm.PV_KVGR3_BOT)        ? mdm.PV_KVGR3_BOT.toUpperCase() : '');
+            codeSet.add(String.isNotBlank(mdm.PV_ZTERM_VV)         ? mdm.PV_ZTERM_VV.toUpperCase() : '');
+            codeSet.add(String.isNotBlank(mdm.PV_OLD_BIZPLACE_NEW) ? mdm.PV_OLD_BIZPLACE_NEW.toUpperCase() : '');
+            codeSet.add(String.isNotBlank(mdm.PV_DELIGROUP)        ? mdm.PV_DELIGROUP.toUpperCase() : '');
+            codeSet.add(String.isNotBlank(mdm.PV_KATR10)           ? mdm.PV_KATR10.toUpperCase() : '');
+
+            // null이나 공백 제거함
             codeSet.remove(null);
             codeSet.remove('');
         }
@@ -230,8 +241,8 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
                     mdmRequest.PV_PAYCUST_lu__c                =      codeToAccIdMap.get(mdm?.PV_PAYCUST);
                     mdmRequest.PV_CHARGECUST__c                =      String.isBlank(mdm.PV_CHARGECUST) ? null : mdm.PV_CHARGECUST;
                     mdmRequest.PV_CHARGECUST_lu__c             =      codeToAccIdMap.get(mdm?.PV_CHARGECUST);
-                    mdmRequest.PV_VKGRP__c                     =      String.isBlank(mdm.PV_VKGRP) ? null : mdm.PV_VKGRP;
-                    mdmRequest.PV_VKGRP_lu__c                  =      codeToIdMap.get(mdm?.PV_VKGRP);
+                    mdmRequest.PV_VKGRP__c                     =      String.isBlank(mdm.PV_VKGRP) ? null : mdm.PV_VKGRP.toUpperCase();
+                    mdmRequest.PV_VKGRP_lu__c                  =      String.isBlank(mdm.PV_VKGRP) ? null : codeToIdMap.get(mdm?.PV_VKGRP.toUpperCase());
                     mdmRequest.PVVF_VKGRP__c                   =      (mdm.PVVF_VKGRP == null || mdm.PVVF_VKGRP == '') ? null : Date.valueOf(mdm.PVVF_VKGRP);
                     mdmRequest.PVRA_VKGRP__c                   =      (mdm.PVRA_VKGRP == null || mdm.PVRA_VKGRP == '') ? null : Date.valueOf(mdm.PVRA_VKGRP);
                     mdmRequest.PV_PERNR__c                     =      String.isBlank(mdm.PV_PERNR) ? null : mdm.PV_PERNR;
@@ -240,25 +251,25 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
                     mdmRequest.PVRA_PERNR__c                   =      (mdm.PVRA_PERNR == null || mdm.PVRA_PERNR == '') ? null : Date.valueOf(mdm.PVRA_PERNR);
                     mdmRequest.PV_ADMINMA__c                   =      String.isBlank(mdm.PV_ADMINMA) ? null : mdm.PV_ADMINMA;
                     mdmRequest.PV_ADMINMA_lu__c                =      codeToUserIdMap.get(mdm?.PV_ADMINMA);
-                    mdmRequest.PV_LOGISCENTER__c               =      String.isBlank(mdm.PV_LOGISCENTER) ? null : mdm.PV_LOGISCENTER;
-                    mdmRequest.PV_LOGISCENTER_lu__c            =      codeToIdMap.get(mdm?.PV_LOGISCENTER);
+                    mdmRequest.PV_LOGISCENTER__c               =      String.isBlank(mdm.PV_LOGISCENTER) ? null : mdm.PV_LOGISCENTER.toUpperCase();
+                    mdmRequest.PV_LOGISCENTER_lu__c            =      String.isBlank(mdm.PV_LOGISCENTER) ? null : codeToIdMap.get(mdm?.PV_LOGISCENTER.toUpperCase());
                     mdmRequest.PVVF_LOGISCENTER__c             =      (mdm.PVVF_LOGISCENTER == null || mdm.PVVF_LOGISCENTER == '') ? null : Date.valueOf(mdm.PVVF_LOGISCENTER);
                     mdmRequest.PVRA_LOGISCENTER__c             =      (mdm.PVRA_LOGISCENTER == null || mdm.PVRA_LOGISCENTER == '') ? null : Date.valueOf(mdm.PVRA_LOGISCENTER);
-                    mdmRequest.PV_STCDT__c                     =      String.isBlank(mdm.PV_STCDT) ? null : mdm.PV_STCDT;
-                    mdmRequest.PV_STCDT_lu__c                  =      codeToIdMap.get(mdm?.PV_STCDT);
+                    mdmRequest.PV_STCDT__c                     =      String.isBlank(mdm.PV_STCDT) ? null : mdm.PV_STCDT.toUpperCase();
+                    mdmRequest.PV_STCDT_lu__c                  =      String.isBlank(mdm.PV_STCDT) ? null : codeToIdMap.get(mdm?.PV_STCDT.toUpperCase());
                     mdmRequest.PV_FITYP__c                     =      String.isBlank(mdm.PV_FITYP) ? null : mdm.PV_FITYP;
                     mdmRequest.PV_HDOFFICEYN__c                =      (mdm.PV_HDOFFICEYN == '' || mdm.PV_HDOFFICEYN == null) ? headShopYnMap.get(mdm.PV_KUNNR) : Boolean.valueOf(mdm.PV_HDOFFICEYN);
                     mdmRequest.PV_HKUNNR__c                    =      String.isBlank(mdm.PV_HKUNNR) ? null : mdm.PV_HKUNNR;
                     mdmRequest.PV_HKUNNR_lu__c                 =      codeToAccIdMap.get(mdm?.PV_HKUNNR);
                     mdmRequest.PV_SUBSIDIARYYN__c              =      (mdm.PV_SUBSIDIARYYN == '' || mdm.PV_SUBSIDIARYYN == null) ? affCompanyYnMap.get(mdm.PV_KUNNR) : Boolean.valueOf(mdm.PV_SUBSIDIARYYN);
-                    mdmRequest.PV_VBUND__c                     =      String.isBlank(mdm.PV_VBUND) ? null : mdm.PV_VBUND;
-                    mdmRequest.PV_VBUND_lu__c                  =      codeToIdMap.get(mdm?.PV_VBUND);
-                    mdmRequest.PV_LAND1__c                     =      String.isBlank(mdm.PV_LAND1) ? null : mdm.PV_LAND1;
-                    mdmRequest.PV_LAND1_lu__c                  =      codeToIdMap.get(mdm?.PV_LAND1);
+                    mdmRequest.PV_VBUND__c                     =      String.isBlank(mdm.PV_VBUND) ? null : mdm.PV_VBUND.toUpperCase();
+                    mdmRequest.PV_VBUND_lu__c                  =      String.isBlank(mdm.PV_VBUND) ? null : codeToIdMap.get(mdm?.PV_VBUND.toUpperCase());
+                    mdmRequest.PV_LAND1__c                     =      String.isBlank(mdm.PV_LAND1) ? null : mdm.PV_LAND1.toUpperCase();
+                    mdmRequest.PV_LAND1_lu__c                  =      String.isBlank(mdm.PV_LAND1) ? null : codeToIdMap.get(mdm?.PV_LAND1.toUpperCase());
                     mdmRequest.PV_KNVKTYPE__c                  =      String.isBlank(mdm.PV_KNVKTYPE) ? null : mdm.PV_KNVKTYPE;
                     mdmRequest.PV_CLOSEDT__c                   =      (mdm.PV_CLOSEDT == '' || mdm.PV_CLOSEDT == null) ? null : Date.valueOf(mdm.PV_CLOSEDT);
-                    mdmRequest.PV_REGIO__c                     =      String.isBlank(mdm.PV_REGIO) ? null : mdm.PV_REGIO;
-                    mdmRequest.PV_REGIO_lu__c                  =      codeToIdMap.get(mdm?.PV_REGIO);
+                    mdmRequest.PV_REGIO__c                     =      String.isBlank(mdm.PV_REGIO) ? null : mdm.PV_REGIO.toUpperCase();
+                    mdmRequest.PV_REGIO_lu__c                  =      String.isBlank(mdm.PV_REGIO) ? null : codeToIdMap.get(mdm?.PV_REGIO.toUpperCase());
                     mdmRequest.PV_ADRES_ROADADDR1__c           =      String.isBlank(mdm.PV_ADRES_ROADADDR1) ? null : mdm.PV_ADRES_ROADADDR1;
                     mdmRequest.PV_ADRES_ROADADDR2__c           =      String.isBlank(mdm.PV_ADRES_ROADADDR2) ? null : mdm.PV_ADRES_ROADADDR2;
                     mdmRequest.PV_ADRES_ADDR1__c               =      String.isBlank(mdm.PV_ADRES_ADDR1) ? null : mdm.PV_ADRES_ADDR1;
@@ -271,42 +282,42 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
                     mdmRequest.PV_BIZPLCODE_lu__c              =      codeToAccIdMap.get(mdm?.PV_BIZPLCODE);
                     mdmRequest.PV_BUSAB__c                     =      String.isBlank(mdm.PV_BUSAB) ? null : mdm.PV_BUSAB;
                     mdmRequest.PV_CESSION_KZ__c                =      String.isBlank(mdm.PV_CESSION_KZ) ? null : mdm.PV_CESSION_KZ;
-                    mdmRequest.PV_ZUAWA__c                     =      String.isBlank(mdm.PV_ZUAWA) ? null : mdm.PV_ZUAWA;
-                    mdmRequest.PV_ZUAWA_lu__c                  =      codeToIdMap.get(mdm?.PV_ZUAWA);
-                    mdmRequest.PV_AKONT__c                     =      String.isBlank(mdm.PV_AKONT) ? null : mdm.PV_AKONT;
-                    mdmRequest.PV_AKONT_lu__c                  =      codeToIdMap.get(mdm?.PV_AKONT);
+                    mdmRequest.PV_ZUAWA__c                     =      String.isBlank(mdm.PV_ZUAWA) ? null : mdm.PV_ZUAWA.toUpperCase();
+                    mdmRequest.PV_ZUAWA_lu__c                  =      String.isBlank(mdm.PV_ZUAWA) ? null : codeToIdMap.get(mdm?.PV_ZUAWA.toUpperCase());
+                    mdmRequest.PV_AKONT__c                     =      String.isBlank(mdm.PV_AKONT) ? null : mdm.PV_AKONT.toUpperCase();
+                    mdmRequest.PV_AKONT_lu__c                  =      String.isBlank(mdm.PV_AKONT) ? null : codeToIdMap.get(mdm?.PV_AKONT.toUpperCase());
                     mdmRequest.PV_FDGRV__c                     =      String.isBlank(mdm.PV_FDGRV) ? null : mdm.PV_FDGRV;
                     mdmRequest.PV_VRSDG__c                     =      String.isBlank(mdm.PV_VRSDG) ? null : mdm.PV_VRSDG;
                     mdmRequest.PV_TAXKDD__c                    =      String.isBlank(mdm.PV_TAXKDD) ? null : mdm.PV_TAXKDD;
                     mdmRequest.PV_KATR5__c                     =      String.isBlank(mdm.PV_KATR5) ? null : mdm.PV_KATR5;
-                    mdmRequest.PV_CUHR1__c                     =      String.isBlank(mdm.PV_CUHR1) ? null : mdm.PV_CUHR1;
-                    mdmRequest.PV_CUHR1_lu__c                  =      codeToIdMap.get(mdm?.PV_CUHR1);
+                    mdmRequest.PV_CUHR1__c                     =      String.isBlank(mdm.PV_CUHR1) ? null : mdm.PV_CUHR1.toUpperCase();
+                    mdmRequest.PV_CUHR1_lu__c                  =      String.isBlank(mdm.PV_CUHR1) ? null : codeToIdMap.get(mdm?.PV_CUHR1.toUpperCase());
                     mdmRequest.PVVF_CUHR1__c                   =      (mdm.PVVF_CUHR1 == null || mdm.PVVF_CUHR1 == '') ? null : Date.valueOf(mdm.PVVF_CUHR1);
                     mdmRequest.PVRA_CUHR1__c                   =      (mdm.PVRA_CUHR1 == null || mdm.PVRA_CUHR1 == '') ? null : Date.valueOf(mdm.PVRA_CUHR1);
-                    mdmRequest.PV_KONDA__c                     =      String.isBlank(mdm.PV_KONDA) ? null : mdm.PV_KONDA;
-                    mdmRequest.PV_KONDA_lu__c                  =      codeToIdMap.get(mdm?.PV_KONDA);
+                    mdmRequest.PV_KONDA__c                     =      String.isBlank(mdm.PV_KONDA) ? null : mdm.PV_KONDA.toUpperCase();
+                    mdmRequest.PV_KONDA_lu__c                  =      String.isBlank(mdm.PV_KONDA) ? null : codeToIdMap.get(mdm?.PV_KONDA.toUpperCase());
                     mdmRequest.PVVF_KONDA__c                   =      (mdm.PVVF_KONDA == null || mdm.PVVF_KONDA == '') ? null : Date.valueOf(mdm.PVVF_KONDA);
                     mdmRequest.PVRA_KONDA__c                   =      (mdm.PVRA_KONDA == null || mdm.PVRA_KONDA == '') ? null : Date.valueOf(mdm.PVRA_KONDA);
-                    mdmRequest.PV_KVGR1__c                     =      String.isBlank(mdm.PV_KVGR1) ? null : mdm.PV_KVGR1;
-                    mdmRequest.PV_KVGR1_lu__c                  =      codeToIdMap.get(mdm?.PV_KVGR1);
+                    mdmRequest.PV_KVGR1__c                     =      String.isBlank(mdm.PV_KVGR1) ? null : mdm.PV_KVGR1.toUpperCase();
+                    mdmRequest.PV_KVGR1_lu__c                  =      String.isBlank(mdm.PV_KVGR1) ? null : codeToIdMap.get(mdm?.PV_KVGR1.toUpperCase());
                     mdmRequest.PVVF_KVGR1__c                   =      (mdm.PVVF_KVGR1 == null || mdm.PVVF_KVGR1 == '') ? null : Date.valueOf(mdm.PVVF_KVGR1);
                     mdmRequest.PVRA_KVGR1__c                   =      (mdm.PVRA_KVGR1 == null || mdm.PVRA_KVGR1 == '') ? null : Date.valueOf(mdm.PVRA_KVGR1);
-                    mdmRequest.PV_WAERS__c                     =      String.isBlank(mdm.PV_WAERS) ? null : mdm.PV_WAERS;
-                    mdmRequest.PV_WAERS_lu__c                  =      codeToIdMap.get(mdm?.PV_WAERS);
+                    mdmRequest.PV_WAERS__c                     =      String.isBlank(mdm.PV_WAERS) ? null : mdm.PV_WAERS.toUpperCase();
+                    mdmRequest.PV_WAERS_lu__c                  =      String.isBlank(mdm.PV_WAERS) ? null : codeToIdMap.get(mdm?.PV_WAERS.toUpperCase());
                     mdmRequest.PV_KDGRP__c                     =      String.isBlank(mdm.PV_KDGRP) ? null : mdm.PV_KDGRP;
-                    mdmRequest.PV_KVGR3__c                     =      String.isBlank(mdm.PV_KVGR3) ? null : mdm.PV_KVGR3;
-                    mdmRequest.PV_KVGR3_lu__c                  =      codeToIdMap.get(mdm?.PV_KVGR3);
+                    mdmRequest.PV_KVGR3__c                     =      String.isBlank(mdm.PV_KVGR3) ? null : mdm.PV_KVGR3.toUpperCase();
+                    mdmRequest.PV_KVGR3_lu__c                  =      String.isBlank(mdm.PV_KVGR3) ? null : codeToIdMap.get(mdm?.PV_KVGR3.toUpperCase());
                     mdmRequest.PV_KVGR2__c                     =      String.isBlank(mdm.PV_KVGR2) ? null : mdm.PV_KVGR2;
-                    mdmRequest.PV_KVGR3_BOT__c                 =      String.isBlank(mdm.PV_KVGR3_BOT) ? null : mdm.PV_KVGR3_BOT;
-                    mdmRequest.PV_KVGR3_BOT_lu__c              =      codeToIdMap.get(mdm?.PV_KVGR3_BOT);
+                    mdmRequest.PV_KVGR3_BOT__c                 =      String.isBlank(mdm.PV_KVGR3_BOT) ? null : mdm.PV_KVGR3_BOT.toUpperCase();
+                    mdmRequest.PV_KVGR3_BOT_lu__c              =      String.isBlank(mdm.PV_KVGR3_BOT) ? null : codeToIdMap.get(mdm?.PV_KVGR3_BOT.toUpperCase());
                     mdmRequest.PV_ODCLOSEGB__c                 =      String.isBlank(mdm.PV_ODCLOSEGB) ? null : mdm.PV_ODCLOSEGB;
                     mdmRequest.PV_VACCPRTEXCYN__c              =      (mdm.PV_VACCPRTEXCYN == '' || mdm.PV_VACCPRTEXCYN == null) ? accountYnMap.get(mdm.PV_KUNNR) : Boolean.valueOf(mdm.PV_VACCPRTEXCYN);
-                    mdmRequest.PV_ZTERM_VV__c                  =      String.isBlank(mdm.PV_ZTERM_VV) ? null : mdm.PV_ZTERM_VV;
-                    mdmRequest.PV_ZTERM_VV_lu__c               =      codeToIdMap.get(mdm?.PV_ZTERM_VV);
+                    mdmRequest.PV_ZTERM_VV__c                  =      String.isBlank(mdm.PV_ZTERM_VV) ? null : mdm.PV_ZTERM_VV.toUpperCase();
+                    mdmRequest.PV_ZTERM_VV_lu__c               =      String.isBlank(mdm.PV_ZTERM_VV) ? null : codeToIdMap.get(mdm?.PV_ZTERM_VV.toUpperCase());
                     mdmRequest.PV_DSTRHISTREGYN__c             =      String.isBlank(mdm.PV_DSTRHISTREGYN) ? null : mdm.PV_DSTRHISTREGYN;
                     mdmRequest.PV_KULTG__c                     =      String.isBlank(mdm.PV_KULTG) ? null : mdm.PV_KULTG;
-                    mdmRequest.PV_OLD_BIZPLACE_NEW__c          =      String.isBlank(mdm.PV_OLD_BIZPLACE_NEW) ? null : mdm.PV_OLD_BIZPLACE_NEW;
-                    mdmRequest.PV_OLD_BIZPLACE_NEW_lu__c       =      codeToIdMap.get(mdm?.PV_OLD_BIZPLACE_NEW);
+                    mdmRequest.PV_OLD_BIZPLACE_NEW__c          =      String.isBlank(mdm.PV_OLD_BIZPLACE_NEW) ? null : mdm.PV_OLD_BIZPLACE_NEW.toUpperCase();
+                    mdmRequest.PV_OLD_BIZPLACE_NEW_lu__c       =      String.isBlank(mdm.PV_OLD_BIZPLACE_NEW) ? null : codeToIdMap.get(mdm?.PV_OLD_BIZPLACE_NEW.toUpperCase());
                     mdmRequest.PVVF_OLD_BIZPLACE_NEW__c        =      (mdm.PVVF_OLD_BIZPLACE_NEW == null || mdm.PVVF_OLD_BIZPLACE_NEW == '') ? null : Date.valueOf(mdm.PVVF_OLD_BIZPLACE_NEW);
                     mdmRequest.PVRA_OLD_BIZPLACE_NEW__c        =      (mdm.PVRA_OLD_BIZPLACE_NEW == null || mdm.PVRA_OLD_BIZPLACE_NEW == '') ? null : Date.valueOf(mdm.PVRA_OLD_BIZPLACE_NEW);
                     mdmRequest.PV_SHAPE__c                     =      String.isBlank(mdm.PV_SHAPE) ? null : mdm.PV_SHAPE;
@@ -317,10 +328,10 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
                     mdmRequest.PV_ENTERCOND1__c                =      String.isBlank(mdm.PV_ENTERCOND1) ? null : mdm.PV_ENTERCOND1;
                     mdmRequest.PV_UNLOADCOND1__c               =      String.isBlank(mdm.PV_UNLOADCOND1) ? null : mdm.PV_UNLOADCOND1;
                     mdmRequest.PV_UNLOADCOND2__c               =      String.isBlank(mdm.PV_UNLOADCOND2) ? null : mdm.PV_UNLOADCOND2;
-                    mdmRequest.PV_DELIGROUP__c                 =      String.isBlank(mdm.PV_DELIGROUP) ? null : mdm.PV_DELIGROUP;
-                    mdmRequest.PV_DELIGROUP_lu__c              =      codeToIdMap.get(mdm?.PV_DELIGROUP);
-                    mdmRequest.PV_KATR10__c                    =      String.isBlank(mdm.PV_KATR10) ? null : mdm.PV_KATR10;
-                    mdmRequest.PV_KATR10_lu__c                 =      codeToIdMap.get(mdm?.PV_KATR10);
+                    mdmRequest.PV_DELIGROUP__c                 =      String.isBlank(mdm.PV_DELIGROUP) ? null : mdm.PV_DELIGROUP.toUpperCase();
+                    mdmRequest.PV_DELIGROUP_lu__c              =      String.isBlank(mdm.PV_DELIGROUP) ? null : codeToIdMap.get(mdm?.PV_DELIGROUP.toUpperCase());
+                    mdmRequest.PV_KATR10__c                    =      String.isBlank(mdm.PV_KATR10) ? null : mdm.PV_KATR10.toUpperCase();
+                    mdmRequest.PV_KATR10_lu__c                 =      String.isBlank(mdm.PV_KATR10) ? null : codeToIdMap.get(mdm?.PV_KATR10.toUpperCase());
                     mdmRequest.PV_KEYYN__c                     =      (mdm.PV_KEYYN == '' || mdm.PV_KEYYN == null) ? bKeyYnMap.get(mdm.PV_KUNNR) : Boolean.valueOf(mdm.PV_KEYYN);
                     mdmRequest.PV_KEYINFO__c                   =      String.isBlank(mdm.PV_KEYINFO) ? null : mdm.PV_KEYINFO;
                     mdmRequest.PV_KXOTD__c                     =      (mdm.PV_KXOTD == '' || mdm.PV_KXOTD == null) ? kxOtdMap.get(mdm.PV_KUNNR) : Boolean.valueOf(mdm.PV_KXOTD);

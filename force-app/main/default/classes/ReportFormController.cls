@@ -1038,10 +1038,7 @@ public with sharing class ReportFormController {
                 FROM CJFW_ExpectedIncomeExpenses__c 
                 WHERE Opportunity__c = :opportunityId 
                 AND Id != :incomeExpensesId 
-                AND ReportType__c =:reportType
-                ];
-
-            CJFW_ExpectedIncomeExpenses__c checkList = [SELECT Id, IsReportCheck__c FROM CJFW_ExpectedIncomeExpenses__c WHERE  Id = :incomeExpensesId];
+                AND ReportType__c =:reportType ];
 
             if(RemoveList <> null ){
                 for(CJFW_ExpectedIncomeExpenses__c data : RemoveList) {
@@ -1050,11 +1047,12 @@ public with sharing class ReportFormController {
                 update RemoveList;
             }
 
-            if(checkList <> null){
-                checkList.IsReportCheck__c =true;
-                System.debug(' checkList ' + checkList );
-                update checkList;
+            CJFW_ExpectedIncomeExpenses__c checkList = [SELECT Id, IsReportCheck__c FROM CJFW_ExpectedIncomeExpenses__c WHERE  Id = :incomeExpensesId];
 
+            System.debug(' 품의체크 checkList ' + checkList.IsReportCheck__c );
+            if(checkList <> null){
+                checkList.IsReportCheck__c = !checkList.IsReportCheck__c;
+                update checkList;
                 return String.valueOf(checkList.IsReportCheck__c);
             }
 

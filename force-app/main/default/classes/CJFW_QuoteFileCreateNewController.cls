@@ -121,7 +121,7 @@ public without sharing class CJFW_QuoteFileCreateNewController {
                 recordId = ApexPages.currentPage().getParameters().get('Id');
 
                 listTempQuoteLineItem = [SELECT   Id, QuoteId__c, ProductName__c, QuantityUnitOfMeasure__c, ProfitMargin__c,
-                                                  CountryOfOriginName__c, TaxTypeName__c, ProductCode__c, Product2Id__c, UnitPriceWithVAT__c, VAT__c,
+                                                  CountryOfOriginName__c, TaxTypeName__c, ProductCode__c,  UnitPriceWithVAT__c, VAT__c,
                                                   UnitPrice__c, ToLabel(LogisticsCenter__c), ToLabel(Month__c), BasePurchasePrice__c, OldBasePurchasePrice__c, StorageConditionName__c,
                                                   ProductWeight__c, BoxQuantity__c, UnitConversion__c, Barcode__c, 
                                                   ProductCategoryLName__c, ProductCategoryMName__c
@@ -145,7 +145,7 @@ public without sharing class CJFW_QuoteFileCreateNewController {
 
                         List<CJFW_QuoteLineItem__c> listTempQuoteLineItem2 = new List<CJFW_QuoteLineItem__c>();
                         listTempQuoteLineItem2 = [SELECT   Id, QuoteId__c, ProductName__c, QuantityUnitOfMeasure__c, ProfitMargin__c,
-                                                           CountryOfOriginName__c, TaxTypeName__c, ProductCode__c, Product2Id__c, UnitPriceWithVAT__c, VAT__c,
+                                                           CountryOfOriginName__c, TaxTypeName__c, ProductCode__c,  UnitPriceWithVAT__c, VAT__c,
                                                            UnitPrice__c, ToLabel(LogisticsCenter__c), ToLabel(Month__c), BasePurchasePrice__c, OldBasePurchasePrice__c, StorageConditionName__c,
                                                            ProductWeight__c, BoxQuantity__c, UnitConversion__c, Barcode__c, 
                                                            ProductCategoryLName__c, ProductCategoryMName__c

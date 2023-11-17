@@ -44,10 +44,45 @@ public without sharing class DecisionProcessNewController {
     }
 
     /**
+     * 해당 영업기회에 품의서별 품의지정된 레코드가 있는지 체크
+     * 
+     * @param reportType 품의유형
+     * @param opptyId    영업기회 아이디
+     * @return true & false
+     *
+    **/
+    @AuraEnabled
+    public static String IsReportCheck(String reportType, String opptyId) {
+
+        System.debug('reportType = ' + reportType);
+        System.debug('opptyId = ' + opptyId);
+
+        try {
+            String result;
+            CJFW_ExpectedIncomeExpenses__c record = [SELECT Id
+                                                    FROM CJFW_ExpectedIncomeExpenses__c 
+                                                    WHERE Opportunity__c = :opptyId 
+                                                            AND ReportType__c = :reportType 
+                                                            AND IsReportCheck__c = true 
+            ];
+            System.debug('record = ' + record);
+            
+            if(record.Id != null) result = 'true';
+            return result;
+            
+        } catch (Exception e) {
+            System.debug('error 메세지 => ' + e.getMessage());
+            System.debug('error 라인 => ' + e.getStackTraceString());
+
+            return e.getMessage();
+        }
+    }
+
+    /**
      * 품의이력 레코드생성
      * 
      * @param objDecisionProcess 품의이력(DecisionProcess__c) Object
-     * @return 
+     * @return 생성된 DecisionProcess__c 레코드 Id
      *
     **/
     @AuraEnabled
@@ -57,7 +92,6 @@ public without sharing class DecisionProcessNewController {
         insert objDecisionProcess;
 
         return objDecisionProcess.Id!=null ? objDecisionProcess.Id : '';
-
     }
 
     /**
@@ -65,8 +99,7 @@ public without sharing class DecisionProcessNewController {
      * 
      * @param recordId
      * @param objDecisionProcess 품의이력(DecisionProcess__c) Object
-     * @param decisionProcessId  품의이력(DecisionProcess__c) Id
-     * @return 
+     * @param decisionProcessId  품의이력(DecisionProcess__c) Id 
      *
     **/
     @AuraEnabled
@@ -132,10 +165,8 @@ public without sharing class DecisionProcessNewController {
                 if(DocType == 'CRM008' || DocType == 'CRM009' || DocType == 'CRM010' || DocType == 'CRM011' || DocType == 'CRM012'){
                     file.getParameters().put('opportunityId', objDecisionProcess.Opportunity__c );  
                     file.getParameters().put('type', DocType );  
-                    file.getParameters().put('showtable', 'true' );  
-                
-                // 그 외 품의서는 아이디값만 넘겨줌
-                } else {    
+                    file.getParameters().put('showtable', 'true' ); 
+                } else {    // 그 외 품의서는 아이디값만 넘겨줌
                     file.getParameters().put('Id', objDecisionProcess.Opportunity__c ); 
                 }
 

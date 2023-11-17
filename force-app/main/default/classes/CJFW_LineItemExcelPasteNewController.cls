@@ -102,9 +102,12 @@ public without sharing class CJFW_LineItemExcelPasteNewController {
         System.debug('listCenter ' + listCenter);
 
         String strSetMonth = '';
+        String oldSetMonth = '';
         if ( !setMonth.isEmpty())
             strSetMonth = string.join(listMonth,',');
-            System.debug('strSetMonth : '+ strSetMonth);
+            oldSetMonth = string.join(listMonth,', Old');
+
+            System.debug('oldSetMonth : '+oldSetMonth);
 
         String Query = '';
         Query += ' SELECT  '
@@ -128,7 +131,7 @@ public without sharing class CJFW_LineItemExcelPasteNewController {
               +  ' ,Product2.fm_XSM_CLS_NM__c '
               +  ' ,Product2.fm_XSM_CLS_CD__c ';
         if(!setMonth.isEmpty())
-            Query += ' ,' + strSetMonth + ', Old' + strSetMonth;
+            Query += ' ,' + strSetMonth + ', Old' + oldSetMonth;
         Query += ' FROM    PriceBookEntry ';
         Query += ' WHERE   PriceBook2Id = : PricebookId';
         Query += ' AND     ExtId__c IN : setExtId';

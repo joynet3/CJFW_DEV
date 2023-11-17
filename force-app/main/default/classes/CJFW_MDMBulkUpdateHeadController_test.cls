@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 10-05-2023
+ * @last modified on  : 11-16-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 @isTest
@@ -15,6 +15,7 @@ private class CJFW_MDMBulkUpdateHeadController_test {
         
         List<Account> accList = new List<Account>();
         
+        // getNameOfNull에 사용할 Account List INSERT
         // 본점 C01, 판매처 C02, 관리처 C03, C04, C11
         for(Integer i = 0; i < 100; i++) {
             Account acc = new Account();
@@ -23,9 +24,18 @@ private class CJFW_MDMBulkUpdateHeadController_test {
             acc.CustomerId__c = '105' + String.valueOf(i);
             acc.LegalStatus__c = 'A';
             acc.RepresentativeName__c = '대표자';
-            acc.RepresentativeBirthDate__c = '123456';
+            acc.RepresentativeBirthDate__c = '610704';
             acc.BusinessConditions__c = '주점';
             acc.RecordTypeId = '0120w000001dMzHAAU';
+            acc.PV_BLCKYN__c = false;
+            acc.IsHeadShopUseYN__c = false;
+            acc.IsAffiliatedcompanyYN__c = false;
+            acc.IsPrintVirtualAccount__c = false;
+            acc.IsFaceToFaceInspectionStatus__c = false;
+            acc.KXOTD__c = 'N';
+            acc.IsBusinessPlaceKey__c = false;
+            acc.IsInitialDeliveryFTFInspection__c = false;
+            acc.InitialDeliveryShare__c = 'N';
             accList.add(acc);
         }
 
@@ -74,7 +84,7 @@ private class CJFW_MDMBulkUpdateHeadController_test {
 
     }
 
-    // 관리처 Test
+    // 관리처-2차 Test
     @isTest
     static void updateTest3() {
 
@@ -84,10 +94,10 @@ private class CJFW_MDMBulkUpdateHeadController_test {
 
         Test.startTest();
 
-        CJFW_MDMBulkUpdateHeadController.SaveResult result = CJFW_MDMBulkUpdateHeadController.doSave(customerList, '관리처');
+        CJFW_MDMBulkUpdateHeadController.SaveResult result = CJFW_MDMBulkUpdateHeadController.doSave(customerList, '관리처-2차');
 
-        System.debug('관리처 result => ' + result);
-        System.Assert(result.status == 'S', '관리처 성공');
+        System.debug('관리처-2차 result => ' + result);
+        System.Assert(result.status == 'S', '관리처-2차 성공');
 
         Test.stopTest();
 
@@ -103,7 +113,7 @@ private class CJFW_MDMBulkUpdateHeadController_test {
             cus.PV_KUNNR = '105' + String.valueOf(i);
             cus.PV_GFORM = 'B';
             cus.PV_J_1KFREPRE = '대표인';
-            cus.PV_STCD1 = '789101';
+            cus.PV_STCD1 = '970219';
             cus.PV_J_1KFTBUS = '음식점';
             customerList.add(cus);
         }

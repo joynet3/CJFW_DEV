@@ -78,7 +78,28 @@ public with sharing class CJFW_Survey_tr extends TriggerHandler {
                         newSurvey.ParentSurvey__c = sourceSurvey.Id;
                     }
                     // Su__c 필드가 surveyMap에 담긴 Su__c와 동일한 경우 validation 띄우기
-                    newSurvey.Version__c = sourceSurvey.Version__c + 1;
+                    // newSurvey.Version__c = sourceSurvey.Version__c + 1;
+
+
+                if (sourceSurvey.ParentSurvey__c != null ) {
+                    List<CJFW_Survey__c> cloneList = [SELECT Id,  Name,  Su__c, Active__c, ParentSurvey__c, Version__c, HeadOffice__c,CheckActiveDate__c FROM CJFW_Survey__c WHERE ParentSurvey__c =: sourceSurvey.ParentSurvey__c ORDER BY Version__c DESC];
+                    System.debug('allList: >>' + cloneList);
+                    if (cloneList.size() > 0) {
+                        newSurvey.Version__c = cloneList[0].Version__c +1;
+                    }else{
+                        newSurvey.Version__c  =sourceSurvey.Version__c + 1;
+                    }
+                }else{
+                    List<CJFW_Survey__c> allList = [SELECT Id,  Name,  Su__c, Active__c, ParentSurvey__c, Version__c, HeadOffice__c,CheckActiveDate__c FROM CJFW_Survey__c WHERE ParentSurvey__c =: sourceSurvey.Id ORDER BY Version__c DESC];
+
+                    System.debug('allList: >>' + allList);
+                    if (allList.size() > 0) {
+                        newSurvey.Version__c = allList[0].Version__c +1;
+                    }else{
+                        newSurvey.Version__c  =sourceSurvey.Version__c + 1;
+                    }
+                }
+                   
                 }
             } else {
                 // if (suCheckMap.containsKey(newSurvey.su__c) && suCheckMap.get(newSurvey.Su__c).Active__c ) {

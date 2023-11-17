@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 11-14-2023
+ * @last modified on  : 11-16-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkCreateInfoListController {

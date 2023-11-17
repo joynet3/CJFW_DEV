@@ -2,10 +2,11 @@
  * @description       : 품의서전용 데이터 팩토리 
  * @author            : eunyoung.choi@dkbmc.com
  * @group             : 
- * @last modified on  : 11-16-2023
- * @last modified by  : jieun.lee3@dkbmc.com
+ * @last modified on  : 11-17-2023
+ * @last modified by  : eunyoung.choi@dkbmc.com
 **/
 
+@isTest
 global with sharing class COMM_ReportTestDataFactory {
     
     /**
