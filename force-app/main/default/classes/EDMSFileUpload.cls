@@ -2,8 +2,8 @@
  * @description       : 
  * @author            : ChangeMeIn@UserSettingsUnder.SFDoc
  * @group             : 
- * @last modified on  : 10-16-2023
- * @last modified by  : joohyeon.jang@dkbmc.com
+ * @last modified on  : 11-21-2023
+ * @last modified by  : yejoo.lee@dkbmc.com
 **/
 public without sharing class EDMSFileUpload {
     /**
@@ -265,6 +265,7 @@ public without sharing class EDMSFileUpload {
         String downloadUrl = mapParam.get('downloadUrl');
 
         DataWrapper objWrapper = new DataWrapper();
+        String versionCategory = '';//oppty의 계약 체결 파일 추가 23-11-21 yejoo
         
         try {
 
@@ -274,7 +275,7 @@ public without sharing class EDMSFileUpload {
 
             // 증빙파일 파일 레코드
             ContentVersion objContentVersion = [
-                    SELECT  Id, PathOnClient, Title, FileExtension, ContentSize, VersionData, CreatedDate
+                    SELECT  Id, PathOnClient, Title, FileExtension, ContentSize, VersionData, CreatedDate, Category__c
                     FROM    ContentVersion
                     WHERE   ContentDocumentId =:documentId
             ];
@@ -282,6 +283,7 @@ public without sharing class EDMSFileUpload {
             System.debug('========================> objContentVersion.FileExtension : '+objContentVersion.FileExtension);
             System.debug('========================> objContentVersion.ContentSize : '+objContentVersion.ContentSize);
 
+            versionCategory = objContentVersion.Category__c;
             String strFileExtension = String.valueOf(objContentVersion.FileExtension).toUpperCase();
             Integer intContentSize = objContentVersion.ContentSize;
 
@@ -355,7 +357,7 @@ public without sharing class EDMSFileUpload {
             System.debug('===========> response.getStatusCode() : '+response.getStatusCode());
             System.debug('===========> responseBody : '+responseBody);
 
-            if(response.getStatusCode() == 200) {                    
+            if(response.getStatusCode() == 200) {                     
                 Map<String, Object> mapResBody = (Map<String, Object>)JSON.deserializeUntyped(responseBody);
 
                 System.debug('================> mapResBody : '+JSON.serialize(mapResBody));
@@ -390,11 +392,17 @@ public without sharing class EDMSFileUpload {
                 strMessage = '파일업로드에 실패하였습니다. 관리자에 문의하여 주시기 바랍니다. 에러코드 : '+response.getStatusCode();
             }
 
-            Database.delete(documentId);
+            if(versionCategory != '계약 체결'){//oppty의 계약 체결 파일 추가 23-11-21 yejoo
+                Database.delete(documentId);
+            }
+
         }catch(Exception e) {
             strStatus = 'ERROR';
             strMessage = e.getMessage() + ' Line : '+e.getLineNumber();
-            Database.delete(documentId);
+
+            if(versionCategory != '계약 체결'){//oppty의 계약 체결 파일 추가 23-11-21 yejoo
+                Database.delete(documentId);
+            }
         }
 
         System.debug('===============> strStatus : '+strStatus);

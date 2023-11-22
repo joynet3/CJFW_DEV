@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 11-15-2023
+ * @last modified on  : 11-21-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkUpdateInfoListController {
@@ -20,7 +20,7 @@ public with sharing class CJFW_MDMBulkUpdateInfoListController {
     
             List<MDMRegRequestCustomer__c> mdmSize = [SELECT PV_KUNNR__c, PV_OLDCD__c, PV_NAME1__c, PV_NAME_G__c, PV_NAME2__c, PV_KTOKD__c, PV_CUSTTYPE__c, PV_STCD2__c, PV_STCD3__c, PV_GFORM__c, PV_J_1KFREPRE__c, PV_BLCKYN__c, PV_STCD1__c, PV_J_1KFTBUS__c, PV_J_1KFTIND__c, PV_TELF1__c, PV_TELFX__c, PV_PAYCUST__c, PV_CHARGECUST__c, PV_VKGRP__c, PVVF_VKGRP__c, PVRA_VKGRP__c, PV_PERNR__c, PVVF_PERNR__c, PVRA_PERNR__c, PV_ADMINMA__c, PV_STCDT__c, PV_FITYP__c, PV_HDOFFICEYN__c, PV_SUBSIDIARYYN__c, PV_VBUND__c, PV_LAND1__c, PV_KNVKTYPE__c, PV_CLOSEDT__c, PV_REGIO__c, PV_ADRES_ROADADDR1__c, PV_ADRES_ROADADDR2__c, PV_ADRES_ADDR1__c, PV_ADRES_ADDR2__c, PV_BUSAB__c, PV_CESSION_KZ__c, PV_ZUAWA__c, PV_AKONT__c, PV_FDGRV__c, PV_VRSDG__c, PV_TAXKDD__c, PV_KATR5__c, PV_CUHR1__c, PVVF_CUHR1__c, PVRA_CUHR1__c, PV_KONDA__c, PVVF_KONDA__c, PVRA_KONDA__c, PV_KVGR1__c, PVVF_KVGR1__c, PVRA_KVGR1__c, PV_WAERS__c, PV_KDGRP__c, PV_KVGR2__c, PV_VACCPRTEXCYN__c, PV_ZTERM_VV__c, PV_DSTRHISTREGYN__c, PV_KULTG__c, PV_OLD_BIZPLACE_NEW__c, PVVF_OLD_BIZPLACE_NEW__c, PVRA_OLD_BIZPLACE_NEW__c, PV_SHAPE__c, PV_DELIGROUP__c, PV_DELICUST__c, PV_SALESCUST__c, PV_BIZPLCODE__c, PVVF_LOGISCENTER__c, PV_LOGISCENTER__c, PVRA_LOGISCENTER__c FROM MDMRegRequestCustomer__c WHERE MDMRegRequestBulkCustomer__c = :recordId ORDER BY PV_KUNNR__c];
 
-            String mdmQuery = 'SELECT PV_KUNNR__c, PV_OLDCD__c, PV_NAME1__c, PV_NAME_G__c, PV_NAME2__c, PV_KTOKD__c, PV_CUSTTYPE__c, PV_STCD2__c, PV_STCD3__c, PV_GFORM__c, PV_J_1KFREPRE__c, PV_BLCKYN__c, PV_STCD1__c, PV_J_1KFTBUS__c, PV_J_1KFTIND__c, PV_TELF1__c, PV_TELFX__c, PV_PAYCUST__c, PV_CHARGECUST__c, PV_VKGRP__c, PVVF_VKGRP__c, PVRA_VKGRP__c, PV_PERNR__c, PVVF_PERNR__c, PVRA_PERNR__c, PV_ADMINMA__c, PV_STCDT__c, PV_FITYP__c, PV_HDOFFICEYN__c, PV_SUBSIDIARYYN__c, PV_VBUND__c, PV_LAND1__c, PV_KNVKTYPE__c, PV_CLOSEDT__c, PV_REGIO__c, PV_ADRES_ROADADDR1__c, PV_ADRES_ROADADDR2__c, PV_ADRES_ADDR1__c, PV_ADRES_ADDR2__c, PV_BUSAB__c, PV_CESSION_KZ__c, PV_ZUAWA__c, PV_AKONT__c, PV_FDGRV__c, PV_VRSDG__c, PV_TAXKDD__c, PV_KATR5__c, PV_CUHR1__c, PVVF_CUHR1__c, PVRA_CUHR1__c, PV_KONDA__c, PVVF_KONDA__c, PVRA_KONDA__c, PV_KVGR1__c, PVVF_KVGR1__c, PVRA_KVGR1__c, PV_WAERS__c, PV_KDGRP__c, PV_KVGR2__c, PV_VACCPRTEXCYN__c, PV_ZTERM_VV__c, PV_DSTRHISTREGYN__c, PV_KULTG__c, PV_OLD_BIZPLACE_NEW__c, PVVF_OLD_BIZPLACE_NEW__c, PVRA_OLD_BIZPLACE_NEW__c, PV_SHAPE__c, PV_DELIGROUP__c, PV_DELICUST__c, PV_SALESCUST__c, PV_BIZPLCODE__c, PVVF_LOGISCENTER__c, PV_LOGISCENTER__c, PVRA_LOGISCENTER__c FROM MDMRegRequestCustomer__c WHERE MDMRegRequestBulkCustomer__c = :recordId';
+            String mdmQuery = 'SELECT PV_KUNNR__c, PV_OLDCD__c, PV_STCD4__c, PV_ENTERCOND1__c, PV_UNLOADCOND1__c, PV_UNLOADCOND2__c, PV_KATR10__c, PV_KEYYN__c, PV_KEYINFO__c, PV_KXOTD__c, PV_SHIPTYPE__c, PV_TEMPTARGET__c, PV_KXOTDTIME__c, PV_FDINFO__c, PV_FDREQD__c, PV_FDREQT__c, PV_ISFDFTF__c, PV_FDCTINFO__c, PV_FDNOTICE__c, PV_RETURNLOC__c, PV_PRODLOADCOND__c, PV_SHIPREQTIME__c, PV_EXAMYN__c, PV_KVGR3__c, PV_ODCLOSEGB__c, PV_KVGR3_BOT__c, PV_HKUNNR__c, PV_NAME1__c, PV_NAME_G__c, PV_NAME2__c, PV_KTOKD__c, PV_CUSTTYPE__c, PV_STCD2__c, PV_STCD3__c, PV_GFORM__c, PV_J_1KFREPRE__c, PV_BLCKYN__c, PV_STCD1__c, PV_J_1KFTBUS__c, PV_J_1KFTIND__c, PV_TELF1__c, PV_TELFX__c, PV_PAYCUST__c, PV_CHARGECUST__c, PV_VKGRP__c, PVVF_VKGRP__c, PVRA_VKGRP__c, PV_PERNR__c, PVVF_PERNR__c, PVRA_PERNR__c, PV_ADMINMA__c, PV_STCDT__c, PV_FITYP__c, PV_HDOFFICEYN__c, PV_SUBSIDIARYYN__c, PV_VBUND__c, PV_LAND1__c, PV_KNVKTYPE__c, PV_CLOSEDT__c, PV_REGIO__c, PV_ADRES_ROADADDR1__c, PV_ADRES_ROADADDR2__c, PV_ADRES_ADDR1__c, PV_ADRES_ADDR2__c, PV_BUSAB__c, PV_CESSION_KZ__c, PV_ZUAWA__c, PV_AKONT__c, PV_FDGRV__c, PV_VRSDG__c, PV_TAXKDD__c, PV_KATR5__c, PV_CUHR1__c, PVVF_CUHR1__c, PVRA_CUHR1__c, PV_KONDA__c, PVVF_KONDA__c, PVRA_KONDA__c, PV_KVGR1__c, PVVF_KVGR1__c, PVRA_KVGR1__c, PV_WAERS__c, PV_KDGRP__c, PV_KVGR2__c, PV_VACCPRTEXCYN__c, PV_ZTERM_VV__c, PV_DSTRHISTREGYN__c, PV_KULTG__c, PV_OLD_BIZPLACE_NEW__c, PVVF_OLD_BIZPLACE_NEW__c, PVRA_OLD_BIZPLACE_NEW__c, PV_SHAPE__c, PV_DELIGROUP__c, PV_DELICUST__c, PV_SALESCUST__c, PV_BIZPLCODE__c, PVVF_LOGISCENTER__c, PV_LOGISCENTER__c, PVRA_LOGISCENTER__c FROM MDMRegRequestCustomer__c WHERE MDMRegRequestBulkCustomer__c = :recordId';
             mdmQuery += ' ORDER BY PV_KUNNR__c LIMIT 20 OFFSET ' + offsetNum;
             List<MDMRegRequestCustomer__c> mdms = Database.query(mdmQuery);
 
@@ -33,9 +33,9 @@ public with sharing class CJFW_MDMBulkUpdateInfoListController {
             System.debug('mdms => ' + json.serialize(mdms));
             System.debug('ids => ' + json.serialize(ids));
     
-            String strQuery = 'SELECT Id, CustomerID__c, Name, fm_empId__c, CustomerIDASIS__c, NameKor__c, NameAlias__c, AccountGroup__c, toLabel(AccountGroup__c) AccountGroupLabel, ';
+            String strQuery = 'SELECT Id, CustomerID__c, Name, PICCode__c, CustomerIDASIS__c, NameKor__c, NameAlias__c, AccountGroup__c, toLabel(AccountGroup__c) AccountGroupLabel, ';
             strQuery += ' CustomerType__c, toLabel(CustomerType__c) CustomerTypeLabel, CompanyRegisterNumber__c, CorporateCode__c, 	SubCompanyRegisterNumber__c, ';
-            strQuery += ' LegalStatus__c, toLabel(LegalStatus__c) LegalStatusLabel, RepresentativeName__c, PV_BLCKYN__c,	RepresentativeBirthDate__c, BusinessConditions__c, BusinessCategory__c, ';
+            strQuery += ' LegalStatus__c, toLabel(LegalStatus__c) LegalStatusLabel, RepresentativeName__c, PV_BLCKYN__c, RepresentativeBirthDate__c, BusinessConditions__c, BusinessCategory__c, ';
             strQuery += ' Phone, Fax, PaymentAccountCode__c, PaymentAccountName__c, ShippingAccountCode__c, ShippingAccountName__c, PV_VKGRP__c, toLabel(PV_VKGRP__c) PV_VKGRP__LABEL, ';
             strQuery += ' PVVF_VKGRP__c, SalesGroupFromDate__c, OwnerId, PVVF_PERNR__c, ResponsibilityMAFromDate__c, ResponsibilityAMA__c, TaxInvoiceType__c, toLabel(TaxInvoiceType__c) TaxInvoiceLabel, ';
             strQuery += ' IsHeadShopUseYN__c, IsAffiliatedcompanyYN__c, AffiliatedCompany__c, toLabel(AffiliatedCompany__c) AffiliatedCompanyLabel, CountryKeyCode__c, toLabel(CountryKeyCode__c) CountryKeyCodeLabel, ';
@@ -46,110 +46,16 @@ public with sharing class CJFW_MDMBulkUpdateInfoListController {
             strQuery += ' PV_CUHR1__c, CustomerRouteFromDate__c, PriceGroup__c, toLabel(PriceGroup__c) PriceGroupLabel, UnitPriceGroup__c, toLabel(UnitPriceGroup__c) UnitPriceGroupLabel, CurrencyIsoCode, ';
             strQuery += ' toLabel(CurrencyIsoCode) CurrencyIsoLabel, CreditManagement__c, toLabel(CreditManagement__c) CreditManagementLabel, SubsidyType__c, toLabel(SubsidyType__c) SubsidyTypeLabel, ';
             strQuery += ' IsPrintVirtualAccount__c, TermsOfPayment__c, toLabel(TermsOfPayment__c) TermsOfPaymentLabel, DisHisRegType__c, toLabel(DisHisRegType__c) DisHisRegTypeLabel, ContractRocationDate__c, TaxationType__c, ';
-            strQuery += ' CustomerPath__c, toLabel(CustomerPath__c) CustomerPathLabel, Shape__c, DeliveryGroup__c, toLabel(DeliveryGroup__c) DeliveryGroupLabel, ';
-            strQuery += ' PVVF_KONDA__c, PriceGroupFromDate__c, PVVF_OLD_BIZPLACE_NEW__c, CustomerPathFromDate__c, FWReleaseCenterFromDate__c, PVVF_LOGISCENTER__c, FWReleaseCenter__c, ';
-            strQuery += ' DeliveryCustomerCode__c, SalesCustomerCode__c, BizPLCode__c ';
+            strQuery += ' CustomerPath__c, toLabel(CustomerPath__c) CustomerPathLabel, Shape__c, DeliveryGroup__c, toLabel(DeliveryGroup__c) DeliveryGroupLabel, CustomerOrderDeadlineType__c, ';
+            strQuery += ' PVVF_KONDA__c, PriceGroupFromDate__c, PVVF_OLD_BIZPLACE_NEW__c, CustomerPathFromDate__c, FWReleaseCenterFromDate__c, PVVF_LOGISCENTER__c, FWReleaseCenter__c, IsFaceToFaceInspectionStatus__c, ';
+            strQuery += ' DeliveryCustomerCode__c, SalesCustomerCode__c, BizPLCode__c, HeadOfficeCode__c, PVVF_KVGR1__c, UnitPriceGroupFromDate__c, StatementOfDeliveryType__c, StatementOfDeliveryType2__c,  ';
+            strQuery += ' OTD__c, ProductLoadingCondition__c, ReturnLocation__c, VehicleEntryCondtions__c, UnloadConditions1__c, UnloadConditions2__c, ShipmentArea__c, IsBusinessPlaceKey__c, BusinessPlaceKeyInfo__c, ';
+            strQuery += ' KXOTD__c, KXOTDRequestDate__c, InitialDeliveryShare__c, InitialDeliveryRequestDate__c, InitialDeliveryRequestTime__c, IsInitialDeliveryFTFInspection__c, InitialDeliveryContact__c, ';
+            strQuery += ' InitialDeliveryDescription__c, PV_SHIPTYPE__c, PV_TEMPTARGET__c ';
             strQuery += ' FROM    Account ';
             strQuery += ' WHERE CustomerId__c IN (' + String.join(ids, ',') + ') ORDER BY CustomerId__c';
 
-            // List<Account> accList = [SELECT Id
-            //                                 , CustomerID__c
-            //                                 , Name
-            //                                 , fm_empId__c
-            //                                 , CustomerIDASIS__c
-            //                                 , NameKor__c
-            //                                 , NameAlias__c
-            //                                 , AccountGroup__c
-            //                                 , toLabel(AccountGroup__c) AccountGroupLabel
-            //                                 , CustomerType__c
-            //                                 , toLabel(CustomerType__c) CustomerTypeLabel
-            //                                 , CompanyRegisterNumber__c
-            //                                 , CorporateCode__c
-            //                                 , SubCompanyRegisterNumber__c
-            //                                 , LegalStatus__c
-            //                                 , toLabel(LegalStatus__c) LegalStatusLabel
-            //                                 , RepresentativeName__c
-            //                                 , PV_BLCKYN__c
-            //                                 , RepresentativeBirthDate__c
-            //                                 , BusinessConditions__c
-            //                                 , BusinessCategory__c
-            //                                 , Phone
-            //                                 , Fax
-            //                                 , PaymentAccountCode__c
-            //                                 , PaymentAccountName__c
-            //                                 , ShippingAccountCode__c
-            //                                 , ShippingAccountName__c
-            //                                 , PV_VKGRP__c
-            //                                 , toLabel(PV_VKGRP__c) PV_VKGRP__LABEL
-            //                                 , PVVF_VKGRP__c
-            //                                 , SalesGroupFromDate__c
-            //                                 , OwnerId
-            //                                 , PVVF_PERNR__c
-            //                                 , ResponsibilityMAFromDate__c
-            //                                 , ResponsibilityAMA__c
-            //                                 , TaxInvoiceType__c
-            //                                 , toLabel(TaxInvoiceType__c) TaxInvoiceLabel
-            //                                 , IsHeadShopUseYN__c
-            //                                 , IsAffiliatedcompanyYN__c
-            //                                 , AffiliatedCompany__c
-            //                                 , toLabel(AffiliatedCompany__c) AffiliatedCompanyLabel
-            //                                 , CountryKeyCode__c
-            //                                 , toLabel(CountryKeyCode__c) CountryKeyCodeLabel
-            //                                 , PV_KNVKTYPE__c
-            //                                 , toLabel(PV_KNVKTYPE__c) PV_KNVKTYPE__LABEL
-            //                                 , ShutDownDate__c
-            //                                 , LocationState__c
-            //                                 , toLabel(LocationState__c) LocationStateLabel
-            //                                 , Address__c
-            //                                 , AddressDetails__c
-            //                                 , Address2__c
-            //                                 , AddressDetails2__c
-            //                                 , SalesForm__c
-            //                                 , toLabel(SalesForm__c) SalesFormLabel
-            //                                 , CustomerStatus__c
-            //                                 , toLabel(CustomerStatus__c) CustomerStatusLabel
-            //                                 , SortKey__c
-            //                                 , toLabel(SortKey__c) SortKeyLabel
-            //                                 , MediateAccount__c
-            //                                 , toLabel(MediateAccount__c) MediateAccountLabel
-            //                                 , CashManagementGroup__c
-            //                                 , toLabel(CashManagementGroup__c) CashManagementGroupLabel
-            //                                 , IsDeposit__c
-            //                                 , toLabel(IsDeposit__c) IsDepositLabel
-            //                                 , TaxClassification__c
-            //                                 , toLabel(TaxClassification__c) TaxClassificationLabel
-            //                                 , TaxPaymentMethod__c
-            //                                 , toLabel(TaxPaymentMethod__c) TaxPaymentMethodLabel
-            //                                 , CustomerRoute__c
-            //                                 , toLabel(CustomerRoute__c) CustomerRouteLabel
-            //                                 , PV_CUHR1__c
-            //                                 , CustomerRouteFromDate__c
-            //                                 , PriceGroup__c
-            //                                 , toLabel(PriceGroup__c) PriceGroupLabel
-            //                                 , UnitPriceGroup__c
-            //                                 , toLabel(UnitPriceGroup__c) UnitPriceGroupLabel
-            //                                 , CurrencyIsoCode
-            //                                 , toLabel(CurrencyIsoCode) CurrencyIsoLabel
-            //                                 , CreditManagement__c
-            //                                 , toLabel(CreditManagement__c) CreditManagementLabel
-            //                                 , SubsidyType__c
-            //                                 , toLabel(SubsidyType__c) SubsidyTypeLabel
-            //                                 , IsPrintVirtualAccount__c
-            //                                 , TermsOfPayment__c
-            //                                 , toLabel(TermsOfPayment__c) TermsOfPaymentLabel
-            //                                 , DisHisRegType__c
-            //                                 , toLabel(DisHisRegType__c) DisHisRegTypeLabel
-            //                                 , ContractRocationDate__c
-            //                                 , TaxationType__c
-            //                                 , CustomerPath__c
-            //                                 , toLabel(CustomerPath__c) CustomerPathLabel
-            //                                 , Shape__c
-            //                                 , DeliveryGroup__c
-            //                                 , toLabel(DeliveryGroup__c) DeliveryGroupLabel
-            //                                 , PVVF_KONDA__c
-            //                                 , PriceGroupFromDate__c
-            //                                 , PVVF_OLD_BIZPLACE_NEW__c
-            //                                 , CustomerPathFromDate__c 
+            // List<Account> accList = [SELECT Id, CustomerID__c, Name, PICCode__c, CustomerIDASIS__c, NameKor__c, NameAlias__c, AccountGroup__c, toLabel(AccountGroup__c) AccountGroupLabel, CustomerType__c, toLabel(CustomerType__c) CustomerTypeLabel, CompanyRegisterNumber__c, CorporateCode__c, SubCompanyRegisterNumber__c, LegalStatus__c, toLabel(LegalStatus__c) LegalStatusLabel, RepresentativeName__c, PV_BLCKYN__c, RepresentativeBirthDate__c, BusinessConditions__c, BusinessCategory__c, Phone, Fax, PaymentAccountCode__c, PaymentAccountName__c, ShippingAccountCode__c, ShippingAccountName__c, PV_VKGRP__c, toLabel(PV_VKGRP__c) PV_VKGRP__LABEL, PVVF_VKGRP__c, SalesGroupFromDate__c, OwnerId, PVVF_PERNR__c, ResponsibilityMAFromDate__c, ResponsibilityAMA__c, TaxInvoiceType__c, toLabel(TaxInvoiceType__c) TaxInvoiceLabel, IsHeadShopUseYN__c, IsAffiliatedcompanyYN__c, AffiliatedCompany__c, toLabel(AffiliatedCompany__c) AffiliatedCompanyLabel, CountryKeyCode__c, toLabel(CountryKeyCode__c) CountryKeyCodeLabel, PV_KNVKTYPE__c, toLabel(PV_KNVKTYPE__c) PV_KNVKTYPE__LABEL, ShutDownDate__c, LocationState__c, toLabel(LocationState__c) LocationStateLabel, Address__c, AddressDetails__c, Address2__c, AddressDetails2__c, SalesForm__c, toLabel(SalesForm__c) SalesFormLabel, CustomerStatus__c, toLabel(CustomerStatus__c) CustomerStatusLabel, SortKey__c, toLabel(SortKey__c) SortKeyLabel, MediateAccount__c, toLabel(MediateAccount__c) MediateAccountLabel, CashManagementGroup__c, toLabel(CashManagementGroup__c) CashManagementGroupLabel, IsDeposit__c, toLabel(IsDeposit__c) IsDepositLabel, TaxClassification__c, toLabel(TaxClassification__c) TaxClassificationLabel, TaxPaymentMethod__c, toLabel(TaxPaymentMethod__c) TaxPaymentMethodLabel, CustomerRoute__c, toLabel(CustomerRoute__c) CustomerRouteLabel, PV_CUHR1__c, CustomerRouteFromDate__c, PriceGroup__c, toLabel(PriceGroup__c) PriceGroupLabel, UnitPriceGroup__c, toLabel(UnitPriceGroup__c) UnitPriceGroupLabel, CurrencyIsoCode, toLabel(CurrencyIsoCode) CurrencyIsoLabel, CreditManagement__c, toLabel(CreditManagement__c) CreditManagementLabel, SubsidyType__c, toLabel(SubsidyType__c) SubsidyTypeLabel, IsPrintVirtualAccount__c, TermsOfPayment__c, toLabel(TermsOfPayment__c) TermsOfPaymentLabel, DisHisRegType__c, toLabel(DisHisRegType__c) DisHisRegTypeLabel, ContractRocationDate__c, TaxationType__c, CustomerPath__c, toLabel(CustomerPath__c) CustomerPathLabel, Shape__c, DeliveryGroup__c, toLabel(DeliveryGroup__c) DeliveryGroupLabel, PVVF_KONDA__c, PriceGroupFromDate__c, PVVF_OLD_BIZPLACE_NEW__c, CustomerPathFromDate__c 
             //                         FROM Account
             //                         WHERE CustomerID__c IN :ids
             //                         ORDER BY CustomerID__c
@@ -184,10 +90,14 @@ public with sharing class CJFW_MDMBulkUpdateInfoListController {
                     mdmRequest.PV_STCD2_MOD             =      String.isBlank(mdms[i].PV_STCD2__c) ? null : mdms[i].PV_STCD2__c;
                     mdmRequest.PV_STCD3                 =      String.isBlank(accList[i].CorporateCode__c) ? null : accList[i].CorporateCode__c;
                     mdmRequest.PV_STCD3_MOD             =      String.isBlank(mdms[i].PV_STCD3__c) ? null : mdms[i].PV_STCD3__c;
+                    mdmRequest.PV_STCD4                 =      String.isBlank(accList[i].SubCompanyRegisterNumber__c) ? null : accList[i].SubCompanyRegisterNumber__c;
+                    mdmRequest.PV_STCD4_MOD             =      String.isBlank(mdms[i].PV_STCD4__c) ? null : mdms[i].PV_STCD4__c;
+                    mdmRequest.PV_GFORM                 =      String.isBlank(accList[i].LegalStatus__c) ? null : accList[i].LegalStatus__c;
+                    mdmRequest.PV_GFORM_MOD             =      String.isBlank(mdms[i].PV_GFORM__c) ? null : mdms[i].PV_GFORM__c;
                     mdmRequest.PV_J_1KFREPRE            =      String.isBlank(accList[i].RepresentativeName__c) ? null : accList[i].RepresentativeName__c;
                     mdmRequest.PV_J_1KFREPRE_MOD        =      String.isBlank(mdms[i].PV_J_1KFREPRE__c) ? null : mdms[i].PV_J_1KFREPRE__c;
-                    mdmRequest.PV_BLCKYN                =      accList[i].PV_BLCKYN__c ? null : accList[i].PV_BLCKYN__c;
-                    mdmRequest.PV_BLCKYN_MOD            =      mdms[i].PV_BLCKYN__c ? null : mdms[i].PV_BLCKYN__c;
+                    mdmRequest.PV_BLCKYN                =      accList[i].PV_BLCKYN__c;
+                    mdmRequest.PV_BLCKYN_MOD            =      mdms[i].PV_BLCKYN__c;
                     mdmRequest.PV_STCD1                 =      String.isBlank(accList[i].RepresentativeBirthDate__c) ? null : accList[i].RepresentativeBirthDate__c;
                     mdmRequest.PV_STCD1_MOD             =      String.isBlank(mdms[i].PV_STCD1__c) ? null : mdms[i].PV_STCD1__c;
                     mdmRequest.PV_J_1KFTBUS             =      String.isBlank(accList[i].BusinessConditions__c) ? null : accList[i].BusinessConditions__c;
@@ -208,7 +118,7 @@ public with sharing class CJFW_MDMBulkUpdateInfoListController {
                     mdmRequest.PVVF_VKGRP_MOD           =      mdms[i].PVVF_VKGRP__c;
                     mdmRequest.PVRA_VKGRP               =      accList[i].SalesGroupFromDate__c;
                     mdmRequest.PVRA_VKGRP_MOD           =      mdms[i].PVRA_VKGRP__c;
-                    mdmRequest.PV_PERNR                 =      String.isBlank(accList[i].fm_empId__c) ? null : accList[i].fm_empId__c;
+                    mdmRequest.PV_PERNR                 =      String.isBlank(accList[i].PICCode__c) ? null : accList[i].PICCode__c;
                     mdmRequest.PV_PERNR_MOD             =      String.isBlank(mdms[i].PV_PERNR__c) ? null : mdms[i].PV_PERNR__c;
                     mdmRequest.PVVF_PERNR               =      accList[i].PVVF_PERNR__c;
                     mdmRequest.PVVF_PERNR_MOD           =      mdms[i].PVVF_PERNR__c;
@@ -226,12 +136,16 @@ public with sharing class CJFW_MDMBulkUpdateInfoListController {
                     mdmRequest.PV_STCDT_MOD             =      String.isBlank(mdms[i].PV_STCDT__c) ? null : mdms[i].PV_STCDT__c;
                     mdmRequest.PV_FITYP                 =      String.isBlank(accList[i].TaxationType__c) ? null : accList[i].TaxationType__c;
                     mdmRequest.PV_FITYP_MOD             =      String.isBlank(mdms[i].PV_FITYP__c) ? null : mdms[i].PV_FITYP__c;
-                    mdmRequest.PV_HDOFFICEYN            =      accList[i].IsHeadShopUseYN__c ? accList[i].IsHeadShopUseYN__c : accList[i].IsHeadShopUseYN__c;
-                    mdmRequest.PV_HDOFFICEYN_MOD        =      mdms[i].PV_HDOFFICEYN__c ? mdms[i].PV_HDOFFICEYN__c : mdms[i].PV_HDOFFICEYN__c;
-                    mdmRequest.PV_SUBSIDIARYYN          =      accList[i].IsAffiliatedcompanyYN__c ? null : accList[i].IsAffiliatedcompanyYN__c;
-                    mdmRequest.PV_SUBSIDIARYYN_MOD      =      mdms[i].PV_SUBSIDIARYYN__c ? null : mdms[i].PV_SUBSIDIARYYN__c;
+                    mdmRequest.PV_HDOFFICEYN            =      accList[i].IsHeadShopUseYN__c;
+                    mdmRequest.PV_HDOFFICEYN_MOD        =      mdms[i].PV_HDOFFICEYN__c;
+                    mdmRequest.PV_HKUNNR                =      String.isBlank(accList[i].HeadOfficeCode__c) ? null : accList[i].HeadOfficeCode__c;
+                    mdmRequest.PV_HKUNNR_MOD            =      String.isBlank(mdms[i].PV_HKUNNR__c) ? null : mdms[i].PV_HKUNNR__c;
+                    mdmRequest.PV_SUBSIDIARYYN          =      accList[i].IsAffiliatedcompanyYN__c;
+                    mdmRequest.PV_SUBSIDIARYYN_MOD      =      mdms[i].PV_SUBSIDIARYYN__c;
                     mdmRequest.PV_VBUND                 =      String.isBlank(accList[i].AffiliatedCompany__c) ? null : accList[i].AffiliatedCompany__c;
                     mdmRequest.PV_VBUND_MOD             =      String.isBlank(mdms[i].PV_VBUND__c) ? null : mdms[i].PV_VBUND__c;
+                    // mdmRequest.PV_LIFNR                 =      String.isBlank(accList[i].AffiliatedCompany__c) ? null : accList[i].AffiliatedCompany__c;
+                    // mdmRequest.PV_LIFNR_MOD             =      String.isBlank(mdms[i].PV_LIFNR__c) ? null : mdms[i].PV_LIFNR__c;
                     mdmRequest.PV_LAND1                 =      String.isBlank(accList[i].CountryKeyCode__c) ? null : accList[i].CountryKeyCode__c;
                     mdmRequest.PV_LAND1_MOD             =      String.isBlank(mdms[i].PV_LAND1__c) ? null : mdms[i].PV_LAND1__c;
                     mdmRequest.PV_KNVKTYPE              =      String.isBlank(accList[i].PV_KNVKTYPE__c) ? null : accList[i].PV_KNVKTYPE__c;
@@ -284,14 +198,24 @@ public with sharing class CJFW_MDMBulkUpdateInfoListController {
                     mdmRequest.PVRA_KONDA_MOD           =      mdms[i].PVRA_KONDA__c;
                     mdmRequest.PV_KVGR1                 =      String.isBlank(accList[i].UnitPriceGroup__c) ? null : accList[i].UnitPriceGroup__c;
                     mdmRequest.PV_KVGR1_MOD             =      String.isBlank(mdms[i].PV_KVGR1__c) ? null : mdms[i].PV_KVGR1__c;
+                    mdmRequest.PVVF_KVGR1               =      accList[i].PVVF_KVGR1__c;
+                    mdmRequest.PVVF_KVGR1_MOD           =      mdms[i].PVVF_KVGR1__c;
+                    mdmRequest.PVRA_KVGR1               =      accList[i].UnitPriceGroupFromDate__c;
+                    mdmRequest.PVRA_KVGR1_MOD           =      mdms[i].PVRA_KVGR1__c;
                     mdmRequest.PV_WAERS                 =      String.isBlank(accList[i].CurrencyIsoCode) ? null : accList[i].CurrencyIsoCode;
                     mdmRequest.PV_WAERS_MOD             =      String.isBlank(mdms[i].PV_WAERS__c) ? null : mdms[i].PV_WAERS__c;
                     mdmRequest.PV_KDGRP                 =      String.isBlank(accList[i].CreditManagement__c) ? null : accList[i].CreditManagement__c;
                     mdmRequest.PV_KDGRP_MOD             =      String.isBlank(mdms[i].PV_KDGRP__c) ? null : mdms[i].PV_KDGRP__c;
+                    mdmRequest.PV_KVGR3                 =      String.isBlank(accList[i].StatementOfDeliveryType__c) ? null : accList[i].StatementOfDeliveryType__c;
+                    mdmRequest.PV_KVGR3_MOD             =      String.isBlank(mdms[i].PV_KVGR3__c) ? null : mdms[i].PV_KVGR3__c;
                     mdmRequest.PV_KVGR2                 =      String.isBlank(accList[i].SubsidyType__c) ? null : accList[i].SubsidyType__c;
                     mdmRequest.PV_KVGR2_MOD             =      String.isBlank(mdms[i].PV_KVGR2__c) ? null : mdms[i].PV_KVGR2__c;
-                    mdmRequest.PV_VACCPRTEXCYN          =      accList[i].IsPrintVirtualAccount__c ? null : accList[i].IsPrintVirtualAccount__c;
-                    mdmRequest.PV_VACCPRTEXCYN_MOD      =      mdms[i].PV_VACCPRTEXCYN__c ? null : mdms[i].PV_VACCPRTEXCYN__c;
+                    mdmRequest.PV_KVGR3_BOT             =      String.isBlank(accList[i].StatementOfDeliveryType2__c) ? null : accList[i].StatementOfDeliveryType2__c;
+                    mdmRequest.PV_KVGR3_BOT_MOD         =      String.isBlank(mdms[i].PV_KVGR3_BOT__c) ? null : mdms[i].PV_KVGR3_BOT__c;
+                    mdmRequest.PV_ODCLOSEGB             =      String.isBlank(accList[i].CustomerOrderDeadlineType__c) ? null : accList[i].CustomerOrderDeadlineType__c;
+                    mdmRequest.PV_ODCLOSEGB_MOD         =      String.isBlank(mdms[i].PV_ODCLOSEGB__c) ? null : mdms[i].PV_ODCLOSEGB__c;
+                    mdmRequest.PV_VACCPRTEXCYN          =      accList[i].IsPrintVirtualAccount__c;
+                    mdmRequest.PV_VACCPRTEXCYN_MOD      =      mdms[i].PV_VACCPRTEXCYN__c;
                     mdmRequest.PV_ZTERM_VV              =      String.isBlank(accList[i].TermsOfPayment__c) ? null : accList[i].TermsOfPayment__c;
                     mdmRequest.PV_ZTERM_VV_MOD          =      String.isBlank(mdms[i].PV_ZTERM_VV__c) ? null : mdms[i].PV_ZTERM_VV__c;
                     mdmRequest.PV_DSTRHISTREGYN         =      String.isBlank(accList[i].DisHisRegType__c) ? null : accList[i].DisHisRegType__c;
@@ -300,14 +224,54 @@ public with sharing class CJFW_MDMBulkUpdateInfoListController {
                     mdmRequest.PV_KULTG_MOD             =      String.isBlank(mdms[i].PV_KULTG__c) ? null : mdms[i].PV_KULTG__c;
                     mdmRequest.PV_OLD_BIZPLACE_NEW      =      String.isBlank(accList[i].CustomerPath__c) ? null : accList[i].CustomerPath__c;
                     mdmRequest.PV_OLD_BIZPLACE_NEW_MOD  =      String.isBlank(mdms[i].PV_OLD_BIZPLACE_NEW__c) ? null : mdms[i].PV_OLD_BIZPLACE_NEW__c;
-                    mdmRequest.PVVF_OLD_BIZPLACE_NEW      =    accList[i].PVVF_OLD_BIZPLACE_NEW__c;
-                    mdmRequest.PVVF_OLD_BIZPLACE_NEW_MOD  =    mdms[i].PVVF_OLD_BIZPLACE_NEW__c;
-                    mdmRequest.PVRA_OLD_BIZPLACE_NEW      =    accList[i].CustomerPathFromDate__c;
-                    mdmRequest.PVRA_OLD_BIZPLACE_NEW_MOD  =    mdms[i].PVRA_OLD_BIZPLACE_NEW__c;
+                    mdmRequest.PVVF_OLD_BIZPLACE_NEW    =      accList[i].PVVF_OLD_BIZPLACE_NEW__c;
+                    mdmRequest.PVVF_OLD_BIZPLACE_NEW_MOD=      mdms[i].PVVF_OLD_BIZPLACE_NEW__c;
+                    mdmRequest.PVRA_OLD_BIZPLACE_NEW    =      accList[i].CustomerPathFromDate__c;
+                    mdmRequest.PVRA_OLD_BIZPLACE_NEW_MOD=      mdms[i].PVRA_OLD_BIZPLACE_NEW__c;
                     mdmRequest.PV_SHAPE                 =      String.isBlank(accList[i].Shape__c) ? null : accList[i].Shape__c;
                     mdmRequest.PV_SHAPE_MOD             =      String.isBlank(mdms[i].PV_SHAPE__c) ? null : mdms[i].PV_SHAPE__c;
+                    mdmRequest.PV_EXAMYN                =      accList[i].IsFaceToFaceInspectionStatus__c ? null : accList[i].IsFaceToFaceInspectionStatus__c;
+                    mdmRequest.PV_EXAMYN_MOD            =      mdms[i].PV_EXAMYN__c;
+                    mdmRequest.PV_SHIPREQTIME           =      String.isBlank(accList[i].OTD__c) ? null : accList[i].OTD__c;
+                    mdmRequest.PV_SHIPREQTIME_MOD       =      String.isBlank(mdms[i].PV_SHIPREQTIME__c) ? null : mdms[i].PV_SHIPREQTIME__c;
+                    mdmRequest.PV_PRODLOADCOND          =      String.isBlank(accList[i].ProductLoadingCondition__c) ? null : accList[i].ProductLoadingCondition__c;
+                    mdmRequest.PV_PRODLOADCOND_MOD      =      String.isBlank(mdms[i].PV_PRODLOADCOND__c) ? null : mdms[i].PV_PRODLOADCOND__c;
+                    mdmRequest.PV_RETURNLOC             =      String.isBlank(accList[i].ReturnLocation__c) ? null : accList[i].ReturnLocation__c;
+                    mdmRequest.PV_RETURNLOC_MOD         =      String.isBlank(mdms[i].PV_RETURNLOC__c) ? null : mdms[i].PV_RETURNLOC__c;
+                    mdmRequest.PV_ENTERCOND1            =      String.isBlank(accList[i].VehicleEntryCondtions__c) ? null : accList[i].VehicleEntryCondtions__c;
+                    mdmRequest.PV_ENTERCOND1_MOD        =      String.isBlank(mdms[i].PV_ENTERCOND1__c) ? null : mdms[i].PV_ENTERCOND1__c;
+                    mdmRequest.PV_UNLOADCOND1           =      String.isBlank(accList[i].UnloadConditions1__c) ? null : accList[i].UnloadConditions1__c;
+                    mdmRequest.PV_UNLOADCOND1_MOD       =      String.isBlank(mdms[i].PV_UNLOADCOND1__c) ? null : mdms[i].PV_UNLOADCOND1__c;
+                    mdmRequest.PV_UNLOADCOND2           =      String.isBlank(accList[i].UnloadConditions2__c) ? null : accList[i].UnloadConditions2__c;
+                    mdmRequest.PV_UNLOADCOND2_MOD       =      String.isBlank(mdms[i].PV_UNLOADCOND2__c) ? null : mdms[i].PV_UNLOADCOND2__c;
                     mdmRequest.PV_DELIGROUP             =      String.isBlank(accList[i].DeliveryGroup__c) ? null : accList[i].DeliveryGroup__c;
                     mdmRequest.PV_DELIGROUP_MOD         =      String.isBlank(mdms[i].PV_DELIGROUP__c) ? null : mdms[i].PV_DELIGROUP__c;
+                    mdmRequest.PV_KATR10                =      String.isBlank(accList[i].ShipmentArea__c) ? null : accList[i].ShipmentArea__c;
+                    mdmRequest.PV_KATR10_MOD            =      String.isBlank(mdms[i].PV_KATR10__c) ? null : mdms[i].PV_KATR10__c;
+                    mdmRequest.PV_KEYYN                 =      accList[i].IsBusinessPlaceKey__c;
+                    mdmRequest.PV_KEYYN_MOD             =      mdms[i].PV_KEYYN__c;
+                    mdmRequest.PV_KEYINFO               =      String.isBlank(accList[i].BusinessPlaceKeyInfo__c) ? null : accList[i].BusinessPlaceKeyInfo__c;
+                    mdmRequest.PV_KEYINFO_MOD           =      String.isBlank(mdms[i].PV_KEYINFO__c) ? null : mdms[i].PV_KEYINFO__c;
+                    mdmRequest.PV_KXOTD                 =      accList[i].KXOTD__c == 'Y' ? true : false;
+                    mdmRequest.PV_KXOTD_MOD             =      mdms[i].PV_KXOTD__c;
+                    mdmRequest.PV_KXOTDTIME             =      String.isBlank(accList[i].KXOTDRequestDate__c) ? null : accList[i].KXOTDRequestDate__c;
+                    mdmRequest.PV_KXOTDTIME_MOD         =      String.isBlank(mdms[i].PV_KXOTDTIME__c) ? null : mdms[i].PV_KXOTDTIME__c;
+                    mdmRequest.PV_FDINFO                =      accList[i].InitialDeliveryShare__c == 'Y' ? true : false;
+                    mdmRequest.PV_FDINFO_MOD            =      mdms[i].PV_FDINFO__c;
+                    mdmRequest.PV_FDREQD                =      accList[i].InitialDeliveryRequestDate__c;
+                    mdmRequest.PV_FDREQD_MOD            =      mdms[i].PV_FDREQD__c;
+                    mdmRequest.PV_FDREQT                =      String.isBlank(accList[i].InitialDeliveryRequestTime__c) ? null : accList[i].InitialDeliveryRequestTime__c;
+                    mdmRequest.PV_FDREQT_MOD            =      String.isBlank(mdms[i].PV_FDREQT__c) ? null : mdms[i].PV_FDREQT__c;
+                    mdmRequest.PV_ISFDFTF               =      accList[i].IsInitialDeliveryFTFInspection__c;
+                    mdmRequest.PV_ISFDFTF_MOD           =      mdms[i].PV_ISFDFTF__c;
+                    mdmRequest.PV_FDCTINFO              =      String.isBlank(accList[i].InitialDeliveryContact__c) ? null : accList[i].InitialDeliveryContact__c;
+                    mdmRequest.PV_FDCTINFO_MOD          =      String.isBlank(mdms[i].PV_FDCTINFO__c) ? null : mdms[i].PV_FDCTINFO__c;
+                    mdmRequest.PV_FDNOTICE              =      String.isBlank(accList[i].InitialDeliveryDescription__c) ? null : accList[i].InitialDeliveryDescription__c;
+                    mdmRequest.PV_FDNOTICE_MOD          =      String.isBlank(mdms[i].PV_FDNOTICE__c) ? null : mdms[i].PV_FDNOTICE__c;
+                    mdmRequest.PV_SHIPTYPE              =      String.isBlank(accList[i].PV_SHIPTYPE__c) ? null : accList[i].PV_SHIPTYPE__c;
+                    mdmRequest.PV_SHIPTYPE_MOD          =      String.isBlank(mdms[i].PV_SHIPTYPE__c) ? null : mdms[i].PV_SHIPTYPE__c;
+                    mdmRequest.PV_TEMPTARGET            =      String.isBlank(accList[i].PV_TEMPTARGET__c) ? null : accList[i].PV_TEMPTARGET__c;
+                    mdmRequest.PV_TEMPTARGET_MOD        =      String.isBlank(mdms[i].PV_TEMPTARGET__c) ? null : mdms[i].PV_TEMPTARGET__c;
                     System.debug('mdmRequest => ' + mdmRequest);
                     mdmList.add(mdmRequest);
                 }
@@ -362,497 +326,497 @@ public with sharing class CJFW_MDMBulkUpdateInfoListController {
         for(Integer i = 0; i < mdmList.size(); i++) {
 
             // 구코드
-            if(mdmList[i].PV_OLDCD != mdmList[i].PV_OLDCD_MOD && mdmList[i].PV_OLDCD_MOD != null) {
+            if(mdmList[i].PV_OLDCD != mdmList[i].PV_OLDCD_MOD) {
                 headerList.add('PV_OLDCD__c');
             }
             
             // 고객명(영문명 포함)
-            if(mdmList[i].PV_NAME1 != mdmList[i].PV_NAME1_MOD && mdmList[i].PV_NAME1_MOD != null) {
+            if(mdmList[i].PV_NAME1 != mdmList[i].PV_NAME1_MOD) {
                 headerList.add('PV_NAME1__c');
             }
     
             // 고객명(G) / 자국명
-            if(mdmList[i].PV_NAME_G != mdmList[i].PV_NAME_G_MOD && mdmList[i].PV_NAME_G_MOD != null) {
+            if(mdmList[i].PV_NAME_G != mdmList[i].PV_NAME_G_MOD) {
                 headerList.add('PV_NAME_G__c');
             }
     
             // 고객약칭명
-            if(mdmList[i].PV_NAME2 != mdmList[i].PV_NAME2_MOD && mdmList[i].PV_NAME2_MOD != null) {
+            if(mdmList[i].PV_NAME2 != mdmList[i].PV_NAME2_MOD) {
                 headerList.add('PV_NAME2__c');
             }
     
             // 고객계정그룹
-            if(mdmList[i].PV_KTOKD != mdmList[i].PV_KTOKD_MOD && mdmList[i].PV_KTOKD_MOD != null) {
+            if(mdmList[i].PV_KTOKD != mdmList[i].PV_KTOKD_MOD) {
                 headerList.add('PV_KTOKD__c');
             }
 
             // 고객유형
-            if(mdmList[i].PV_CUSTTYPE != mdmList[i].PV_CUSTTYPE_MOD && mdmList[i].PV_CUSTTYPE_MOD != null) {
+            if(mdmList[i].PV_CUSTTYPE != mdmList[i].PV_CUSTTYPE_MOD) {
                 headerList.add('PV_CUSTTYPE__c');
             }
 
             // 사업자등록번호
-            if(mdmList[i].PV_STCD2 != mdmList[i].PV_STCD2_MOD && mdmList[i].PV_STCD2_MOD != null) {
+            if(mdmList[i].PV_STCD2 != mdmList[i].PV_STCD2_MOD) {
                 headerList.add('PV_STCD2__c');
             }
 
             // 법인코드
-            if(mdmList[i].PV_STCD3 != mdmList[i].PV_STCD3_MOD && mdmList[i].PV_STCD3_MOD != null) {
+            if(mdmList[i].PV_STCD3 != mdmList[i].PV_STCD3_MOD) {
                 headerList.add('PV_STCD3__c');
             }
 
             // 종사업장번호
-            if(mdmList[i].PV_STCD4 != mdmList[i].PV_STCD4_MOD && mdmList[i].PV_STCD4_MOD != null) {
+            if(mdmList[i].PV_STCD4 != mdmList[i].PV_STCD4_MOD) {
                 headerList.add('PV_STCD4__c');
             }
 
             // 법적상태
-            if(mdmList[i].PV_GFORM != mdmList[i].PV_GFORM_MOD && mdmList[i].PV_GFORM_MOD != null) {
+            if(mdmList[i].PV_GFORM != mdmList[i].PV_GFORM_MOD) {
                 headerList.add('PV_GFORM__c');
             }
 
             // 대표자이름
-            if(mdmList[i].PV_J_1KFREPRE != mdmList[i].PV_J_1KFREPRE_MOD && mdmList[i].PV_J_1KFREPRE_MOD != null) {
+            if(mdmList[i].PV_J_1KFREPRE != mdmList[i].PV_J_1KFREPRE_MOD) {
                 headerList.add('PV_J_1KFREPRE__c');
             }
 
             // 사용중지
-            if(mdmList[i].PV_BLCKYN != mdmList[i].PV_BLCKYN_MOD && mdmList[i].PV_BLCKYN_MOD != null) {
+            if(mdmList[i].PV_BLCKYN != mdmList[i].PV_BLCKYN_MOD) {
                 headerList.add('PV_BLCKYN__c');
             }
 
             // 대표자 생년월일
-            if(mdmList[i].PV_STCD1 != mdmList[i].PV_STCD1_MOD && mdmList[i].PV_STCD1_MOD != null) {
+            if(mdmList[i].PV_STCD1 != mdmList[i].PV_STCD1_MOD) {
                 headerList.add('PV_STCD1__c');
             }
 
             // 업태
-            if(mdmList[i].PV_J_1KFTBUS != mdmList[i].PV_J_1KFTBUS_MOD && mdmList[i].PV_J_1KFTBUS_MOD != null) {
+            if(mdmList[i].PV_J_1KFTBUS != mdmList[i].PV_J_1KFTBUS_MOD) {
                 headerList.add('PV_J_1KFTBUS__c');
             }
 
             // 업종
-            if(mdmList[i].PV_J_1KFTIND != mdmList[i].PV_J_1KFTIND_MOD && mdmList[i].PV_J_1KFTIND_MOD != null) {
+            if(mdmList[i].PV_J_1KFTIND != mdmList[i].PV_J_1KFTIND_MOD) {
                 headerList.add('PV_J_1KFTIND__c');
             }
 
             // 전화
-            if(mdmList[i].PV_TELF1 != mdmList[i].PV_TELF1_MOD && mdmList[i].PV_TELF1_MOD != null) {
+            if(mdmList[i].PV_TELF1 != mdmList[i].PV_TELF1_MOD) {
                 headerList.add('PV_TELF1__c');
             }
             
             // 팩스
-            if(mdmList[i].PV_TELFX != mdmList[i].PV_TELFX_MOD && mdmList[i].PV_TELFX_MOD != null) {
+            if(mdmList[i].PV_TELFX != mdmList[i].PV_TELFX_MOD) {
                 headerList.add('PV_TELFX__c');
             }
 
             // 지급처            
-            if(mdmList[i].PV_PAYCUST != mdmList[i].PV_PAYCUST_MOD && mdmList[i].PV_PAYCUST_MOD != null) {
+            if(mdmList[i].PV_PAYCUST != mdmList[i].PV_PAYCUST_MOD) {
                 headerList.add('PV_PAYCUST__c');
             }
 
             // 청구처
-            if(mdmList[i].PV_CHARGECUST != mdmList[i].PV_CHARGECUST_MOD && mdmList[i].PV_CHARGECUST_MOD != null) {
+            if(mdmList[i].PV_CHARGECUST != mdmList[i].PV_CHARGECUST_MOD) {
                 headerList.add('PV_CHARGECUST__c');
             }
             
             // 영업그룹
-            if(mdmList[i].PV_VKGRP != mdmList[i].PV_VKGRP_MOD && mdmList[i].PV_VKGRP_MOD != null) {
+            if(mdmList[i].PV_VKGRP != mdmList[i].PV_VKGRP_MOD) {
                 headerList.add('PV_VKGRP__c');
             }
 
             // 영업그룹 유효일자
-            if(mdmList[i].PVVF_VKGRP != mdmList[i].PVVF_VKGRP_MOD && mdmList[i].PVVF_VKGRP_MOD != null) {
+            if(mdmList[i].PVVF_VKGRP != mdmList[i].PVVF_VKGRP_MOD) {
                 headerList.add('PVVF_VKGRP__c');
             }
 
             // 영업그룹 적용일자
-            if(mdmList[i].PVRA_VKGRP != mdmList[i].PVRA_VKGRP_MOD && mdmList[i].PVRA_VKGRP_MOD != null) {
+            if(mdmList[i].PVRA_VKGRP != mdmList[i].PVRA_VKGRP_MOD) {
                 headerList.add('PVRA_VKGRP__c');
             }
 
             // 담당MA
-            if(mdmList[i].PV_PERNR != mdmList[i].PV_PERNR_MOD && mdmList[i].PV_PERNR_MOD != null) {
+            if(mdmList[i].PV_PERNR != mdmList[i].PV_PERNR_MOD) {
                 headerList.add('PV_PERNR__c');
             }
             
             // 담당MA 유효일자
-            if(mdmList[i].PVVF_PERNR != mdmList[i].PVVF_PERNR_MOD && mdmList[i].PVVF_PERNR_MOD != null) {
+            if(mdmList[i].PVVF_PERNR != mdmList[i].PVVF_PERNR_MOD) {
                 headerList.add('PVVF_PERNR__c');
             }
             
             // 담당MA 적용일자
-            if(mdmList[i].PVRA_PERNR != mdmList[i].PVRA_PERNR_MOD && mdmList[i].PVRA_PERNR_MOD != null) {
+            if(mdmList[i].PVRA_PERNR != mdmList[i].PVRA_PERNR_MOD) {
                 headerList.add('PVRA_PERNR__c');
             }
 
             // 담당AMA
-            if(mdmList[i].PV_ADMINMA != mdmList[i].PV_ADMINMA_MOD && mdmList[i].PV_ADMINMA_MOD != null) {
+            if(mdmList[i].PV_ADMINMA != mdmList[i].PV_ADMINMA_MOD) {
                 headerList.add('PV_ADMINMA__c');
             }
             
             // FW 출고센터
-            if(mdmList[i].PV_LOGISCENTER != mdmList[i].PV_LOGISCENTER_MOD && mdmList[i].PV_LOGISCENTER_MOD != null) {
+            if(mdmList[i].PV_LOGISCENTER != mdmList[i].PV_LOGISCENTER_MOD) {
                 headerList.add('PV_LOGISCENTER__c');
             }
             
             // FW 출고센터 유효일자
-            if(mdmList[i].PVVF_LOGISCENTER != mdmList[i].PVVF_LOGISCENTER_MOD && mdmList[i].PVVF_LOGISCENTER_MOD != null) {
+            if(mdmList[i].PVVF_LOGISCENTER != mdmList[i].PVVF_LOGISCENTER_MOD) {
                 headerList.add('PVVF_LOGISCENTER__c');
             }
             
             // FW 출고센터 적용일자
-            if(mdmList[i].PVRA_LOGISCENTER != mdmList[i].PVRA_LOGISCENTER_MOD && mdmList[i].PVRA_LOGISCENTER_MOD != null) {
+            if(mdmList[i].PVRA_LOGISCENTER != mdmList[i].PVRA_LOGISCENTER_MOD) {
                 headerList.add('PVRA_LOGISCENTER__c');
             }
 
             // 세금계산서발행유형
-            if(mdmList[i].PV_STCDT != mdmList[i].PV_STCDT_MOD && mdmList[i].PV_STCDT_MOD != null) {
+            if(mdmList[i].PV_STCDT != mdmList[i].PV_STCDT_MOD) {
                 headerList.add('PV_STCDT__c');
             }
 
             // 과세유형
-            if(mdmList[i].PV_FITYP != mdmList[i].PV_FITYP_MOD && mdmList[i].PV_FITYP_MOD != null) {
+            if(mdmList[i].PV_FITYP != mdmList[i].PV_FITYP_MOD) {
                 headerList.add('PV_FITYP__c');
             }
 
             // 본점 사용유무
-            if(mdmList[i].PV_HDOFFICEYN != mdmList[i].PV_HDOFFICEYN_MOD && mdmList[i].PV_HDOFFICEYN_MOD != null) {
+            if(mdmList[i].PV_HDOFFICEYN != mdmList[i].PV_HDOFFICEYN_MOD) {
                 headerList.add('PV_HDOFFICEYN__c');
             }
             
             // 본점코드
-            if(mdmList[i].PV_HKUNNR != mdmList[i].PV_HKUNNR_MOD && mdmList[i].PV_HKUNNR_MOD != null) {
+            if(mdmList[i].PV_HKUNNR != mdmList[i].PV_HKUNNR_MOD) {
                 headerList.add('PV_HKUNNR__c');
             }
 
             // 관계사여부
-            if(mdmList[i].PV_SUBSIDIARYYN != mdmList[i].PV_SUBSIDIARYYN_MOD && mdmList[i].PV_SUBSIDIARYYN_MOD != null) {
+            if(mdmList[i].PV_SUBSIDIARYYN != mdmList[i].PV_SUBSIDIARYYN_MOD) {
                 headerList.add('PV_SUBSIDIARYYN__c');
             }
 
             // 관계사코드
-            if(mdmList[i].PV_VBUND != mdmList[i].PV_VBUND_MOD && mdmList[i].PV_VBUND_MOD != null) {
+            if(mdmList[i].PV_VBUND != mdmList[i].PV_VBUND_MOD) {
                 headerList.add('PV_VBUND__c');
             }
 
             // 수수료지급처
-            if(mdmList[i].PV_LIFNR != mdmList[i].PV_LIFNR_MOD && mdmList[i].PV_LIFNR_MOD != null) {
+            if(mdmList[i].PV_LIFNR != mdmList[i].PV_LIFNR_MOD) {
                 headerList.add('PV_LIFNR__c');
             }
 
             // 국가키
-            if(mdmList[i].PV_LAND1 != mdmList[i].PV_LAND1_MOD && mdmList[i].PV_LAND1_MOD != null) {
+            if(mdmList[i].PV_LAND1 != mdmList[i].PV_LAND1_MOD) {
                 headerList.add('PV_LAND1__c');
             }
 
             // 주문유형
-            if(mdmList[i].PV_KNVKTYPE != mdmList[i].PV_KNVKTYPE_MOD && mdmList[i].PV_KNVKTYPE_MOD != null) {
+            if(mdmList[i].PV_KNVKTYPE != mdmList[i].PV_KNVKTYPE_MOD) {
                 headerList.add('PV_KNVKTYPE__c');
             }
 
             // 휴폐업일자
-            if(mdmList[i].PV_CLOSEDT != mdmList[i].PV_CLOSEDT_MOD && mdmList[i].PV_CLOSEDT_MOD != null) {
+            if(mdmList[i].PV_CLOSEDT != mdmList[i].PV_CLOSEDT_MOD) {
                 headerList.add('PV_CLOSEDT__c');
             }
 
             // 지역
-            if(mdmList[i].PV_REGIO != mdmList[i].PV_REGIO_MOD && mdmList[i].PV_REGIO_MOD != null) {
+            if(mdmList[i].PV_REGIO != mdmList[i].PV_REGIO_MOD) {
                 headerList.add('PV_REGIO__c');
             }
 
             // 도로명 주소
-            if(mdmList[i].PV_ADRES_ROADADDR1 != mdmList[i].PV_ADRES_ROADADDR1_MOD && mdmList[i].PV_ADRES_ROADADDR1_MOD != null) {
+            if(mdmList[i].PV_ADRES_ROADADDR1 != mdmList[i].PV_ADRES_ROADADDR1_MOD) {
                 headerList.add('PV_ADRES_ROADADDR1__c');
             }
 
             // 상세 주소
-            if(mdmList[i].PV_ADRES_ROADADDR2 != mdmList[i].PV_ADRES_ROADADDR2_MOD && mdmList[i].PV_ADRES_ROADADDR2_MOD != null) {
+            if(mdmList[i].PV_ADRES_ROADADDR2 != mdmList[i].PV_ADRES_ROADADDR2_MOD) {
                 headerList.add('PV_ADRES_ROADADDR2__c');
             }
 
             // 지번주소
-            if(mdmList[i].PV_ADRES_ADDR1 != mdmList[i].PV_ADRES_ADDR1_MOD && mdmList[i].PV_ADRES_ADDR1_MOD != null) {
+            if(mdmList[i].PV_ADRES_ADDR1 != mdmList[i].PV_ADRES_ADDR1_MOD) {
                 headerList.add('PV_ADRES_ADDR1__c');
             }
 
             // 지번주소상세
-            if(mdmList[i].PV_ADRES_ADDR2 != mdmList[i].PV_ADRES_ADDR2_MOD && mdmList[i].PV_ADRES_ADDR2_MOD != null) {
+            if(mdmList[i].PV_ADRES_ADDR2 != mdmList[i].PV_ADRES_ADDR2_MOD) {
                 headerList.add('PV_ADRES_ADDR2__c');
             }
 
             // 배송관리처
-            if(mdmList[i].PV_DELICUST != mdmList[i].PV_DELICUST_MOD && mdmList[i].PV_DELICUST_MOD != null) {
+            if(mdmList[i].PV_DELICUST != mdmList[i].PV_DELICUST_MOD) {
                 headerList.add('PV_DELICUST__c');
             }
 
             // 판매처
-            if(mdmList[i].PV_SALESCUST != mdmList[i].PV_SALESCUST_MOD && mdmList[i].PV_SALESCUST_MOD != null) {
+            if(mdmList[i].PV_SALESCUST != mdmList[i].PV_SALESCUST_MOD) {
                 headerList.add('PV_SALESCUST__c');
             }
 
             // OnlyOneFoodNet사업장ID
-            if(mdmList[i].PV_BIZPLCODE != mdmList[i].PV_BIZPLCODE_MOD && mdmList[i].PV_BIZPLCODE_MOD != null) {
+            if(mdmList[i].PV_BIZPLCODE != mdmList[i].PV_BIZPLCODE_MOD) {
                 headerList.add('PV_BIZPLCODE__c');
             }
 
             // 매출형태
-            if(mdmList[i].PV_BUSAB != mdmList[i].PV_BUSAB_MOD && mdmList[i].PV_BUSAB_MOD != null) {
+            if(mdmList[i].PV_BUSAB != mdmList[i].PV_BUSAB_MOD) {
                 headerList.add('PV_BUSAB__c');
             }
 
             // 고객상태
-            if(mdmList[i].PV_CESSION_KZ != mdmList[i].PV_CESSION_KZ_MOD && mdmList[i].PV_CESSION_KZ_MOD != null) {
+            if(mdmList[i].PV_CESSION_KZ != mdmList[i].PV_CESSION_KZ_MOD) {
                 headerList.add('PV_CESSION_KZ__c');
             }
 
             // 정렬키
-            if(mdmList[i].PV_ZUAWA != mdmList[i].PV_ZUAWA_MOD && mdmList[i].PV_ZUAWA_MOD != null) {
+            if(mdmList[i].PV_ZUAWA != mdmList[i].PV_ZUAWA_MOD) {
                 headerList.add('PV_ZUAWA__c');
             }
 
             // 조정계정
-            if(mdmList[i].PV_AKONT != mdmList[i].PV_AKONT_MOD && mdmList[i].PV_AKONT_MOD != null) {
+            if(mdmList[i].PV_AKONT != mdmList[i].PV_AKONT_MOD) {
                 headerList.add('PV_AKONT__c');
             }
 
             // 현금관리그룹
-            if(mdmList[i].PV_FDGRV != mdmList[i].PV_FDGRV_MOD && mdmList[i].PV_FDGRV_MOD != null) {
+            if(mdmList[i].PV_FDGRV != mdmList[i].PV_FDGRV_MOD) {
                 headerList.add('PV_FDGRV__c');
             }
 
             // 입금여부(FS만 사용)
-            if(mdmList[i].PV_VRSDG != mdmList[i].PV_VRSDG_MOD && mdmList[i].PV_VRSDG_MOD != null) {
+            if(mdmList[i].PV_VRSDG != mdmList[i].PV_VRSDG_MOD) {
                 headerList.add('PV_VRSDG__c');
             }
 
             // 세금분류
-            if(mdmList[i].PV_TAXKDD != mdmList[i].PV_TAXKDD_MOD && mdmList[i].PV_TAXKDD_MOD != null) {
+            if(mdmList[i].PV_TAXKDD != mdmList[i].PV_TAXKDD_MOD) {
                 headerList.add('PV_TAXKDD__c');
             }
 
             // 세금납부방법
-            if(mdmList[i].PV_KATR5 != mdmList[i].PV_KATR5_MOD && mdmList[i].PV_KATR5_MOD != null) {
+            if(mdmList[i].PV_KATR5 != mdmList[i].PV_KATR5_MOD) {
                 headerList.add('PV_KATR5__c');
             }
 
             // 고객분류
-            if(mdmList[i].PV_CUHR1 != mdmList[i].PV_CUHR1_MOD && mdmList[i].PV_CUHR1_MOD != null) {
+            if(mdmList[i].PV_CUHR1 != mdmList[i].PV_CUHR1_MOD) {
                 headerList.add('PV_CUHR1__c');
             }
 
             // 고객분류 유효일자
-            if(mdmList[i].PVVF_CUHR1 != mdmList[i].PVVF_CUHR1_MOD && mdmList[i].PVVF_CUHR1_MOD != null) {
+            if(mdmList[i].PVVF_CUHR1 != mdmList[i].PVVF_CUHR1_MOD) {
                 headerList.add('PVVF_CUHR1__c');
             }
 
             // 고객분류 적용일자
-            if(mdmList[i].PVRA_CUHR1 != mdmList[i].PVRA_CUHR1_MOD && mdmList[i].PVRA_CUHR1_MOD != null) {
+            if(mdmList[i].PVRA_CUHR1 != mdmList[i].PVRA_CUHR1_MOD) {
                 headerList.add('PVRA_CUHR1__c');
             }
             
             // 가격그룹
-            if(mdmList[i].PV_KONDA != mdmList[i].PV_KONDA_MOD && mdmList[i].PV_KONDA_MOD != null) {
+            if(mdmList[i].PV_KONDA != mdmList[i].PV_KONDA_MOD) {
                 headerList.add('PV_KONDA__c');
             }
 
             // 가격그룹 유효일자
-            if(mdmList[i].PVVF_KONDA != mdmList[i].PVVF_KONDA_MOD && mdmList[i].PVVF_KONDA_MOD != null) {
+            if(mdmList[i].PVVF_KONDA != mdmList[i].PVVF_KONDA_MOD) {
                 headerList.add('PVVF_KONDA__c');
             }
 
             // 가격그룹 적용일자
-            if(mdmList[i].PVRA_KONDA != mdmList[i].PVRA_KONDA_MOD && mdmList[i].PVRA_KONDA_MOD != null) {
+            if(mdmList[i].PVRA_KONDA != mdmList[i].PVRA_KONDA_MOD) {
                 headerList.add('PVRA_KONDA__c');
             }
 
             // 단가그룹
-            if(mdmList[i].PV_KVGR1 != mdmList[i].PV_KVGR1_MOD && mdmList[i].PV_KVGR1_MOD != null) {
+            if(mdmList[i].PV_KVGR1 != mdmList[i].PV_KVGR1_MOD) {
                 headerList.add('PV_KVGR1__c');
             }
 
             // 단가그룹 유효일자
-            if(mdmList[i].PVVF_KVGR1 != mdmList[i].PVVF_KVGR1_MOD && mdmList[i].PVVF_KVGR1_MOD != null) {
+            if(mdmList[i].PVVF_KVGR1 != mdmList[i].PVVF_KVGR1_MOD) {
                 headerList.add('PVVF_KVGR1__c');
             }
 
             // 단가그룹 적용일자
-            if(mdmList[i].PVRA_KVGR1 != mdmList[i].PVRA_KVGR1_MOD && mdmList[i].PVRA_KVGR1_MOD != null) {
+            if(mdmList[i].PVRA_KVGR1 != mdmList[i].PVRA_KVGR1_MOD) {
                 headerList.add('PVRA_KVGR1__c');
             }
 
             // 통화
-            if(mdmList[i].PV_WAERS != mdmList[i].PV_WAERS_MOD && mdmList[i].PV_WAERS_MOD != null) {
+            if(mdmList[i].PV_WAERS != mdmList[i].PV_WAERS_MOD) {
                 headerList.add('PV_WAERS__c');
             }
 
             // 여신관리(고객향)
-            if(mdmList[i].PV_KDGRP != mdmList[i].PV_KDGRP_MOD && mdmList[i].PV_KDGRP_MOD != null) {
+            if(mdmList[i].PV_KDGRP != mdmList[i].PV_KDGRP_MOD) {
                 headerList.add('PV_KDGRP__c');
             }
 
             // 납품서유형
-            if(mdmList[i].PV_KVGR3 != mdmList[i].PV_KVGR3_MOD && mdmList[i].PV_KVGR3_MOD != null) {
+            if(mdmList[i].PV_KVGR3 != mdmList[i].PV_KVGR3_MOD) {
                 headerList.add('PV_KVGR3__c');
             }
 
             // 장려금유형
-            if(mdmList[i].PV_KVGR2 != mdmList[i].PV_KVGR2_MOD && mdmList[i].PV_KVGR2_MOD != null) {
+            if(mdmList[i].PV_KVGR2 != mdmList[i].PV_KVGR2_MOD) {
                 headerList.add('PV_KVGR2__c');
             }
 
             // 납품서 하단유형
-            if(mdmList[i].PV_KVGR3_BOT != mdmList[i].PV_KVGR3_BOT_MOD && mdmList[i].PV_KVGR3_BOT_MOD != null) {
+            if(mdmList[i].PV_KVGR3_BOT != mdmList[i].PV_KVGR3_BOT_MOD) {
                 headerList.add('PV_KVGR2__c');
             }
 
             // 고객 주문마감 유형코드
-            if(mdmList[i].PV_ODCLOSEGB != mdmList[i].PV_ODCLOSEGB_MOD && mdmList[i].PV_ODCLOSEGB_MOD != null) {
+            if(mdmList[i].PV_ODCLOSEGB != mdmList[i].PV_ODCLOSEGB_MOD) {
                 headerList.add('PV_VACCPRTEXCYN__c');
             }
 
             // 가상계좌 출력 제외
-            if(mdmList[i].PV_VACCPRTEXCYN != mdmList[i].PV_VACCPRTEXCYN_MOD && mdmList[i].PV_VACCPRTEXCYN_MOD != null) {
+            if(mdmList[i].PV_VACCPRTEXCYN != mdmList[i].PV_VACCPRTEXCYN_MOD) {
                 headerList.add('PV_VACCPRTEXCYN__c');
             }
 
             // 지급조건
-            if(mdmList[i].PV_ZTERM_VV != mdmList[i].PV_ZTERM_VV_MOD && mdmList[i].PV_ZTERM_VV_MOD != null) {
+            if(mdmList[i].PV_ZTERM_VV != mdmList[i].PV_ZTERM_VV_MOD) {
                 headerList.add('PV_ZTERM_VV__c');
             }
 
             // 유통이력 신고대상 유형
-            if(mdmList[i].PV_DSTRHISTREGYN != mdmList[i].PV_DSTRHISTREGYN_MOD && mdmList[i].PV_DSTRHISTREGYN_MOD != null) {
+            if(mdmList[i].PV_DSTRHISTREGYN != mdmList[i].PV_DSTRHISTREGYN_MOD) {
                 headerList.add('PV_DSTRHISTREGYN__c');
             }
 
             // 약정회전일
-            if(mdmList[i].PV_KULTG != mdmList[i].PV_KULTG_MOD && mdmList[i].PV_KULTG_MOD != null) {
+            if(mdmList[i].PV_KULTG != mdmList[i].PV_KULTG_MOD) {
                 headerList.add('PV_KULTG__c');
             }
 
             // 경로(사업부)
-            if(mdmList[i].PV_OLD_BIZPLACE_NEW != mdmList[i].PV_OLD_BIZPLACE_NEW_MOD && mdmList[i].PV_OLD_BIZPLACE_NEW_MOD != null) {
+            if(mdmList[i].PV_OLD_BIZPLACE_NEW != mdmList[i].PV_OLD_BIZPLACE_NEW_MOD) {
                 headerList.add('PV_OLD_BIZPLACE_NEW__c');
             }
 
             // 경로(사업부) 유효일자
-            if(mdmList[i].PVVF_OLD_BIZPLACE_NEW != mdmList[i].PVVF_OLD_BIZPLACE_NEW_MOD && mdmList[i].PVVF_OLD_BIZPLACE_NEW_MOD != null) {
+            if(mdmList[i].PVVF_OLD_BIZPLACE_NEW != mdmList[i].PVVF_OLD_BIZPLACE_NEW_MOD) {
                 headerList.add('PVVF_OLD_BIZPLACE_NEW__c');
             }
 
             // 경로(사업부) 적용일자
-            if(mdmList[i].PVRA_OLD_BIZPLACE_NEW != mdmList[i].PVRA_OLD_BIZPLACE_NEW_MOD && mdmList[i].PVRA_OLD_BIZPLACE_NEW_MOD != null) {
+            if(mdmList[i].PVRA_OLD_BIZPLACE_NEW != mdmList[i].PVRA_OLD_BIZPLACE_NEW_MOD) {
                 headerList.add('PVRA_OLD_BIZPLACE_NEW__c');
             }
 
             // 외형(정원)
-            if(mdmList[i].PV_SHAPE != mdmList[i].PV_SHAPE_MOD && mdmList[i].PV_SHAPE_MOD != null) {
+            if(mdmList[i].PV_SHAPE != mdmList[i].PV_SHAPE_MOD) {
                 headerList.add('PV_SHAPE__c');
             }
 
             // 대면검수여부
-            if(mdmList[i].PV_EXAMYN != mdmList[i].PV_EXAMYN_MOD && mdmList[i].PV_EXAMYN_MOD != null) {
+            if(mdmList[i].PV_EXAMYN != mdmList[i].PV_EXAMYN_MOD) {
                 headerList.add('PV_EXAMYN__c');
             }
 
             // OTD(배송요구시간)
-            if(mdmList[i].PV_SHIPREQTIME != mdmList[i].PV_SHIPREQTIME_MOD && mdmList[i].PV_SHIPREQTIME_MOD != null) {
+            if(mdmList[i].PV_SHIPREQTIME != mdmList[i].PV_SHIPREQTIME_MOD) {
                 headerList.add('PV_SHIPREQTIME__c');
             }
 
             // 상품적재조건
-            if(mdmList[i].PV_PRODLOADCOND != mdmList[i].PV_PRODLOADCOND_MOD && mdmList[i].PV_PRODLOADCOND_MOD != null) {
+            if(mdmList[i].PV_PRODLOADCOND != mdmList[i].PV_PRODLOADCOND_MOD) {
                 headerList.add('PV_PRODLOADCOND__c');
             }
 
             // 반품회수 위치
-            if(mdmList[i].PV_RETURNLOC != mdmList[i].PV_RETURNLOC_MOD && mdmList[i].PV_RETURNLOC_MOD != null) {
+            if(mdmList[i].PV_RETURNLOC != mdmList[i].PV_RETURNLOC_MOD) {
                 headerList.add('PV_RETURNLOC__c');
             }
 
             // 차량 진입조건-1
-            if(mdmList[i].PV_ENTERCOND1 != mdmList[i].PV_ENTERCOND1_MOD && mdmList[i].PV_ENTERCOND1_MOD != null) {
+            if(mdmList[i].PV_ENTERCOND1 != mdmList[i].PV_ENTERCOND1_MOD) {
                 headerList.add('PV_ENTERCOND1__c');
             }
 
             // 하역조건-1
-            if(mdmList[i].PV_UNLOADCOND1 != mdmList[i].PV_UNLOADCOND1_MOD && mdmList[i].PV_UNLOADCOND1_MOD != null) {
+            if(mdmList[i].PV_UNLOADCOND1 != mdmList[i].PV_UNLOADCOND1_MOD) {
                 headerList.add('PV_UNLOADCOND1__c');
             }
 
             // 하역조건-2
-            if(mdmList[i].PV_UNLOADCOND2 != mdmList[i].PV_UNLOADCOND2_MOD && mdmList[i].PV_UNLOADCOND2_MOD != null) {
+            if(mdmList[i].PV_UNLOADCOND2 != mdmList[i].PV_UNLOADCOND2_MOD) {
                 headerList.add('PV_UNLOADCOND2__c');
             }
             
             // 배송그룹
-            if(mdmList[i].PV_DELIGROUP != mdmList[i].PV_DELIGROUP_MOD && mdmList[i].PV_DELIGROUP_MOD != null) {
+            if(mdmList[i].PV_DELIGROUP != mdmList[i].PV_DELIGROUP_MOD) {
                 headerList.add('PV_DELIGROUP__c');
             }
             
             // 출하권역
-            if(mdmList[i].PV_KATR10 != mdmList[i].PV_KATR10_MOD && mdmList[i].PV_KATR10_MOD != null) {
+            if(mdmList[i].PV_KATR10 != mdmList[i].PV_KATR10_MOD) {
                 headerList.add('PV_KATR10__c');
             }
             
             // 업장Key 여부
-            if(mdmList[i].PV_KEYYN != mdmList[i].PV_KEYYN_MOD && mdmList[i].PV_KEYYN_MOD != null) {
+            if(mdmList[i].PV_KEYYN != mdmList[i].PV_KEYYN_MOD) {
                 headerList.add('PV_KEYYN__c');
             }
             
             // 업장Key 정보
-            if(mdmList[i].PV_KEYINFO != mdmList[i].PV_KEYINFO_MOD && mdmList[i].PV_KEYINFO_MOD != null) {
+            if(mdmList[i].PV_KEYINFO != mdmList[i].PV_KEYINFO_MOD) {
                 headerList.add('PV_KEYINFO__c');
             }
             
             // KX OTD
-            if(mdmList[i].PV_KXOTD != mdmList[i].PV_KXOTD_MOD && mdmList[i].PV_KXOTD_MOD != null) {
+            if(mdmList[i].PV_KXOTD != mdmList[i].PV_KXOTD_MOD) {
                 headerList.add('PV_KXOTD__c');
             }
             
             // KX OTD 요청시간
-            if(mdmList[i].PV_KXOTDTIME != mdmList[i].PV_KXOTDTIME_MOD && mdmList[i].PV_KXOTDTIME_MOD != null) {
+            if(mdmList[i].PV_KXOTDTIME != mdmList[i].PV_KXOTDTIME_MOD) {
                 headerList.add('PV_KXOTDTIME__c');
             }
             
             // 초도배송 정보공유
-            if(mdmList[i].PV_FDINFO != mdmList[i].PV_FDINFO_MOD && mdmList[i].PV_FDINFO_MOD != null) {
+            if(mdmList[i].PV_FDINFO != mdmList[i].PV_FDINFO_MOD) {
                 headerList.add('PV_FDINFO__c');
             }
             
             // 초도배송 요청일자
-            if(mdmList[i].PV_FDREQD != mdmList[i].PV_FDREQD_MOD && mdmList[i].PV_FDREQD_MOD != null) {
+            if(mdmList[i].PV_FDREQD != mdmList[i].PV_FDREQD_MOD) {
                 headerList.add('PV_FDREQD__c');
             }
             
             // 초도배송 요청시간
-            if(mdmList[i].PV_FDREQT != mdmList[i].PV_FDREQT_MOD && mdmList[i].PV_FDREQT_MOD != null) {
+            if(mdmList[i].PV_FDREQT != mdmList[i].PV_FDREQT_MOD) {
                 headerList.add('PV_FDREQT__c');
             }
             
             // 초도배송 대면검수
-            if(mdmList[i].PV_ISFDFTF != mdmList[i].PV_ISFDFTF_MOD && mdmList[i].PV_ISFDFTF_MOD != null) {
+            if(mdmList[i].PV_ISFDFTF != mdmList[i].PV_ISFDFTF_MOD) {
                 headerList.add('PV_ISFDFTF__c');
             }
             
             // 초도배송 담당자 연락처
-            if(mdmList[i].PV_FDCTINFO != mdmList[i].PV_FDCTINFO_MOD && mdmList[i].PV_FDCTINFO_MOD != null) {
+            if(mdmList[i].PV_FDCTINFO != mdmList[i].PV_FDCTINFO_MOD) {
                 headerList.add('PV_FDCTINFO__c');
             }
             
             // 초도배송 시 전달사항
-            if(mdmList[i].PV_FDNOTICE != mdmList[i].PV_FDNOTICE_MOD && mdmList[i].PV_FDNOTICE_MOD != null) {
+            if(mdmList[i].PV_FDNOTICE != mdmList[i].PV_FDNOTICE_MOD) {
                 headerList.add('PV_FDNOTICE__c');
             }
             
             // 배송유형
-            if(mdmList[i].PV_SHIPTYPE != mdmList[i].PV_SHIPTYPE_MOD && mdmList[i].PV_SHIPTYPE_MOD != null) {
+            if(mdmList[i].PV_SHIPTYPE != mdmList[i].PV_SHIPTYPE_MOD) {
                 headerList.add('PV_SHIPTYPE__c');
             }
             
             // 온도기록지 제출 대상 여부
-            if(mdmList[i].PV_TEMPTARGET != mdmList[i].PV_TEMPTARGET_MOD && mdmList[i].PV_TEMPTARGET_MOD != null) {
+            if(mdmList[i].PV_TEMPTARGET != mdmList[i].PV_TEMPTARGET_MOD) {
                 headerList.add('PV_TEMPTARGET__c');
             }
 
@@ -948,8 +912,8 @@ public with sharing class CJFW_MDMBulkUpdateInfoListController {
         @AuraEnabled public String PV_FITYP_MOD {get;set;}
         @AuraEnabled public Boolean PV_HDOFFICEYN {get;set;}
         @AuraEnabled public Boolean PV_HDOFFICEYN_MOD {get;set;}
-        @AuraEnabled public Boolean PV_HKUNNR {get;set;}
-        @AuraEnabled public Boolean PV_HKUNNR_MOD {get;set;}
+        @AuraEnabled public String PV_HKUNNR {get;set;}
+        @AuraEnabled public String PV_HKUNNR_MOD {get;set;}
         @AuraEnabled public Boolean PV_SUBSIDIARYYN {get;set;}
         @AuraEnabled public Boolean PV_SUBSIDIARYYN_MOD {get;set;}
         @AuraEnabled public String PV_VBUND {get;set;}
@@ -1040,8 +1004,8 @@ public with sharing class CJFW_MDMBulkUpdateInfoListController {
         @AuraEnabled public Date PVRA_OLD_BIZPLACE_NEW_MOD {get;set;}
         @AuraEnabled public String PV_SHAPE {get;set;}
         @AuraEnabled public String PV_SHAPE_MOD {get;set;}
-        @AuraEnabled public String PV_EXAMYN {get;set;}
-        @AuraEnabled public String PV_EXAMYN_MOD {get;set;}
+        @AuraEnabled public Boolean PV_EXAMYN {get;set;}
+        @AuraEnabled public Boolean PV_EXAMYN_MOD {get;set;}
         @AuraEnabled public String PV_SHIPREQTIME {get;set;}
         @AuraEnabled public String PV_SHIPREQTIME_MOD {get;set;}
         @AuraEnabled public String PV_PRODLOADCOND {get;set;}
@@ -1058,22 +1022,22 @@ public with sharing class CJFW_MDMBulkUpdateInfoListController {
         @AuraEnabled public String PV_DELIGROUP_MOD {get;set;}
         @AuraEnabled public String PV_KATR10 {get;set;}
         @AuraEnabled public String PV_KATR10_MOD {get;set;}
-        @AuraEnabled public String PV_KEYYN {get;set;}
-        @AuraEnabled public String PV_KEYYN_MOD {get;set;}
+        @AuraEnabled public Boolean PV_KEYYN {get;set;}
+        @AuraEnabled public Boolean PV_KEYYN_MOD {get;set;}
         @AuraEnabled public String PV_KEYINFO {get;set;}
         @AuraEnabled public String PV_KEYINFO_MOD {get;set;}
-        @AuraEnabled public String PV_KXOTD {get;set;}
-        @AuraEnabled public String PV_KXOTD_MOD {get;set;}
+        @AuraEnabled public Boolean PV_KXOTD {get;set;}
+        @AuraEnabled public Boolean PV_KXOTD_MOD {get;set;}
         @AuraEnabled public String PV_KXOTDTIME {get;set;}
         @AuraEnabled public String PV_KXOTDTIME_MOD {get;set;}
-        @AuraEnabled public String PV_FDINFO {get;set;}
-        @AuraEnabled public String PV_FDINFO_MOD {get;set;}
-        @AuraEnabled public String PV_FDREQD {get;set;}
-        @AuraEnabled public String PV_FDREQD_MOD {get;set;}
+        @AuraEnabled public Boolean PV_FDINFO {get;set;}
+        @AuraEnabled public Boolean PV_FDINFO_MOD {get;set;}
+        @AuraEnabled public Date PV_FDREQD {get;set;}
+        @AuraEnabled public Date PV_FDREQD_MOD {get;set;}
         @AuraEnabled public String PV_FDREQT {get;set;}
         @AuraEnabled public String PV_FDREQT_MOD {get;set;}
-        @AuraEnabled public String PV_ISFDFTF {get;set;}
-        @AuraEnabled public String PV_ISFDFTF_MOD {get;set;}
+        @AuraEnabled public Boolean PV_ISFDFTF {get;set;}
+        @AuraEnabled public Boolean PV_ISFDFTF_MOD {get;set;}
         @AuraEnabled public String PV_FDCTINFO {get;set;}
         @AuraEnabled public String PV_FDCTINFO_MOD {get;set;}
         @AuraEnabled public String PV_FDNOTICE {get;set;}

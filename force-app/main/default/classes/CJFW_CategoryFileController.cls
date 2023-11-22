@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : seol.kim@dkbmc.com
  * @group             : 
- * @last modified on  : 11-14-2023
+ * @last modified on  : 11-17-2023
  * @last modified by  : seol.kim@dkbmc.com
 **/
 public with sharing class CJFW_CategoryFileController {
@@ -205,7 +205,7 @@ public with sharing class CJFW_CategoryFileController {
                 recordName = (String)obj.get('Name');
             }
         } catch (Exception e) {
-            // Handle exception if necessary
+
         }
         return recordName;
     }

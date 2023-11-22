@@ -1,10 +1,10 @@
 /**
- * @Class : IFN_EIF1001_EC001_MD002.cls
+ * @Class : IFN_EIF1001_EC003_MD006.cls
  * @group Framework : MMS
  * @Author : 김동영
  * @Date : 2023-08-22
  * @Version : 1.0
- * @Description : MMS 메시지 전송 결과 Webhook Callback API
+ * @Description : KAKAO 메시지 전송 결과 Webhook Callback API
  *				  Comm.one(메시징시스템) -> 중계서버 -> Salesforce
  * @Modified : 
  * ----------------------------------------------
@@ -17,7 +17,7 @@ global with sharing class IFN_EIF1001_EC003_MD006 {
     global IFN_EIF1001_EC003_MD006() {}
     
     @HttpPost
-    global static String doPost() {
+    global static void doPost() {
         String strCode = '100'; // webhook 전송 정상 접수 확인
         String strMessage = 'Success';
         String interfaceId = 'IFN_EIF1001_EC003_MD006';
@@ -25,6 +25,7 @@ global with sharing class IFN_EIF1001_EC003_MD006 {
         IFN_CommonLog.LogWrap logWrap = new IFN_CommonLog.logWrap(interfaceId, 'Real');
         IFN_CommonLog commlog = new IFN_CommonLog();
 
+        RestResponse restResponse = RestContext.response;
         Map<String, String> response = new Map<String, String>();
 
         String requestBody = '';
@@ -90,6 +91,7 @@ global with sharing class IFN_EIF1001_EC003_MD006 {
         response.put('desc', strMessage);
         commlog.insertLog(logWrap);
 
-        return JSON.serialize(response);
+        restResponse.addHeader('Content-Type', 'application/json');
+        restResponse.responseBody = Blob.valueOf(JSON.serialize(response));
     }
 }

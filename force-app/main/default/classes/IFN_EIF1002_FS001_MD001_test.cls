@@ -38,7 +38,7 @@ public class IFN_EIF1002_FS001_MD001_test {
         
         Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator('',500));
 
-        IFN_EIF1002_FS001_MD001 b = new IFN_EIF1002_FS001_MD001();
+        IFN_EIF1002_FS001_MD001_ba b = new IFN_EIF1002_FS001_MD001_ba();
         Database.executeBatch(b);
         
         Test.stopTest();
@@ -48,12 +48,12 @@ public class IFN_EIF1002_FS001_MD001_test {
     static void test_IFN_EIF1002_FS001_MD001_sc() {
         Test.startTest();
 
-        IFN_EIF1002_FS001_MD001.RESULT result = new IFN_EIF1002_FS001_MD001.RESULT();
+        IFN_EIF1002_FS001_MD001_ba.RESULT result = new IFN_EIF1002_FS001_MD001_ba.RESULT();
         result.CODE = 'INFO-000';
         result.MSG = '정상처리되었습니다.';
 
-        List<IFN_EIF1002_FS001_MD001.row> rowlst = new List<IFN_EIF1002_FS001_MD001.row>();
-        IFN_EIF1002_FS001_MD001.row row = new IFN_EIF1002_FS001_MD001.row();
+        List<IFN_EIF1002_FS001_MD001_ba.row> rowlst = new List<IFN_EIF1002_FS001_MD001_ba.row>();
+        IFN_EIF1002_FS001_MD001_ba.row row = new IFN_EIF1002_FS001_MD001_ba.row();
         
         row.PRDLST_REPORT_NO ='1';
         row.PRMS_DT	= '1';
@@ -72,12 +72,12 @@ public class IFN_EIF1002_FS001_MD001_test {
         row.PRPOS = '1';
         rowlst.add(row);
 
-        IFN_EIF1002_FS001_MD001.I1250 I1250 = new IFN_EIF1002_FS001_MD001.I1250();
+        IFN_EIF1002_FS001_MD001_ba.I1250 I1250 = new IFN_EIF1002_FS001_MD001_ba.I1250();
         I1250.Result = result;
         I1250.row = rowlst;
         I1250.total_count = '10';
 
-        IFN_EIF1002_FS001_MD001.Output Output = new IFN_EIF1002_FS001_MD001.Output();
+        IFN_EIF1002_FS001_MD001_ba.Output Output = new IFN_EIF1002_FS001_MD001_ba.Output();
         Output.i1250 = I1250;
         
         Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator(JSON.serialize(Output),200));

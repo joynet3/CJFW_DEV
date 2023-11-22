@@ -11,9 +11,7 @@
  * ----------------------------------------------
  *  1. | 2023.08.30 | sancho         | 최초작성
  * */
-global class IFN_EIF1002_FS001_MD001_sc implements Schedulable {
-    global IFN_EIF1002_FS001_MD001_sc() {}
-
+global class IFN_EIF1002_FS001_MD001_ba_sc implements Schedulable {
     global void execute(SchedulableContext sc) {
         IFN_EIF1002_FS001_MD001_ba ba = new IFN_EIF1002_FS001_MD001_ba();
         Database.executeBatch(ba, 1);

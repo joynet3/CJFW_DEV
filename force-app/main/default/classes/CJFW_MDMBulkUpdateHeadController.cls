@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 11-16-2023
+ * @last modified on  : 11-22-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkUpdateHeadController {
@@ -16,13 +16,13 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
     * MDMRequest = wrapper class다 
     */
     @AuraEnabled
-    public static SaveResult doSave(List<MDMRequest> mdmCustomer, String type) {
-
-        system.debug('#CJFW_MDMBulkUpdateHeadController >>>doSave ');
+    public static SaveResult doSave(List<MDMRequest> mdmCustomer, String type, List<String> headerList) {
+        system.debug('headerList ' + JSON.serialize(headerList));
+        system.debug(' # CJFW_MDMBulkUpdateHeadController >>> doSave ');
         SaveResult saveResult = new SaveResult();
         // aura  String 으로 넘어와서 JSON.des
         // mdmCustomer obj =  JSON.deserialize(mdmCustomer, 래퍼클래스명.class);
-        system.debug('>>>doSave # mdmCustomer ' + JSON.serialize(mdmCustomer));
+        system.debug(' >>> doSave # mdmCustomer => ' + JSON.serialize(mdmCustomer));
         //값을 나눠서 값이 없으면 안되는친구들
         //값이 없어도 되는친구들
 
@@ -40,7 +40,110 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
         System.debug(' recordIdEx => ' + recordIdEx);
         
         // 이름이 null값이 되지 않도록 null일 경우 기존 값을 찾아서 기입해 줄 Map 생성
-        Map<String, String> nameMaps = getNameOfNull(mdmCustomer);
+        // Map<String, String> nameMaps = getNameOfNull(mdmCustomer);
+
+        // CustomerID로 Boolean 값들 받아서 오기
+        Set<String> custIds = new Set<String>();
+        for(MDMRequest mdm : mdmCustomer){
+            custIds.add(mdm.PV_KUNNR);
+            custIds.remove(null);
+            custIds.remove('');
+        }
+        
+        // List<Account> booleanList = [SELECT Id, CustomerId__c, PV_BLCKYN__c, IsHeadShopUseYN__c, IsAffiliatedcompanyYN__c, IsPrintVirtualAccount__c, IsFaceToFaceInspectionStatus__c, IsInitialDeliveryFTFInspection__c, IsBusinessPlaceKey__c, InitialDeliveryShare__c, KXOTD__c FROM Account WHERE CustomerID__c = :custIds];
+        List<Account> booleanList = [SELECT Id, CustomerID__c, Name, PICCode__c, CustomerIDASIS__c, NameKor__c, NameAlias__c, AccountGroup__c, toLabel(AccountGroup__c) AccountGroupLabel, CustomerType__c, toLabel(CustomerType__c) CustomerTypeLabel, CompanyRegisterNumber__c, CorporateCode__c, SubCompanyRegisterNumber__c,  LegalStatus__c, toLabel(LegalStatus__c) LegalStatusLabel, RepresentativeName__c, PV_BLCKYN__c, RepresentativeBirthDate__c, BusinessConditions__c, BusinessCategory__c,  Phone, Fax, PaymentAccountCode__c, PaymentAccountName__c, ShippingAccountCode__c, ShippingAccountName__c, PV_VKGRP__c, toLabel(PV_VKGRP__c) PV_VKGRP__LABEL,  PVVF_VKGRP__c, SalesGroupFromDate__c, OwnerId, PVVF_PERNR__c, ResponsibilityMAFromDate__c, ResponsibilityAMA__c, ResponsibilityAMACode__c, TaxInvoiceType__c, toLabel(TaxInvoiceType__c) TaxInvoiceLabel,  IsHeadShopUseYN__c, IsAffiliatedcompanyYN__c, AffiliatedCompany__c, toLabel(AffiliatedCompany__c) AffiliatedCompanyLabel, CountryKeyCode__c, toLabel(CountryKeyCode__c) CountryKeyCodeLabel,  PV_KNVKTYPE__c, toLabel(PV_KNVKTYPE__c) PV_KNVKTYPE__LABEL, ShutDownDate__c, LocationState__c, toLabel(LocationState__c) LocationStateLabel, Address__c, AddressDetails__c,  Address2__c, AddressDetails2__c, SalesForm__c, toLabel(SalesForm__c) SalesFormLabel, CustomerStatus__c, toLabel(CustomerStatus__c) CustomerStatusLabel, SortKey__c, toLabel(SortKey__c) SortKeyLabel,  MediateAccount__c, toLabel(MediateAccount__c) MediateAccountLabel, CashManagementGroup__c, toLabel(CashManagementGroup__c) CashManagementGroupLabel, IsDeposit__c, toLabel(IsDeposit__c) IsDepositLabel,  TaxClassification__c, toLabel(TaxClassification__c) TaxClassificationLabel, TaxPaymentMethod__c, toLabel(TaxPaymentMethod__c) TaxPaymentMethodLabel, CustomerRoute__c, toLabel(CustomerRoute__c) CustomerRouteLabel,  PV_CUHR1__c, CustomerRouteFromDate__c, PriceGroup__c, toLabel(PriceGroup__c) PriceGroupLabel, UnitPriceGroup__c, toLabel(UnitPriceGroup__c) UnitPriceGroupLabel, CurrencyIsoCode,  toLabel(CurrencyIsoCode) CurrencyIsoLabel, CreditManagement__c, toLabel(CreditManagement__c) CreditManagementLabel, SubsidyType__c, toLabel(SubsidyType__c) SubsidyTypeLabel,  IsPrintVirtualAccount__c, TermsOfPayment__c, toLabel(TermsOfPayment__c) TermsOfPaymentLabel, DisHisRegType__c, toLabel(DisHisRegType__c) DisHisRegTypeLabel, ContractRocationDate__c, TaxationType__c,  CustomerPath__c, toLabel(CustomerPath__c) CustomerPathLabel, Shape__c, DeliveryGroup__c, toLabel(DeliveryGroup__c) DeliveryGroupLabel, CustomerOrderDeadlineType__c,  PVVF_KONDA__c, PriceGroupFromDate__c, PVVF_OLD_BIZPLACE_NEW__c, CustomerPathFromDate__c, FWReleaseCenterFromDate__c, PVVF_LOGISCENTER__c, FWReleaseCenter__c, IsFaceToFaceInspectionStatus__c,  DeliveryCustomerCode__c, SalesCustomerCode__c, BizPLCode__c, HeadOfficeCode__c, PVVF_KVGR1__c, UnitPriceGroupFromDate__c, StatementOfDeliveryType__c, StatementOfDeliveryType2__c,   OTD__c, ProductLoadingCondition__c, ReturnLocation__c, VehicleEntryCondtions__c, UnloadConditions1__c, UnloadConditions2__c, ShipmentArea__c, IsBusinessPlaceKey__c, BusinessPlaceKeyInfo__c, KXOTD__c, KXOTDRequestDate__c, InitialDeliveryShare__c, InitialDeliveryRequestDate__c, InitialDeliveryRequestTime__c, IsInitialDeliveryFTFInspection__c, InitialDeliveryContact__c, InitialDeliveryDescription__c, PV_SHIPTYPE__c, PV_TEMPTARGET__c FROM Account WHERE CustomerID__c = :custIds];
+        
+        System.debug('# booleanList => ' + booleanList);
+        
+        Map<String, Account> accountMap = new Map<String, Account>();
+        
+        // Key : Id , value : boolean
+        // Map<String, Boolean> blckYnMap = new Map<String, Boolean>();           // 사용 중지
+        // Map<String, Boolean> headShopYnMap = new Map<String, Boolean>();       // 본점 사용 유무
+        // Map<String, Boolean> affCompanyYnMap = new Map<String, Boolean>();     // 관계사 여부
+        // Map<String, Boolean> accountYnMap = new Map<String, Boolean>();        // 가상 계좌
+        // Map<String, Boolean> faceYnMap = new Map<String, Boolean>();           // 대면 검수
+        // Map<String, Boolean> kxOtdMap = new Map<String, Boolean>();            // KX OTD
+        // Map<String, Boolean> bKeyYnMap = new Map<String, Boolean>();           // 업장 Key
+        // Map<String, Boolean> isFaceYnMap = new Map<String, Boolean>();         // 초도배송 대면 검수
+        // Map<String, Boolean> fdInfoMap = new Map<String, Boolean>();           // 초도배송 정보 공유
+        
+        // Map<String, Account> booleanAccMap = new Map<String, Account>();
+        
+        for(Account acc : booleanList){
+            accountMap.put(acc.CustomerId__c, acc);
+            
+            // blckYnMap.put(acc.CustomerId__c, acc.PV_BLCKYN__c);
+            // headShopYnMap.put(acc.CustomerId__c, acc.IsHeadShopUseYN__c);
+            // affCompanyYnMap.put(acc.CustomerId__c, acc.IsAffiliatedcompanyYN__c);
+            // accountYnMap.put(acc.CustomerId__c, acc.IsPrintVirtualAccount__c);
+            // faceYnMap.put(acc.CustomerId__c, acc.IsFaceToFaceInspectionStatus__c);
+            
+            // Boolean isKxOtd = false;
+            // if(acc.KXOTD__c == 'Y') {
+            //     isKxOtd = true;
+            // } else if(acc.KXOTD__c == 'N') {
+            //     isKxOtd = false;
+            // }
+        
+        // kxOtdMap.put(acc.CustomerId__c, isKxOtd);
+        // bKeyYnMap.put(acc.CustomerId__c, acc.IsBusinessPlaceKey__c);
+        // isFaceYnMap.put(acc.CustomerId__c, acc.IsInitialDeliveryFTFInspection__c);
+        
+        // Boolean isFdInfo = false;
+        // if(acc.InitialDeliveryShare__c == 'Y') {
+            //     isFdInfo = true;
+            // } else if(acc.InitialDeliveryShare__c == 'N') {
+            //     isFdInfo = false;
+            // }
+            
+            // fdInfoMap.put(acc.CustomerId__c, isFdInfo);
+        }
+            
+        // System.debug('# blckYnMap => ' + blckYnMap);
+        // System.debug('# headShopYnMap => ' + headShopYnMap);
+        // System.debug('# affCompanyYnMap => ' + affCompanyYnMap);
+        // System.debug('# accountYnMap => ' + accountYnMap);
+        // System.debug('# faceYnMap => ' + faceYnMap);
+        // System.debug('# bKeyYnMap => ' + bKeyYnMap);
+        // System.debug('# isFaceYnMap => ' + isFaceYnMap);
+                    
+        // 고객의 CustomerId 필드(CustomerId__c)로 조회해서 Id값 알아내기
+        Set<String> accSet = new Set<String>();
+        for(MDMRequest mdm : mdmCustomer){
+            accSet.add(mdm.PV_PAYCUST);
+            accSet.add(mdm.PV_CHARGECUST);
+            accSet.add(mdm.PV_SALESCUST);
+            accSet.add(mdm.PV_DELICUST);
+            accSet.add(mdm.PV_BIZPLCODE);
+            accSet.add(mdm.PV_HKUNNR);
+            accSet.remove(null);
+            accSet.remove('');
+        }
+        
+        // 기존 Account로부터도 받아 오기
+        for(Account acc : booleanList) {
+            accSet.add(acc.ShippingAccountCode__c);
+            accSet.add(acc.PaymentAccountCode__c);
+            accSet.add(acc.SalesCustomerCode__c);
+            accSet.add(acc.DeliveryCustomerCode__c);
+            accSet.add(acc.BizPLCode__c);
+            accSet.add(acc.HeadOfficeCode__c);
+            accSet.remove(null);
+            accSet.remove('');
+        }
+
+        List<Account> accList = [SELECT Id, Name, CustomerId__c FROM Account WHERE CustomerId__c = :accSet];
+
+        System.debug('# accList => ' + accList);
+        
+        // Key :code , value :Id
+        Map<String, String> codeToAccIdMap = new Map<String, String>();
+        for(Account acc : accList){ 
+            codeToAccIdMap.put(acc.CustomerId__c, acc.Id);
+        }
+
+        System.debug('# codeToAccIdMap => ' + codeToAccIdMap);
 
         // 각종 ID 필요한 MDMReferenceCode__c 조회해서 Id값 가지고 오기
         Set<String> codeSet = new Set<String>();
@@ -72,132 +175,96 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
             codeSet.add(String.isNotBlank(mdm.PV_OLD_BIZPLACE_NEW) ? mdm.PV_OLD_BIZPLACE_NEW.toUpperCase() : '');
             codeSet.add(String.isNotBlank(mdm.PV_DELIGROUP)        ? mdm.PV_DELIGROUP.toUpperCase() : '');
             codeSet.add(String.isNotBlank(mdm.PV_KATR10)           ? mdm.PV_KATR10.toUpperCase() : '');
-
-            // null이나 공백 제거함
-            codeSet.remove(null);
-            codeSet.remove('');
         }
         
-        List<MDMReferenceCode__c> referenceCodeList = [SELECT Id, Name, Code__c FROM MDMReferenceCode__c WHERE code__c = :codeSet];
+        for(Account acc : booleanList) {
+            codeSet.add(acc.PV_VKGRP__c);
+            codeSet.add(acc.FWReleaseCenter__c);
+            codeSet.add(acc.TaxInvoiceType__c);
+            codeSet.add(acc.AffiliatedCompany__c);
+            codeSet.add(acc.CountryKeyCode__c);
+            codeSet.add(acc.LocationState__c);
+            codeSet.add(acc.SortKey__c);
+            codeSet.add(acc.MediateAccount__c);
+            codeSet.add(acc.CustomerRoute__c);
+            codeSet.add(acc.PriceGroup__c);
+            codeSet.add(acc.UnitPriceGroup__c);
+            codeSet.add(acc.CurrencyIsoCode);
+            codeSet.add(acc.StatementOfDeliveryType__c);
+            codeSet.add(acc.StatementOfDeliveryType2__c);
+            codeSet.add(acc.TermsOfPayment__c);
+            codeSet.add(acc.CustomerPath__c);
+            codeSet.add(acc.DeliveryGroup__c);
+            codeSet.add(acc.ShipmentArea__c);
+        }
+
+        // null이나 공백 제거함
+        codeSet.remove(null);
+        codeSet.remove('');
+        
+        // 겹치는 Code 제외한 MDM 참조 코드 List
+        List<MDMReferenceCode__c> referenceCodeList = [SELECT Id, Name, Code__c, GroupId__c FROM MDMReferenceCode__c WHERE code__c = :codeSet];
+        // AND GroupId__c NOT IN ('TVV3', 'TVV3_BOT', 'DELIGROUP', 'TVV1', 'TVKO1', 'TZUN', 'TVV2'
 
         System.debug('# referenceCodeList => ' + referenceCodeList);
 
         // Key : code , value : Id
         Map<String, String> codeToIdMap = new Map<String, String>();
-        for(MDMReferenceCode__c mdmCode :referenceCodeList){ 
-            codeToIdMap.put(mdmCode.Code__c, mdmCode.id);
+        Map<String, String> deliveryIdMap = new Map<String, String>(); // 배송그룹
+        Map<String, String> statementIdMap = new Map<String, String>(); // 납품서유형
+        Map<String, String> statementBotIdMap = new Map<String, String>(); // 납품서하단유형
+        Map<String, String> unitPriceIdMap = new Map<String, String>(); // 단가그룹
+        Map<String, String> shipmentIdMap = new Map<String, String>(); // 출하권역
+        Map<String, String> sortKeyIdMap = new Map<String, String>(); // 정렬키
+        // Map<String, String> subsidIdMap = new Map<String, String>(); // 장려금유형
+
+        for(MDMReferenceCode__c mdmCode :referenceCodeList){
+            if(mdmCode.GroupId__c == 'DELIGROUP') {
+                deliveryIdMap.put(mdmCode.Code__c, mdmCode.id);
+            } else if(mdmCode.GroupId__c == 'TVV3') {
+                statementIdMap.put(mdmCode.Code__c, mdmCode.id);
+            } else if(mdmCode.GroupId__c == 'TVV3_BOT') {
+                statementBotIdMap.put(mdmCode.Code__c, mdmCode.id);
+            } else if(mdmCode.GroupId__c == 'TVV1') {
+                unitPriceIdMap.put(mdmCode.Code__c, mdmCode.id);
+            } else if(mdmCode.GroupId__c == 'TVKO1') {
+                shipmentIdMap.put(mdmCode.Code__c, mdmCode.id);
+            } else if(mdmCode.GroupId__c == 'TZUN') {
+                sortKeyIdMap.put(mdmCode.Code__c, mdmCode.id);
+            } else {
+                codeToIdMap.put(mdmCode.Code__c, mdmCode.id);
+            }
         }
 
         System.debug('# codeToIdMap => ' + codeToIdMap);
-
-        // 고객의 CustomerId 필드(CustomerId__c)로 조회해서 Id값 알아내기
-        Set<String> accSet = new Set<String>();
-        for(MDMRequest mdm : mdmCustomer){
-            accSet.add(mdm.PV_PAYCUST);
-            accSet.add(mdm.PV_CHARGECUST);
-            accSet.add(mdm.PV_SALESCUST);
-            accSet.add(mdm.PV_DELICUST);
-            accSet.add(mdm.PV_BIZPLCODE);
-            accSet.add(mdm.PV_HKUNNR);
-            accSet.remove(null);
-            accSet.remove('');
-        }
-
-        List<Account> accList = [SELECT Id, Name, CustomerId__c FROM Account WHERE CustomerId__c = :accSet];
-
-        System.debug('# accList => ' + accList);
-        
-        // Key :code , value :Id
-        Map<String, String> codeToAccIdMap = new Map<String, String>();
-        for(Account acc : accList){ 
-            codeToAccIdMap.put(acc.CustomerId__c, acc.Id);
-        }
-
-        System.debug('# codeToAccIdMap => ' + codeToAccIdMap);
 
         // User의 사번필드(ResponsibilityAMA__c)로 User 조회해서 Id값 알아내기
         Set<String> accUserSet = new Set<String>();
         for(MDMRequest mdm : mdmCustomer){
             accUserSet.add(mdm.PV_PERNR);
             accUserSet.add(mdm.PV_ADMINMA);
-            accUserSet.remove(null);
-            accUserSet.remove('');
         }
+        
+        for(Account acc : booleanList) {
+            accUserSet.add(acc.PICCode__c);
+            accUserSet.add(acc.ResponsibilityAMACode__c);
+        }
+        
+        accUserSet.remove(null);
+        accUserSet.remove('');
+
         List<User> userList = [SELECT Id, EmployeeNumber FROM User WHERE EmployeeNumber = :accUserSet];
 
         System.debug('# accUserSet => ' + accUserSet);
-        
+
         // Key :code , value :Id
         Map<String, String> codeToUserIdMap = new Map<String, String>();
         for(User us : userList){ 
             codeToUserIdMap.put(us.EmployeeNumber, us.Id);
         }
-
-        // CustomerID로 Boolean 값들 받아서 오기
-        Set<String> custIds = new Set<String>();
-        for(MDMRequest mdm : mdmCustomer){
-            custIds.add(mdm.PV_KUNNR);
-            custIds.remove(null);
-            custIds.remove('');
-        }
-
-        List<Account> booleanList = [SELECT Id, CustomerId__c, PV_BLCKYN__c, IsHeadShopUseYN__c, IsAffiliatedcompanyYN__c, IsPrintVirtualAccount__c, IsFaceToFaceInspectionStatus__c, IsInitialDeliveryFTFInspection__c, IsBusinessPlaceKey__c, InitialDeliveryShare__c, KXOTD__c FROM Account WHERE CustomerID__c = :custIds];
-
-        System.debug('# booleanList => ' + booleanList);
-        
-        // Key : Id , value : boolean
-        Map<String, Boolean> blckYnMap = new Map<String, Boolean>();           // 사용 중지
-        Map<String, Boolean> headShopYnMap = new Map<String, Boolean>();       // 본점 사용 유무
-        Map<String, Boolean> affCompanyYnMap = new Map<String, Boolean>();     // 관계사 여부
-        Map<String, Boolean> accountYnMap = new Map<String, Boolean>();        // 가상 계좌
-        Map<String, Boolean> faceYnMap = new Map<String, Boolean>();           // 대면 검수
-        Map<String, Boolean> kxOtdMap = new Map<String, Boolean>();            // KX OTD
-        Map<String, Boolean> bKeyYnMap = new Map<String, Boolean>();           // 업장 Key
-        Map<String, Boolean> isFaceYnMap = new Map<String, Boolean>();         // 초도배송 대면 검수
-        Map<String, Boolean> fdInfoMap = new Map<String, Boolean>();           // 초도배송 정보 공유
-
-        // Map<String, Account> booleanAccMap = new Map<String, Account>();
-
-        for(Account acc : booleanList){ 
-            // booleanAccMap.put(acc.CustomerId__c, acc);
-
-            blckYnMap.put(acc.CustomerId__c, acc.PV_BLCKYN__c);
-            headShopYnMap.put(acc.CustomerId__c, acc.IsHeadShopUseYN__c);
-            affCompanyYnMap.put(acc.CustomerId__c, acc.IsAffiliatedcompanyYN__c);
-            accountYnMap.put(acc.CustomerId__c, acc.IsPrintVirtualAccount__c);
-            faceYnMap.put(acc.CustomerId__c, acc.IsFaceToFaceInspectionStatus__c);
-
-            Boolean isKxOtd = false;
-            if(acc.KXOTD__c == 'Y') {
-                isKxOtd = true;
-            } else if(acc.KXOTD__c == 'N') {
-                isKxOtd = false;
-            }
-
-            kxOtdMap.put(acc.CustomerId__c, isKxOtd);
-            bKeyYnMap.put(acc.CustomerId__c, acc.IsBusinessPlaceKey__c);
-            isFaceYnMap.put(acc.CustomerId__c, acc.IsInitialDeliveryFTFInspection__c);
-
-            Boolean isFdInfo = false;
-            if(acc.InitialDeliveryShare__c == 'Y') {
-                isFdInfo = true;
-            } else if(acc.InitialDeliveryShare__c == 'N') {
-                isFdInfo = false;
-            }
-
-            fdInfoMap.put(acc.CustomerId__c, isFdInfo);
-        }
-
-        System.debug('# blckYnMap => ' + blckYnMap);
-        System.debug('# headShopYnMap => ' + headShopYnMap);
-        System.debug('# affCompanyYnMap => ' + affCompanyYnMap);
-        System.debug('# accountYnMap => ' + accountYnMap);
-        System.debug('# faceYnMap => ' + faceYnMap);
-        System.debug('# bKeyYnMap => ' + bKeyYnMap);
-        System.debug('# isFaceYnMap => ' + isFaceYnMap);
         
         List<MDMRegRequestCustomer__c> customerList = new List<MDMRegRequestCustomer__c>();
-
+                    
         try {
             
             if(mdmCustomer != null){
@@ -206,7 +273,7 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
 
                 String bulkName = mdmCustomer[0].PV_NAME1;
                 if(String.isBlank(bulkName) == true) {
-                    bulkName = nameMaps.get(mdmCustomer[0].PV_KUNNR);
+                    bulkName = accountMap.get(mdmCustomer[0].PV_KUNNR).Name;
                 }
 
                 mdmRequestbulk.RequestType__c = 'Edit';
@@ -220,136 +287,139 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
 
                     mdmRequest.RecordTypeId                    =      String.isBlank(type) ? null : recordIdEx;
                     mdmRequest.PV_KUNNR__c                     =      String.isBlank(mdm.PV_KUNNR) ? null : mdm.PV_KUNNR;
-                    mdmRequest.PV_OLDCD__c                     =      String.isBlank(mdm.PV_OLDCD) ? null : mdm.PV_OLDCD;
-                    mdmRequest.PV_NAME1__c                     =      String.isBlank(mdm.PV_NAME1) ? nameMaps.get(mdm.PV_KUNNR) : mdm.PV_NAME1;
-                    mdmRequest.PV_NAME_G__c                    =      String.isBlank(mdm.PV_NAME_G) ? null : mdm.PV_NAME_G;
-                    mdmRequest.PV_NAME2__c                     =      String.isBlank(mdm.PV_NAME2) ? null : mdm.PV_NAME2;
-                    mdmRequest.PV_KTOKD__c                     =      String.isBlank(mdm.PV_KTOKD) ? null : mdm.PV_KTOKD;
-                    mdmRequest.PV_CUSTTYPE__c                  =      String.isBlank(mdm.PV_CUSTTYPE) ? null : mdm.PV_CUSTTYPE;
-                    mdmRequest.PV_STCD2__c                     =      String.isBlank(mdm.PV_STCD2) ? null : mdm.PV_STCD2;
-                    mdmRequest.PV_STCD3__c                     =      String.isBlank(mdm.PV_STCD3) ? null : mdm.PV_STCD3;
-                    mdmRequest.PV_STCD4__c                     =      String.isBlank(mdm.PV_STCD4) ? null : mdm.PV_STCD4;
-                    mdmRequest.PV_GFORM__c                     =      String.isBlank(mdm.PV_GFORM) ? null : mdm.PV_GFORM;
-                    mdmRequest.PV_J_1KFREPRE__c                =      String.isBlank(mdm.PV_J_1KFREPRE) ? null : mdm.PV_J_1KFREPRE;
-                    mdmRequest.PV_BLCKYN__c                    =      (mdm.PV_BLCKYN == '' || mdm.PV_BLCKYN == null) ? blckYnMap.get(mdm.PV_KUNNR) : Boolean.valueOf(mdm.PV_BLCKYN);
-                    mdmRequest.PV_STCD1__c                     =      String.isBlank(mdm.PV_STCD1) ? null : mdm.PV_STCD1;
-                    mdmRequest.PV_J_1KFTBUS__c                 =      String.isBlank(mdm.PV_J_1KFTBUS) ? null : mdm.PV_J_1KFTBUS;
-                    mdmRequest.PV_J_1KFTIND__c                 =      String.isBlank(mdm.PV_J_1KFTIND) ? null : mdm.PV_J_1KFTIND;
-                    mdmRequest.PV_TELF1__c                     =      String.isBlank(mdm.PV_TELF1) ? null : mdm.PV_TELF1;
-                    mdmRequest.PV_TELFX__c                     =      String.isBlank(mdm.PV_TELFX) ? null : mdm.PV_TELFX;
-                    mdmRequest.PV_PAYCUST__c                   =      String.isBlank(mdm.PV_PAYCUST) ? null : mdm.PV_PAYCUST;
-                    mdmRequest.PV_PAYCUST_lu__c                =      codeToAccIdMap.get(mdm?.PV_PAYCUST);
-                    mdmRequest.PV_CHARGECUST__c                =      String.isBlank(mdm.PV_CHARGECUST) ? null : mdm.PV_CHARGECUST;
-                    mdmRequest.PV_CHARGECUST_lu__c             =      codeToAccIdMap.get(mdm?.PV_CHARGECUST);
-                    mdmRequest.PV_VKGRP__c                     =      String.isBlank(mdm.PV_VKGRP) ? null : mdm.PV_VKGRP.toUpperCase();
-                    mdmRequest.PV_VKGRP_lu__c                  =      String.isBlank(mdm.PV_VKGRP) ? null : codeToIdMap.get(mdm?.PV_VKGRP.toUpperCase());
-                    mdmRequest.PVVF_VKGRP__c                   =      (mdm.PVVF_VKGRP == null || mdm.PVVF_VKGRP == '') ? null : Date.valueOf(mdm.PVVF_VKGRP);
-                    mdmRequest.PVRA_VKGRP__c                   =      (mdm.PVRA_VKGRP == null || mdm.PVRA_VKGRP == '') ? null : Date.valueOf(mdm.PVRA_VKGRP);
-                    mdmRequest.PV_PERNR__c                     =      String.isBlank(mdm.PV_PERNR) ? null : mdm.PV_PERNR;
-                    mdmRequest.PV_PERNR_lu__c                  =      codeToUserIdMap.get(mdm?.PV_PERNR);
-                    mdmRequest.PVVF_PERNR__c                   =      (mdm.PVVF_PERNR == null || mdm.PVVF_PERNR == '') ? null : Date.valueOf(mdm.PVVF_PERNR);
-                    mdmRequest.PVRA_PERNR__c                   =      (mdm.PVRA_PERNR == null || mdm.PVRA_PERNR == '') ? null : Date.valueOf(mdm.PVRA_PERNR);
-                    mdmRequest.PV_ADMINMA__c                   =      String.isBlank(mdm.PV_ADMINMA) ? null : mdm.PV_ADMINMA;
-                    mdmRequest.PV_ADMINMA_lu__c                =      codeToUserIdMap.get(mdm?.PV_ADMINMA);
-                    mdmRequest.PV_LOGISCENTER__c               =      String.isBlank(mdm.PV_LOGISCENTER) ? null : mdm.PV_LOGISCENTER.toUpperCase();
-                    mdmRequest.PV_LOGISCENTER_lu__c            =      String.isBlank(mdm.PV_LOGISCENTER) ? null : codeToIdMap.get(mdm?.PV_LOGISCENTER.toUpperCase());
-                    mdmRequest.PVVF_LOGISCENTER__c             =      (mdm.PVVF_LOGISCENTER == null || mdm.PVVF_LOGISCENTER == '') ? null : Date.valueOf(mdm.PVVF_LOGISCENTER);
-                    mdmRequest.PVRA_LOGISCENTER__c             =      (mdm.PVRA_LOGISCENTER == null || mdm.PVRA_LOGISCENTER == '') ? null : Date.valueOf(mdm.PVRA_LOGISCENTER);
-                    mdmRequest.PV_STCDT__c                     =      String.isBlank(mdm.PV_STCDT) ? null : mdm.PV_STCDT.toUpperCase();
-                    mdmRequest.PV_STCDT_lu__c                  =      String.isBlank(mdm.PV_STCDT) ? null : codeToIdMap.get(mdm?.PV_STCDT.toUpperCase());
-                    mdmRequest.PV_FITYP__c                     =      String.isBlank(mdm.PV_FITYP) ? null : mdm.PV_FITYP;
-                    mdmRequest.PV_HDOFFICEYN__c                =      (mdm.PV_HDOFFICEYN == '' || mdm.PV_HDOFFICEYN == null) ? headShopYnMap.get(mdm.PV_KUNNR) : Boolean.valueOf(mdm.PV_HDOFFICEYN);
-                    mdmRequest.PV_HKUNNR__c                    =      String.isBlank(mdm.PV_HKUNNR) ? null : mdm.PV_HKUNNR;
-                    mdmRequest.PV_HKUNNR_lu__c                 =      codeToAccIdMap.get(mdm?.PV_HKUNNR);
-                    mdmRequest.PV_SUBSIDIARYYN__c              =      (mdm.PV_SUBSIDIARYYN == '' || mdm.PV_SUBSIDIARYYN == null) ? affCompanyYnMap.get(mdm.PV_KUNNR) : Boolean.valueOf(mdm.PV_SUBSIDIARYYN);
-                    mdmRequest.PV_VBUND__c                     =      String.isBlank(mdm.PV_VBUND) ? null : mdm.PV_VBUND.toUpperCase();
-                    mdmRequest.PV_VBUND_lu__c                  =      String.isBlank(mdm.PV_VBUND) ? null : codeToIdMap.get(mdm?.PV_VBUND.toUpperCase());
-                    mdmRequest.PV_LAND1__c                     =      String.isBlank(mdm.PV_LAND1) ? null : mdm.PV_LAND1.toUpperCase();
-                    mdmRequest.PV_LAND1_lu__c                  =      String.isBlank(mdm.PV_LAND1) ? null : codeToIdMap.get(mdm?.PV_LAND1.toUpperCase());
-                    mdmRequest.PV_KNVKTYPE__c                  =      String.isBlank(mdm.PV_KNVKTYPE) ? null : mdm.PV_KNVKTYPE;
-                    mdmRequest.PV_CLOSEDT__c                   =      (mdm.PV_CLOSEDT == '' || mdm.PV_CLOSEDT == null) ? null : Date.valueOf(mdm.PV_CLOSEDT);
-                    mdmRequest.PV_REGIO__c                     =      String.isBlank(mdm.PV_REGIO) ? null : mdm.PV_REGIO.toUpperCase();
-                    mdmRequest.PV_REGIO_lu__c                  =      String.isBlank(mdm.PV_REGIO) ? null : codeToIdMap.get(mdm?.PV_REGIO.toUpperCase());
-                    mdmRequest.PV_ADRES_ROADADDR1__c           =      String.isBlank(mdm.PV_ADRES_ROADADDR1) ? null : mdm.PV_ADRES_ROADADDR1;
-                    mdmRequest.PV_ADRES_ROADADDR2__c           =      String.isBlank(mdm.PV_ADRES_ROADADDR2) ? null : mdm.PV_ADRES_ROADADDR2;
-                    mdmRequest.PV_ADRES_ADDR1__c               =      String.isBlank(mdm.PV_ADRES_ADDR1) ? null : mdm.PV_ADRES_ADDR1;
-                    mdmRequest.PV_ADRES_ADDR2__c               =      String.isBlank(mdm.PV_ADRES_ADDR2) ? null : mdm.PV_ADRES_ADDR2;
-                    mdmRequest.PV_DELICUST__c                  =      String.isBlank(mdm.PV_DELICUST) ? null : mdm.PV_DELICUST;
-                    mdmRequest.PV_DELICUST_lu__c               =      codeToAccIdMap.get(mdm?.PV_DELICUST);
-                    mdmRequest.PV_SALESCUST__c                 =      String.isBlank(mdm.PV_SALESCUST) ? null : mdm.PV_SALESCUST;
-                    mdmRequest.PV_SALESCUST_lu__c              =      codeToAccIdMap.get(mdm?.PV_SALESCUST);
-                    mdmRequest.PV_BIZPLCODE__c                 =      String.isBlank(mdm.PV_BIZPLCODE) ? null : mdm.PV_BIZPLCODE;
-                    mdmRequest.PV_BIZPLCODE_lu__c              =      codeToAccIdMap.get(mdm?.PV_BIZPLCODE);
-                    mdmRequest.PV_BUSAB__c                     =      String.isBlank(mdm.PV_BUSAB) ? null : mdm.PV_BUSAB;
-                    mdmRequest.PV_CESSION_KZ__c                =      String.isBlank(mdm.PV_CESSION_KZ) ? null : mdm.PV_CESSION_KZ;
-                    mdmRequest.PV_ZUAWA__c                     =      String.isBlank(mdm.PV_ZUAWA) ? null : mdm.PV_ZUAWA.toUpperCase();
-                    mdmRequest.PV_ZUAWA_lu__c                  =      String.isBlank(mdm.PV_ZUAWA) ? null : codeToIdMap.get(mdm?.PV_ZUAWA.toUpperCase());
-                    mdmRequest.PV_AKONT__c                     =      String.isBlank(mdm.PV_AKONT) ? null : mdm.PV_AKONT.toUpperCase();
-                    mdmRequest.PV_AKONT_lu__c                  =      String.isBlank(mdm.PV_AKONT) ? null : codeToIdMap.get(mdm?.PV_AKONT.toUpperCase());
-                    mdmRequest.PV_FDGRV__c                     =      String.isBlank(mdm.PV_FDGRV) ? null : mdm.PV_FDGRV;
-                    mdmRequest.PV_VRSDG__c                     =      String.isBlank(mdm.PV_VRSDG) ? null : mdm.PV_VRSDG;
-                    mdmRequest.PV_TAXKDD__c                    =      String.isBlank(mdm.PV_TAXKDD) ? null : mdm.PV_TAXKDD;
-                    mdmRequest.PV_KATR5__c                     =      String.isBlank(mdm.PV_KATR5) ? null : mdm.PV_KATR5;
-                    mdmRequest.PV_CUHR1__c                     =      String.isBlank(mdm.PV_CUHR1) ? null : mdm.PV_CUHR1.toUpperCase();
-                    mdmRequest.PV_CUHR1_lu__c                  =      String.isBlank(mdm.PV_CUHR1) ? null : codeToIdMap.get(mdm?.PV_CUHR1.toUpperCase());
-                    mdmRequest.PVVF_CUHR1__c                   =      (mdm.PVVF_CUHR1 == null || mdm.PVVF_CUHR1 == '') ? null : Date.valueOf(mdm.PVVF_CUHR1);
-                    mdmRequest.PVRA_CUHR1__c                   =      (mdm.PVRA_CUHR1 == null || mdm.PVRA_CUHR1 == '') ? null : Date.valueOf(mdm.PVRA_CUHR1);
-                    mdmRequest.PV_KONDA__c                     =      String.isBlank(mdm.PV_KONDA) ? null : mdm.PV_KONDA.toUpperCase();
-                    mdmRequest.PV_KONDA_lu__c                  =      String.isBlank(mdm.PV_KONDA) ? null : codeToIdMap.get(mdm?.PV_KONDA.toUpperCase());
-                    mdmRequest.PVVF_KONDA__c                   =      (mdm.PVVF_KONDA == null || mdm.PVVF_KONDA == '') ? null : Date.valueOf(mdm.PVVF_KONDA);
-                    mdmRequest.PVRA_KONDA__c                   =      (mdm.PVRA_KONDA == null || mdm.PVRA_KONDA == '') ? null : Date.valueOf(mdm.PVRA_KONDA);
-                    mdmRequest.PV_KVGR1__c                     =      String.isBlank(mdm.PV_KVGR1) ? null : mdm.PV_KVGR1.toUpperCase();
-                    mdmRequest.PV_KVGR1_lu__c                  =      String.isBlank(mdm.PV_KVGR1) ? null : codeToIdMap.get(mdm?.PV_KVGR1.toUpperCase());
-                    mdmRequest.PVVF_KVGR1__c                   =      (mdm.PVVF_KVGR1 == null || mdm.PVVF_KVGR1 == '') ? null : Date.valueOf(mdm.PVVF_KVGR1);
-                    mdmRequest.PVRA_KVGR1__c                   =      (mdm.PVRA_KVGR1 == null || mdm.PVRA_KVGR1 == '') ? null : Date.valueOf(mdm.PVRA_KVGR1);
-                    mdmRequest.PV_WAERS__c                     =      String.isBlank(mdm.PV_WAERS) ? null : mdm.PV_WAERS.toUpperCase();
-                    mdmRequest.PV_WAERS_lu__c                  =      String.isBlank(mdm.PV_WAERS) ? null : codeToIdMap.get(mdm?.PV_WAERS.toUpperCase());
-                    mdmRequest.PV_KDGRP__c                     =      String.isBlank(mdm.PV_KDGRP) ? null : mdm.PV_KDGRP;
-                    mdmRequest.PV_KVGR3__c                     =      String.isBlank(mdm.PV_KVGR3) ? null : mdm.PV_KVGR3.toUpperCase();
-                    mdmRequest.PV_KVGR3_lu__c                  =      String.isBlank(mdm.PV_KVGR3) ? null : codeToIdMap.get(mdm?.PV_KVGR3.toUpperCase());
-                    mdmRequest.PV_KVGR2__c                     =      String.isBlank(mdm.PV_KVGR2) ? null : mdm.PV_KVGR2;
-                    mdmRequest.PV_KVGR3_BOT__c                 =      String.isBlank(mdm.PV_KVGR3_BOT) ? null : mdm.PV_KVGR3_BOT.toUpperCase();
-                    mdmRequest.PV_KVGR3_BOT_lu__c              =      String.isBlank(mdm.PV_KVGR3_BOT) ? null : codeToIdMap.get(mdm?.PV_KVGR3_BOT.toUpperCase());
-                    mdmRequest.PV_ODCLOSEGB__c                 =      String.isBlank(mdm.PV_ODCLOSEGB) ? null : mdm.PV_ODCLOSEGB;
-                    mdmRequest.PV_VACCPRTEXCYN__c              =      (mdm.PV_VACCPRTEXCYN == '' || mdm.PV_VACCPRTEXCYN == null) ? accountYnMap.get(mdm.PV_KUNNR) : Boolean.valueOf(mdm.PV_VACCPRTEXCYN);
-                    mdmRequest.PV_ZTERM_VV__c                  =      String.isBlank(mdm.PV_ZTERM_VV) ? null : mdm.PV_ZTERM_VV.toUpperCase();
-                    mdmRequest.PV_ZTERM_VV_lu__c               =      String.isBlank(mdm.PV_ZTERM_VV) ? null : codeToIdMap.get(mdm?.PV_ZTERM_VV.toUpperCase());
-                    mdmRequest.PV_DSTRHISTREGYN__c             =      String.isBlank(mdm.PV_DSTRHISTREGYN) ? null : mdm.PV_DSTRHISTREGYN;
-                    mdmRequest.PV_KULTG__c                     =      String.isBlank(mdm.PV_KULTG) ? null : mdm.PV_KULTG;
-                    mdmRequest.PV_OLD_BIZPLACE_NEW__c          =      String.isBlank(mdm.PV_OLD_BIZPLACE_NEW) ? null : mdm.PV_OLD_BIZPLACE_NEW.toUpperCase();
-                    mdmRequest.PV_OLD_BIZPLACE_NEW_lu__c       =      String.isBlank(mdm.PV_OLD_BIZPLACE_NEW) ? null : codeToIdMap.get(mdm?.PV_OLD_BIZPLACE_NEW.toUpperCase());
-                    mdmRequest.PVVF_OLD_BIZPLACE_NEW__c        =      (mdm.PVVF_OLD_BIZPLACE_NEW == null || mdm.PVVF_OLD_BIZPLACE_NEW == '') ? null : Date.valueOf(mdm.PVVF_OLD_BIZPLACE_NEW);
-                    mdmRequest.PVRA_OLD_BIZPLACE_NEW__c        =      (mdm.PVRA_OLD_BIZPLACE_NEW == null || mdm.PVRA_OLD_BIZPLACE_NEW == '') ? null : Date.valueOf(mdm.PVRA_OLD_BIZPLACE_NEW);
-                    mdmRequest.PV_SHAPE__c                     =      String.isBlank(mdm.PV_SHAPE) ? null : mdm.PV_SHAPE;
-                    mdmRequest.PV_EXAMYN__c                    =      (mdm.PV_EXAMYN == '' || mdm.PV_EXAMYN == null) ? faceYnMap.get(mdm.PV_KUNNR) : Boolean.valueOf(mdm.PV_EXAMYN);
-                    mdmRequest.PV_SHIPREQTIME__c               =      String.isBlank(mdm.PV_SHIPREQTIME) ? null : mdm.PV_SHIPREQTIME;
-                    mdmRequest.PV_PRODLOADCOND__c              =      String.isBlank(mdm.PV_PRODLOADCOND) ? null : mdm.PV_PRODLOADCOND;
-                    mdmRequest.PV_RETURNLOC__c                 =      String.isBlank(mdm.PV_RETURNLOC) ? null : mdm.PV_RETURNLOC;
-                    mdmRequest.PV_ENTERCOND1__c                =      String.isBlank(mdm.PV_ENTERCOND1) ? null : mdm.PV_ENTERCOND1;
-                    mdmRequest.PV_UNLOADCOND1__c               =      String.isBlank(mdm.PV_UNLOADCOND1) ? null : mdm.PV_UNLOADCOND1;
-                    mdmRequest.PV_UNLOADCOND2__c               =      String.isBlank(mdm.PV_UNLOADCOND2) ? null : mdm.PV_UNLOADCOND2;
-                    mdmRequest.PV_DELIGROUP__c                 =      String.isBlank(mdm.PV_DELIGROUP) ? null : mdm.PV_DELIGROUP.toUpperCase();
-                    mdmRequest.PV_DELIGROUP_lu__c              =      String.isBlank(mdm.PV_DELIGROUP) ? null : codeToIdMap.get(mdm?.PV_DELIGROUP.toUpperCase());
-                    mdmRequest.PV_KATR10__c                    =      String.isBlank(mdm.PV_KATR10) ? null : mdm.PV_KATR10.toUpperCase();
-                    mdmRequest.PV_KATR10_lu__c                 =      String.isBlank(mdm.PV_KATR10) ? null : codeToIdMap.get(mdm?.PV_KATR10.toUpperCase());
-                    mdmRequest.PV_KEYYN__c                     =      (mdm.PV_KEYYN == '' || mdm.PV_KEYYN == null) ? bKeyYnMap.get(mdm.PV_KUNNR) : Boolean.valueOf(mdm.PV_KEYYN);
-                    mdmRequest.PV_KEYINFO__c                   =      String.isBlank(mdm.PV_KEYINFO) ? null : mdm.PV_KEYINFO;
-                    mdmRequest.PV_KXOTD__c                     =      (mdm.PV_KXOTD == '' || mdm.PV_KXOTD == null) ? kxOtdMap.get(mdm.PV_KUNNR) : Boolean.valueOf(mdm.PV_KXOTD);
-                    mdmRequest.PV_KXOTDTIME__c                 =      String.isBlank(mdm.PV_KXOTDTIME) ? null : mdm.PV_KXOTDTIME;
-                    mdmRequest.PV_FDINFO__c                    =      (mdm.PV_FDINFO == '' || mdm.PV_FDINFO == null) ? fdInfoMap.get(mdm.PV_KUNNR) : Boolean.valueOf(mdm.PV_FDINFO);
-                    mdmRequest.PV_FDREQD__c                    =      (mdm.PV_FDREQD == '' || mdm.PV_FDREQD == null) ? null : Date.valueOf(mdm.PV_FDREQD);
-                    mdmRequest.PV_FDREQT__c                    =      String.isBlank(mdm.PV_FDREQT) ? null : mdm.PV_FDREQT;
-                    mdmRequest.PV_ISFDFTF__c                   =      (mdm.PV_ISFDFTF == '' || mdm.PV_ISFDFTF == null) ? isFaceYnMap.get(mdm.PV_KUNNR) : Boolean.valueOf(mdm.PV_ISFDFTF);
-                    mdmRequest.PV_FDCTINFO__c                  =      String.isBlank(mdm.PV_FDCTINFO) ? null : mdm.PV_FDCTINFO;
-                    mdmRequest.PV_FDNOTICE__c                  =      String.isBlank(mdm.PV_FDNOTICE) ? null : mdm.PV_FDNOTICE;
-                    mdmRequest.PV_SHIPTYPE__c                  =      String.isBlank(mdm.PV_SHIPTYPE) ? null : mdm.PV_SHIPTYPE;
-                    mdmRequest.PV_TEMPTARGET__c                =      String.isBlank(mdm.PV_TEMPTARGET) ? null : mdm.PV_TEMPTARGET;
+                    mdmRequest.PV_OLDCD__c                     =      getValue(mdm.PV_OLDCD, accountMap.get(mdm?.PV_KUNNR)?.CustomerIDASIS__c, headerList.contains('PV_OLDCD'));
+                                                                                                                                  // 선택한 헤더리스트에 지금 매핑해줄 필드가 포함 되어있으면 true
+                    mdmRequest.PV_NAME1__c                     =      getValue(mdm.PV_NAME1, accountMap.get(mdm?.PV_KUNNR)?.Name, headerList.contains('PV_NAME1'));
+
+                    mdmRequest.PV_NAME_G__c                    =      getValue(mdm.PV_NAME_G, accountMap.get(mdm?.PV_KUNNR)?.NameKor__c, headerList.contains('PV_NAME_G'));
+                    mdmRequest.PV_NAME2__c                     =      getValue(mdm.PV_NAME2, accountMap.get(mdm?.PV_KUNNR)?.NameAlias__c,  headerList.contains('PV_NAME2'));
+                    mdmRequest.PV_KTOKD__c                     =      getValue(mdm.PV_KTOKD, accountMap.get(mdm?.PV_KUNNR)?.AccountGroup__c);
+                    mdmRequest.PV_CUSTTYPE__c                  =      getValue(mdm.PV_CUSTTYPE, accountMap.get(mdm?.PV_KUNNR)?.CustomerType__c);
+                    mdmRequest.PV_STCD2__c                     =      getValue(mdm.PV_STCD2, accountMap.get(mdm?.PV_KUNNR)?.CompanyRegisterNumber__c);
+                    mdmRequest.PV_STCD3__c                     =      getValue(mdm.PV_STCD3, accountMap.get(mdm?.PV_KUNNR)?.CorporateCode__c);
+                    mdmRequest.PV_STCD4__c                     =      getValue(mdm.PV_STCD4, accountMap.get(mdm?.PV_KUNNR)?.SubCompanyRegisterNumber__c);
+                    mdmRequest.PV_GFORM__c                     =      getValue(mdm.PV_GFORM, accountMap.get(mdm?.PV_KUNNR)?.LegalStatus__c);
+                    mdmRequest.PV_J_1KFREPRE__c                =      getValue(mdm.PV_J_1KFREPRE, accountMap.get(mdm?.PV_KUNNR)?.RepresentativeName__c);
+                    mdmRequest.PV_BLCKYN__c                    =      (mdm.PV_BLCKYN == '' || mdm.PV_BLCKYN == null) ? accountMap.get(mdm?.PV_KUNNR).PV_BLCKYN__c : Boolean.valueOf(mdm.PV_BLCKYN);
+                    mdmRequest.PV_STCD1__c                     =      getValue(mdm.PV_STCD1, accountMap.get(mdm?.PV_KUNNR)?.RepresentativeBirthDate__c);
+                    mdmRequest.PV_J_1KFTBUS__c                 =      getValue(mdm.PV_J_1KFTBUS, accountMap.get(mdm?.PV_KUNNR)?.BusinessConditions__c);
+                    mdmRequest.PV_J_1KFTIND__c                 =      getValue(mdm.PV_J_1KFTIND, accountMap.get(mdm?.PV_KUNNR)?.BusinessCategory__c);
+                    mdmRequest.PV_TELF1__c                     =      getValue(mdm.PV_TELF1, accountMap.get(mdm?.PV_KUNNR)?.Phone);
+                    mdmRequest.PV_TELFX__c                     =      getValue(mdm.PV_TELFX, accountMap.get(mdm?.PV_KUNNR)?.Fax);
+                    mdmRequest.PV_PAYCUST__c                   =      getValue(mdm.PV_PAYCUST, accountMap.get(mdm?.PV_KUNNR)?.PaymentAccountCode__c);
+                    mdmRequest.PV_PAYCUST_lu__c                =      codeToAccIdMap.get(mdmRequest.PV_PAYCUST__c);
+                    mdmRequest.PV_CHARGECUST__c                =      getValue(mdm.PV_CHARGECUST, accountMap.get(mdm?.PV_KUNNR)?.ShippingAccountCode__c);
+                    mdmRequest.PV_CHARGECUST_lu__c             =      codeToAccIdMap.get(mdmRequest.PV_CHARGECUST__c);
+                    mdmRequest.PV_VKGRP__c                     =      getValue(String.isBlank(mdm.PV_VKGRP) ? '' : mdm.PV_VKGRP.toUpperCase(), accountMap.get(mdm?.PV_KUNNR)?.PV_VKGRP__c);
+                    mdmRequest.PV_VKGRP_lu__c                  =      codeToIdMap.get(mdmRequest.PV_VKGRP__c);
+                    mdmRequest.PVVF_VKGRP__c                   =      (mdm.PVVF_VKGRP == null || mdm.PVVF_VKGRP == '') ? accountMap.get(mdm?.PV_KUNNR).PVVF_VKGRP__c : Date.valueOf(mdm.PVVF_VKGRP);
+                    mdmRequest.PVRA_VKGRP__c                   =      (mdm.PVRA_VKGRP == null || mdm.PVRA_VKGRP == '') ? accountMap.get(mdm?.PV_KUNNR).SalesGroupFromDate__c : Date.valueOf(mdm.PVRA_VKGRP);
+                    mdmRequest.PV_PERNR__c                     =      getValue(mdm.PV_PERNR, accountMap.get(mdm?.PV_KUNNR)?.PICCode__c);
+                    mdmRequest.PV_PERNR_lu__c                  =      codeToUserIdMap.get(mdmRequest.PV_PERNR__c);
+                    mdmRequest.PVVF_PERNR__c                   =      (mdm.PVVF_PERNR == null || mdm.PVVF_PERNR == '') ? accountMap.get(mdm?.PV_KUNNR).PVVF_PERNR__c : Date.valueOf(mdm.PVVF_PERNR);
+                    mdmRequest.PVRA_PERNR__c                   =      (mdm.PVRA_PERNR == null || mdm.PVRA_PERNR == '') ? accountMap.get(mdm?.PV_KUNNR).ResponsibilityMAFromDate__c : Date.valueOf(mdm.PVRA_PERNR);
+                    mdmRequest.PV_ADMINMA__c                   =      getValue(mdm.PV_ADMINMA, accountMap.get(mdm?.PV_KUNNR)?.ResponsibilityAMA__c);
+                    mdmRequest.PV_ADMINMA_lu__c                =      codeToUserIdMap.get(mdmRequest.PV_ADMINMA__c);
+                    mdmRequest.PV_LOGISCENTER__c               =      getValue(String.isBlank(mdm.PV_LOGISCENTER) ? '' : mdm.PV_LOGISCENTER.toUpperCase(), accountMap.get(mdm?.PV_KUNNR)?.FWReleaseCenter__c);
+                    mdmRequest.PV_LOGISCENTER_lu__c            =      codeToIdMap.get(mdmRequest.PV_LOGISCENTER__c);
+                    mdmRequest.PVVF_LOGISCENTER__c             =      (mdm.PVVF_LOGISCENTER == null || mdm.PVVF_LOGISCENTER == '') ? accountMap.get(mdm?.PV_KUNNR).PVVF_LOGISCENTER__c : Date.valueOf(mdm.PVVF_LOGISCENTER);
+                    mdmRequest.PVRA_LOGISCENTER__c             =      (mdm.PVRA_LOGISCENTER == null || mdm.PVRA_LOGISCENTER == '') ? accountMap.get(mdm?.PV_KUNNR).FWReleaseCenterFromDate__c : Date.valueOf(mdm.PVRA_LOGISCENTER);
+                    mdmRequest.PV_STCDT__c                     =      getValue(String.isBlank(mdm.PV_STCDT) ? '' : mdm.PV_STCDT.toUpperCase(), accountMap.get(mdm?.PV_KUNNR)?.TaxInvoiceType__c);
+                    mdmRequest.PV_STCDT_lu__c                  =      codeToIdMap.get(mdmRequest.PV_STCDT__c);
+                    mdmRequest.PV_FITYP__c                     =      getValue(mdm.PV_FITYP, accountMap.get(mdm?.PV_KUNNR)?.TaxationType__c);
+                    mdmRequest.PV_HDOFFICEYN__c                =      (mdm.PV_HDOFFICEYN == '' || mdm.PV_HDOFFICEYN == null) ? accountMap.get(mdm?.PV_KUNNR).IsHeadShopUseYN__c : Boolean.valueOf(mdm.PV_HDOFFICEYN);
+                    mdmRequest.PV_HKUNNR__c                    =      String.isBlank(mdm.PV_HKUNNR) ? accountMap.get(mdm?.PV_KUNNR).HeadOfficeCode__c : mdm.PV_HKUNNR;
+                    mdmRequest.PV_HKUNNR_lu__c                 =      codeToAccIdMap.get(mdmRequest.PV_HKUNNR__c);
+                    mdmRequest.PV_SUBSIDIARYYN__c              =      (mdm.PV_SUBSIDIARYYN == '' || mdm.PV_SUBSIDIARYYN == null) ? accountMap.get(mdm?.PV_KUNNR).IsAffiliatedcompanyYN__c : Boolean.valueOf(mdm.PV_SUBSIDIARYYN);
+                    mdmRequest.PV_VBUND__c                     =      String.isBlank(mdm.PV_VBUND) ? accountMap.get(mdm?.PV_KUNNR).AffiliatedCompany__c : mdm.PV_VBUND.toUpperCase();
+                    mdmRequest.PV_VBUND_lu__c                  =      codeToIdMap.get(mdmRequest.PV_VBUND__c);
+                    mdmRequest.PV_LAND1__c                     =      String.isBlank(mdm.PV_LAND1) ? accountMap.get(mdm?.PV_KUNNR).CountryKeyCode__c : mdm.PV_LAND1.toUpperCase();
+                    mdmRequest.PV_LAND1_lu__c                  =      codeToIdMap.get(mdmRequest.PV_LAND1__c);
+                    mdmRequest.PV_KNVKTYPE__c                  =      String.isBlank(mdm.PV_KNVKTYPE) ? accountMap.get(mdm?.PV_KUNNR).PV_KNVKTYPE__c : mdm.PV_KNVKTYPE;
+                    mdmRequest.PV_CLOSEDT__c                   =      (mdm.PV_CLOSEDT == '' || mdm.PV_CLOSEDT == null) ? accountMap.get(mdm?.PV_KUNNR).ShutDownDate__c : Date.valueOf(mdm.PV_CLOSEDT);
+                    mdmRequest.PV_REGIO__c                     =      String.isBlank(mdm.PV_REGIO) ? accountMap.get(mdm?.PV_KUNNR).LocationState__c : mdm.PV_REGIO.toUpperCase();
+                    mdmRequest.PV_REGIO_lu__c                  =      codeToIdMap.get(mdmRequest.PV_REGIO__c);
+                    mdmRequest.PV_ADRES_ROADADDR1__c           =      String.isBlank(mdm.PV_ADRES_ROADADDR1) ? accountMap.get(mdm?.PV_KUNNR).Address__c : mdm.PV_ADRES_ROADADDR1;
+                    mdmRequest.PV_ADRES_ROADADDR2__c           =      String.isBlank(mdm.PV_ADRES_ROADADDR2) ? accountMap.get(mdm?.PV_KUNNR).AddressDetails__c : mdm.PV_ADRES_ROADADDR2;
+                    mdmRequest.PV_ADRES_ADDR1__c               =      String.isBlank(mdm.PV_ADRES_ADDR1) ? accountMap.get(mdm?.PV_KUNNR).Address2__c : mdm.PV_ADRES_ADDR1;
+                    mdmRequest.PV_ADRES_ADDR2__c               =      String.isBlank(mdm.PV_ADRES_ADDR2) ? accountMap.get(mdm?.PV_KUNNR).AddressDetails2__c : mdm.PV_ADRES_ADDR2;
+                    mdmRequest.PV_DELICUST__c                  =      String.isBlank(mdm.PV_DELICUST) ? accountMap.get(mdm?.PV_KUNNR).DeliveryCustomerCode__c : mdm.PV_DELICUST;
+                    mdmRequest.PV_DELICUST_lu__c               =      codeToAccIdMap.get(mdmRequest.PV_DELICUST__c);
+                    mdmRequest.PV_SALESCUST__c                 =      String.isBlank(mdm.PV_SALESCUST) ? accountMap.get(mdm?.PV_KUNNR).SalesCustomerCode__c : mdm.PV_SALESCUST;
+                    mdmRequest.PV_SALESCUST_lu__c              =      codeToAccIdMap.get(mdmRequest.PV_SALESCUST__c);
+                    mdmRequest.PV_BIZPLCODE__c                 =      String.isBlank(mdm.PV_BIZPLCODE) ? accountMap.get(mdm?.PV_KUNNR).BizPLCode__c : mdm.PV_BIZPLCODE;
+                    mdmRequest.PV_BIZPLCODE_lu__c              =      codeToAccIdMap.get(mdmRequest.PV_BIZPLCODE__c);
+                    mdmRequest.PV_BUSAB__c                     =      String.isBlank(mdm.PV_BUSAB) ? accountMap.get(mdm?.PV_KUNNR).SalesForm__c : mdm.PV_BUSAB;
+                    mdmRequest.PV_CESSION_KZ__c                =      String.isBlank(mdm.PV_CESSION_KZ) ? accountMap.get(mdm?.PV_KUNNR).CustomerStatus__c : mdm.PV_CESSION_KZ;
+                    mdmRequest.PV_ZUAWA__c                     =      String.isBlank(mdm.PV_ZUAWA) ? accountMap.get(mdm?.PV_KUNNR).SortKey__c : mdm.PV_ZUAWA.toUpperCase();
+                    mdmRequest.PV_ZUAWA_lu__c                  =      sortKeyIdMap.get(mdmRequest.PV_ZUAWA__c);
+                    mdmRequest.PV_AKONT__c                     =      String.isBlank(mdm.PV_AKONT) ? accountMap.get(mdm?.PV_KUNNR).MediateAccount__c : mdm.PV_AKONT.toUpperCase();
+                    mdmRequest.PV_AKONT_lu__c                  =      codeToIdMap.get(mdmRequest.PV_AKONT__c);
+                    mdmRequest.PV_FDGRV__c                     =      String.isBlank(mdm.PV_FDGRV) ? accountMap.get(mdm?.PV_KUNNR).CashManagementGroup__c : mdm.PV_FDGRV;
+                    mdmRequest.PV_VRSDG__c                     =      String.isBlank(mdm.PV_VRSDG) ? accountMap.get(mdm?.PV_KUNNR).IsDeposit__c : mdm.PV_VRSDG;
+                    mdmRequest.PV_TAXKDD__c                    =      String.isBlank(mdm.PV_TAXKDD) ? accountMap.get(mdm?.PV_KUNNR).TaxClassification__c : mdm.PV_TAXKDD;
+                    mdmRequest.PV_KATR5__c                     =      String.isBlank(mdm.PV_KATR5) ? accountMap.get(mdm?.PV_KUNNR).TaxPaymentMethod__c : mdm.PV_KATR5;
+                    mdmRequest.PV_CUHR1__c                     =      String.isBlank(mdm.PV_CUHR1) ? accountMap.get(mdm?.PV_KUNNR).CustomerRoute__c : mdm.PV_CUHR1.toUpperCase();
+                    mdmRequest.PV_CUHR1_lu__c                  =      codeToIdMap.get(mdmRequest.PV_CUHR1__c);
+                    mdmRequest.PVVF_CUHR1__c                   =      (mdm.PVVF_CUHR1 == null || mdm.PVVF_CUHR1 == '') ? accountMap.get(mdm?.PV_KUNNR).PV_CUHR1__c : Date.valueOf(mdm.PVVF_CUHR1);
+                    mdmRequest.PVRA_CUHR1__c                   =      (mdm.PVRA_CUHR1 == null || mdm.PVRA_CUHR1 == '') ? accountMap.get(mdm?.PV_KUNNR).CustomerRouteFromDate__c : Date.valueOf(mdm.PVRA_CUHR1);
+                    mdmRequest.PV_KONDA__c                     =      String.isBlank(mdm.PV_KONDA) ? accountMap.get(mdm?.PV_KUNNR).PriceGroup__c : mdm.PV_KONDA.toUpperCase();
+                    mdmRequest.PV_KONDA_lu__c                  =      codeToIdMap.get(mdmRequest.PV_KONDA__c);
+                    mdmRequest.PVVF_KONDA__c                   =      (mdm.PVVF_KONDA == null || mdm.PVVF_KONDA == '') ? accountMap.get(mdm?.PV_KUNNR).PVVF_KONDA__c : Date.valueOf(mdm.PVVF_KONDA);
+                    mdmRequest.PVRA_KONDA__c                   =      (mdm.PVRA_KONDA == null || mdm.PVRA_KONDA == '') ? accountMap.get(mdm?.PV_KUNNR).PriceGroupFromDate__c : Date.valueOf(mdm.PVRA_KONDA);
+                    mdmRequest.PV_KVGR1__c                     =      String.isBlank(mdm.PV_KVGR1) ? accountMap.get(mdm?.PV_KUNNR).UnitPriceGroup__c : mdm.PV_KVGR1.toUpperCase();
+                    mdmRequest.PV_KVGR1_lu__c                  =      unitPriceIdMap.get(mdmRequest.PV_KVGR1__c);
+                    mdmRequest.PVVF_KVGR1__c                   =      (mdm.PVVF_KVGR1 == null || mdm.PVVF_KVGR1 == '') ? accountMap.get(mdm?.PV_KUNNR).PVVF_KVGR1__c : Date.valueOf(mdm.PVVF_KVGR1);
+                    mdmRequest.PVRA_KVGR1__c                   =      (mdm.PVRA_KVGR1 == null || mdm.PVRA_KVGR1 == '') ? accountMap.get(mdm?.PV_KUNNR).UnitPriceGroupFromDate__c : Date.valueOf(mdm.PVRA_KVGR1);
+                    mdmRequest.PV_WAERS__c                     =      String.isBlank(mdm.PV_WAERS) ? accountMap.get(mdm?.PV_KUNNR).CurrencyIsoCode : mdm.PV_WAERS.toUpperCase();
+                    mdmRequest.PV_WAERS_lu__c                  =      codeToIdMap.get(mdmRequest.PV_WAERS__c);
+                    mdmRequest.PV_KDGRP__c                     =      String.isBlank(mdm.PV_KDGRP) ? accountMap.get(mdm?.PV_KUNNR).CreditManagement__c : mdm.PV_KDGRP;
+                    mdmRequest.PV_KVGR3__c                     =      String.isBlank(mdm.PV_KVGR3) ? accountMap.get(mdm?.PV_KUNNR).StatementOfDeliveryType__c : mdm.PV_KVGR3.toUpperCase();
+                    mdmRequest.PV_KVGR3_lu__c                  =      statementIdMap.get(mdmRequest.PV_KVGR3__c);
+                    mdmRequest.PV_KVGR2__c                     =      String.isBlank(mdm.PV_KVGR2) ? accountMap.get(mdm?.PV_KUNNR).SubsidyType__c : mdm.PV_KVGR2;
+                    mdmRequest.PV_KVGR3_BOT__c                 =      String.isBlank(mdm.PV_KVGR3_BOT) ? accountMap.get(mdm?.PV_KUNNR).StatementOfDeliveryType2__c : mdm.PV_KVGR3_BOT.toUpperCase();
+                    mdmRequest.PV_KVGR3_BOT_lu__c              =      statementBotIdMap.get(mdmRequest.PV_KVGR3_BOT__c);
+                    mdmRequest.PV_ODCLOSEGB__c                 =      String.isBlank(mdm.PV_ODCLOSEGB) ? accountMap.get(mdm?.PV_KUNNR).CustomerOrderDeadlineType__c : mdm.PV_ODCLOSEGB;
+                    mdmRequest.PV_VACCPRTEXCYN__c              =      (mdm.PV_VACCPRTEXCYN == '' || mdm.PV_VACCPRTEXCYN == null) ? accountMap.get(mdm?.PV_KUNNR).IsPrintVirtualAccount__c : Boolean.valueOf(mdm.PV_VACCPRTEXCYN);
+                    mdmRequest.PV_ZTERM_VV__c                  =      String.isBlank(mdm.PV_ZTERM_VV) ? accountMap.get(mdm?.PV_KUNNR).TermsOfPayment__c : mdm.PV_ZTERM_VV.toUpperCase();
+                    mdmRequest.PV_ZTERM_VV_lu__c               =      codeToIdMap.get(mdmRequest.PV_ZTERM_VV__c);
+                    mdmRequest.PV_DSTRHISTREGYN__c             =      String.isBlank(mdm.PV_DSTRHISTREGYN) ? accountMap.get(mdm?.PV_KUNNR).DisHisRegType__c : mdm.PV_DSTRHISTREGYN;
+                    mdmRequest.PV_KULTG__c                     =      String.isBlank(mdm.PV_KULTG) ? accountMap.get(mdm?.PV_KUNNR).ContractRocationDate__c : mdm.PV_KULTG;
+                    mdmRequest.PV_OLD_BIZPLACE_NEW__c          =      String.isBlank(mdm.PV_OLD_BIZPLACE_NEW) ? accountMap.get(mdm?.PV_KUNNR).CustomerPath__c : mdm.PV_OLD_BIZPLACE_NEW.toUpperCase();
+                    mdmRequest.PV_OLD_BIZPLACE_NEW_lu__c       =      codeToIdMap.get(mdmRequest.PV_OLD_BIZPLACE_NEW__c);
+                    mdmRequest.PVVF_OLD_BIZPLACE_NEW__c        =      (mdm.PVVF_OLD_BIZPLACE_NEW == null || mdm.PVVF_OLD_BIZPLACE_NEW == '') ? accountMap.get(mdm?.PV_KUNNR).PVVF_OLD_BIZPLACE_NEW__c : Date.valueOf(mdm.PVVF_OLD_BIZPLACE_NEW);
+                    mdmRequest.PVRA_OLD_BIZPLACE_NEW__c        =      (mdm.PVRA_OLD_BIZPLACE_NEW == null || mdm.PVRA_OLD_BIZPLACE_NEW == '') ? accountMap.get(mdm?.PV_KUNNR).CustomerPathFromDate__c : Date.valueOf(mdm.PVRA_OLD_BIZPLACE_NEW);
+                    mdmRequest.PV_SHAPE__c                     =      String.isBlank(mdm.PV_SHAPE) ? accountMap.get(mdm?.PV_KUNNR).Shape__c : mdm.PV_SHAPE;
+                    mdmRequest.PV_EXAMYN__c                    =      (mdm.PV_EXAMYN == '' || mdm.PV_EXAMYN == null) ? accountMap.get(mdm?.PV_KUNNR).IsFaceToFaceInspectionStatus__c : Boolean.valueOf(mdm.PV_EXAMYN);
+                    mdmRequest.PV_SHIPREQTIME__c               =      String.isBlank(mdm.PV_SHIPREQTIME) ? accountMap.get(mdm?.PV_KUNNR).OTD__c : mdm.PV_SHIPREQTIME;
+                    mdmRequest.PV_PRODLOADCOND__c              =      String.isBlank(mdm.PV_PRODLOADCOND) ? accountMap.get(mdm?.PV_KUNNR).ProductLoadingCondition__c : mdm.PV_PRODLOADCOND;
+                    mdmRequest.PV_RETURNLOC__c                 =      String.isBlank(mdm.PV_RETURNLOC) ? accountMap.get(mdm?.PV_KUNNR).ReturnLocation__c : mdm.PV_RETURNLOC;
+                    mdmRequest.PV_ENTERCOND1__c                =      String.isBlank(mdm.PV_ENTERCOND1) ? accountMap.get(mdm?.PV_KUNNR).VehicleEntryCondtions__c : mdm.PV_ENTERCOND1;
+                    mdmRequest.PV_UNLOADCOND1__c               =      String.isBlank(mdm.PV_UNLOADCOND1) ? accountMap.get(mdm?.PV_KUNNR).UnloadConditions1__c : mdm.PV_UNLOADCOND1;
+                    mdmRequest.PV_UNLOADCOND2__c               =      String.isBlank(mdm.PV_UNLOADCOND2) ? accountMap.get(mdm?.PV_KUNNR).UnloadConditions2__c : mdm.PV_UNLOADCOND2;
+                    mdmRequest.PV_DELIGROUP__c                 =      String.isBlank(mdm.PV_DELIGROUP) ? accountMap.get(mdm?.PV_KUNNR).DeliveryGroup__c : mdm.PV_DELIGROUP.toUpperCase();
+                    mdmRequest.PV_DELIGROUP_lu__c              =      deliveryIdMap.get(mdmRequest.PV_DELIGROUP__c);
+                    mdmRequest.PV_KATR10__c                    =      String.isBlank(mdm.PV_KATR10) ? accountMap.get(mdm?.PV_KUNNR).ShipmentArea__c : mdm.PV_KATR10.toUpperCase();
+                    mdmRequest.PV_KATR10_lu__c                 =      shipmentIdMap.get(mdmRequest.PV_KATR10__c);
+                    mdmRequest.PV_KEYYN__c                     =      (mdm.PV_KEYYN == '' || mdm.PV_KEYYN == null) ? accountMap.get(mdm?.PV_KUNNR).IsBusinessPlaceKey__c : Boolean.valueOf(mdm.PV_KEYYN);
+                    mdmRequest.PV_KEYINFO__c                   =      String.isBlank(mdm.PV_KEYINFO) ? accountMap.get(mdm?.PV_KUNNR).BusinessPlaceKeyInfo__c : mdm.PV_KEYINFO;
+                    mdmRequest.PV_KXOTD__c                     =      (mdm.PV_KXOTD == '' || mdm.PV_KXOTD == null) ? (accountMap.get(mdm?.PV_KUNNR).KXOTD__c == 'Y' ? true : false) : Boolean.valueOf(mdm.PV_KXOTD);
+                    mdmRequest.PV_KXOTDTIME__c                 =      String.isBlank(mdm.PV_KXOTDTIME) ? accountMap.get(mdm?.PV_KUNNR).KXOTDRequestDate__c : mdm.PV_KXOTDTIME;
+                    mdmRequest.PV_FDINFO__c                    =      (mdm.PV_FDINFO == '' || mdm.PV_FDINFO == null) ? (accountMap.get(mdm?.PV_KUNNR).InitialDeliveryShare__c == 'Y' ? true : false) : Boolean.valueOf(mdm.PV_FDINFO);
+                    mdmRequest.PV_FDREQD__c                    =      (mdm.PV_FDREQD == '' || mdm.PV_FDREQD == null) ? accountMap.get(mdm?.PV_KUNNR).InitialDeliveryRequestDate__c : Date.valueOf(mdm.PV_FDREQD);
+                    mdmRequest.PV_FDREQT__c                    =      String.isBlank(mdm.PV_FDREQT) ? accountMap.get(mdm?.PV_KUNNR).InitialDeliveryRequestTime__c : mdm.PV_FDREQT;
+                    mdmRequest.PV_ISFDFTF__c                   =      (mdm.PV_ISFDFTF == '' || mdm.PV_ISFDFTF == null) ? accountMap.get(mdm?.PV_KUNNR).IsInitialDeliveryFTFInspection__c : Boolean.valueOf(mdm.PV_ISFDFTF);
+                    mdmRequest.PV_FDCTINFO__c                  =      String.isBlank(mdm.PV_FDCTINFO) ? accountMap.get(mdm?.PV_KUNNR).InitialDeliveryContact__c : mdm.PV_FDCTINFO;
+                    mdmRequest.PV_FDNOTICE__c                  =      String.isBlank(mdm.PV_FDNOTICE) ? accountMap.get(mdm?.PV_KUNNR).InitialDeliveryDescription__c : mdm.PV_FDNOTICE;
+                    mdmRequest.PV_SHIPTYPE__c                  =      String.isBlank(mdm.PV_SHIPTYPE) ? accountMap.get(mdm?.PV_KUNNR).PV_SHIPTYPE__c : mdm.PV_SHIPTYPE;
+                    mdmRequest.PV_TEMPTARGET__c                =      String.isBlank(mdm.PV_TEMPTARGET) ? accountMap.get(mdm?.PV_KUNNR).PV_TEMPTARGET__c : mdm.PV_TEMPTARGET;
 
                     mdmRequest.RequestType__c                  =      'Edit';
 
                     mdmRequest.MDMRegRequestBulkCustomer__c    =      mdmRequestbulk.id;
 
                     customerList.add(mdmRequest);       
+                    system.debug('@@ mdmRequest.PV_OLDCD__c ' + mdmRequest.PV_OLDCD__c);
                 }
 
                 insert customerList;
@@ -363,37 +433,98 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
         }
 
         return saveResult;
+
     }
 
-    // 이름이 null값이 되지 않도록 null일 경우 기존 값을 찾아서 기입해 줄 Map 생성
-    public static Map<String, String> getNameOfNull(List<MDMRequest> mdmCustomer) {
+    // 조건문 줄이기
+    public static String getValue2(String mdmName, String accountName) {
+        System.debug(mdmName);
+        if (mdmName != null) {
+            // 조건 1: mdmName이 null이 아니면 mdmName 반환
+            return mdmName;
+        } else if (mdmName == null) {
+            return accountName;
+        }
+        // 조건을 그냥 뜯어고쳐야 함 모두 null으로 들어옴 231121
+        // 조건 2: mdmName이 blank이고 accountName이 blank가 아니면 accountName 반환
+        return accountName;
+    }
+    public static String getValue(String mdmName, String accountName) {
+        system.debug('mdmName ' + mdmName);
+        system.debug('accountName ' + accountName);
+    
+        // mdmName이 null이 아니고 빈 문자열이 아니면 mdmName 반환
+        if (!String.isBlank(mdmName)) {
+            return mdmName;
+        }
 
-        // Custom Id 넣을 List 생성
-        List<String> ids = new List<String>();
+        // 1. mdmName != null || mdmName != ''  => mdmName
+        // 2. mdmName == null || mdmName  = '' + 항목 설정X => accountName
+        // 3. mdmName == null || mdmName  = '' + 항목 설정O => accountName X => mdmName이여야한다..
+
+
+        // mdmName이 빈 문자열이면서 accountName이 null이 아니고 다르면 accountName 반환
+        if (String.isBlank(mdmName) && accountName != null && !accountName.equals(mdmName)) {
+            return accountName;
+        }
+    
+
+    
+        // 위의 조건에 해당하지 않으면 빈 문자열 반환
+        return '';
+    }
+
+    public static String getValue(String mdmName, String accountName, Boolean isSelectdHeader) {
+
+        // mdmName 현재 수정하는 필드의 값이 비어있지 않으면
+        if(String.isNotBlank(mdmName)){
+            // 그대로 mdmName 리턴
+            return mdmName;
         
-        for(MDMRequest mdm : mdmCustomer) {
-            if(mdm.PV_NAME1 == null) {
-                ids.add(mdm.PV_KUNNR);
+        // mdmName 현재 수정하는 필드의 값이 비어 있으면
+        }else{
+            // isSelectdHeader = 얘가 선택된 헤더이냐 아니냐
+
+            // true 선택된 얘
+            if(isSelectdHeader) {
+                // mdm
+                return mdmName;
+            // false 선택되지 않은 얘
+            } else {
+                return accountName;
             }
         }
-        
-        System.debug('ids => ' + ids);
-        
-        // Account로부터 해당 Custom Id의 이름 받아서 넣기
-        List<Account> accList = [SELECT Name, CustomerID__c FROM Account WHERE CustomerID__c IN :ids];
-        
-        // Map[{"Id": "이름"}, ...] 형식
-        Map<String, String> nameMaps = new Map<String, String>();
-
-        // Map에 Key, Value 저장
-        for(Account acc : accList) {
-            nameMaps.put(acc.CustomerID__c, acc.Name);
-        }
-
-        System.debug('accList => ' + accList);
-
-        return nameMaps;
     }
+
+    // // 이름이 null값이 되지 않도록 null일 경우 기존 값을 찾아서 기입해 줄 Map 생성
+    // public static Map<String, String> getNameOfNull(List<MDMRequest> mdmCustomer) {
+
+    //     // Custom Id 넣을 List 생성
+    //     List<String> ids = new List<String>();
+        
+    //     for(MDMRequest mdm : mdmCustomer) {
+    //         if(mdm.PV_NAME1 == null) {
+    //             ids.add(mdm.PV_KUNNR);
+    //         }
+    //     }
+        
+    //     System.debug('ids => ' + ids);
+        
+    //     // Account로부터 해당 Custom Id의 이름 받아서 넣기
+    //     List<Account> accList = [SELECT Name, CustomerID__c FROM Account WHERE CustomerID__c IN :ids];
+        
+    //     // Map[{"Id": "이름"}, ...] 형식
+    //     Map<String, String> nameMaps = new Map<String, String>();
+
+    //     // Map에 Key, Value 저장
+    //     for(Account acc : accList) {
+    //         nameMaps.put(acc.CustomerID__c, acc.Name);
+    //     }
+
+    //     System.debug('accList => ' + accList);
+
+    //     return nameMaps;
+    // }
 
     @AuraEnabled
     public static List<ErrorData> validationCheckBeforeSave(List<MDMRequest> mdmList, List<String> headerList){

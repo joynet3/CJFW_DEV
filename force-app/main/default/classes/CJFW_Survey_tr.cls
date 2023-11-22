@@ -2,7 +2,7 @@
  * @description       :
  * @author            : sunkyung.choi@dkbmc.com
  * @group             :
- * @last modified on  : 11-16-2023
+ * @last modified on  : 11-20-2023
  * @last modified by  : sunkyung.choi@dkbmc.com
 **/
 public with sharing class CJFW_Survey_tr extends TriggerHandler {
@@ -29,9 +29,9 @@ public with sharing class CJFW_Survey_tr extends TriggerHandler {
     public override void beforeUpdate() {
         checkSuFieldChanges();
     }
-    public override void beforeDelete() {
-        doDeleteCheck();
-    }
+    // public override void beforeDelete() {
+    //     doDeleteCheck();
+    // }
 
 
 
@@ -227,23 +227,23 @@ public with sharing class CJFW_Survey_tr extends TriggerHandler {
             }
         }
     }
-    @testVisible private void doDeleteCheck() {
-        List<CJFW_Survey__c> oldSurveysList = listOld;
-        Map<String, CJFW_Survey__c> daCheckMap = new Map<String, CJFW_Survey__c>();
+    // @testVisible private void doDeleteCheck() {
+    //     List<CJFW_Survey__c> oldSurveysList = listOld;
+    //     Map<String, CJFW_Survey__c> daCheckMap = new Map<String, CJFW_Survey__c>();
     
-        List<CJFW_Survey__c> dateChecksLists = [SELECT Id, Name, Su__c, Active__c, ParentSurvey__c, Version__c, HeadOffice__c,CheckActiveDate__c FROM CJFW_Survey__c WHERE CheckActiveDate__c !=null ];
+    //     List<CJFW_Survey__c> dateChecksLists = [SELECT Id, Name, Su__c, Active__c, ParentSurvey__c, Version__c, HeadOffice__c,CheckActiveDate__c FROM CJFW_Survey__c WHERE CheckActiveDate__c !=null ];
        
-        for (CJFW_Survey__c dateChecksList : dateChecksLists) {
-            daCheckMap.put(dateChecksList.Id, dateChecksList);
-            System.debug('suCheckMap>>>>>>>> ' + daCheckMap);
-        }
-        for (CJFW_Survey__c oldDateCheck : oldSurveysList) {
-            if (daCheckMap.get(oldDateCheck.Id).CheckActiveDate__c != null) {
-                oldDateCheck.addError('활성화 되었던 설문지입니다. 설문지를 삭제할 수 없습니다.');
-            }
-        }
+    //     for (CJFW_Survey__c dateChecksList : dateChecksLists) {
+    //         daCheckMap.put(dateChecksList.Id, dateChecksList);
+    //         System.debug('suCheckMap>>>>>>>> ' + daCheckMap);
+    //     }
+    //     for (CJFW_Survey__c oldDateCheck : oldSurveysList) {
+    //         if (daCheckMap.get(oldDateCheck.Id).CheckActiveDate__c != null) {
+    //             oldDateCheck.addError('활성화 되었던 설문지입니다. 설문지를 삭제할 수 없습니다.');
+    //         }
+    //     }
     
-    }
+    // }
     
     
     

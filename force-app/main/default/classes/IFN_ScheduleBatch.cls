@@ -70,7 +70,7 @@ global class IFN_ScheduleBatch extends MasterBatchBase implements Database.Allow
         try 
         {
             //이전 스케줄 삭제
-            delList = [SELECT Id
+            delList = [ SELECT Id
                                 ,CronExpression
                                 ,CronJobDetail.Name
                         FROM CronTrigger 
@@ -84,22 +84,37 @@ global class IFN_ScheduleBatch extends MasterBatchBase implements Database.Allow
                 }
             }
 
-            for(Batch_Sequence__mdt schedule : scList)
-            {
-                if(schedule.CronExpression__c != null)
-                {
+            //  *************************************
+            //  1. Cron 표현식은 시간 단위, 현재 배치가 60분 단위로 돌며, 시간단위를 확인하여 재등록작업을 한다.
+            //  2. Interval 형식은 간격으로 재단한다.
+            for(Batch_Sequence__mdt schedule : scList){
+                
+                // 1.Cron 표현식의 배치
+                if(schedule.CronExpression__c != null){
                     List<String> cronList = schedule.CronExpression__c.split(' ');
-
-                    if(sTime == Integer.valueOf(cronList[2]))
-                    {
+                    
+                    // 3번째 인자 현재 시간대 (1 10 1 * * ?   :  오전 1시 10분 1초)
+                    if(sTime == Integer.valueOf(cronList[2])){
                         IFN_Scheduler sch = new IFN_Scheduler(schedule.ScheduleClass__c,String.valueOf(schedule.ScopeSize__c));
                         system.schedule('[INTERFACE] ' + schedule.ScheduleClass__c.trim(), schedule.CronExpression__c, sch);
-
                         executeList.add(schedule);
                     }
-                }
-                else if(schedule.Interval__c != null)
-                {
+
+                    // sancho try
+                    //3번째 인자 아스타(*) 일 때 - (이런 배치 되나 모르겠네...)
+                    // 테스트용 5분 단위로(0 0/5 * * * ?)
+                    //  -> 이런... 매5분단위 이거 않먹히네...
+                    //  -> e.getMessage():[Seconds and minutes must be specified as integers: 0 0/5 * * * ?]/e.getLineNumber():[99]
+
+                    // if( '*'.equals(cronList[2]) ){
+                    //     IFN_Scheduler sch = new IFN_Scheduler(schedule.ScheduleClass__c,String.valueOf(schedule.ScopeSize__c));
+                    //     system.schedule('[INTERFACE] ' + schedule.ScheduleClass__c.trim(), schedule.CronExpression__c, sch);
+                    //     executeList.add(schedule);
+                    //
+                    // ===>>> 결론, 관두... Interval 쓰자.
+
+                //2. Interval 형식의 배치
+                }else if(schedule.Interval__c != null){
                     itMap.put(schedule.DeveloperName, schedule);
                 }
             }
@@ -133,7 +148,7 @@ global class IFN_ScheduleBatch extends MasterBatchBase implements Database.Allow
         } 
         catch(System.Exception e) 
         {
-            logWrap.ErrorText.add(e.getMessage() + '/' + e.getLineNumber() );
+            logWrap.ErrorText.add('e.getMessage():[' + e.getMessage() + ']' + '/' + 'e.getLineNumber():[' + e.getLineNumber() + ']' );
         }
     }
 }

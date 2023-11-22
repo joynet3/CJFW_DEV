@@ -247,38 +247,41 @@ public without sharing class CJFW_LineItemExcelPasteNewController {
                     objLineItem.put(sObjectName+'Id__c', recordId);
                     objLineItem.put('ProductCode__c', strProductCode);
                     objLineItem.put('BasePurchasePrice__c', strBasePurchasePrice);
-
-                    if ( strBasePurchasePrice == 1){
-                        strUnitPrice = 1;
-                        strProfitMargin = 100;
-                        strVAT = 0;
-                        strUnitPriceWithVAT = 1;
-                    }
-                    else if( isPriceExist){
-                        if( strUnitPrice < 10) strUnitPrice = 10;
-                        else if ( strUnitPrice > 1000000000) strUnitPrice = 1000000000;
-                        strUnitPrice = strUnitPrice.setScale(-1,System.RoundingMode.UP);  
-                        strProfitMargin = ((strUnitPrice - strBasePurchasePrice) / strUnitPrice  * 100).setScale(2);
-                        
-                        if ( strProfitMargin > 99 ) {
-                            strProfitMargin = 99;
-                            strUnitPrice = strBasePurchasePrice / (1 - strProfitMargin/100);
+                    /**
+                     * Dummy 상품은 계산로직 X
+                    
+                        if ( strBasePurchasePrice == 1){
+                            strUnitPrice = 1;
+                            strProfitMargin = 100;
+                            strVAT = 0;
+                            strUnitPriceWithVAT = 1;
                         }
-                        strVAT = (strTaxTypeName == '과세' ? 1 : 0) * strUnitPrice * 0.1;
-                        strUnitPriceWithVAT = strUnitPrice + strVAT;
-                    }
-                    else if(isMarginExist){
-                        if ( strProfitMargin > 99 ) strProfitMargin = 99;
-                        else if ( strProfitMargin < -100000000) strProfitMargin = -100000000;
-    
-                        strProfitMargin = strProfitMargin.setScale(2);
-                        strUnitPrice = strBasePurchasePrice / (1 - strProfitMargin/100);
-                        strUnitPrice = strUnitPrice.setScale(-1,System.RoundingMode.UP);
-    
-                        strProfitMargin = ((strUnitPrice - strBasePurchasePrice)/strUnitPrice * 100).setScale(2);
-                        strVAT = (strTaxTypeName == '과세' ? 1 : 0) * strUnitPrice * 0.1;
-                        strUnitPriceWithVAT = strUnitPrice + strVAT;
-                    }
+                        else if( isPriceExist){
+                            if( strUnitPrice < 10) strUnitPrice = 10;
+                            else if ( strUnitPrice > 1000000000) strUnitPrice = 1000000000;
+                            strUnitPrice = strUnitPrice.setScale(-1,System.RoundingMode.UP);  
+                            strProfitMargin = ((strUnitPrice - strBasePurchasePrice) / strUnitPrice  * 100).setScale(2);
+                            
+                            if ( strProfitMargin > 99 ) {
+                                strProfitMargin = 99;
+                                strUnitPrice = strBasePurchasePrice / (1 - strProfitMargin/100);
+                            }
+                            strVAT = (strTaxTypeName == '과세' ? 1 : 0) * strUnitPrice * 0.1;
+                            strUnitPriceWithVAT = strUnitPrice + strVAT;
+                        }
+                        else if(isMarginExist){
+                            if ( strProfitMargin > 99 ) strProfitMargin = 99;
+                            else if ( strProfitMargin < -100000000) strProfitMargin = -100000000;
+        
+                            strProfitMargin = strProfitMargin.setScale(2);
+                            strUnitPrice = strBasePurchasePrice / (1 - strProfitMargin/100);
+                            strUnitPrice = strUnitPrice.setScale(-1,System.RoundingMode.UP);
+        
+                            strProfitMargin = ((strUnitPrice - strBasePurchasePrice)/strUnitPrice * 100).setScale(2);
+                            strVAT = (strTaxTypeName == '과세' ? 1 : 0) * strUnitPrice * 0.1;
+                            strUnitPriceWithVAT = strUnitPrice + strVAT;
+                        }
+                     */
 
                     objLineItem.put('TaxTypeName__c', strTaxTypeName);
                     objLineItem.put('UnitPrice__c', strUnitPrice);

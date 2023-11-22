@@ -2,8 +2,8 @@
  * @description       : 
  * @author            : ChangeMeIn@UserSettingsUnder.SFDoc
  * @group             : 
- * @last modified on  : 09-25-2023
- * @last modified by  : joohyeon.jang@dkbmc.com
+ * @last modified on  : 11-21-2023
+ * @last modified by  : yejoo.lee@dkbmc.com
 **/
 public without sharing class MDMRegRequest {
     /**
@@ -297,12 +297,64 @@ public without sharing class MDMRegRequest {
         }catch(Exception e) {
             Database.rollback(sp);
             System.debug('Error ==============> '+e.getMessage());
+            System.debug('====================> Error Line '+e.getLineNumber());
+
             return 'error';
             // return e.getMessage();
-        //     System.debug('=============================> Error Line '+e.getLineNumber());
-        //     System.debug('=============================> Error '+e.getMessage());
+            // System.debug('=============================> Error Line '+e.getLineNumber());
+            // System.debug('=============================> Error '+e.getMessage());
         }
     }
+
+    
+    /**
+    * @description MDM 고객정보 저장 시, oppty 에서 저장할 경우 oppty의 계약 체결 파일 추가
+    * @author yejoo.lee@dkbmc.com | 11-21-2023 
+    * @param opptyId 
+    * @return String 
+    **/
+    @AuraEnabled
+    public static Boolean saveRecordFiles(MDMRegRequestCustomer__c customer, String customerId){
+        System.debug('saveRecordFiles ::' + customer );
+        System.debug('saveRecordFiles ::' + customerId );
+
+        String opptyId  = customer.Opportunity__c;
+        List<ContentDocumentLink> cdlinkList = [SELECT 
+                                                    Id
+                                                    , ContentDocumentId
+                                                    , ContentDocument.LatestPublishedVersion.Category__c
+                                                    , LinkedEntityId
+                                                FROM ContentDocumentLink 
+                                                WHERE LinkedEntityId =:opptyId 
+                                                    AND ContentDocument.LatestPublishedVersion.Category__c = '계약 체결'
+        ];
+
+        if(cdlinkList.size() > 0){
+            EDMSFileUpload.DataWrapper objWrapper = EDMSFileUpload.doCreatedFileURL(cdlinkList[0].ContentDocumentId);
+
+            Map<String, String> mapParam = new Map<String, String>();
+            mapParam.put('recordId', customerId);
+            mapParam.put('documentId', cdlinkList[0].ContentDocumentId);
+            // mapParam.put('strType', '계약서원본');
+            mapParam.put('strType', '1');
+            mapParam.put('downloadUrl', objWrapper.downloadUrl);
+            
+            sendEMDS(mapParam);
+            
+            return true;
+        } else {            
+            return false;
+        }
+    }
+
+    @future(callout=true)
+    public static void sendEMDS(Map<String,String> mapParam) {
+        // HTTP 호출out 수행
+        EDMSFileUpload.DataWrapper objWrapper = new EDMSFileUpload.DataWrapper();
+        objWrapper = EDMSFileUpload.doSendEMDS(mapParam);
+        System.debug('sendEMDS in MDMRegRequest ::: ' + objWrapper);
+    }
+
     
     /**
      * User 정보 조회

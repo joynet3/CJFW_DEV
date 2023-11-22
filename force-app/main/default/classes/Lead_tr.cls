@@ -166,7 +166,7 @@ public without sharing class Lead_tr extends TriggerHandler {
                                         , Name
                                 FROM RecordType
                                 WHERE sObjectType = 'OrderServiceRequest__c'
-                                AND DeveloperName = 'OnlyoneBiznetInquiry'].Id
+                                AND DeveloperName = 'OnlyoneBiznetInquiry']?.Id
                                 ;
 
         Set<String> setCompanyRegisterNumber = new Set<String>();

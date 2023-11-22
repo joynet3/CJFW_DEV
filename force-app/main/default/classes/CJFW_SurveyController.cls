@@ -150,9 +150,11 @@ public with sharing class CJFW_SurveyController {
     */
    @AuraEnabled
     public static Map<String,Object> saveSurveyResponse(Map<String,Object> params){
+        Map<String,Object> result = new Map<String,Object>();
+        CJFW_SurveyResponse__c response;
+        List<CJFW_SurveyResult__c> responsResultList = new List<CJFW_SurveyResult__c>();
         try {
             
-            Map<String,Object> result = new Map<String,Object>();
             result.put('params', params);
 
             String mode = (String) params.get('mode');
@@ -166,8 +168,8 @@ public with sharing class CJFW_SurveyController {
             if(params.get('surveyResponseId') != null) surveyResponseId = Id.valueOf((String) params.get('surveyResponseId'));
             
             List<Object> objList = (List<Object>) JSON.deserializeUntyped(JSON.serialize(params.get('selectedValueList')));
-            System.debug(objList);
-            CJFW_SurveyResponse__c response;
+            System.debug('시작 ' +objList);
+            
             switch on mode {
                 when 'create' {
                     /** */
@@ -198,6 +200,7 @@ public with sharing class CJFW_SurveyController {
                     response.Survey__c = surveyTypeId;
 
                     insert response;
+                    
                 }when 'edit' {
                     //edit 일 때는 이전 설문지 결과 데이터 삭제 후 신규 생성 : 복수개의 객관식 때문에 수정하기 어려움..        
                     
@@ -220,7 +223,7 @@ public with sharing class CJFW_SurveyController {
                 }
             }
 
-            List<CJFW_SurveyResult__c> responsResultList = new List<CJFW_SurveyResult__c>();
+            
 
             for(Object obj : objList) {
                 Map<String,Object> question = (Map<String,Object>) JSON.deserializeUntyped(JSON.serialize(obj));
@@ -289,12 +292,29 @@ public with sharing class CJFW_SurveyController {
             insert responsResultList;
             
             result.put('insertData', response);
-
-            return result;
+            
+            
+            
+            
+            
+            
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
         }
+
+        try {
+            
+            CJFW_SurveyMapping.getMappingInfo(response, responsResultList);
+                
+            
+
+        }
+        catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());  
+        }
+
         
+        return result;
     }
 
     public class selectOption {

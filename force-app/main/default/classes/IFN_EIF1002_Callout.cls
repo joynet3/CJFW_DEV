@@ -89,7 +89,7 @@ public class IFN_EIF1002_Callout {
         String result_code = 'S';
         String result_message = 'Callout Success';
         
-        IFN_EIF1002_FS001_MD001.Output infResponse = new IFN_EIF1002_FS001_MD001.Output();  
+        IFN_EIF1002_FS001_MD001_ba.Output infResponse = new IFN_EIF1002_FS001_MD001_ba.Output();  
         
         try{
             System.debug('params >>>>>>>>>>>>>>>>>>>>>>>>>' + params);
@@ -101,7 +101,7 @@ public class IFN_EIF1002_Callout {
 
             responsedata = response.getBody();
             if(response.getStatusCode() == 200) {
-                infResponse = (IFN_EIF1002_FS001_MD001.Output)JSON.deserializeStrict((String)responsedata, IFN_EIF1002_FS001_MD001.Output.class);
+                infResponse = (IFN_EIF1002_FS001_MD001_ba.Output)JSON.deserializeStrict((String)responsedata, IFN_EIF1002_FS001_MD001_ba.Output.class);
             } else {
                 result_code = 'F';
                 result_message = 'Callout Fail';

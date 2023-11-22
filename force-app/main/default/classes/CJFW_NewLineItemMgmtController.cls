@@ -82,7 +82,8 @@ public with sharing class CJFW_NewLineItemMgmtController {
                                         , UnitPriceWithVAT__c
                                         , VAT__c
                                         , SortOrder__c
-                                        , UnitConversion__c
+                                        , UnitConversion__c             //단위 환산
+                                        , UnitConversionPurchasePrice__c //단위환산매입가
                                         , ProductWeight__c              // 중량
                                         , ProductWeightUnit__c          // 중량 단위
                                         , Barcode__c                    // 바코드 정보

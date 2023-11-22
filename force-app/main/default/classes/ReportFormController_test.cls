@@ -2,7 +2,7 @@
  * @description       : 급식 품의서 전용 테스트코드 
  * @author            : jieun.lee3@dkbmc.com
  * @group             : 
- * @last modified on  : 11-15-2023
+ * @last modified on  : 11-17-2023
  * @last modified by  : jieun.lee3@dkbmc.com
 **/
 @IsTest
@@ -49,7 +49,7 @@ public with sharing class ReportFormController_Test {
         
         String opptyId = [SELECT Id FROM Opportunity Limit 1].Id; // 영업기회 Id
         String exIncomeId = [SELECT Id FROM CJFW_ExpectedIncomeExpenses__c Limit 1].Id; // 신규개설품의 Id값
-        
+        String reportType ='CRM008';
         
         String dataList = ' {"collateralType": "담보",'
         + ' "creditLoanAmount": "100.00", '
@@ -151,7 +151,7 @@ public with sharing class ReportFormController_Test {
         // controller.getAccountInfo();
         // controller.getIncomeExpenses();
         ReportFormController.saveIncomeExpenses(dataList, opptyId, 1, exIncomeId);
-        ReportFormController.ReportCheck(exIncomeId, opptyId);
+        ReportFormController.ReportCheck(exIncomeId, opptyId , reportType);
         
 
         Test.stopTest();

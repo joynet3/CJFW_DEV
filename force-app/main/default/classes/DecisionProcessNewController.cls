@@ -48,7 +48,7 @@ public without sharing class DecisionProcessNewController {
      * 
      * @param reportType 품의유형
      * @param opptyId    영업기회 아이디
-     * @return true & false
+     * @return String
      *
     **/
     @AuraEnabled
@@ -59,15 +59,16 @@ public without sharing class DecisionProcessNewController {
 
         try {
             String result;
-            CJFW_ExpectedIncomeExpenses__c record = [SELECT Id
+            List<CJFW_ExpectedIncomeExpenses__c> record = [SELECT Id
                                                     FROM CJFW_ExpectedIncomeExpenses__c 
                                                     WHERE Opportunity__c = :opptyId 
                                                             AND ReportType__c = :reportType 
                                                             AND IsReportCheck__c = true 
+                                                    LIMIT 1
             ];
             System.debug('record = ' + record);
             
-            if(record.Id != null) result = 'true';
+            if(record.size()>0) result = 'true';
             return result;
             
         } catch (Exception e) {

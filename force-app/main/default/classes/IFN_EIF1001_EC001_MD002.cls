@@ -18,7 +18,7 @@ global with sharing class IFN_EIF1001_EC001_MD002 {
     global IFN_EIF1001_EC001_MD002() {}
     
     @HttpPost
-    global static String doPost() {
+    global static void doPost() {
         String strCode = '100'; // webhook 전송 정상 접수 확인
         String strMessage = 'Success';
         String interfaceId = 'IFN_EIF1001_EC001_MD002';
@@ -26,9 +26,10 @@ global with sharing class IFN_EIF1001_EC001_MD002 {
         IFN_CommonLog.LogWrap logWrap = new IFN_CommonLog.logWrap(interfaceId, 'Real');
         IFN_CommonLog commlog = new IFN_CommonLog();
 
+        RestResponse restResponse = RestContext.response;
         Map<String, String> response = new Map<String, String>();
-        String requestBody = '';
 
+        String requestBody = '';
         IFN_CMM_ERRUTIL.ErrorValueWrapper errWr = new IFN_CMM_ERRUTIL.ErrorValueWrapper();
 
         try {
@@ -86,8 +87,8 @@ global with sharing class IFN_EIF1001_EC001_MD002 {
 
                             mms.SendResultCode__c = resultItem.get('code').toString();
                             mms.SendResultDesc__c = resultItem.get('desc').toString();
-                            mms.SendResultDesc__c = resultItem.get('dest').toString();
-                            mms.SendResultDesc__c = resultItem.get('done_date').toString();
+                            mms.SendResultDest__c = resultItem.get('dest').toString();
+                            mms.SendResultDoneDate__c = resultItem.get('done_date').toString();
                             try {
                                 update mms;
                             } catch (DmlException e) {
@@ -111,6 +112,7 @@ global with sharing class IFN_EIF1001_EC001_MD002 {
         response.put('desc', strMessage);
         commlog.insertLog(logWrap);
 
-        return JSON.serialize(response);
+        restResponse.addHeader('Content-Type', 'application/json');
+        restResponse.responseBody = Blob.valueOf(JSON.serialize(response));
     }
 }
