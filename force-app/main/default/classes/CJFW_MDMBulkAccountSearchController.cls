@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 11-14-2023
+ * @last modified on  : 11-22-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkAccountSearchController {
@@ -76,8 +76,8 @@ public with sharing class CJFW_MDMBulkAccountSearchController {
             List<Account> searchResult = new List<Account>(); // 분할해서 담은
             List<Account> listSearchResult = new List<Account>(); // 모두 담은
 
-            String strQuery = 'SELECT Id, CustomerID__c, Name, Owner.Name, Owner.EmployeeNumber, CustomerIDASIS__c, NameKor__c, NameAlias__c, AccountGroup__c, toLabel(AccountGroup__c) AccountGroupLabel, ';
-            strQuery += ' CustomerType__c, toLabel(CustomerType__c) CustomerTypeLabel, CompanyRegisterNumber__c, 	CorporateCode__c, 	SubCompanyRegisterNumber__c, TaxationType__c, toLabel(TaxationType__c) TaxationTypeLabel, ';
+            String strQuery = 'SELECT Id, CustomerID__c, PICCode__c, PIC__r.Name, Name, Owner.Name, Owner.EmployeeNumber, CustomerIDASIS__c, NameKor__c, NameAlias__c, AccountGroup__c, toLabel(AccountGroup__c) AccountGroupLabel, ';
+            strQuery += ' CustomerType__c, toLabel(CustomerType__c) CustomerTypeLabel, CompanyRegisterNumber__c, CorporateCode__c, 	SubCompanyRegisterNumber__c, TaxationType__c, toLabel(TaxationType__c) TaxationTypeLabel, ';
             strQuery += ' LegalStatus__c, toLabel(LegalStatus__c) LegalStatusLabel, RepresentativeName__c, PV_BLCKYN__c,	RepresentativeBirthDate__c, BusinessConditions__c, BusinessCategory__c, ';
             strQuery += ' Phone, Fax, PaymentAccountCode__c, PaymentAccountName__c, ShippingAccountCode__c, ShippingAccountName__c, PV_VKGRP__c, toLabel(PV_VKGRP__c) PV_VKGRP__LABEL, ';
             strQuery += ' PVVF_VKGRP__c, SalesGroupFromDate__c, OwnerId, PVVF_PERNR__c, ResponsibilityMAFromDate__c, ResponsibilityAMA__c, TaxInvoiceType__c, toLabel(TaxInvoiceType__c) TaxInvoiceLabel, ';
@@ -94,7 +94,7 @@ public with sharing class CJFW_MDMBulkAccountSearchController {
             strQuery += ' UnloadConditions1__c, toLabel(UnloadConditions1__c) UnloadConditions1Label, UnloadConditions2__c, toLabel(UnloadConditions2__c) UnloadConditions2Label, ShipmentArea__c, toLabel(ShipmentArea__c) ShipmentAreaLabel, ';
             strQuery += ' IsBusinessPlaceKey__c, BusinessPlaceKeyInfo__c, KXOTD__c, toLabel(KXOTD__c) KXOTDLabel, KXOTDRequestDate__c, InitialDeliveryShare__c, toLabel(InitialDeliveryShare__c) InitialDeliveryShareLabel, InitialDeliveryRequestDate__c, ';
             strQuery += ' InitialDeliveryRequestTime__c, IsInitialDeliveryFTFInspection__c, InitialDeliveryContact__c, InitialDeliveryDescription__c, PV_SHIPTYPE__c, toLabel(PV_SHIPTYPE__c) PV_SHIPTYPE__LABEL, PV_TEMPTARGET__c, toLabel(PV_TEMPTARGET__c) PV_TEMPTARGET__LABEL, ';
-            strQuery += ' PV_SALESCUST__c, PV_DELICUST__c, PV_BIZPLCODE__c ';
+            strQuery += ' PV_SALESCUST__c, PV_DELICUST__c, PV_BIZPLCODE__c, FWReleaseCenter__c, toLabel(FWReleaseCenter__c) FWReleaseCenterLabel, PVVF_LOGISCENTER__c, FWReleaseCenterFromDate__c ';
             strQuery += ' FROM    Account';
             strQuery += ' WHERE   CustomerType__c IN ( \'' + searchCode + '\' ) AND CustomerId__c != NULL ';
             for(Integer i = 0; i < searchKeys.size(); i++) {
@@ -121,6 +121,28 @@ public with sharing class CJFW_MDMBulkAccountSearchController {
             
             listSearchResult = Database.query(strQuery);
 
+            // PICCode => 이름 변환
+            // List<String> picCodes = new List<String>();
+
+            // for(Account acc : listSearchResult) {
+            //     picCodes.add(acc.PICCode__c);
+            // }
+
+            // List<User> userList = [SELECT Id, Name, EmployeeNumber FROM User WHERE EmployeeNumber IN :picCodes];
+            // System.debug(' ## userList => ' + userList);
+            
+            // Map<String, String> codeToUserNameMap = new Map<String, String>();
+            
+            // for(User cus : userList) {
+            //     codeToUserNameMap.put(cus.EmployeeNumber, cus.Name);
+            // }
+
+            // System.debug(' ## codeToUserNameMap => ' + codeToUserNameMap);
+
+            // for(Account acc : listSearchResult) {
+                
+            // }
+
             Integer listSearchResultSize = listSearchResult.size();
 
             Integer startIndex = (pageNumber - 1) * pageSize;
@@ -141,7 +163,7 @@ public with sharing class CJFW_MDMBulkAccountSearchController {
             
         } catch(Exception e) {
             strStatus = 'ERROR';
-            strMessage = e.getMessage() + ' Line : '+e.getLineNumber();
+            strMessage = e.getMessage() + ' Line : ' + e.getLineNumber();
         }
 
         objWrapper.strStatus = strStatus;
@@ -177,5 +199,9 @@ public with sharing class CJFW_MDMBulkAccountSearchController {
         public String inputTextLabel {get;set;}
 
 	}
+
+    public class AccountWrapper {
+
+    }
 
 }

@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : ChangeMeIn@UserSettingsUnder.SFDoc
  * @group             : 
- * @last modified on  : 11-21-2023
+ * @last modified on  : 11-22-2023
  * @last modified by  : yejoo.lee@dkbmc.com
 **/
 public without sharing class EDMSFileUpload {
@@ -392,7 +392,7 @@ public without sharing class EDMSFileUpload {
                 strMessage = '파일업로드에 실패하였습니다. 관리자에 문의하여 주시기 바랍니다. 에러코드 : '+response.getStatusCode();
             }
 
-            if(versionCategory != '계약 체결'){//oppty의 계약 체결 파일 추가 23-11-21 yejoo
+            if(versionCategory != System.Label.CJFW_ETC_CategoryName_002){//oppty의 계약 체결 파일 추가 23-11-21 yejoo
                 Database.delete(documentId);
             }
 
@@ -400,7 +400,7 @@ public without sharing class EDMSFileUpload {
             strStatus = 'ERROR';
             strMessage = e.getMessage() + ' Line : '+e.getLineNumber();
 
-            if(versionCategory != '계약 체결'){//oppty의 계약 체결 파일 추가 23-11-21 yejoo
+            if(versionCategory != System.Label.CJFW_ETC_CategoryName_002){//oppty의 계약 체결 파일 추가 23-11-21 yejoo
                 Database.delete(documentId);
             }
         }

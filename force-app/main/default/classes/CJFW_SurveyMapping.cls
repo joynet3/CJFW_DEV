@@ -2,7 +2,7 @@
  * @description       :
  * @author            : sunkyung.choi@dkbmc.com
  * @group             :
- * @last modified on  : 11-21-2023
+ * @last modified on  : 11-22-2023
  * @last modified by  : sunkyung.choi@dkbmc.com
 **/
 public with sharing class CJFW_SurveyMapping {
@@ -99,6 +99,10 @@ public with sharing class CJFW_SurveyMapping {
             List<Contact> conList = [
                 SELECT id, name, AccountId, Phone, Email FROM Contact WHERE AccountId IN: accIdSet
             ];
+            List<Contact> allConLists = [
+                SELECT id, name, AccountId, Phone, Email FROM Contact 
+            ];
+            Boolean check = false;
 
             for (CJFW_SurveyResult__c res : resultList) {
                 System.debug('contact Start');
@@ -106,21 +110,36 @@ public with sharing class CJFW_SurveyMapping {
                     System.debug('contact Start 22');
                     String openEndedValue = resultMap.get(res.FM_Question__c);
                     for (Contact con : conList) {
-                        if (res.FM_Question__c.contains('이름')) {
-                            con.LastName = openEndedValue;
-                            system.debug('contact Phone 확인' + con.LastName);
-                        } else if (res.FM_Question__c.contains('이메일')) {
-                            con.Email = openEndedValue;
-                            system.debug('contact Phone 확인' + con.Email);
-                        } else if (res.FM_Question__c.contains('연락처')) {
-                            con.Phone = openEndedValue;
-                            system.debug('contact Phone 확인' + con.Phone);
-                        }
+                            if (res.FM_Question__c.contains('이름')) {
+                                con.LastName = openEndedValue;
+                                system.debug('contact Phone 확인' + con.LastName);
+                            } else if (res.FM_Question__c.contains('이메일')) {
+                                con.Email = openEndedValue;
+                                system.debug('contact Phone 확인' + con.Email);
+                            } else if (res.FM_Question__c.contains('연락처')) {
+                                con.Phone = openEndedValue;
+                                system.debug('contact Phone 확인' + con.Phone);
+                            }
                     }
                 }
             }
-            System.debug('conLists check ?? ' + conList);
-            update conList;
+            Contact newContact = new Contact();
+            for (Contact allConList : allConLists) {
+                if (allConList.Email == conList[0].Email) {
+                    check =true;
+                }else if (allConList.Email != conList[0].Email) {
+                    
+                    newContact.AccountId = response.Account__c;
+                    newContact.LastName = conList[0].LastName;
+                    newContact.Email = conList[0].Email;
+                    newContact.Phone = conList[0].Phone;
+                }
+            }
+            if (check) {
+                update conList;
+            }else{
+                insert newContact;
+            }
         }
     }
 }

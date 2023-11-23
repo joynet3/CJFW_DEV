@@ -2,34 +2,13 @@
  * @description       : 
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 11-21-2023
+ * @last modified on  : 11-22-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
  * 1.0   10-10-2023   joohyeon.jang@dkbmc.com   Initial Version
 **/
 public with sharing class CJFW_MDMBulkCreateManagementController {
-
-    public static String getValue(String mdmName, String accountName) {
-        // mdmName이 blank가 아니면 mdmName 반환
-        if (!String.isBlank(mdmName)) {
-            return mdmName;
-     
-        // accountName이 blank가 아니면
-        } else if (!String.isBlank(accountName)) {
-            // accountName과 mdmName이 같지 않으면
-           
-            mdmName =String.isBlank(mdmName) ? '' : mdmName;
-     
-            if(accountName != mdmName) {
-                return mdmName;
-            }
-        }
-     
-        // mdmName이 blank이고 accountName이 blank가 아니면 accountName 반환
-        return accountName;
-    }
-    
   /**
    * Save 버튼을 클릭 했을 때 호출
    * 
@@ -151,9 +130,12 @@ public with sharing class CJFW_MDMBulkCreateManagementController {
                 checkRequiredField(mdm.PV_J_1KFTBUS__c, i, '업태', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_J_1KFTIND__c, i, '업종', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_TELF1__c, i, '전화번호', '필수값', errorDataidList);
-                checkRequiredField(mdm.PVRA_VKGRP__c, i, '영업그룹[NEW VALUE]', '필수값', errorDataidList);
-                checkRequiredField(mdm.PVRA_PERNR__c, i, '담당MA[NEW VALUE]', '필수값', errorDataidList);
-                checkRequiredField(mdm.PVRA_LOGISCENTER__c, i, 'FW 출고센터[NEW  VALUE]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_VKGRP__c, i, '영업그룹[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PVRA_VKGRP__c, i, '영업그룹[VALID FROM]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_PERNR__c, i, '담당MA[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PVRA_PERNR__c, i, '담당MA[VALID FROM]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_LOGISCENTER__c, i, 'FW 출고센터[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PVRA_LOGISCENTER__c, i, 'FW 출고센터[VALID FROM]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_STCDT__c, i, '세금계산서발행유형[ID]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_FITYP__c, i, '과세유형[ID]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_HDOFFICEYN__c, i, '본점사용 유무', '필수값', errorDataidList);
@@ -176,9 +158,12 @@ public with sharing class CJFW_MDMBulkCreateManagementController {
                 checkRequiredField(mdm.PV_FDGRV__c, i, '현금관리그룹[ID]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_TAXKDD__c, i, '세금분류[ID]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_KATR5__c, i, '세금납부방법[ID]', '필수값', errorDataidList);
-                checkRequiredField(mdm.PVRA_CUHR1__c, i, '고객분류[NEW VALUE]', '필수값', errorDataidList);
-                checkRequiredField(mdm.PVRA_KONDA__c, i, '가격그룹[NEW VALUE]', '필수값', errorDataidList);
-                checkRequiredField(mdm.PVRA_KVGR1__c, i, '단가그룹[NEW VALUE]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_CUHR1__c, i, '고객분류[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PVRA_CUHR1__c, i, '고객분류[VALID FROM]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_KONDA__c, i, '가격그룹[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PVRA_KONDA__c, i, '가격그룹[VALID FROM]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_KVGR1__c, i, '단가그룹[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PVRA_KVGR1__c, i, '단가그룹[VALID FROM]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_WAERS__c, i, '통화[ID]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_KVGR3__c, i, '납품서유형[ID]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_KVGR3_BOT__c, i, '납품서 하단유형[ID]', '필수값', errorDataidList);
@@ -186,7 +171,8 @@ public with sharing class CJFW_MDMBulkCreateManagementController {
                 checkRequiredField(mdm.PV_VACCPRTEXCYN__c, i, '가상계좌 출력 제외', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_ZTERM_VV__c, i, '지급조건[ID]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_DSTRHISTREGYN__c, i, '유통이력 신고대상 유형[ID]', '필수값', errorDataidList);
-                checkRequiredField(mdm.PVRA_OLD_BIZPLACE_NEW__c, i, '경로(사업부)[NEW VALUE]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_OLD_BIZPLACE_NEW__c, i, '경로(사업부)[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PVRA_OLD_BIZPLACE_NEW__c, i, '경로(사업부)[VALID FROM]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_EXAMYN__c, i, '대면검수여부', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_DELIGROUP__c, i, '배송그룹[ID]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_KEYYN__c, i, '업장key 여부', '필수값', errorDataidList);

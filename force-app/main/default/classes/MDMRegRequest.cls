@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : ChangeMeIn@UserSettingsUnder.SFDoc
  * @group             : 
- * @last modified on  : 11-21-2023
+ * @last modified on  : 11-22-2023
  * @last modified by  : yejoo.lee@dkbmc.com
 **/
 public without sharing class MDMRegRequest {
@@ -319,6 +319,7 @@ public without sharing class MDMRegRequest {
         System.debug('saveRecordFiles ::' + customerId );
 
         String opptyId  = customer.Opportunity__c;
+        String categoryName = System.Label.CJFW_ETC_CategoryName_002;
         List<ContentDocumentLink> cdlinkList = [SELECT 
                                                     Id
                                                     , ContentDocumentId
@@ -326,21 +327,22 @@ public without sharing class MDMRegRequest {
                                                     , LinkedEntityId
                                                 FROM ContentDocumentLink 
                                                 WHERE LinkedEntityId =:opptyId 
-                                                    AND ContentDocument.LatestPublishedVersion.Category__c = '계약 체결'
+                                                    AND ContentDocument.LatestPublishedVersion.Category__c = :categoryName
         ];
 
         if(cdlinkList.size() > 0){
-            EDMSFileUpload.DataWrapper objWrapper = EDMSFileUpload.doCreatedFileURL(cdlinkList[0].ContentDocumentId);
-
-            Map<String, String> mapParam = new Map<String, String>();
-            mapParam.put('recordId', customerId);
-            mapParam.put('documentId', cdlinkList[0].ContentDocumentId);
-            // mapParam.put('strType', '계약서원본');
-            mapParam.put('strType', '1');
-            mapParam.put('downloadUrl', objWrapper.downloadUrl);
-            
-            sendEMDS(mapParam);
-            
+            for (ContentDocumentLink cdlink : cdlinkList) {                
+                EDMSFileUpload.DataWrapper objWrapper = EDMSFileUpload.doCreatedFileURL(cdlink.ContentDocumentId);
+    
+                Map<String, String> mapParam = new Map<String, String>();
+                mapParam.put('recordId', customerId);
+                mapParam.put('documentId', cdlink.ContentDocumentId);
+                // mapParam.put('strType', '계약서원본');
+                mapParam.put('strType', '1');
+                mapParam.put('downloadUrl', objWrapper.downloadUrl);
+                
+                sendEMDS(mapParam);
+            }
             return true;
         } else {            
             return false;
