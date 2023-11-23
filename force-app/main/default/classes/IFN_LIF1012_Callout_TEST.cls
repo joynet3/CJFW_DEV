@@ -305,11 +305,6 @@ public with sharing class IFN_LIF1012_Callout_TEST {
     }
 
 
-
-
-
-
-
     
     // Mock3 : ERR_CD":"9999"
     public class IFN_LIF1012_Callout_TESTMock implements HttpCalloutMock {
