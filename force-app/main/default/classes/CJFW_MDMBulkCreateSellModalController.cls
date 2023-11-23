@@ -21,19 +21,13 @@ public with sharing class CJFW_MDMBulkCreateSellModalController {
    */
     @AuraEnabled                 
     public static SaveResult doSave(List<MDMRequest> mdmCustomer, String type){
-        system.debug('gd');
-        system.debug('doSave' + mdmCustomer);
-        system.debug('type' + type);
-
+        system.debug('#CJFW_MDMBulkCreateHeadController >>>doSave ');
         SaveResult saveResult = new SaveResult();
-
         String recordTypeName = 'MDMChild';     // 판매처
         Id recordIdEx = null;
-        String MDMRecordTypeId = '';  
         String Status = 'Waiting';              // 이거
         
-        recordIdEx = Schema.SObjectType.MDMRegRequestCustomer__c.getRecordTypeInfosByDeveloperName().get('MDMChild').getRecordTypeId();
-        MDMRecordTypeId = Schema.SObjectType.MDMRegRequestCustomer__c.getRecordTypeInfosByDeveloperName().get(recordTypeName).getRecordTypeId(); // 이거
+        recordIdEx = Schema.SObjectType.MDMRegRequestCustomer__c.getRecordTypeInfosByDeveloperName().get(recordTypeName).getRecordTypeId();
 
         // 고객의 CustomerId 필드(CustomerId__c)로 조회해서 Id값 알아내기
         Set<String> accSet = new Set<String>();
@@ -91,6 +85,9 @@ public with sharing class CJFW_MDMBulkCreateSellModalController {
             codeSet.add(String.isNotBlank(mdm.PV_DELIGROUP)        ? mdm.PV_DELIGROUP.toUpperCase() : '');
             codeSet.add(String.isNotBlank(mdm.PV_KATR10)           ? mdm.PV_KATR10.toUpperCase() : '');
         }
+        // null이나 공백 제거함
+        codeSet.remove(null);
+        codeSet.remove('');
         // 겹치는 Code 제외한 MDM 참조 코드 List
         List<MDMReferenceCode__c> referenceCodeList = [SELECT Id, Name, Code__c, GroupId__c FROM MDMReferenceCode__c WHERE code__c = :codeSet];
         // AND GroupId__c NOT IN ('TVV3', 'TVV3_BOT', 'DELIGROUP', 'TVV1', 'TVKO1', 'TZUN', 'TVV2'
@@ -260,7 +257,9 @@ public with sharing class CJFW_MDMBulkCreateSellModalController {
                     mdmRequest.PV_UNLOADCOND1__c               =      String.isBlank(mdm.PV_UNLOADCOND1) ? null : mdm.PV_UNLOADCOND1;          
                     mdmRequest.PV_UNLOADCOND2__c               =      String.isBlank(mdm.PV_UNLOADCOND2) ? null : mdm.PV_UNLOADCOND2;          
                     mdmRequest.PV_DELIGROUP__c                 =      String.isBlank(mdm.PV_DELIGROUP) ? null : mdm.PV_DELIGROUP;      
+                    mdmRequest.PV_DELIGROUP_lu__c              =      deliveryIdMap.get(mdmRequest.PV_DELIGROUP__c);
                     mdmRequest.PV_KATR10__c                    =      String.isBlank(mdm.PV_KATR10) ? null : mdm.PV_KATR10;  
+                    mdmRequest.PV_KATR10_lu__c                 =      shipmentIdMap.get(mdmRequest.PV_KATR10__c);
                     mdmRequest.PV_KEYYN__c                     =      (!String.isBlank(mdm.PV_KEYYN)) && mdm.PV_KEYYN.equalsIgnoreCase('Y') ? true : false;  
                     mdmRequest.PV_KEYINFO__c                   =      String.isBlank(mdm.PV_KEYINFO) ? null : mdm.PV_KEYINFO;      
                     mdmRequest.PV_KXOTD__c                     =      (!String.isBlank(mdm.PV_KXOTD)) && mdm.PV_KXOTD.equalsIgnoreCase('Y') ? true : false;  
@@ -344,74 +343,74 @@ public with sharing class CJFW_MDMBulkCreateSellModalController {
                MDMRequest mdm = mdmList[i];
                 checkRequiredField(mdm.PV_NAME1, i,  '고객명(영문명 포함)', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_NAME_G, i, '고객명(G) / 자국명', '필수값', errorDataidList);
-                //checkRequiredField(mdm.PV_NAME2, i, '고객약칭명(변경)', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_KTOKD, i, '고객계정그룹[ID]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_CUSTTYPE, i, '고객유형[ID]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_STCD2, i, '사업자등록번호', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_STCD3, i, '법인코드', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_NAME2, i, '고객약칭명(변경)', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_KTOKD, i, '고객계정그룹[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_CUSTTYPE, i, '고객유형[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_STCD2, i, '사업자등록번호', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_STCD3, i, '법인코드', '필수값', errorDataidList);
                 // [판매처]checkRequiredField(mdm.PV_STCD4, i, '종사업장번호', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_GFORM, i, '법적상태[ID]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_J_1KFREPRE, i, '대표자이름', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_STCD1, i, '대표자 생년월일', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_J_1KFTBUS, i, '업태', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_J_1KFTIND, i, '업종', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_TELF1, i, '전화번호', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_TELFX, i, '팩스번호', '필수값', errorDataidList);                      // 판매처 팩스번호 추가
-                // checkRequiredField(mdm.PV_PAYCUST, i, '지급처[ID]', '필수값', errorDataidList);                  // 판매처 지급처 추가
-                // checkRequiredField(mdm.PV_CHARGECUST, i, '청구처[ID]', '필수값', errorDataidList);               // 판매처 청구처 추가
-                // checkRequiredField(mdm.PV_VKGRP, i, '영업그룹[ID]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PVRA_VKGRP, i, '영업그룹[VALID FROM]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_PERNR, i, '담당MA[ID]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PVRA_PERNR, i, '담당MA[VALID FROM]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_LOGISCENTER, i, 'FW 출고센터[ID]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PVRA_LOGISCENTER, i, 'FW 출고센터[VALID FROM]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_STCDT, i, '세금계산서발행유형[ID]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_FITYP, i, '과세유형[ID]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_HDOFFICEYN, i, '본점사용 유무', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_HKUNNR, i, '본점코드[ID]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_SUBSIDIARYYN, i, '관계사여부', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_VBUND, i, '관계사 코드[ID]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_LAND1, i, '국가키[ID]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_KNVKTYPE, i, '주문유형[ID]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_REGIO, i, '지역[ID]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_ADRES_ZIPCODE, i, '주소[ZIPCODE]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_ADRES_ADDR1, i, '주소[ADDR1]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_ADRES_ADDR2, i, '주소[ADDR2]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_ADRES_ROADADDR1, i, '주소[ROAD ADDR1]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_ADRES_ROADADDR2, i, '주소[ROAD ADDR2]', '필수값', errorDataidList);
-                // [판매처]checkRequiredField(mdm.PV_SALESCUST, i, '판매처[ID]', '필수값', errorDataidList);
-                // [판매처]checkRequiredField(mdm.PV_BUSAB, i, '매출형태[ID]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_CESSION_KZ, i, '고객상태[ID]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_ZUAWA, i, '정렬키[ID]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_AKONT, i, '조정계정[ID]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_FDGRV, i, '현금관리그룹[ID]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_VRSDG, i, '입금여부(FS만 사용)[ID]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_TAXKDD, i, '세금분류[ID]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_KATR5, i, '세금납부방법[ID]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_CUHR1, i, '고객분류[ID]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PVRA_CUHR1, i, '고객분류[VALID FROM]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_KONDA, i, '가격그룹[ID]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PVRA_KONDA, i, '가격그룹[VALID FROM]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_KVGR1, i, '단가그룹[ID]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PVRA_KVGR1, i, '단가그룹[VALID FROM]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_GFORM, i, '법적상태[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_J_1KFREPRE, i, '대표자이름', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_STCD1, i, '대표자 생년월일', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_J_1KFTBUS, i, '업태', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_J_1KFTIND, i, '업종', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_TELF1, i, '전화번호', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_TELFX, i, '팩스번호', '필수값', errorDataidList);                      // 판매처 팩스번호 추가
+                checkRequiredField(mdm.PV_PAYCUST, i, '지급처[ID]', '필수값', errorDataidList);                  // 판매처 지급처 추가
+                checkRequiredField(mdm.PV_CHARGECUST, i, '청구처[ID]', '필수값', errorDataidList);               // 판매처 청구처 추가
+                checkRequiredField(mdm.PV_VKGRP, i, '영업그룹[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PVRA_VKGRP, i, '영업그룹[VALID FROM]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_PERNR, i, '담당MA[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PVRA_PERNR, i, '담당MA[VALID FROM]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_LOGISCENTER, i, 'FW 출고센터[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PVRA_LOGISCENTER, i, 'FW 출고센터[VALID FROM]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_STCDT, i, '세금계산서발행유형[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_FITYP, i, '과세유형[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_HDOFFICEYN, i, '본점사용 유무', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_HKUNNR, i, '본점코드[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_SUBSIDIARYYN, i, '관계사여부', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_VBUND, i, '관계사 코드[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_LAND1, i, '국가키[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_KNVKTYPE, i, '주문유형[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_REGIO, i, '지역[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_ADRES_ZIPCODE, i, '주소[ZIPCODE]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_ADRES_ADDR1, i, '주소[ADDR1]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_ADRES_ADDR2, i, '주소[ADDR2]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_ADRES_ROADADDR1, i, '주소[ROAD ADDR1]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_ADRES_ROADADDR2, i, '주소[ROAD ADDR2]', '필수값', errorDataidList);
+                //[판매처]checkRequiredField(mdm.PV_SALESCUST, i, '판매처[ID]', '필수값', errorDataidList);
+                //[판매처]checkRequiredField(mdm.PV_BUSAB, i, '매출형태[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_CESSION_KZ, i, '고객상태[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_ZUAWA, i, '정렬키[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_AKONT, i, '조정계정[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_FDGRV, i, '현금관리그룹[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_VRSDG, i, '입금여부(FS만 사용)[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_TAXKDD, i, '세금분류[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_KATR5, i, '세금납부방법[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_CUHR1, i, '고객분류[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PVRA_CUHR1, i, '고객분류[VALID FROM]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_KONDA, i, '가격그룹[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PVRA_KONDA, i, '가격그룹[VALID FROM]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_KVGR1, i, '단가그룹[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PVRA_KVGR1, i, '단가그룹[VALID FROM]', '필수값', errorDataidList);
                 // [판매처]checkRequiredField(mdm.PV_WAERS, i, '통화[ID]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_KDGRP, i, '여신관리(고객향)[ID]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_KVGR3, i, '납품서유형[ID]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_KVGR3_BOT, i, '납품서 하단유형[ID]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_ODCLOSEGB, i, '고객 주문마감 유형코드[ID]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_VACCPRTEXCYN, i, '가상계좌 출력 제외', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_ZTERM_VV, i, '지급조건[ID]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_DSTRHISTREGYN, i, '유통이력 신고대상 유형[ID]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_KULTG, i, '약정회전일', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_OLD_BIZPLACE_NEW, i, '경로(사업부)[ID]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PVRA_OLD_BIZPLACE_NEW, i, '경로(사업부)[VALID FROM]', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_SHAPE, i, '외형(정원)', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_KDGRP, i, '여신관리(고객향)[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_KVGR3, i, '납품서유형[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_KVGR3_BOT, i, '납품서 하단유형[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_ODCLOSEGB, i, '고객 주문마감 유형코드[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_VACCPRTEXCYN, i, '가상계좌 출력 제외', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_ZTERM_VV, i, '지급조건[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_DSTRHISTREGYN, i, '유통이력 신고대상 유형[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_KULTG, i, '약정회전일', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_OLD_BIZPLACE_NEW, i, '경로(사업부)[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PVRA_OLD_BIZPLACE_NEW, i, '경로(사업부)[VALID FROM]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_SHAPE, i, '외형(정원)', '필수값', errorDataidList);
                 // [판매처]checkRequiredField(mdm.PV_EXAMYN, i, '대면검수여부', '필수값', errorDataidList);
                 // [판매처]checkRequiredField(mdm.PV_DELIGROUP, i, '배송그룹[ID]', '필수값', errorDataidList);
                 // [판매처]checkRequiredField(mdm.PV_KEYYN, i, '업장key 여부', '필수값', errorDataidList);
                 // [판매처]checkRequiredField(mdm.PV_KEYINFO, i, '업장key 정보', '필수값', errorDataidList);
                 // [판매처]checkRequiredField(mdm.PV_ISFDFTF, i, '초도배송 대면검수', '필수값', errorDataidList);
-                // checkRequiredField(mdm.PV_TEMPTARGET, i, '온도기록지 제출 대상 여부[ID]', '필수값', errorDataidList);
+                checkRequiredField(mdm.PV_TEMPTARGET, i, '온도기록지 제출 대상 여부[ID]', '필수값', errorDataidList);
                
                // 구코드(As-Is)
                if(mdm.PV_OLDCD != null){

@@ -106,6 +106,7 @@ public with sharing class IFN_ApiGateWay {
 
                 for (API_Authenticationkey__mdt hdmap : objIFAuthHeadInfoLst) {
                     request.setHeader(hdmap.HeaderLab__c, hdmap.HeaderKey__c);
+                    this.logWrap.RequestHeader = Json.serialize(hdmap);
                 }
 
             }
@@ -197,7 +198,7 @@ public with sharing class IFN_ApiGateWay {
 
 
 
-            } else if(objIFMaster.Method__c == 'GET_REST' ) {
+            }else if(objIFMaster.Method__c == 'GET_REST' ) {
 
                 endPointUrl = String.isNotBlank(this.objIFMaster.Param1__c) ? endPointUrl + '/' + this.objIFMaster.Param1__c : endPointUrl;
                 endPointUrl = String.isNotBlank(this.objIFMaster.Param2__c) ? endPointUrl + '/' + this.objIFMaster.Param2__c : endPointUrl;

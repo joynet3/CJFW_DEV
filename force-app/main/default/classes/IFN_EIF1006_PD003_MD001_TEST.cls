@@ -83,7 +83,7 @@ public with sharing class IFN_EIF1006_PD003_MD001_TEST {
 
         IFN_EIF1006_PD003_MD001.PD003_MD001ResWrapper res1 = cont.callout(params);
 
-        
+        system.debug(JSon.serialize(res1));
 
         Test.stopTest();
 

@@ -415,9 +415,7 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
                     mdmRequest.PV_DELIGROUP__c                 =      getValue(mdm.PV_DELIGROUP, accountMap.get(mdm?.PV_KUNNR)?.DeliveryGroup__c, headerList.contains('PV_DELIGROUP'));
                     mdmRequest.PV_DELIGROUP_lu__c              =      deliveryIdMap.get(mdmRequest.PV_DELIGROUP__c);
                     mdmRequest.PV_KATR10__c                    =      getValue(mdm.PV_KATR10, accountMap.get(mdm?.PV_KUNNR)?.ShipmentArea__c, headerList.contains('PV_KATR10'));
-                    System.debug('PV_KATR10 => ' + mdmRequest.PV_KATR10__c);
                     mdmRequest.PV_KATR10_lu__c                 =      shipmentIdMap.get(mdmRequest.PV_KATR10__c);
-                    System.debug('PV_KATR10_lu => ' + mdmRequest.PV_KATR10_lu__c);
                     mdmRequest.PV_KEYYN__c                     =      (mdm.PV_KEYYN == '' || mdm.PV_KEYYN == null) ? accountMap.get(mdm?.PV_KUNNR).IsBusinessPlaceKey__c : Boolean.valueOf(mdm.PV_KEYYN);
                     mdmRequest.PV_KEYINFO__c                   =      getValue(mdm.PV_KEYINFO, accountMap.get(mdm?.PV_KUNNR)?.BusinessPlaceKeyInfo__c, headerList.contains('PV_KEYINFO'));
                     mdmRequest.PV_KXOTD__c                     =      (mdm.PV_KXOTD == '' || mdm.PV_KXOTD == null) ? (accountMap.get(mdm?.PV_KUNNR).KXOTD__c == 'Y' ? true : false) : Boolean.valueOf(mdm.PV_KXOTD);
@@ -447,7 +445,7 @@ public with sharing class CJFW_MDMBulkUpdateHeadController {
             
         } catch (Exception e) {
             saveResult = new SaveResult('F', e.getMessage() + e.getLineNumber());
-            
+
             // 실패 시 bulk 데이터도 insert되지 않게끔
             Database.rollback(sp);
         }

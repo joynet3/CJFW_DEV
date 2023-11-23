@@ -166,39 +166,6 @@ public class IFN_EIF1006_Callout {
      * @exception  메소드가 발생시키는 예외에 대한 설명 또는 목록
      * @example 
      *  예제코드 태그 아래줄에서 예제 작성
-     * http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getHoliDeInfo?ServiceKey=cnMMU2J58o7H5KaNu9U1L7m1NV8d2ZjnJqg77goahcEpya9JFzZVdge5v0608R/01w9WBZQ4CCst6XbogxS2hg==&pageNo=1&numOfRows=10&solYear=2013&solMonth=10
-     * 
-     * {
-    "response": {
-        "header": {
-            "resultCode": "00",
-            "resultMsg": "NORMAL SERVICE."
-        },
-        "body": {
-            "items": {
-                "item": [
-                    {
-                        "dateKind": "01",
-                        "dateName": "개천절",
-                        "isHoliday": "Y",
-                        "locdate": 20131003,
-                        "seq": 1
-                    },
-                    {
-                        "dateKind": "01",
-                        "dateName": "한글날",
-                        "isHoliday": "Y",
-                        "locdate": 20131009,
-                        "seq": 1
-                    }
-                ]
-            },
-            "numOfRows": 10,
-            "pageNo": 1,
-            "totalCount": 2
-        }
-    }
-}
      * */
     public IFN_CalloutResult IFN_EIF1006_PD003_MD001(String interfaceId, Object params){
         IFN_CalloutResult result = new IFN_CalloutResult();
@@ -207,7 +174,7 @@ public class IFN_EIF1006_Callout {
         String result_code = 'S';
         String result_message = 'Callout Success';
         
-        String  infResponse = '';  
+        IFN_EIF1006_PD003_MD001.PD003_MD001ResWrapper  infResponse = new IFN_EIF1006_PD003_MD001.PD003_MD001ResWrapper();  
         
         try{
 
@@ -224,7 +191,7 @@ public class IFN_EIF1006_Callout {
             API_Authenticationkey__mdt authmdt = [SELECT KeyValue__c,DeveloperName  FROM API_Authenticationkey__mdt WHERE DeveloperName  = :interfaceId Limit 1];
             requestBody = paramConvert.searchSp + '?'
                                 + 'ServiceKey=' + authmdt.KeyValue__c
-                                + 'pageNo=1&numOfRows=100'
+                                + '&pageNo=1&numOfRows=100'
                                 + '&solYear=' +   paramConvert.solYear
                                 + '&solMonth=' +   paramConvert.solMonth  ;
             
@@ -233,10 +200,11 @@ public class IFN_EIF1006_Callout {
             Map<String,String> hemap = new Map<String,String>();
             HttpResponse response = gateway.webCallout(requestBody, hemap, true);
            
-
-            responsedata = response.getBody();
             if(response.getStatusCode() == 200) {
-                infResponse = (String)responsedata;
+
+                responsedata = response.getBody();
+                infResponse =  (IFN_EIF1006_PD003_MD001.PD003_MD001ResWrapper)JSON.deserializeStrict((String)responsedata, IFN_EIF1006_PD003_MD001.PD003_MD001ResWrapper.class);
+                
             } else {
                 result_code = 'F';
                 result_message = 'Callout Fail';

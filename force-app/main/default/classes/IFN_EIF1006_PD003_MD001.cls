@@ -31,8 +31,6 @@ public class IFN_EIF1006_PD003_MD001 {
             IFN_CalloutResult calloutRes = callout.getResponse(this.interfaceId, params);
 
             result = (PD003_MD001ResWrapper)calloutRes.response;
-
-            this.logWrap.LogText.add(JSon.serialize(result));
             
         } catch (Exception e) {
             this.logWrap.ErrorCode = '-1';
@@ -40,8 +38,6 @@ public class IFN_EIF1006_PD003_MD001 {
             this.logWrap.Status = 'ERROR';
         }
 
-
-        //commlog.insertLog(this.logWrap);
         return result;
 
 
