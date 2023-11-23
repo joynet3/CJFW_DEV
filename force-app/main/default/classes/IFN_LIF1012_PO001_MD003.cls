@@ -57,9 +57,13 @@ public class IFN_LIF1012_PO001_MD003 {
      * 요청 파라메터 
      */
     public class PO001_MD003ReqWrapper{
-        public ZMMT1380_ITM ZMMT1380 {get;set;}
+        public String XROWS {get;set;} // 파라메터 요청 갯수(리스트 요청일 경우)
+        public String XSYS {get;set;} // SD 고정
+        public String XDATS {get;set;} // 요청일자
+        public String XTIMS {get;set;} // 요청시간        
+        public T_INPUT_ITM T_INPUT {get;set;}
     }
-    public class ZMMT1380_ITM {
+    public class T_INPUT_ITM {
         public String MATNR {get;set;} // 자재번호
         public String FRBNR {get;set;} // B/L번호
         public String CTYPE {get;set;} // 계약구분
@@ -71,10 +75,12 @@ public class IFN_LIF1012_PO001_MD003 {
      * 수신 데이터
      */
      public class PO001_MD003ResWrapper{
-        public T_RETURN_ITM T_RETURN {get;set;}
+        public String XSTAT {get;set;}
+        public String XMSGS {get;set;}        
+        public T_OUTPUT_ITM T_OUTPUT {get;set;}
     }
 
-    public class T_RETURN_ITM{
+    public class T_OUTPUT_ITM{
         public String KUNNR {get;set;}       // 고객 번호   
         public String WERKS {get;set;}       // 플랜트 
         public String LGORT {get;set;}       // 저장 위치

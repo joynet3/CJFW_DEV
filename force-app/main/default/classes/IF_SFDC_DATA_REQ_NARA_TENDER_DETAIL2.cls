@@ -4,6 +4,9 @@
  * @group             : 
  * @last modified on  : 03-08-2023
  * @last modified by  : admin
+ * 
+ * @last modified on  : 2023.09.11
+ * @last modified by  : sancho (Lead -> CJFW_BiddingInformation__c)
 **/
 global without sharing class IF_SFDC_DATA_REQ_NARA_TENDER_DETAIL2 {
 

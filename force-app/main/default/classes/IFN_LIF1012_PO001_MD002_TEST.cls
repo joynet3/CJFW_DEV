@@ -63,7 +63,7 @@ public with sharing class IFN_LIF1012_PO001_MD002_TEST {
         resItm.PV_HNAME = '1';      // 사원번호 내역
 
         resData.T_OUTPUT = resItm;
-        resData.XMSGS = 'SD';
+        resData.XMSGS = '';
         resData.XSTAT= 'S';
 
         Test.setMock(HttpCalloutMock.class, new IFN_LIF1012_PO001_MD002_TESTMock(JSON.serialize(resData),200)); 
@@ -71,14 +71,14 @@ public with sharing class IFN_LIF1012_PO001_MD002_TEST {
         IFN_LIF1012_PO001_MD002.ITEM_ITM paramitm = new IFN_LIF1012_PO001_MD002.ITEM_ITM();
 
         IFN_LIF1012_PO001_MD002 cont = new IFN_LIF1012_PO001_MD002();
-        String interfaceId = 'IFN_LIF1012_PO001_MD001';
+        String interfaceId = 'IFN_LIF1012_PO001_MD002';
 
-        paramitm.VKORG = '1';   // 판매 조직
-        paramitm.VKBUR = '1';   // 사업장 
-        paramitm.VKGRP = '1';   // 영업 그룹
-        paramitm.PERNR = '1';   // 사원 번호
-        paramitm.KUNNR = '1';   // 고객 번호
-        paramitm.STIDA = '1';   // [FI] 미결항목일자
+        paramitm.VKORG = '';   // 판매 조직
+        paramitm.VKBUR = '';   // 사업장 
+        paramitm.VKGRP = '';   // 영업 그룹
+        paramitm.PERNR = '';   // 사원 번호
+        paramitm.KUNNR = '10037';   // 고객 번호
+        paramitm.STIDA = '20231107';   // [FI] 미결항목일자
         params.ITEM = paramitm;
 
 

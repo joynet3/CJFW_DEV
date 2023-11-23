@@ -42,7 +42,7 @@ public with sharing class IFN_LIF1012_PO001_MD003_TEST {
 
         Test.startTest();
         IFN_LIF1012_PO001_MD003.PO001_MD003ResWrapper resData = new IFN_LIF1012_PO001_MD003.PO001_MD003ResWrapper();
-        IFN_LIF1012_PO001_MD003.T_RETURN_ITM resItm = new IFN_LIF1012_PO001_MD003.T_RETURN_ITM();
+        IFN_LIF1012_PO001_MD003.T_OUTPUT_ITM resItm = new IFN_LIF1012_PO001_MD003.T_OUTPUT_ITM();
         resItm.KUNNR= '';
         resItm.WERKS= '';
         resItm.LGORT= '';
@@ -74,21 +74,24 @@ public with sharing class IFN_LIF1012_PO001_MD003_TEST {
         resItm.NAME1_WERKS= '';
         resItm.LGOBE= '';
         resItm.MAKTX= '';
-        resData.T_RETURN = resItm;
+        resData.T_OUTPUT = resItm;
+        resData.XMSGS = '';
+        resData.XSTAT= 'S';
 
         Test.setMock(HttpCalloutMock.class, new IFN_LIF1012_PO001_MD003_TESTMock(JSON.serialize(resData),200)); 
         IFN_LIF1012_PO001_MD003.PO001_MD003ReqWrapper params = new IFN_LIF1012_PO001_MD003.PO001_MD003ReqWrapper();
-        IFN_LIF1012_PO001_MD003.ZMMT1380_ITM paramitm = new IFN_LIF1012_PO001_MD003.ZMMT1380_ITM();
+        IFN_LIF1012_PO001_MD003.T_INPUT_ITM paramitm = new IFN_LIF1012_PO001_MD003.T_INPUT_ITM();
 
         IFN_LIF1012_PO001_MD003 cont = new IFN_LIF1012_PO001_MD003();
         String interfaceId = 'IFN_LIF1012_PO001_MD003';
 
-        paramitm.MATNR = '';
+        paramitm.MATNR = '401424';
         paramitm.FRBNR = '';
         paramitm.CTYPE = '';
-        params.ZMMT1380 = paramitm;
+        params.T_INPUT = paramitm;
 
         IFN_LIF1012_PO001_MD003.PO001_MD003ResWrapper res = cont.callout(params);
+        System.debug(JSON.serialize(res));
 
         
 

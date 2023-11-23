@@ -192,8 +192,9 @@ public class IFN_EIF1006_Callout {
             requestBody = paramConvert.searchSp + '?'
                                 + 'ServiceKey=' + authmdt.KeyValue__c
                                 + '&pageNo=1&numOfRows=100'
-                                + '&solYear=' +   paramConvert.solYear
-                                + '&solMonth=' +   paramConvert.solMonth  ;
+                                + '&solYear=' +   paramConvert.solYear;
+
+            if(String.isNotBlank(paramConvert.solMonth)) requestBody = requestBody + '&solMonth=' +   paramConvert.solMonth;
             
             this.logWrap.RequestBody = Json.serialize(params);
 

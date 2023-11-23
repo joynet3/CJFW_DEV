@@ -1,10 +1,10 @@
 /**
- * @Class : IFN_LIF1002_Callout_TEST.cls
+ * @Class : IFN_EIF1006_PD003_MD001_TEST.cls
  * @group Framework : 
  * @Author :  조일근 
  * @Date : 2023.08.30
  * @Version : 1.0
- * @Description : 주문 시스템 callout 테스트 클래스
+ * @Description : 공공 데이터 공휴일 조회 callout 테스트 클래스
  * @Modified :
  * ----------------------------------------------
  *  NO | Date       | Modifier       | Description

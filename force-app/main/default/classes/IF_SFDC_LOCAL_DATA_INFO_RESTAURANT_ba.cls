@@ -4,6 +4,9 @@
  * @group             : 
  * @last modified on  : 03-08-2023
  * @last modified by  : admin
+ * 
+ * 2023.10.17 sancho
+ * Lead ->	CJFW_PublicBiddingInformation__c
 **/
 global with sharing class IF_SFDC_LOCAL_DATA_INFO_RESTAURANT_ba implements Database.Batchable<String>,
   Database.AllowsCallouts, Database.Stateful{

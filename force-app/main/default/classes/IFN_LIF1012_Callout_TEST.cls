@@ -4,7 +4,7 @@
  * @Author :  조일근 
  * @Date : 2023.11.08
  * @Version : 1.0
- * @Description :
+ * @Description : SAP PO CALLOUT 테스트 클래스
  * @Modified :
  * ----------------------------------------------
  *  NO | Date       | Modifier       | Description
@@ -38,8 +38,91 @@ public with sharing class IFN_LIF1012_Callout_TEST {
 
 
 
+
+
+    /**
+     * 여신 사용 현황 테스트 - 정상
+     */
     @isTest
     static void test01_1()
+    {
+
+        Test.startTest();
+        IFN_LIF1012_PO001_MD001.PO001_MD001ResWrapper resData = new IFN_LIF1012_PO001_MD001.PO001_MD001ResWrapper();
+        IFN_LIF1012_PO001_MD001.T_OUTPUT_ITM resItm = new IFN_LIF1012_PO001_MD001.T_OUTPUT_ITM();
+        resItm.KUNNR       = '1';
+        resItm.KKBER       = '1';
+        resItm.VKORG       = '1';
+        resItm.KLIMK       = '1';
+        resItm.SAUFT       = '1';
+        resItm.SBGRP       = '1';
+        resItm.KATR2       = '1';
+        resItm.ZINCOME     = '1';
+        resItm.VTEXT       = '1';
+        resItm.VTEXT_KART2 = '1';
+        resItm.STEXT       = '1';
+        resItm.KKBTX       = '1';
+        resData.T_OUTPUT = resItm;
+
+        resData.XMSGS = '1';
+        resData.XSTAT= 'S';
+
+        Test.setMock(HttpCalloutMock.class, new IFN_LIF1012_Callout_TESTMock(JSON.serialize(resData),200)); 
+        IFN_LIF1012_PO001_MD001.PO001_MD001ReqWrapper params = new IFN_LIF1012_PO001_MD001.PO001_MD001ReqWrapper();
+        IFN_LIF1012_PO001_MD001.T_INPUT_ITM paramitm = new IFN_LIF1012_PO001_MD001.T_INPUT_ITM();
+        String interfaceId = 'IFN_LIF1012_PO001_MD001';
+
+        IFN_LIF1012_Callout callout = new IFN_LIF1012_Callout(interfaceId,'Realtime');
+
+        paramitm.KUNNR = '50000';
+        paramitm.KKBER = 'FW00';
+        params.T_INPUT = paramitm;
+
+        callout.getResponse(interfaceId, Json.serialize(params));
+
+        
+
+        Test.stopTest();
+
+    }
+
+
+    
+    /**
+     * 여신 사용 현황 테스트 - 500
+     */
+    @isTest
+    static void test01_2()
+    {
+
+        Test.startTest();
+       
+        Test.setMock(HttpCalloutMock.class, new IFN_LIF1012_Callout_TESTMock('',500)); 
+        IFN_LIF1012_PO001_MD001.PO001_MD001ReqWrapper params = new IFN_LIF1012_PO001_MD001.PO001_MD001ReqWrapper();
+        IFN_LIF1012_PO001_MD001.T_INPUT_ITM paramitm = new IFN_LIF1012_PO001_MD001.T_INPUT_ITM();
+        String interfaceId = 'IFN_LIF1012_PO001_MD001';
+
+        IFN_LIF1012_Callout callout = new IFN_LIF1012_Callout(interfaceId,'Realtime');
+
+        paramitm.KUNNR = '50000';
+        paramitm.KKBER = 'FW00';
+        params.T_INPUT = paramitm;
+
+        callout.getResponse(interfaceId, Json.serialize(params));
+
+        
+
+        Test.stopTest();
+
+    }
+
+
+
+    /**
+     * 매출 채권현황 테스트 - 정상
+     */
+    @isTest
+    static void test02_1()
     {
 
         Test.startTest();
@@ -92,9 +175,11 @@ public with sharing class IFN_LIF1012_Callout_TEST {
 
     }
 
-    
+    /**
+     * 매출 채권현황 테스트 - 500
+     */
     @isTest
-    static void test01_2()
+    static void test02_2()
     {
 
         Test.startTest();
@@ -124,14 +209,16 @@ public with sharing class IFN_LIF1012_Callout_TEST {
     }
 
 
-
+    /**
+     * 미계약 상품 테스트 - 정상
+     */
     @isTest
-    static void test02_1()
+    static void test03_1()
     {
 
         Test.startTest();
         IFN_LIF1012_PO001_MD003.PO001_MD003ResWrapper resData = new IFN_LIF1012_PO001_MD003.PO001_MD003ResWrapper();
-        IFN_LIF1012_PO001_MD003.T_RETURN_ITM resItm = new IFN_LIF1012_PO001_MD003.T_RETURN_ITM();
+        IFN_LIF1012_PO001_MD003.T_OUTPUT_ITM resItm = new IFN_LIF1012_PO001_MD003.T_OUTPUT_ITM();
         resItm.KUNNR= '';
         resItm.WERKS= '';
         resItm.LGORT= '';
@@ -163,93 +250,19 @@ public with sharing class IFN_LIF1012_Callout_TEST {
         resItm.NAME1_WERKS= '';
         resItm.LGOBE= '';
         resItm.MAKTX= '';
-        resData.T_RETURN = resItm;
-
-        Test.setMock(HttpCalloutMock.class, new IFN_LIF1012_Callout_TESTMock(JSON.serialize(resData),200)); 
-        IFN_LIF1012_PO001_MD003.PO001_MD003ReqWrapper params = new IFN_LIF1012_PO001_MD003.PO001_MD003ReqWrapper();
-        IFN_LIF1012_PO001_MD003.ZMMT1380_ITM paramitm = new IFN_LIF1012_PO001_MD003.ZMMT1380_ITM();
-        String interfaceId = 'IFN_LIF1012_PO001_MD003';
-
-        IFN_LIF1012_Callout callout = new IFN_LIF1012_Callout(interfaceId,'Realtime');
-
-
-        paramitm.MATNR = '';
-        paramitm.FRBNR = '';
-        paramitm.CTYPE = '';
-        params.ZMMT1380 = paramitm;
-
-        callout.getResponse(interfaceId, Json.serialize(params));
-
-        
-
-        Test.stopTest();
-
-    }
-
-
-
-    @isTest
-    static void test02_2()
-    {
-
-        Test.startTest();
-       
-        Test.setMock(HttpCalloutMock.class, new IFN_LIF1012_Callout_TESTMock('',500)); 
-        IFN_LIF1012_PO001_MD003.PO001_MD003ReqWrapper params = new IFN_LIF1012_PO001_MD003.PO001_MD003ReqWrapper();
-        IFN_LIF1012_PO001_MD003.ZMMT1380_ITM paramitm = new IFN_LIF1012_PO001_MD003.ZMMT1380_ITM();
-        String interfaceId = 'IFN_LIF1012_PO001_MD003';
-
-        IFN_LIF1012_Callout callout = new IFN_LIF1012_Callout(interfaceId,'Realtime');
-
-
-        paramitm.MATNR = '';
-        paramitm.FRBNR = '';
-        paramitm.CTYPE = '';
-        params.ZMMT1380 = paramitm;
-
-        callout.getResponse(interfaceId, Json.serialize(params));
-
-        
-
-        Test.stopTest();
-
-    }
-
-
-    
-    @isTest
-    static void test03_1()
-    {
-
-        Test.startTest();
-        IFN_LIF1012_PO001_MD001.PO001_MD001ResWrapper resData = new IFN_LIF1012_PO001_MD001.PO001_MD001ResWrapper();
-        IFN_LIF1012_PO001_MD001.T_OUTPUT_ITM resItm = new IFN_LIF1012_PO001_MD001.T_OUTPUT_ITM();
-        resItm.KUNNR       = '1';
-        resItm.KKBER       = '1';
-        resItm.VKORG       = '1';
-        resItm.KLIMK       = '1';
-        resItm.SAUFT       = '1';
-        resItm.SBGRP       = '1';
-        resItm.KATR2       = '1';
-        resItm.ZINCOME     = '1';
-        resItm.VTEXT       = '1';
-        resItm.VTEXT_KART2 = '1';
-        resItm.STEXT       = '1';
-        resItm.KKBTX       = '1';
         resData.T_OUTPUT = resItm;
 
-        resData.XMSGS = '1';
-        resData.XSTAT= 'S';
-
         Test.setMock(HttpCalloutMock.class, new IFN_LIF1012_Callout_TESTMock(JSON.serialize(resData),200)); 
-        IFN_LIF1012_PO001_MD001.PO001_MD001ReqWrapper params = new IFN_LIF1012_PO001_MD001.PO001_MD001ReqWrapper();
-        IFN_LIF1012_PO001_MD001.T_INPUT_ITM paramitm = new IFN_LIF1012_PO001_MD001.T_INPUT_ITM();
-        String interfaceId = 'IFN_LIF1012_PO001_MD001';
+        IFN_LIF1012_PO001_MD003.PO001_MD003ReqWrapper params = new IFN_LIF1012_PO001_MD003.PO001_MD003ReqWrapper();
+        IFN_LIF1012_PO001_MD003.T_INPUT_ITM paramitm = new IFN_LIF1012_PO001_MD003.T_INPUT_ITM();
+        String interfaceId = 'IFN_LIF1012_PO001_MD003';
 
         IFN_LIF1012_Callout callout = new IFN_LIF1012_Callout(interfaceId,'Realtime');
 
-        paramitm.KUNNR = '50000';
-        paramitm.KKBER = 'FW00';
+
+        paramitm.MATNR = '';
+        paramitm.FRBNR = '';
+        paramitm.CTYPE = '';
         params.T_INPUT = paramitm;
 
         callout.getResponse(interfaceId, Json.serialize(params));
@@ -261,8 +274,9 @@ public with sharing class IFN_LIF1012_Callout_TEST {
     }
 
 
-    
-
+    /**
+     * 미계약 상품 테스트 - 500
+     */
     @isTest
     static void test03_2()
     {
@@ -270,14 +284,16 @@ public with sharing class IFN_LIF1012_Callout_TEST {
         Test.startTest();
        
         Test.setMock(HttpCalloutMock.class, new IFN_LIF1012_Callout_TESTMock('',500)); 
-        IFN_LIF1012_PO001_MD001.PO001_MD001ReqWrapper params = new IFN_LIF1012_PO001_MD001.PO001_MD001ReqWrapper();
-        IFN_LIF1012_PO001_MD001.T_INPUT_ITM paramitm = new IFN_LIF1012_PO001_MD001.T_INPUT_ITM();
-        String interfaceId = 'IFN_LIF1012_PO001_MD001';
+        IFN_LIF1012_PO001_MD003.PO001_MD003ReqWrapper params = new IFN_LIF1012_PO001_MD003.PO001_MD003ReqWrapper();
+        IFN_LIF1012_PO001_MD003.T_INPUT_ITM paramitm = new IFN_LIF1012_PO001_MD003.T_INPUT_ITM();
+        String interfaceId = 'IFN_LIF1012_PO001_MD003';
 
         IFN_LIF1012_Callout callout = new IFN_LIF1012_Callout(interfaceId,'Realtime');
 
-        paramitm.KUNNR = '50000';
-        paramitm.KKBER = 'FW00';
+
+        paramitm.MATNR = '';
+        paramitm.FRBNR = '';
+        paramitm.CTYPE = '';
         params.T_INPUT = paramitm;
 
         callout.getResponse(interfaceId, Json.serialize(params));

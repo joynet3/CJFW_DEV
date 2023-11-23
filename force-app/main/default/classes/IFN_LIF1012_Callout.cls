@@ -186,7 +186,7 @@ public class IFN_LIF1012_Callout {
             String yyyymmdd = ymdhms.substring(0, 8);
             String hhmmss = ymdhms.substring(8);
             reqparam.XROWS = '1';
-            reqparam.XSYS = 'SD';
+            reqparam.XSYS = 'CRM';
             reqparam.XDATS = yyyymmdd;
             reqparam.XTIMS = hhmmss;
             
@@ -306,6 +306,16 @@ public class IFN_LIF1012_Callout {
             reqparam = (IFN_LIF1012_PO001_MD003.PO001_MD003ReqWrapper)JSON.deserializeStrict((String) params, IFN_LIF1012_PO001_MD003.PO001_MD003ReqWrapper.class);
 
 
+            String ymdhms = Datetime.now().format('yyyyMMddHHmmss');
+            String yyyymmdd = ymdhms.substring(0, 8);
+            String hhmmss = ymdhms.substring(8);
+            reqparam.XROWS = '1';
+            reqparam.XSYS = 'CRM';
+            reqparam.XDATS = yyyymmdd;
+            reqparam.XTIMS = hhmmss;
+            
+
+
             IFN_ApiGateWay gateway = new IFN_ApiGateWay(interfaceId);
             String requestBody = JSON.serialize(reqparam);
             this.logWrap.RequestBody = requestBody;
@@ -316,7 +326,7 @@ public class IFN_LIF1012_Callout {
 
                 responsedata = response.getBody();
                 infResponse =  (IFN_LIF1012_PO001_MD003.PO001_MD003ResWrapper)JSON.deserializeStrict((String)responsedata, IFN_LIF1012_PO001_MD003.PO001_MD003ResWrapper.class);
-                this.logWrap.LogText.add('infResponse.search >>>>>>>>>> ' + JSON.serialize(infResponse.T_RETURN));
+                this.logWrap.LogText.add('infResponse.search >>>>>>>>>> ' + JSON.serialize(infResponse.T_OUTPUT));
                 this.logWrap.ResponseBody = (String)responsedata;
                 this.logWrap.ResponseTime = Datetime.now();
             } else {

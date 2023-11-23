@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 11-06-2023
+ * @last modified on  : 11-23-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -94,7 +94,7 @@ public with sharing class CJFW_MDMAccountSearchController {
             strQuery += ' UnloadConditions1__c, toLabel(UnloadConditions1__c) UnloadConditions1Label, UnloadConditions2__c, toLabel(UnloadConditions2__c) UnloadConditions2Label, ShipmentArea__c, toLabel(ShipmentArea__c) ShipmentAreaLabel, ';
             strQuery += ' IsBusinessPlaceKey__c, BusinessPlaceKeyInfo__c, KXOTD__c, toLabel(KXOTD__c) KXOTDLabel, KXOTDRequestDate__c, InitialDeliveryShare__c, toLabel(InitialDeliveryShare__c) InitialDeliveryShareLabel, InitialDeliveryRequestDate__c, ';
             strQuery += ' InitialDeliveryRequestTime__c, IsInitialDeliveryFTFInspection__c, InitialDeliveryContact__c, InitialDeliveryDescription__c, PV_SHIPTYPE__c, toLabel(PV_SHIPTYPE__c) PV_SHIPTYPE__LABEL, PV_TEMPTARGET__c, toLabel(PV_TEMPTARGET__c) PV_TEMPTARGET__LABEL, ';
-            strQuery += ' PV_SALESCUST__c, PV_DELICUST__c, PV_BIZPLCODE__c ';
+            strQuery += ' PV_SALESCUST__c, PV_DELICUST__c, OnlyOneFoodNetBusinessIdCode__c ';
             strQuery += ' FROM    Account';
             strQuery += ' WHERE   CustomerType__c IN ( \'' + selectedcustomerType + '\' ) AND CustomerId__c != NULL ';
             for(Integer i = 0; i < searchKeys.size(); i++) {
