@@ -94,7 +94,7 @@ public class IFN_LIF1012_Callout {
 
             Map<String,String> dynamicHd = new Map<String,String>();
 
-            HttpResponse response = gateway.webCallout(requestBody,null, false);
+            HttpResponse response = gateway.webCallout(requestBody,null, true);
 
             if(response.getStatusCode() == 200) {
 
@@ -105,14 +105,12 @@ public class IFN_LIF1012_Callout {
                 this.logWrap.ResponseTime = Datetime.now();
             } else {
 
-                List<String> errMsgLst = new List<String>{String.valueOf(response.getStatus())};
-                errWr = IFN_CMM_ERRUTIL.GET_ERRORINFO_BYERRORKEY_FORMAT('COMMON', IFN_CMM_ERRUTIL.ERRKEY_INTERFACE_STATUS_ERROR,errMsgLst);
-                result_code =  errWr.err_code;
-                result_message =  errWr.err_msg;
-                
+                result_code =  String.valueOf(response.getStatusCode());
+                result_message = response.getStatus();
+                                
                 responsedata = '';
-                this.logWrap.LogText.add(response.getStatus());
-                this.logWrap.ErrorText.add(response.getStatus());
+                this.logWrap.LogText.add(result_message);
+                this.logWrap.ErrorText.add(result_message);
             }
 
         } catch(Exception e) {
@@ -195,7 +193,7 @@ public class IFN_LIF1012_Callout {
             String requestBody = JSON.serialize(reqparam);
             this.logWrap.RequestBody = requestBody;
 
-            HttpResponse response = gateway.webCallout(requestBody,null, false);
+            HttpResponse response = gateway.webCallout(requestBody,null, true);
 
             if(response.getStatusCode() == 200) {
 
@@ -206,14 +204,12 @@ public class IFN_LIF1012_Callout {
                 this.logWrap.ResponseTime = Datetime.now();
             } else {
 
-                List<String> errMsgLst = new List<String>{String.valueOf(response.getStatus())};
-                errWr = IFN_CMM_ERRUTIL.GET_ERRORINFO_BYERRORKEY_FORMAT('COMMON', IFN_CMM_ERRUTIL.ERRKEY_INTERFACE_STATUS_ERROR,errMsgLst);
-                result_code =  errWr.err_code;
-                result_message =  errWr.err_msg;
-                
+                result_code =  String.valueOf(response.getStatusCode());
+                result_message = response.getStatus();
+                                
                 responsedata = '';
-                this.logWrap.LogText.add(response.getStatus());
-                this.logWrap.ErrorText.add(response.getStatus());
+                this.logWrap.LogText.add(result_message);
+                this.logWrap.ErrorText.add(result_message);
             }
 
         } catch(Exception e) {

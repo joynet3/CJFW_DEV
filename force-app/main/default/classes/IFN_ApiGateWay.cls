@@ -141,7 +141,7 @@ public with sharing class IFN_ApiGateWay {
             String endPointUrl = this.objIFMaster.Endpoint__c;
             String strMethod = this.objIFMaster.Method__c.contains('_') ? this.objIFMaster.Method__c.split('_')[0] : this.objIFMaster.Method__c;
             request.setMethod(strMethod);
-            request.setTimeout(110000);         
+            request.setTimeout(30000);         
 
             
             if(contentType.contains('multipart')) {                
@@ -208,12 +208,6 @@ public with sharing class IFN_ApiGateWay {
 
                 endPointUrl = String.isNotBlank(requestBody) ?  endPointUrl+'/'+requestBody : endPointUrl;
             }
-
-
-            System.debug('>>>>>>>>>>>>>>>>>>>>>>>>>>> Interface_id' + request.getHeader('Interface_id'));
-            System.debug('>>>>>>>>>>>>>>>>>>>>>>>>>>> Interface_auth_key' + request.getHeader('Interface_auth_key'));
-            System.debug('>>>>>>>>>>>>>>>>>>>>>>>>>>> Content-Type' + request.getHeader('Content-Type'));
-
 
             request.setEndpoint(endPointUrl);
             

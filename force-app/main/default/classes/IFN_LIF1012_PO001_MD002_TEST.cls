@@ -83,6 +83,7 @@ public with sharing class IFN_LIF1012_PO001_MD002_TEST {
 
 
         IFN_LIF1012_PO001_MD002.PO001_MD002ResWrapper res = cont.callout(params);
+        System.debug(res);
 
         Test.stopTest();
 
