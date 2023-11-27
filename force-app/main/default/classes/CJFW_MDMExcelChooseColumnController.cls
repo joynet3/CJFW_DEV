@@ -2,13 +2,15 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 11-06-2023
- * @last modified by  : hyeeun.song@dkbmc.com
+ * @last modified on  : 11-24-2023
+ * @last modified by  : joohyeon.jang@dkbmc.com
 **/
 public with sharing class CJFW_MDMExcelChooseColumnController {
 
     @AuraEnabled
     public static List<OptionObj> getAttributeOptions(String property){
+        system.debug('# getAttributeOptions() ');
+        system.debug('property ' + property);
 
         List<OptionObj> attributeOptions = new List<OptionObj>();
 
@@ -42,6 +44,11 @@ public with sharing class CJFW_MDMExcelChooseColumnController {
     /* 속성부문, 속성군, 타입에 따라 field값 다르게 도출하기 */
     @AuraEnabled
     public static List<AccountApplicableField__mdt> getDownloadField(String property, String attribute, String type, String searchWord) {
+        system.debug('# getDownloadField() ');
+        system.debug('property ' + property);
+        system.debug('property ' + attribute);
+        system.debug('property ' + type);
+        system.debug('property ' + searchWord);
 
         String typeApi = null;
 
@@ -87,7 +94,11 @@ public with sharing class CJFW_MDMExcelChooseColumnController {
     /* Filter 값 불러오기 */
     @AuraEnabled
     public static List<AccountApplicableField__mdt> getFilterField(String property, String attribute, String type, String searchWord) {
-
+        system.debug('# getFilterField() ');
+        system.debug('property ' + property);
+        system.debug('property ' + attribute);
+        system.debug('property ' + type);
+        system.debug('property ' + searchWord);
         String typeApi = null;
 
         if (type == '본점') {

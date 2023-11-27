@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 11-22-2023
+ * @last modified on  : 11-27-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -166,6 +166,7 @@ public with sharing class CJFW_MDMBulkCreateSellModalController {
                     mdmRequest.PV_NAME_G__c                    =      String.isBlank(mdm.PV_NAME_G) ? null : mdm.PV_NAME_G;  
                     mdmRequest.PV_NAME2__c                     =      String.isBlank(mdm.PV_NAME2) ? null : mdm.PV_NAME2;  
                     mdmRequest.PV_KTOKD__c                     =      String.isBlank(mdm.PV_KTOKD) ? null : mdm.PV_KTOKD;  
+                    //mdmRequest.PV_CUSTTYPE__c                  =      'C02';      
                     mdmRequest.PV_CUSTTYPE__c                  =      String.isBlank(mdm.PV_CUSTTYPE) ? null : mdm.PV_CUSTTYPE;      
                     mdmRequest.PV_STCD2__c                     =      String.isBlank(mdm.PV_STCD2) ? null : mdm.PV_STCD2;  
                     mdmRequest.PV_STCD3__c                     =      String.isBlank(mdm.PV_STCD3) ? null : mdm.PV_STCD3;  
@@ -384,7 +385,6 @@ public with sharing class CJFW_MDMBulkCreateSellModalController {
                 checkRequiredField(mdm.PV_ZUAWA, i, '정렬키[ID]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_AKONT, i, '조정계정[ID]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_FDGRV, i, '현금관리그룹[ID]', '필수값', errorDataidList);
-                checkRequiredField(mdm.PV_VRSDG, i, '입금여부(FS만 사용)[ID]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_TAXKDD, i, '세금분류[ID]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_KATR5, i, '세금납부방법[ID]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_CUHR1, i, '고객분류[ID]', '필수값', errorDataidList);
@@ -404,7 +404,6 @@ public with sharing class CJFW_MDMBulkCreateSellModalController {
                 checkRequiredField(mdm.PV_KULTG, i, '약정회전일', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_OLD_BIZPLACE_NEW, i, '경로(사업부)[ID]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PVRA_OLD_BIZPLACE_NEW, i, '경로(사업부)[VALID FROM]', '필수값', errorDataidList);
-                checkRequiredField(mdm.PV_SHAPE, i, '외형(정원)', '필수값', errorDataidList);
                 // [판매처]checkRequiredField(mdm.PV_EXAMYN, i, '대면검수여부', '필수값', errorDataidList);
                 // [판매처]checkRequiredField(mdm.PV_DELIGROUP, i, '배송그룹[ID]', '필수값', errorDataidList);
                 // [판매처]checkRequiredField(mdm.PV_KEYYN, i, '업장key 여부', '필수값', errorDataidList);

@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : hyeeun.song@dkbmc.com
  * @group             : 
- * @last modified on  : 11-21-2023
+ * @last modified on  : 11-24-2023
  * @last modified by  : hyeeun.song@dkbmc.com
 **/
 public with sharing class CJFW_MDMBulkUpdateInfoListController {
@@ -48,7 +48,7 @@ public with sharing class CJFW_MDMBulkUpdateInfoListController {
             strQuery += ' IsPrintVirtualAccount__c, TermsOfPayment__c, toLabel(TermsOfPayment__c) TermsOfPaymentLabel, DisHisRegType__c, toLabel(DisHisRegType__c) DisHisRegTypeLabel, ContractRocationDate__c, TaxationType__c, ';
             strQuery += ' CustomerPath__c, toLabel(CustomerPath__c) CustomerPathLabel, Shape__c, DeliveryGroup__c, toLabel(DeliveryGroup__c) DeliveryGroupLabel, CustomerOrderDeadlineType__c, ';
             strQuery += ' PVVF_KONDA__c, PriceGroupFromDate__c, PVVF_OLD_BIZPLACE_NEW__c, CustomerPathFromDate__c, FWReleaseCenterFromDate__c, PVVF_LOGISCENTER__c, FWReleaseCenter__c, IsFaceToFaceInspectionStatus__c, ';
-            strQuery += ' DeliveryCustomerCode__c, SalesCustomerCode__c, BizPLCode__c, HeadOfficeCode__c, PVVF_KVGR1__c, UnitPriceGroupFromDate__c, StatementOfDeliveryType__c, StatementOfDeliveryType2__c,  ';
+            strQuery += ' DeliveryCustomerCode__c, SalesCustomerCode__c, OnlyOneFoodNetBusinessIdCode__c, HeadOfficeCode__c, PVVF_KVGR1__c, UnitPriceGroupFromDate__c, StatementOfDeliveryType__c, StatementOfDeliveryType2__c,  ';
             strQuery += ' OTD__c, ProductLoadingCondition__c, ReturnLocation__c, VehicleEntryCondtions__c, UnloadConditions1__c, UnloadConditions2__c, ShipmentArea__c, IsBusinessPlaceKey__c, BusinessPlaceKeyInfo__c, ';
             strQuery += ' KXOTD__c, KXOTDRequestDate__c, InitialDeliveryShare__c, InitialDeliveryRequestDate__c, InitialDeliveryRequestTime__c, IsInitialDeliveryFTFInspection__c, InitialDeliveryContact__c, ';
             strQuery += ' InitialDeliveryDescription__c, PV_SHIPTYPE__c, PV_TEMPTARGET__c ';
@@ -166,7 +166,7 @@ public with sharing class CJFW_MDMBulkUpdateInfoListController {
                     mdmRequest.PV_DELICUST_MOD          =      String.isBlank(mdms[i].PV_DELICUST__c) ? null : mdms[i].PV_DELICUST__c;
                     mdmRequest.PV_SALESCUST             =      String.isBlank(accList[i].SalesCustomerCode__c) ? null : accList[i].SalesCustomerCode__c;
                     mdmRequest.PV_SALESCUST_MOD         =      String.isBlank(mdms[i].PV_SALESCUST__c) ? null : mdms[i].PV_SALESCUST__c;
-                    mdmRequest.PV_BIZPLCODE             =      String.isBlank(accList[i].BizPLCode__c) ? null : accList[i].BizPLCode__c;
+                    mdmRequest.PV_BIZPLCODE             =      String.isBlank(accList[i].OnlyOneFoodNetBusinessIdCode__c) ? null : accList[i].OnlyOneFoodNetBusinessIdCode__c;
                     mdmRequest.PV_BIZPLCODE_MOD         =      String.isBlank(mdms[i].PV_BIZPLCODE__c) ? null : mdms[i].PV_BIZPLCODE__c;
                     mdmRequest.PV_BUSAB                 =      String.isBlank(accList[i].SalesForm__c) ? null : accList[i].SalesForm__c;
                     mdmRequest.PV_BUSAB_MOD             =      String.isBlank(mdms[i].PV_BUSAB__c) ? null : mdms[i].PV_BUSAB__c;
@@ -230,7 +230,7 @@ public with sharing class CJFW_MDMBulkUpdateInfoListController {
                     mdmRequest.PVRA_OLD_BIZPLACE_NEW_MOD=      mdms[i].PVRA_OLD_BIZPLACE_NEW__c;
                     mdmRequest.PV_SHAPE                 =      String.isBlank(accList[i].Shape__c) ? null : accList[i].Shape__c;
                     mdmRequest.PV_SHAPE_MOD             =      String.isBlank(mdms[i].PV_SHAPE__c) ? null : mdms[i].PV_SHAPE__c;
-                    mdmRequest.PV_EXAMYN                =      accList[i].IsFaceToFaceInspectionStatus__c ? null : accList[i].IsFaceToFaceInspectionStatus__c;
+                    mdmRequest.PV_EXAMYN                =      accList[i].IsFaceToFaceInspectionStatus__c;
                     mdmRequest.PV_EXAMYN_MOD            =      mdms[i].PV_EXAMYN__c;
                     mdmRequest.PV_SHIPREQTIME           =      String.isBlank(accList[i].OTD__c) ? null : accList[i].OTD__c;
                     mdmRequest.PV_SHIPREQTIME_MOD       =      String.isBlank(mdms[i].PV_SHIPREQTIME__c) ? null : mdms[i].PV_SHIPREQTIME__c;

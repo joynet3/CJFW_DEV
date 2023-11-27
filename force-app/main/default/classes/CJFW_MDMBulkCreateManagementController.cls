@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 11-22-2023
+ * @last modified on  : 11-23-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -299,10 +299,11 @@ public with sharing class CJFW_MDMBulkCreateManagementController {
     * =======================================================================================================================
     */
     @AuraEnabled
-    public static List<ErrorData> validationCheckBeforeSave(List<MDMRequest> mdmList) {
+    public static List<ErrorData> validationCheckBeforeSave(List<MDMRequest> mdmList, String type) {
         System.debug(' ### validationCheckBeforeSave() ' );
         try {
-            System.debug('mdmList ' + mdmList);
+            System.debug('type ' + type);
+            System.debug('mdmList ' + json.serialize(mdmList));
     
             List<ErrorData> errorDataidList = new List<ErrorData>();
             
@@ -350,8 +351,8 @@ public with sharing class CJFW_MDMBulkCreateManagementController {
                 checkRequiredField(mdm.PV_KTOKD, i, '고객계정그룹[ID]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_CUSTTYPE, i, '고객유형[ID]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_STCD2, i, '사업자등록번호', '필수값', errorDataidList);
-                checkRequiredField(mdm.PV_STCD3, i, '법인코드', '필수값', errorDataidList);
-                checkRequiredField(mdm.PV_STCD4, i, '종사업장번호', '필수값', errorDataidList);
+                if (type == '관리처-분할') checkRequiredField(mdm.PV_STCD3, i, '법인코드', '필수값', errorDataidList);
+                if (type == '관리처-분할') checkRequiredField(mdm.PV_STCD4, i, '종사업장번호', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_GFORM, i, '법적상태[ID]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_J_1KFREPRE, i, '대표자이름', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_STCD1, i, '대표자 생년월일', '필수값', errorDataidList);
@@ -366,10 +367,10 @@ public with sharing class CJFW_MDMBulkCreateManagementController {
                 checkRequiredField(mdm.PVRA_LOGISCENTER, i, 'FW 출고센터[VALID FROM]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_STCDT, i, '세금계산서발행유형[ID]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_FITYP, i, '과세유형[ID]', '필수값', errorDataidList);
-                checkRequiredField(mdm.PV_HDOFFICEYN, i, '본점사용 유무', '필수값', errorDataidList);
+                if (type == '관리처-분할') checkRequiredField(mdm.PV_HDOFFICEYN, i, '본점사용 유무', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_HKUNNR, i, '본점코드[ID]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_SUBSIDIARYYN, i, '관계사여부', '필수값', errorDataidList);
-                checkRequiredField(mdm.PV_VBUND, i, '관계사 코드[ID]', '필수값', errorDataidList);
+                if (type == '관리처-분할') checkRequiredField(mdm.PV_VBUND, i, '관계사 코드[ID]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_LAND1, i, '국가키[ID]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_KNVKTYPE, i, '주문유형[ID]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_REGIO, i, '지역[ID]', '필수값', errorDataidList);
@@ -379,6 +380,7 @@ public with sharing class CJFW_MDMBulkCreateManagementController {
                 checkRequiredField(mdm.PV_ADRES_ROADADDR1, i, '주소[ROAD ADDR1]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_ADRES_ROADADDR2, i, '주소[ROAD ADDR2]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_SALESCUST, i, '판매처[ID]', '필수값', errorDataidList);
+                if (type == '관리처-2차')  checkRequiredField(mdm.PV_BIZPLCODE, i, 'OnlyOneFoodNet사업장ID[ID]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_BUSAB, i, '매출형태[ID]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_CESSION_KZ, i, '고객상태[ID]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_ZUAWA, i, '정렬키[ID]', '필수값', errorDataidList);
@@ -403,10 +405,10 @@ public with sharing class CJFW_MDMBulkCreateManagementController {
                 checkRequiredField(mdm.PVRA_OLD_BIZPLACE_NEW, i, '경로(사업부)[VALID FROM]', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_EXAMYN, i, '대면검수여부', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_DELIGROUP, i, '배송그룹[ID]', '필수값', errorDataidList);
-                checkRequiredField(mdm.PV_KEYYN, i, '업장key 여부', '필수값', errorDataidList);
-                checkRequiredField(mdm.PV_KEYINFO, i, '업장key 정보', '필수값', errorDataidList);
+                if (type == '관리처-분할') checkRequiredField(mdm.PV_KEYYN, i, '업장key 여부', '필수값', errorDataidList);
+                if (type == '관리처-분할') checkRequiredField(mdm.PV_KEYINFO, i, '업장key 정보', '필수값', errorDataidList);
                 checkRequiredField(mdm.PV_ISFDFTF, i, '초도배송 대면검수', '필수값', errorDataidList);
-                checkRequiredField(mdm.PV_TEMPTARGET, i, '온도기록지 제출 대상 여부[ID]', '필수값', errorDataidList);
+                if (type == '관리처-분할') checkRequiredField(mdm.PV_TEMPTARGET, i, '온도기록지 제출 대상 여부[ID]', '필수값', errorDataidList);
                 
                 // 구코드(As-Is)
                 if(mdm.PV_OLDCD != null){

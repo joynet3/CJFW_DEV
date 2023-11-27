@@ -2,7 +2,7 @@
  * @description       : 관리처-분할 Controller
  * @author            : joohyeon.jang@dkbmc.com
  * @group             : 
- * @last modified on  : 11-02-2023
+ * @last modified on  : 11-27-2023
  * @last modified by  : joohyeon.jang@dkbmc.com
  * Modifications Log
  * Ver   Date         Author                    Modification
@@ -345,7 +345,7 @@ public with sharing class CJFW_MDMManagementController {
                         ,PV_KVGR2__c                    // 장려금유형 
                         ,PV_FDGRV__c                    // 현금관리그룹 
                         ,PV_KVGR3__c                    // 납품서유형 
-                        ,PV_VRSDG__c                    // 입금여부(FS만 사용) 
+                        // ,PV_VRSDG__c                    // 입금여부(FS만 사용) 
                         ,PVRA_KVGR1__c                  // 단가그룹(유효일자 관리 필요) - 현재 속성의 VALID FROM 
                         ,PV_TAXKDD__c                   // 세금분류 
                         ,PVVF_KVGR1__c                  // 단가그룹(유효일자 관리 필요) - 미래 속성의 VALID FROM 
@@ -358,7 +358,7 @@ public with sharing class CJFW_MDMManagementController {
                         ,PVRA_CUHR1__c                  // 고객분류 - 현재 속성의 VALID FROM 
                         ,PVVF_CUHR1__c                  // 고객분류 - 미래 속성의 VALID FROM 
                         ,PV_SALESCUST__c                // 판매처 
-                        ,PV_DELICUST__c                 // 배송관리처 
+                        //,PV_DELICUST__c                 // 배송관리처
                         ,PV_FDINFO__c                   // 초도배송 정보공유 
                         ,PV_KXOTD__c                    // KX OTD 
                         ,PV_KDGRP__c                    // 여신관리(고객향) 
